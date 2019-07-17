@@ -36,7 +36,8 @@ Plug 'neovimhaskell/haskell-vim'        " syntax
 Plug 'dag/vim2hs'                       " syntax, indent
 
 " python3
-Plug 'davidhalter/jedi-vim'             " completion
+"Plug 'davidhalter/jedi-vim'             " completion
+Plug 'kiteco/plugins'
 
 " c++
 Plug 'octol/vim-cpp-enhanced-highlight' " syntax highlight
@@ -47,16 +48,27 @@ Plug 'vim-ruby/vim-ruby'
 
 " Rust
 Plug 'rust-lang/rust.vim'              " completion
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 " Dart
 Plug 'dart-lang/dart-vim-plugin'
 
+" JavaScript
+Plug 'othree/yajs.vim' "syntax highlight
+Plug 'ternjs/tern_for_vim' "auto completion
+
 " toml
 Plug 'cespare/vim-toml'
+
+" json
+Plug 'elzr/vim-json'
 
 "markdown
 "Plug 'godlygeek/tabular'
 "Plug 'plasticboy/vim-markdown'
+
+" html
+Plug 'mattn/emmet-vim'
 
 " :Unite colorscheme -auto-preview
 Plug 'Shougo/unite.vim'
@@ -89,5 +101,5 @@ Plug 'drewtempelmeyer/palenight.vim'      " palenight
 
 " others
 Plug 'scrooloose/nerdtree'
-Plug 'Shougo/deoplete.nvim'               " auto completion
+
 call plug#end()

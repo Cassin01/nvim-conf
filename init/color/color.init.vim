@@ -11,9 +11,6 @@ syntax on
 " 255 : 白色
 " 240 : 灰色
 
-
-
-
 " color scheme 拡張 " one dark
 au ColorScheme * hi Normal       ctermbg=none
 au ColorScheme * hi LineNr       ctermbg=none ctermfg=240 cterm=italic " 行番号
@@ -33,13 +30,10 @@ au Colorscheme * hi SpellBad ctermfg=46 cterm=none
 " キャメルケースチェック
 au ColorScheme * hi SpellCap ctermfg=46 cterm=bold
 
-
-
-set background=light
+set background=dark
 colo onedark
 "colo tomorrow
 "colo hybrid
-
 
 augroup filetypedetect
   au BufRead,BufNewFile *.hs :call ColHaskell()

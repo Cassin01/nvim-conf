@@ -4,7 +4,7 @@ set fenc=utf-8
 set nobackup
 set noswapfile
 set autoread
-set tabstop=2 shiftwidth=2 expandtab
+set tabstop=2 shiftwidth=4 expandtab
 set number
 "set scrolloff=5
 set scrolloff=10
@@ -27,3 +27,8 @@ hi clear SpellCap
 
 " remove trailing whitespace
 " autocmd BufWritePre * :%s/\s\+$//ge
+
+au BufNewFile start.rs 0r $HOME/.config/nvim/template/main.rs
+
+let g:python2_host_prog = '/usr/local/bin/python'
+let g:python3_host_prog = '/usr/local/bin/python3'

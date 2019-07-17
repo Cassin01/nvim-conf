@@ -9,8 +9,11 @@ autocmd VimEnter,Colorscheme * :hi IndentGuidesOdd   ctermbg=237
 autocmd VimEnter,Colorscheme * :hi IndentGuidesEven  ctermbg=237
 
 " indentLine
-let g:indentLine_enabled = 0 " disable by default
+let g:indentLine_enabled = 1 " disable by default
 let g:indentLine_char = '⎸'
+
+" elzr/vim-json
+let g:vim_json_syntax_conceal=0
 
 " fugitive.vim
 set statusline+=%{FugitiveStatusline()}
@@ -91,8 +94,47 @@ let g:clang_cpp_options = '-std=c++11 -stdlib=libc++' " c++11 用
 " disable auto completion for vim-clang
 let g:clang_auto = 0
 
-" deoplate
-" let g:deoplete#enable_at_startup = 1
+" kiteco/plugins
+let g:kite_auto_complete=0
+
+" ------------------------
+" coc.nvim start
+" ------------------------
+" if hidden is not set, TextEdit might fail.
+set hidden
+
+" Some servers have issues with backup files, see #649
+set nobackup
+set nowritebackup
+
+" Better display for messages
+set cmdheight=2
+
+" You will have bad experience for diagnostic messages when it's default 4000.
+set updatetime=300
+
+" don't give |ins-completion-menu| messages.
+set shortmess+=c
+
+" always show signcolumns
+set signcolumn=yes
+
+" Use tab for trigger completion with characters ahead and navigate.
+" Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
+inoremap <silent><expr> <TAB>
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ coc#refresh()
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
+" ------------------------
+" coc.nvim end
+" ------------------------
 
 "------------------------------------------
 "           -- colorschemes --

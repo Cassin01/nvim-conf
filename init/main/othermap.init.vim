@@ -6,6 +6,8 @@ map <C-n> :NERDTreeToggle<CR>
 " insert mode
 inoremap <silent> <C-f> <right>
 inoremap <silent> <C-b> <left>
+inoremap <silent> <C-k> <up>
+inoremap <silent> <C-l> <down>
 
 " 括弧補完
 inoremap ( ()<left>
@@ -28,6 +30,10 @@ augroup FolowFile
     autocmd BufRead,BufNewFile *.cpp  inoremap {<enter> {}<left><cr><cr><up><tab>
     autocmd BufRead,BufNewFile *.rs   inoremap {<enter> {}<left><cr><cr><up><tab>
     autocmd BufRead,BufNewFile *.go   inoremap {<enter> {}<left><cr><cr><up><tab>
+    autocmd BufRead,BufNewFile *.css  inoremap {<enter> {}<left><cr><cr><up><tab>
+    autocmd BufRead,BufNewFile *.js   inoremap {<enter> {}<left><cr><cr><up><tab>
+    autocmd BufRead,BufNewFile *.php  inoremap {<enter> {}<left><cr><cr><up><tab>
+    autocmd BufRead,BufNewFile *.html  inoremap {<enter> {}<left><cr><cr><up><tab>
 augroup END
 
 " terminal mode
