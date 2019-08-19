@@ -1,5 +1,8 @@
 scriptencoding utf-8
 
+nnoremap mp :<c-u>set clipboard+=unnamed<cr>
+nnoremap mm :<c-u>set clipboard-=unnamed<cr>
+
 " move middle of the current line
 nnoremap sm :<C-u>call cursor(0,strlen(getline("."))/2)<CR>
 

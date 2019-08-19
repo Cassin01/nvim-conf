@@ -24,11 +24,11 @@ hi clear SpellBad
 hi clear SpellCap
 ""hi SpellCap cterm=underline,bold
 
-
 " remove trailing whitespace
 " autocmd BufWritePre * :%s/\s\+$//ge
 
 au BufNewFile start.rs 0r $HOME/.config/nvim/template/main.rs
+au BufNewFile start.go 0r $HOME/.config/nvim/template/main.go
 
 let g:python2_host_prog = '/usr/local/bin/python'
 let g:python3_host_prog = '/usr/local/bin/python3'
