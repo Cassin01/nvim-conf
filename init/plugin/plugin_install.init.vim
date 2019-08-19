@@ -9,9 +9,6 @@ Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 Plug 'kana/vim-submode'        " resize split windows
 
-" differences
-Plug 'brooth/Far.vim'
-
 " git
 Plug 'tpope/vim-fugitive'
 
@@ -37,7 +34,9 @@ Plug 'dag/vim2hs'                       " syntax, indent
 
 " python3
 "Plug 'davidhalter/jedi-vim'             " completion
-Plug 'kiteco/plugins'
+
+" Go
+Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 
 " c++
 Plug 'octol/vim-cpp-enhanced-highlight' " syntax highlight
