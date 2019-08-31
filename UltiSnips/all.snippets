@@ -1,0 +1,37 @@
+snippet simp "Simple" b
+`!p snip.rv = "Hello"`
+endsnippet
+
+snippet uuid "UUID" !b
+`!p import uuid
+if not snip.c:
+		snip.rv = uuid.uuid4().hex`
+endsnippet
+
+global !p
+def complete(t, opts):
+		if t:
+				opts = [ m[len(t):] for m in opts if m.startswith(t) ]
+		if len(opts) == 1:
+				return opts[0]
+		return "(" + '|'.join(opts) + ')'
+endglobal
+
+snippet '^ st' "Status" r
+ status $1`!p snip.rv=complete(t[1], ['new', 'incomplete', 'invalid'])`
+endsnippet
+
+snippet "rep (\d+) (\w+)" "Repeat" r
+`!p
+snip.rv = int(match.group(1))*match.group(2)`
+endsnippet
+
+snippet "rep (\d+)" "Repeat" r
+`!p
+snip.rv = ''.join(map(lambda x: str(x) + "\n", range(int(match.group(1)))))`
+endsnippet
+
+snippet "rep (\d+) to (\d+)" "Repeat" r
+`!p
+snip.rv = ''.join(map(lambda x: str(x) + "\n", range(int(match.group(1)), int(match.group(2)) )))`
+endsnippet

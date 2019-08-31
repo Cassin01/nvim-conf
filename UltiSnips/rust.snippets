@@ -1,0 +1,305 @@
+snippet tester "tester"
+#[allow(unused_doc_comments)]
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn tester() {
+        let inputs = [
+("
+", "
+"),
+
+("
+", "
+"),
+
+("
+","
+"),
+
+("
+","
+"),
+        ];
+
+        for (input, expected) in inputs.iter() {
+            call(input, expected.to_string());
+        }
+    }
+
+    fn call<T: AsRef<str>>(input: T, expected: String) {
+        use std::process::{Command, Stdio};
+        use std::io::{Read, Write};
+
+        let mut cmd_ls = Command::new("echo")
+            .arg(input.as_ref())
+            .stdout(Stdio::piped())
+            .spawn()
+            .unwrap();
+        let mut cmd_grep = Command::new("cargo")
+            .arg("run")
+            .stdin(Stdio::piped())
+            .stdout(Stdio::piped())
+            .spawn()
+            .unwrap();
+
+        if let Some(ref mut stdout) = cmd_ls.stdout {
+            if let Some(ref mut stdin) = cmd_grep.stdin {
+                let mut buf: Vec<u8> = Vec::new();
+                stdout.read_to_end(&mut buf).unwrap();
+                stdin.write_all(&buf).unwrap();
+            }
+        }
+
+        let res = cmd_grep.wait_with_output().unwrap().stdout;
+
+        let res_string: String = String::from_utf8(res.to_vec()).unwrap();
+
+        // convert '\n' into space
+        let actual = res_string
+            .replace("\n", " ")
+            .trim_end_matches(' ')
+            .trim_start_matches(' ')
+            .to_owned();
+        let expected = expected
+            .replace("\n", " ")
+            .trim_end_matches(' ')
+            .trim_start_matches(' ')
+            .to_owned();
+
+        // split into a vector
+        let actual = actual
+            .split(' ')
+            .map(|s| s.parse::<f64>().unwrap())
+            .collect::<Vec<_>>();
+        let expected = expected
+            .split(' ')
+            .map(|s| s.parse::<f64>().unwrap())
+            .collect::<Vec<_>>();
+
+        assert_eq!(actual, expected);
+    }
+}
+endsnippet
+
+snippet input "input()"
+use std::io::prelude::*;
+
+fn input<T>() -> T
+    where T: std::str::FromStr {
+    let stdin = std::io::stdin();
+    let token: String = stdin
+        .lock()
+        .bytes()
+        .map(|c| c.unwrap() as char)
+        .skip_while(|c| c.is_whitespace())
+        .take_while(|c| !c.is_whitespace())
+        .collect();
+    token.parse().ok().unwrap()
+}
+endsnippet
+
+snippet inputc "input char"
+let ${1:mut }n = input::<${2:usize}>();
+endsnippet
+
+snippet inputv "input vector"
+let ${1:mut }v = (0..${2:n})
+	.map(|_| input::<${3:usize}>())
+	.collect::<Vec<_>>();
+endsnippet
+
+snippet modular "modular"
+pub mod modular {
+    const MOD: i64 = 1_000_000_000 + 7;
+
+    #[derive(Debug, Clone, Copy, Default, PartialOrd, Ord, PartialEq, Eq)]
+    pub struct Mod(i64);
+
+    impl std::fmt::Display for Mod {
+        fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+            write!(f, "{}", self.0)
+        }
+    }
+
+    impl Mod {
+        pub fn new(x: i64) -> Mod {
+            Mod(x % MOD)
+        }
+
+        pub fn pow(self, mut r: i64) -> Mod {
+            let mut k = self;
+            let mut ret = 1.into();
+            while r > 0 {
+                if r % 2 != 0 {
+                    ret = ret * k;
+                }
+                r /= 2;
+                k = k * k;
+            }
+            ret
+        }
+
+        // フェルマーの小定理より
+        pub fn recip(self) -> Mod {
+            self.pow(MOD-2)
+        }
+    }
+
+    use std::ops::*;
+
+    impl<T: Into<Mod>> Add<T> for Mod {
+        type Output = Mod;
+        fn add(self, rhs: T) -> Self::Output {
+            Mod::new(self.0 + rhs.into().0)
+        }
+    }
+    impl<T: Into<Mod>> AddAssign<T> for Mod {
+        fn add_assign(&mut self, rhs: T) {
+            *self = *self + rhs;
+        }
+    }
+    impl<T: Into<Mod>> Sub<T> for Mod {
+        type Output = Mod;
+        fn sub(self, rhs: T) -> Self::Output {
+            Mod::new(self.0 - rhs.into().0 + MOD)
+        }
+    }
+    impl<T: Into<Mod>> SubAssign<T> for Mod {
+        fn sub_assign(&mut self, rhs: T) {
+            *self = *self - rhs;
+        }
+    }
+    impl<T: Into<Mod>> Mul<T> for Mod {
+        type Output = Mod;
+        fn mul(self, rhs: T) -> Self::Output {
+            Mod::new(self.0 * rhs.into().0)
+        }
+    }
+    impl<T: Into<Mod>> Div<T> for Mod {
+        type Output = Mod;
+        fn div(self, rhs: T) -> Self::Output {
+            self * rhs.into().recip()
+        }
+    }
+    impl<T: Into<Mod>> DivAssign<T> for Mod {
+        fn div_assign(&mut self, rhs: T) {
+            *self = *self / rhs;
+        }
+    }
+    impl Neg for Mod {
+        type Output = Mod;
+        fn neg(self) -> Self::Output {
+            Mod(0) - self
+        }
+    }
+    impl<T: std::convert::Into<i64>> std::convert::From<T> for Mod {
+        fn from(x: T) -> Self {
+            Mod::new(x.into())
+        }
+    }
+
+}
+
+use modular::Mod;
+endsnippet
+
+snippet p "println"
+println!("${1:{:?}}", ${VISUAL}${2:${VISUAL/(.*)//}});
+endsnippet
+
+snippet p "print"
+print!("${1:{:?}}", ${VISUAL}${2:${VISUAL/(.*)//}});
+endsnippet
+
+snippet main "main() (main)"
+fn main() {
+	${VISUAL}${0:${VISUAL/(.*)//}}
+}
+endsnippet
+
+snippet let "let name[:type]=exp (let)"
+let ${1:n}${2:: usize} = ${3:expression};
+endsnippet
+
+snippet if "if ... (if)"
+if (${1:condition}) {
+	${VISUAL}${2:${VISUAL/(.*)//}}
+} ${0}
+endsnippet
+
+snippet elif "else if ... (elif)"
+else if (${1:condition}) {
+	${VISUAL}${2:${VISUAL/(.*)//}}
+} ${0}
+endsnippet
+
+snippet el "else ... (else)"
+else {
+	${VISUAL}${1:${VISUAL/(.*)//}}
+} ${0}
+endsnippet
+
+snippet fn "fn ... () { ... } (fn)"
+fn ${1:name}(${2:parameters})${VISUAL} {
+	${0}
+}
+endsnippet
+
+snippet fn-> "fn ... () -> ... { ... } (fn)"
+fn ${1:name}(${2:parameters}) -> ${VISUAL}${3:${VISUAL/(.*)/i32/}} {
+	${0}
+}
+endsnippet
+
+snippet st "struct ... (struct)"
+struct ${1:name} {
+	${0}
+}
+endsnippet
+
+snippet en "enum ... (enum)"
+enum ${1:name} {
+	${0}
+}
+endsnippet
+
+snippet ma "match ... (match)"
+match ${1:expression} {
+	${2:pattern} => ${3:expression},
+	${4:pattern} => ${5:expression},
+	${VISUAL}${6:${VISUAL/(.*)/_/}} => ${0:expression},
+}
+endsnippet
+
+snippet for "for ... (for)"
+for ${1:iterater} in ${2:expression} {
+	${0}
+}
+endsnippet
+
+snippet forr "for x in range(0, 10) ... (forr)"
+for ${VISUAL}${1:${VISUAL/(.*)/x/}} in range(${VISUAL}${2:${VISUAL/(.*)/0/}}, ${VISUAL}${3:${VISUAL/(.*)/10/}}) {
+	${0}
+}
+endsnippet
+
+snippet wh "while ... (while)"
+while ${1:condition} {
+	${0}
+}
+endsnippet
+
+snippet prlnexp "println ... (println)"
+println!("{}", ${1});${0}
+endsnippet
+
+snippet prlns "println ... (println)"
+println!("${1}");${0}
+endsnippet
+
+snippet mod "mod ... (mod)"
+mod ${1:name} {
+	${0}
+}
+endsnippet
