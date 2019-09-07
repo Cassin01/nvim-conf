@@ -9,9 +9,6 @@ Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 Plug 'kana/vim-submode'        " resize split windows
 
-" git
-Plug 'tpope/vim-fugitive'
-
 " indent guides
 Plug 'Yggdroot/indentLine'
 
@@ -65,6 +62,7 @@ Plug 'elzr/vim-json'
 "markdown
 "Plug 'godlygeek/tabular'
 "Plug 'plasticboy/vim-markdown'
+Plug 'suan/vim-instant-markdown', {'for': 'markdown'}
 
 " html
 Plug 'mattn/emmet-vim'
@@ -97,8 +95,33 @@ Plug 'gosukiwi/vim-atom-dark'             " atom-dark
 Plug 'liuchengxu/space-vim-dark'          " space-vim-dark -> recommended 'hi Comment cterm=italic'
 Plug 'kristijanhusak/vim-hybrid-material' "hybrid_material
 Plug 'drewtempelmeyer/palenight.vim'      " palenight
+Plug 'haishanh/night-owl.vim'             " night owl
+Plug 'arcticicestudio/nord-vim'           " nord
+Plug 'cocopon/iceberg.vim'                " iceberg
 
 " others
 Plug 'scrooloose/nerdtree'
+
+" fzf completion
+Plug '/usr/local/opt/fzf'
+
+" snippets && vim-lsp
+Plug 'SirVer/ultisnips'
+Plug 'honza/vim-snippets'
+Plug 'prabirshrestha/async.vim'           "vim-lsp
+Plug 'prabirshrestha/vim-lsp'             "vim-lsp
+
+" multiple cursors
+Plug 'terryma/vim-multiple-cursors'
+
+" git
+Plug 'tpope/vim-fugitive'
+
+" shows a git diff in the gutter (sign column) and stages/undoes (partial) hunks.
+Plug 'airblade/vim-gitgutter'
+Plug 'tpope/vim-rhubarb' " enable :Gbrowse
+
+" quoting/parenthesizing made simple
+Plug 'tpope/vim-surround'
 
 call plug#end()

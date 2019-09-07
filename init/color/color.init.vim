@@ -1,6 +1,5 @@
 scriptencoding utf-8
 
-
 syntax on
 
 " 179 : 黄色
@@ -12,26 +11,36 @@ syntax on
 " 240 : 灰色
 
 " color scheme 拡張 " one dark
-au ColorScheme * hi Normal       ctermbg=none
-au ColorScheme * hi LineNr       ctermbg=none ctermfg=240 cterm=italic " 行番号
-au ColorScheme * hi StatusLine   ctermbg=none " アクティブなステータスライン
-au ColorScheme * hi StatusLineNC ctermbg=none " 非アクティブなステータスライン
-au ColorScheme * hi Comment      ctermfg=243 cterm=italic " コメントアウト
-au ColorScheme * hi Statement    ctermfg=45
-au ColorScheme * hi DiffAdd      ctermbg=24  " 追加行
-au ColorScheme * hi Identifier   ctermfg=45 "cterm=bold
+""au ColorScheme * hi Normal       ctermbg=none
+""au ColorScheme * hi LineNr       ctermbg=none ctermfg=240 cterm=italic " 行番号
+""au ColorScheme * hi StatusLine   ctermbg=none " アクティブなステータスライン
+""au ColorScheme * hi StatusLineNC ctermbg=none " 非アクティブなステータスライン
+""au ColorScheme * hi Comment      ctermfg=243 cterm=italic " コメントアウト
+""au ColorScheme * hi Statement    ctermfg=45
+""au ColorScheme * hi DiffAdd      ctermbg=24  " 追加行
+""au ColorScheme * hi Identifier   ctermfg=45 "cterm=bold
 
+" color scheme 拡張 " night_owl
+""au ColorScheme * hi Normal ctermbg=none
+"au ColorScheme * hi MatchParen cterm=bold ctermfg=111 ctermbg=black " 括弧対応
+au ColorScheme * hi MatchParen cterm=bold ctermfg=214 ctermbg=black " 括弧対応
+
+" スペルチェック
+au Colorscheme * hi SpellBad ctermfg=23 cterm=none ctermbg=none
+"au Colorscheme * hi SpellBad ctermfg=none cterm=underline ctermbg=none
+
+" キャメルケースチェック
+""au ColorScheme * hi SpellCap ctermfg=46 cterm=bold ctermbg=none
+
+" Haskell
 au ColorScheme * hi Haskell01 ctermfg=179 " 黄色
 au ColorScheme * hi Haskell02 ctermfg=45  " 水色
 au ColorScheme * hi Haskell03 ctermfg=255 " 白
 
-" スペルチェック
-au Colorscheme * hi SpellBad ctermfg=46 cterm=none
-" キャメルケースチェック
-au ColorScheme * hi SpellCap ctermfg=46 cterm=bold
-
 set background=dark
-colo onedark
+colo nord
+"colo night-owl
+"colo onedark
 "colo tomorrow
 "colo hybrid
 
@@ -39,14 +48,10 @@ augroup filetypedetect
   au BufRead,BufNewFile *.hs :call ColHaskell()
 augroup END
 
-
 " Haskell 用のシンタックスハイライト
 function! ColHaskell()
   au BufWinEnter * let w:m3 = matchadd("Haskell02", '(')
-  au WinEnter    * let w:m3 = matchadd("Haskell02", '(')
-  au BufWinEnter * let w:m3 = matchadd("Haskell02", ')')
-  au WinEnter    * let w:m3 = matchadd("Haskell02", ')')
-  au BufWinEnter * let w:m3 = matchadd("Haskell02", '$')
+  au WinEnter    * let w:m3 = matchadd("Haskell02", '(') au BufWinEnter * let w:m3 = matchadd("Haskell02", ')') au WinEnter    * let w:m3 = matchadd("Haskell02", ')') au BufWinEnter * let w:m3 = matchadd("Haskell02", '$')
   au WinEnter    * let w:m3 = matchadd("Haskell02", '$')
 endfunction
 

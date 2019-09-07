@@ -9,6 +9,9 @@ nnoremap sm :<C-u>call cursor(0,strlen(getline("."))/2)<CR>
 " modes short cut
 nnoremap s<space> :<C-u>terminal<cr>
 
+" 開いているファイルのカレントディレクトリを開く
+nnoremap <C-k> :sp<cr>:edit %:h<tab><cr>
+
 " 日本語
 nnoremap あ a
 nnoremap い i

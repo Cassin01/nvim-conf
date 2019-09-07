@@ -6,7 +6,6 @@ set noswapfile
 set autoread
 set tabstop=2 shiftwidth=4 expandtab
 set number
-"set scrolloff=5
 set scrolloff=10
 filetype plugin indent on
 
@@ -20,9 +19,7 @@ set spell
 set spelllang=en,cjk
 
 hi clear SpellBad
-""hi SpellBad cterm=underline
-hi clear SpellCap
-""hi SpellCap cterm=underline,bold
+""hi clear SpellCap
 
 " remove trailing whitespace
 " autocmd BufWritePre * :%s/\s\+$//ge

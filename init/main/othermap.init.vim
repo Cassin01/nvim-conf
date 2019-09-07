@@ -1,7 +1,7 @@
 scriptencoding utf-8
 
 " nerdtree
-map <C-n> :NERDTreeToggle<CR>
+map <C-l> :NERDTreeToggle<CR>
 
 " insert mode
 inoremap <silent> <C-f> <right>
@@ -19,6 +19,11 @@ inoremap [ []<left>
 " 上の例外処理: の後に続けて)を押したとき
 inoremap <expr> ]  strpart(getline('.'), col('.')-1, 1) == "]" ? "\<Right>" : "]"
 
+" 括弧補完
+inoremap { {}<left>
+" 上の例外処理: の後に続けて)を押したとき
+inoremap <expr> }  strpart(getline('.'), col('.')-1, 1) == "}" ? "\<Right>" : "}"
+
 " quotation補完
 inoremap " ""<left>
 inoremap ' ''<left>
@@ -34,6 +39,7 @@ augroup FolowFile
     autocmd BufRead,BufNewFile *.js   inoremap {<enter> {}<left><cr><cr><up><tab>
     autocmd BufRead,BufNewFile *.php  inoremap {<enter> {}<left><cr><cr><up><tab>
     autocmd BufRead,BufNewFile *.html  inoremap {<enter> {}<left><cr><cr><up><tab>
+    autocmd BufRead,BufNewFile *.c    inoremap /* <kDivide><kMultiply><space><space><kMultiply><kDivide><left><left><left>
 augroup END
 
 " terminal mode
