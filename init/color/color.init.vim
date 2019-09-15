@@ -38,7 +38,8 @@ au ColorScheme * hi Haskell02 ctermfg=45  " 水色
 au ColorScheme * hi Haskell03 ctermfg=255 " 白
 
 set background=dark
-colo nord
+colo iceberg
+"colo nord
 "colo night-owl
 "colo onedark
 "colo tomorrow

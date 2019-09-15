@@ -21,6 +21,10 @@ set spelllang=en,cjk
 hi clear SpellBad
 ""hi clear SpellCap
 
+
+"検索で大文字小文字を区別しない
+set ignorecase
+
 " remove trailing whitespace
 " autocmd BufWritePre * :%s/\s\+$//ge
 

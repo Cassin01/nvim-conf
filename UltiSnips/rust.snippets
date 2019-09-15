@@ -87,6 +87,7 @@ fn input<T>() -> T
         .collect();
     token.parse().ok().unwrap()
 }
+
 fn main() {
     ${VISUAL}${0:${VISUAL/(.*)//}}
 }
@@ -125,27 +126,27 @@ mod tests {
         use std::process::{Command, Stdio};
         use std::io::{Read, Write};
 
-        let mut cmd_ls = Command::new("echo")
+        let mut cmd_echo = Command::new("echo")
             .arg(input.as_ref())
             .stdout(Stdio::piped())
             .spawn()
             .unwrap();
-        let mut cmd_grep = Command::new("cargo")
+        let mut cmd_run = Command::new("cargo")
             .arg("run")
             .stdin(Stdio::piped())
             .stdout(Stdio::piped())
             .spawn()
             .unwrap();
 
-        if let Some(ref mut stdout) = cmd_ls.stdout {
-            if let Some(ref mut stdin) = cmd_grep.stdin {
+        if let Some(ref mut stdout) = cmd_echo.stdout {
+            if let Some(ref mut stdin) = cmd_run.stdin {
                 let mut buf: Vec<u8> = Vec::new();
                 stdout.read_to_end(&mut buf).unwrap();
                 stdin.write_all(&buf).unwrap();
             }
         }
 
-        let res = cmd_grep.wait_with_output().unwrap().stdout;
+        let res = cmd_run.wait_with_output().unwrap().stdout;
 
         let res_string: String = String::from_utf8(res.to_vec()).unwrap();
 
@@ -315,7 +316,7 @@ pub mod modular {
 use modular::Mod;
 endsnippet
 
-snippet p "println"
+snippet pl "println"
 println!("${1:{:?}}", ${VISUAL}${2:${VISUAL/(.*)//}});
 endsnippet
 

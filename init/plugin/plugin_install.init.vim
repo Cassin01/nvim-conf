@@ -7,7 +7,7 @@ scriptencoding utf-8
 call plug#begin()
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
-Plug 'kana/vim-submode'        " resize split windows
+Plug 'kana/vim-submode'                 " resize split windows
 
 " indent guides
 Plug 'Yggdroot/indentLine'
@@ -17,6 +17,7 @@ Plug 'Yggdroot/indentLine'
 " Plug 'Cassin01/neoline.vim'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
+Plug 'enricobacis/vim-airline-clock'    " vim-airline clock extension
 
 " syntastic
 Plug 'vim-syntastic/syntastic'
@@ -123,5 +124,25 @@ Plug 'tpope/vim-rhubarb' " enable :Gbrowse
 
 " quoting/parenthesizing made simple
 Plug 'tpope/vim-surround'
+
+" calender
+Plug 'itchyny/calendar.vim'
+
+" shougo completion start
+if has('nvim')
+  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+else
+  Plug 'Shougo/deoplete.nvim'
+  Plug 'roxma/nvim-yarp'
+  Plug 'roxma/vim-hug-neovim-rpc'
+endif
+let g:deoplete#enable_at_startup = 1 " Use deoplate
+
+Plug 'Shougo/neosnippet.vim'
+Plug 'Shougo/neosnippet-snippets'
+" shougo completion end
+
+" :terminal親のvimを操作できるようにする
+Plug 'mhinz/neovim-remote'
 
 call plug#end()

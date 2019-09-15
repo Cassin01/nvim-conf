@@ -33,7 +33,10 @@ let g:syntastic_mode_map = {
 let g:syntastic_cpp_compiler = 'clang++'
 let g:syntastic_cpp_compiler_options = ' -std=c++11 -stdlib=libc++'
 
-" submode
+" ------------------------
+" submode start
+" ------------------------
+" resize window
 call submode#enter_with('bufmove', 'n', '', 's>', '<C-w>>')
 call submode#enter_with('bufmove', 'n', '', 's<', '<C-w><')
 call submode#enter_with('bufmove', 'n', '', 's+', '<C-w>+')
@@ -42,13 +45,18 @@ call submode#map('bufmove', 'n', '', '>', '<C-w>>')
 call submode#map('bufmove', 'n', '', '<', '<C-w><')
 call submode#map('bufmove', 'n', '', '+', '<C-w>+')
 call submode#map('bufmove', 'n', '', '-', '<C-w>-')
+" ------------------------
+" submode end
+" ------------------------
 
 " lightline
 " let g:lightline = {
 "      \ 'colorscheme': 'onedark',
 "      \ }
 
-" vim-airline
+" ------------------------
+" vim-airline start
+" ------------------------
 set laststatus=2
 let g:airline_powerline_fonts = 1
 let g:airline#extensions#tabline#enabled = 1
@@ -87,6 +95,9 @@ let g:airline_symbols.branch = ''
 let g:airline_symbols.readonly = ''
 let g:airline_symbols.linenr = '☰'
 let g:airline_symbols.maxlinenr = ''
+" ------------------------
+" vim-airline end
+" ------------------------
 
 "vim-clang
 let g:clang_c_options = '-std=gnu11'
@@ -145,7 +156,6 @@ function! s:show_documentation()
   endif
 endfunction
 
-
 "ノーマルモードで
 "スペース2回でCocList
 nmap <silent> <space><space> :<C-u>CocList<cr>
@@ -173,7 +183,7 @@ let g:UltiSnipsSnippetsDir="~/.config/nvim/UltiSnips"
 " Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
 let g:UltiSnipsExpandTrigger="<tab>"
 let g:UltiSnipsJumpForwardTrigger="<tab>"
-let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+let g:UltiSnipsJumpBackwardTrigger="<space>n"
 
 " If you want :UltiSnipsEdit to split your window.
 let g:UltiSnipsEditSplit="horizontal"
@@ -185,7 +195,6 @@ let g:UltiSnipsEditSplit="horizontal"
 " vim-lsp start
 " ------------------------
 "  Rust
-"
 if executable('rls')
     au User lsp_setup call lsp#register_server({
         \ 'name': 'rls',
@@ -198,4 +207,39 @@ endif
 set completeopt+=menuone "候補が一つでも実行
 " ------------------------
 " vim-lsp end
+" ------------------------
+
+" ------------------------
+" calender start
+" ------------------------
+let g:calendar_google_calendar = 1
+let g:calendar_google_task = 1
+" ------------------------
+" calender end
+" ------------------------
+
+" ------------------------
+" neosnippet start
+" ------------------------
+" Plugin key-mappings.
+" Note: It must be "imap" and "smap".  It uses <Plug> mappings.
+imap <C-k>     <Plug>(neosnippet_expand_or_jump)
+smap <C-k>     <Plug>(neosnippet_expand_or_jump)
+xmap <C-k>     <Plug>(neosnippet_expand_target)
+
+" SuperTab like snippets behavior.
+" Note: It must be "imap" and "smap".  It uses <Plug> mappings.
+"imap <expr><TAB>
+" \ pumvisible() ? "\<C-n>" :
+" \ neosnippet#expandable_or_jumpable() ?
+" \    "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+\ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+
+" For conceal markers.
+if has('conceal')
+  set conceallevel=2 concealcursor=niv
+endif
+" ------------------------
+" neosnippet end
 " ------------------------
