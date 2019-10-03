@@ -252,6 +252,9 @@ endif
 " neosnippet end
 " ------------------------
 
+" Spotify
+let g:soptify_token='IDk1MGMzMGI4MzA1MTQzNjVhYzFmYWUzNTU0YTc1YWIyOjdkZTc2NTczYWU2OTRkMjg5YzRhN2VjYzE0MmM4MzAxCg=='
+
 " vim-autoformat
 let g:formatter_yapf_style = 'pep8'
 
