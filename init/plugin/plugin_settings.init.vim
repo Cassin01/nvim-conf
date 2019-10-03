@@ -15,8 +15,7 @@ let g:indentLine_char = '⎸'
 " elzr/vim-json
 let g:vim_json_syntax_conceal=0
 
-" fugitive.vim
-set statusline+=%{FugitiveStatusline()}
+" fugitive.vim set statusline+=%{FugitiveStatusline()}
 
 " syntasic
 set statusline+=%#warningmsg#
@@ -28,7 +27,7 @@ let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 0
 let g:syntastic_mode_map = {
       \ 'mode': 'passive',
-      \ 'active_filetypes': ['c','cpp','python3']
+      \ 'active_filetypes': ['c','cpp']
       \}
 let g:syntastic_cpp_compiler = 'clang++'
 let g:syntastic_cpp_compiler_options = ' -std=c++11 -stdlib=libc++'
@@ -158,9 +157,9 @@ endfunction
 
 "ノーマルモードで
 "スペース2回でCocList
-nmap <silent> <space><space> :<C-u>CocList<cr>
+"nmap <silent> <space>l :<C-u>CocList<cr>
 "スペースhでHover
-nmap <silent> <space>h :<C-u>call CocAction('doHover')<cr>
+nmap <silent> <space>i :<C-u>call CocAction('doHover')<cr>
 "スペースdfでDefinition
 nmap <silent> <space>df <Plug>(coc-definition)
 "スペースrfでReferences
@@ -204,6 +203,15 @@ if executable('rls')
         \ })
 endif
 
+" Python
+if executable('pyls')
+    au User lsp_setup call lsp#register_server({
+        \ 'name': 'pyls',
+        \ 'cmd': {server_info->['pyls']},
+        \ 'whitelist': ['python'],
+        \ })
+endif
+
 set completeopt+=menuone "候補が一つでも実行
 " ------------------------
 " vim-lsp end
@@ -243,3 +251,21 @@ endif
 " ------------------------
 " neosnippet end
 " ------------------------
+
+" vim-autoformat
+let g:formatter_yapf_style = 'pep8'
+
+" easymotion/vim-easymotion
+map <Leader> <Plug>(easymotion-prefix)
+
+" majutsushi/tagbar
+nmap <space>t :TagbarToggle<CR>
+
+" goyo
+nnoremap <silent> <leader>z :Goyo<cr>
+
+" EasyAlign
+" Start interactive EasyAlign in visual mode (e.g. vipga)
+xmap ga <Plug>(EasyAlign)
+" Start interactive EasyAlign for a motion/text object (e.g. gaip)
+nmap ga <Plug>(EasyAlign)

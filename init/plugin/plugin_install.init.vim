@@ -9,6 +9,9 @@ Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 Plug 'kana/vim-submode'                 " resize split windows
 
+" Spotify integration
+Plug 'HendrikPetertje/vimify'
+
 " indent guides
 Plug 'Yggdroot/indentLine'
 
@@ -25,13 +28,17 @@ Plug 'vim-syntastic/syntastic'
 " pathogen for syntastic
 Plug 'tpope/vim-pathogen'
 
+" auto format
+Plug 'Chiel92/vim-autoformat'
+
 " haskell
 Plug 'eagletmt/neco-ghc'                " completion
 Plug 'neovimhaskell/haskell-vim'        " syntax
 Plug 'dag/vim2hs'                       " syntax, indent
 
 " python3
-"Plug 'davidhalter/jedi-vim'             " completion
+Plug 'davidhalter/jedi-vim'             " completion
+Plug 'numirias/semshi', {'do': ':UpdateRemotePlugins'} " Semantic Highlighting for Python in Neovim
 
 " Go
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
@@ -53,6 +60,7 @@ Plug 'dart-lang/dart-vim-plugin'
 " JavaScript
 Plug 'othree/yajs.vim' "syntax highlight
 Plug 'ternjs/tern_for_vim' "auto completion
+Plug 'pangloss/vim-javascript' "indentation and syntax support
 
 " toml
 Plug 'cespare/vim-toml'
@@ -111,6 +119,10 @@ Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 Plug 'prabirshrestha/async.vim'           "vim-lsp
 Plug 'prabirshrestha/vim-lsp'             "vim-lsp
+" After vim-lsp, etc
+Plug 'ryanolsonx/vim-lsp-python'          "python
+
+Plug 'autozimu/LanguageClient-neovim'     " lsp support
 
 " multiple cursors
 Plug 'terryma/vim-multiple-cursors'
@@ -144,5 +156,34 @@ Plug 'Shougo/neosnippet-snippets'
 
 " :terminal親のvimを操作できるようにする
 Plug 'mhinz/neovim-remote'
+
+" game
+Plug 'mattn/flappyvird-vim'
+
+" auto-collect
+Plug 'sedm0784/vim-you-autocorrect'
+
+" org mode
+Plug 'jceb/vim-orgmode'
+
+" Distraction-free writing in Vim
+Plug 'junegunn/goyo.vim'
+Plug 'amix/vim-zenroom2' "A Vim extension that emulates iA Writer environment when editing Markdown, reStructuredText or text files
+
+" vim motion on speed!
+Plug 'easymotion/vim-easymotion'
+
+" Vim plugin that displays tags in a window,
+Plug 'majutsushi/tagbar'
+
+" Comment stuff out.
+Plug 'tpope/vim-commentary'
+
+"A solid language pack for Vim.
+Plug 'sheerun/vim-polyglot'
+
+" 揃える
+Plug 'junegunn/vim-easy-align'
+
 
 call plug#end()
