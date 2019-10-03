@@ -21,3 +21,19 @@
 3. Set this code at ``~/.config/nvim/``.
 4. ``pip3 install neovim-remote`` for ``mhinz/neovim-remote``
 5. ``:PlugInstall`` for installing plugins
+
+# Dependencies
+
+If you don't use at mac, You should remove this code from ``init/main/nnoremap.init.vim``
+
+```nnoremap.init.vim
+" ---------------------------
+"  mac only!!!!!!!!!!!!!!!!!!
+"  start
+" ---------------------------
+nnoremap ,? :!open dict://<cword><CR>
+" ---------------------------
+"  end
+"  mac only!!!!!!!!!!!!!!!!!!
+" ---------------------------
+```
