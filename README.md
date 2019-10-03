@@ -1,4 +1,6 @@
-```
+# ReiwaVimConfiguration
+
+```vim
 ██╗███╗   ██╗██╗████████╗██╗   ██╗██╗███╗   ███╗
 ██║████╗  ██║██║╚══██╔══╝██║   ██║██║████╗ ████║
 ██║██╔██╗ ██║██║   ██║   ██║   ██║██║██╔████╔██║
@@ -14,6 +16,7 @@
 
 ```
 
+## Installation
 
 0. ``pip3 install pynvim``
 1. check ``let g:python3_host_prog``'s (at ``init/main/main.init.vim``) path is collect
@@ -22,7 +25,7 @@
 4. ``pip3 install neovim-remote`` for ``mhinz/neovim-remote``
 5. ``:PlugInstall`` for installing plugins
 
-# Dependencies
+## Dependencies
 
 If you don't use this configuration at mac, You should remove this code from ``init/main/nnoremap.init.vim``
 
