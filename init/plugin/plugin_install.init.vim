@@ -62,6 +62,10 @@ Plug 'othree/yajs.vim' "syntax highlight
 Plug 'ternjs/tern_for_vim' "auto completion
 Plug 'pangloss/vim-javascript' "indentation and syntax support
 
+" swift
+Plug 'keith/swift.vim'
+Plug 'jpsim/SourceKitten'
+
 " toml
 Plug 'cespare/vim-toml'
 
@@ -72,6 +76,7 @@ Plug 'elzr/vim-json'
 "Plug 'godlygeek/tabular'
 "Plug 'plasticboy/vim-markdown'
 Plug 'suan/vim-instant-markdown', {'for': 'markdown'}
+let g:instant_markdown_autostart = 0
 
 " html
 Plug 'mattn/emmet-vim'
@@ -179,11 +184,11 @@ Plug 'majutsushi/tagbar'
 " Comment stuff out.
 Plug 'tpope/vim-commentary'
 
-"A solid language pack for Vim.
-Plug 'sheerun/vim-polyglot'
-
 " 揃える
 Plug 'junegunn/vim-easy-align'
+
+" icon
+Plug 'ryanoasis/vim-devicons'
 
 
 call plug#end()
