@@ -30,13 +30,7 @@
 If you don't use this configuration at mac, You should remove this code from ``init/main/nnoremap.init.vim``
 
 ```nnoremap.init.vim
-" ---------------------------
-"  mac only!!!!!!!!!!!!!!!!!!
-"  start
-" ---------------------------
-nnoremap ,? :!open dict://<cword><CR>
-" ---------------------------
-"  end
-"  mac only!!!!!!!!!!!!!!!!!!
-" ---------------------------
+" mac only!!!!!!!!!!!!!! {{{
+    nnoremap ,? :!open dict://<cword><CR>
+" }}}
 ```
