@@ -27,7 +27,7 @@
 
 ## Dependencies
 
-If you don't use this configuration at mac, You should remove this code from ``init/main/nnoremap.init.vim``
+If you don't use this configuration on mac, You should remove this code from ``init/main/nnoremap.init.vim``
 
 ```nnoremap.init.vim
 " mac only!!!!!!!!!!!!!! {{{
