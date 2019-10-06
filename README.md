@@ -16,6 +16,12 @@
 
 ```
 
+# Features
+
+- **Powerful editing.** Use more than 80 plugins.
+
+- **Simple key-bind.** systematized key-binding's prefix.
+
 ## Installation
 
 0. ``pip3 install pynvim``
