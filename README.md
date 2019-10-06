@@ -29,7 +29,7 @@
 
 ### NerdFonts
 
-Both Devicon plugin and Airline plugin require [nerd-fonts](https://github.com/ryanoasis/nerd-fonts).
+Both ``Devicon-plugin`` and ``Airline-plugin`` require [nerd-fonts](https://github.com/ryanoasis/nerd-fonts).
 
 ### Mac
 
