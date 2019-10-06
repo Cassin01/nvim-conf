@@ -1,7 +1,7 @@
 scriptencoding utf-8
 
 " indent-guides {{{
-    "let g:indent_guides_enable_on_vim_startup=1 " enable indent-guides let g:indent_guides_guide_size =1
+    let g:indent_guides_enable_on_vim_startup=1 " enable indent-guides let g:indent_guides_guide_size =1
     let g:indent_guides_start_level=1
     let g:indent_guides_auto_colors=0 " enable auto colors
     let g:indent_guides_exclude_filetypes = ['help', 'nerdtree']
@@ -40,10 +40,10 @@ scriptencoding utf-8
 
 " submode start {{{
     " resize window
-    call submode#enter_with('bufmove', 'n', '', 's>', '<C-w>>')
-    call submode#enter_with('bufmove', 'n', '', 's<', '<C-w><')
-    call submode#enter_with('bufmove', 'n', '', 's+', '<C-w>+')
-    call submode#enter_with('bufmove', 'n', '', 's-', '<C-w>-')
+    call submode#enter_with('bufmove', 'n', '', '[s]>', '<C-w>>')
+    call submode#enter_with('bufmove', 'n', '', '[s]<', '<C-w><')
+    call submode#enter_with('bufmove', 'n', '', '[s]+', '<C-w>+')
+    call submode#enter_with('bufmove', 'n', '', '[s]-', '<C-w>-')
     call submode#map('bufmove', 'n', '', '>', '<C-w>>')
     call submode#map('bufmove', 'n', '', '<', '<C-w><')
     call submode#map('bufmove', 'n', '', '+', '<C-w>+')
@@ -64,7 +64,7 @@ scriptencoding utf-8
     let g:airline#extensions#whitespace#mixed_indent_algo = 1
     "let g:airline_theme = 'tomorrow'
     if !exists('g:airline_symbols')
-      let g:airline_symbols = {}
+        let g:airline_symbols = {}
     endif
     " unicode symbols
     let g:airline_left_sep = '»'
@@ -133,25 +133,25 @@ scriptencoding utf-8
     " Use tab for trigger completion with characters ahead and navigate.
     " Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
     inoremap <silent><expr> <TAB>
-          \ pumvisible() ? "\<C-n>" :
-          \ <SID>check_back_space() ? "\<TAB>" :
-          \ coc#refresh()
+        \ pumvisible() ? "\<C-n>" :
+        \ <SID>check_back_space() ? "\<TAB>" :
+        \ coc#refresh()
     inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 
     function! s:check_back_space() abort
-      let col = col('.') - 1
-      return !col || getline('.')[col - 1]  =~# '\s'
+        let col = col('.') - 1
+        return !col || getline('.')[col - 1]  =~# '\s'
     endfunction
 
     " Use K to show documentation in preview window
     nnoremap <silent> K :call <SID>show_documentation()<CR>
 
     function! s:show_documentation()
-      if (index(['vim','help'], &filetype) >= 0)
-        execute 'h '.expand('<cword>')
-      else
-        call CocAction('doHover')
-      endif
+        if (index(['vim','help'], &filetype) >= 0)
+            execute 'h '.expand('<cword>')
+        else
+            call CocAction('doHover')
+        endif
     endfunction
 
     "ノーマルモードで
@@ -214,9 +214,9 @@ scriptencoding utf-8
 " neosnippet {{{
     " Plugin key-mappings.
     " Note: It must be "imap" and "smap".  It uses <Plug> mappings.
-    imap <C-k>     <Plug>(neosnippet_expand_or_jump)
-    smap <C-k>     <Plug>(neosnippet_expand_or_jump)
-    xmap <C-k>     <Plug>(neosnippet_expand_target)
+    imap <C-k> <Plug>(neosnippet_expand_or_jump)
+    smap <C-k> <Plug>(neosnippet_expand_or_jump)
+    xmap <C-k> <Plug>(neosnippet_expand_target)
 
     " SuperTab like snippets behavior.
     " Note: It must be "imap" and "smap".  It uses <Plug> mappings.
@@ -234,28 +234,39 @@ scriptencoding utf-8
 " }}}
 
 " vim-autoformat {{{
-let g:formatter_yapf_style = 'pep8'
+    let g:formatter_yapf_style = 'pep8'
 " }}}
 
 " easymotion/vim-easymotion {{{
-map <Leader><Leader> <Plug>(easymotion-prefix)
+    map <Leader><Leader> <Plug>(easymotion-prefix)
 " }}}
 
 " majutsushi/tagbar {{{
-nmap <space>t :TagbarToggle<CR>
+    nmap <space>t :TagbarToggle<CR>
 " }}}
 
 " goyo {{{
-nnoremap <silent> <leader>z :Goyo<cr>
+    nnoremap <silent> <leader>z :Goyo<cr>
 " }}}
 
 " EasyAlign {{{
-" Start interactive EasyAlign in visual mode (e.g. vipga)
-xmap ga <Plug>(EasyAlign)
-" Start interactive EasyAlign for a motion/text object (e.g. gaip)
-nmap ga <Plug>(EasyAlign)
+    " Start interactive EasyAlign in visual mode (e.g. vipga)
+    xmap ga <Plug>(EasyAlign)
+    " Start interactive EasyAlign for a motion/text object (e.g. gaip)
+    nmap ga <Plug>(EasyAlign)
 " }}}
 
 "  vim-devicons {{{
-set guifont=DroidSansMono_Nerd_Font:h11
+    set guifont=DroidSansMono_Nerd_Font:h11
+" }}}
+
+" terryma/vim-expand-region {{{
+    vmap v <Plug>(expand_region_expand)
+    vmap <C-v> <Plug>(expand_region_shrink)
+" }}}
+
+" FZF {{{
+    nnoremap [m]ff :<c-u>FZF<space>
+    nnoremap [m]fr :<c-u>FZF<space> ~/<cr>
+    nnoremap [m]fc :<c-u>FZF<space> ./<cr>
 " }}}

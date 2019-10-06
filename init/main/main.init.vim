@@ -9,21 +9,19 @@ scriptencoding utf-8
     set number
     set scrolloff=10
     filetype plugin indent on
-
-    nnoremap [m] <Nop>
-    nmap     m [m]
 " }}}
 
 " Visualize {{{
-    set list
-    set listchars=tab:»-,trail:†,eol:↲
+    " 不可視文字 {{{
+        set list
+        set listchars=tab:»-,trail:†,eol:↲
+    " }}}
 
-    " 英語と日本語のスペルチェック z= で修正候補
-    set spell
-    set spelllang=en,cjk
-
-    hi clear SpellBad
-    " hi clear SpellCap
+    " 英語と日本語のスペルチェック z= で修正候補 {{{
+        set spell
+        set spelllang=en,cjk
+        hi clear SpellBad
+    " }}}
 
     "検索で大文字小文字を区別しない
     set ignorecase

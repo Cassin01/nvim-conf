@@ -1,80 +1,103 @@
 scriptencoding utf-8
 
+" Initialization {{{
+    nnoremap [m] <Nop>
+    nnoremap mm m
+    nmap m [m]
+
+    nnoremap [,] <Nop>
+    nnoremap ,, ,
+    nmap , [,]
+
+    nnoremap [s] <Nop>
+    nnoremap s <Nop>
+    nmap s [s]
+" }}}
+
 " classic commands {{{
-    nnoremap mp :<c-u>set clipboard+=unnamed<cr>
-    nnoremap mm :<c-u>set clipboard-=unnamed<cr>
+    " clipboard
+    nnoremap <space>p :<c-u>set clipboard+=unnamed<cr>
+    nnoremap <space>n :<c-u>set clipboard-=unnamed<cr>
 
     " move middle of the current line
-    nnoremap sm :<C-u>call cursor(0,strlen(getline("."))/2)<CR>
+    nnoremap [s]m :<C-u>call cursor(0,strlen(getline("."))/2)<CR>
 
     " modes short cut
-    nnoremap s<space> :<C-u>terminal<cr>
+    nnoremap [s]<space> :<C-u>terminal<cr>
 
     " 開いているファイルのカレントディレクトリを開く
-    nnoremap <C-k> :sp<cr>:edit %:h<tab><cr>
+    nnoremap [,]t :sp<cr>:edit %:h<tab><cr>
 
     " カーソル下の単語をハイライトする
     nnoremap <silent> <Space><Space> "zyiw:let @/ = '\<' . @z . '\>'<CR>:set hlsearch<CR>
 
     " カーソル下の単語をハイライトしてから置換する
-    nmap # <Space><Space>:%s/<C-r>///g<Left><Left>
+    nnoremap # <Space><Space>:%s/<C-r>///g<Left><Left>
 
     " nerdtree
-    map <C-l> :NERDTreeToggle<CR>
+    map <space>s :<c-u>NERDTreeToggle<CR>
 
     " 日本語
     nnoremap あ a
     nnoremap い i
 
-    " カッコ
+    " bracket
     map <tab> %
 
     " 移動
-    nmap H ^
-    nmap L g_
+    nnoremap H ^
+    nnoremap L g_
 
     " 読み込み
-    nmap <space>s :<C-u>source %<cr>
+    nnoremap [m]s :<C-u>source %<cr>
 
     " マーク
-    nmap <silent> <leader>hh :execute 'match  InterestingWord1 /\<<c-r><c-w>\>/'<cr>
-    nmap <silent> <leader>h1 :execute 'match  InterestingWord1 /\<<c-r><c-w>\>/'<cr>
-    nmap <silent> <leader>h2 :execute '2match InterestingWord2 /\<<c-r><c-w>\>/'<cr>
-    nmap <silent> <leader>h3 :execute '3match InterestingWord3 /\<<c-r><c-w>\>/'<cr>
+    nnoremap <silent> <leader>hh :execute 'match  InterestingWord1 /\<<c-r><c-w>\>/'<cr>
+    nnoremap <silent> <leader>h1 :execute 'match  InterestingWord1 /\<<c-r><c-w>\>/'<cr>
+    nnoremap <silent> <leader>h2 :execute '2match InterestingWord2 /\<<c-r><c-w>\>/'<cr>
+    nnoremap <silent> <leader>h3 :execute '3match InterestingWord3 /\<<c-r><c-w>\>/'<cr>
+
+    " open file
+    nnoremap [m]v :vi<space>
+
+    " color scheme
+    nnoremap [,]c :<c-u>Unite colorscheme -auto-preview<cr>
 " }}}
 
 " split windows {{{
-    nnoremap s <Nop>
-    nnoremap sj <C-w>j
-    nnoremap sk <C-w>k
-    nnoremap sl <C-w>l
-    nnoremap sh <C-w>h
-    nnoremap sJ <C-w>J
-    nnoremap sK <C-w>K
-    nnoremap sL <C-w>L
-    nnoremap sH <C-w>H
-    nnoremap sn gt
-    nnoremap sp gT
-    nnoremap sr <C-w>r
-    nnoremap s= <C-w>=
-    nnoremap sw <C-w>w
-    nnoremap so <C-w>_<C-w>|
-    nnoremap sO <C-w>=
-    nnoremap sN :<C-u>bn<CR>
-    nnoremap sP :<C-u>bp<CR>
-    nnoremap st :<C-u>tabnew<CR>
-    nnoremap sT :<C-u>Unite tab<CR>
-    nnoremap ss :<C-u>sp<CR>
-    nnoremap sv :<C-u>vs<CR>
-    nnoremap sq :<C-u>q<CR>
-    nnoremap sQ :<C-u>bd<CR>
-    nnoremap sb :<C-u>Unite buffer_tab -buffer-name=file<CR>
-    nnoremap sB :<C-u>Unite buffer -buffer-name=file<CR>
+    nnoremap [s]j <C-w>j
+    nnoremap [s]k <C-w>k
+    nnoremap [s]l <C-w>l
+    nnoremap [s]h <C-w>h
+    nnoremap [s]J <C-w>J
+    nnoremap [s]K <C-w>K
+    nnoremap [s]L <C-w>L
+    nnoremap [s]H <C-w>H
+    nnoremap [s]n gt
+    nnoremap [s]p gT
+    nnoremap [s]r <C-w>r
+    nnoremap [s]= <C-w>=
+    nnoremap [s]w <C-w>w
+    nnoremap [s]o <C-w>_<C-w>|
+    nnoremap [s]O <C-w>=
+    nnoremap [s]N :<C-u>bn<CR>
+    nnoremap [s]P :<C-u>bp<CR>
+    nnoremap [s]t :<C-u>tabnew<CR>
+    nnoremap [s]T :<C-u>Unite tab<CR>
+    nnoremap [s]s :<C-u>sp<CR>
+    nnoremap [s]v :<C-u>vs<CR>
+    nnoremap [s]q :<C-u>q<CR>
+    nnoremap [s]Q :<C-u>bd<CR>
+    nnoremap [s]b :<C-u>Unite buffer_tab -buffer-name=file<CR>
+    nnoremap [s]B :<C-u>Unite buffer -buffer-name=file<CR>
+
+    " 下部に幅10のコマンドラインを生成
+    nnoremap [s]; :<c-u>sp<cr><c-w>J:<c-u>res 10<cr>:<C-u>terminal<cr>i
 " }}}
 
 " folding {{{
     " toggle foldmethod
-    nmap <Leader>ff :call <SID>ToggleFold()<CR>
+    nnoremap <space>ff :call <SID>ToggleFold()<CR>
     function! s:ToggleFold()
         if &foldmethod == 'indent'
             let &l:foldmethod = 'marker'
@@ -100,18 +123,19 @@ scriptencoding utf-8
     " zj -- move to the next fold
     " zk -- move to the previous fold
 
-    nmap <silent> <space>j zj
-    nmap <silent> <space>k zk
+    nnoremap <silent> <space>j zj
+    nnoremap <silent> <space>k zk
 
-    nmap <silent> <space>h zc    " 折りたたみ
-    nmap <silent> <space>l zO    " 展開
+    nnoremap <silent> <space>h zc    " 折りたたみ
+    nnoremap <silent> <space>l zO    " 展開
 
-    nmap <silent> <space>H zM    " 折りたたみ
-    nmap <silent> <space>L zR    " 展開
+    nnoremap <silent> <space>H zM    " 折りたたみ
+    nnoremap <silent> <space>L zR    " 展開
 
-    nmap <silent> <space>o zMzv  " 自分以外とじる
+    nnoremap <silent> <space>o zMzv  " 自分以外とじる
 " }}}
 
 " mac only!!!!!!!!!!!!!! {{{
-    nnoremap ,? :!open dict://<cword><CR>
+    " Search meaning of the current word
+    nnoremap [,]? :!open dict://<cword><CR>
 " }}}

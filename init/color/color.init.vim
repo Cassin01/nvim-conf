@@ -15,54 +15,26 @@ syntax on
     " 214 : オレンジ (暗)
     " }}}
 
-    " Prefix for color scheme {{{
-        " color scheme 拡張 " one dark {{{
-        function! s:onedark()
-            if g:colors_name == "onedark"
-                hi Normal       ctermbg=none
-
-                " 行番号
-                hi LineNr       ctermbg=none ctermfg=240 cterm=italic
-
-                " アクティブなステータスライン
-                hi StatusLine   ctermbg=none
-
-                 " 非アクティブなステータスライン
-                hi StatusLineNC ctermbg=none
-
-                " コメントアウト
-                hi Comment      ctermfg=243 cterm=italic
-
-                hi Statement    ctermfg=45
-
-                " 追加行
-                hi DiffAdd      ctermbg=24
-
-                hi Identifier   ctermfg=45 "cterm=bold
-            endif
-        endfunction
-        " }}}
-
-        " color scheme 拡張 " night_owl {{{
-        function! s:iceberg()
-            if g:colors_name == "iceberg"
-                " bracket
-                hi MatchParen cterm=bold ctermfg=214 ctermbg=black
-            endif
-        endfunction
-        " }}}
-
-    " Prefix for color schemes
-        au ColorScheme * :call s:onedark()
-        au ColorScheme * :call s:iceberg()
-    " }}}
-
     " Check {{{
         " スペルチェック
-        au Colorscheme * hi SpellBad ctermfg=23 cterm=none ctermbg=none
+        au Colorscheme * hi SpellBad ctermfg=none ctermbg=none cterm=underline
+    " }}}
 
-        " キャメルケースチェック
-        " au ColorScheme * hi SpellCap ctermfg=46 cterm=bold ctermbg=none
+    " Tab, Space, etc...{{{
+        " Note:
+        "   * NonText
+        "     * eol, extends, precedes
+        "   * SpecialKey
+        "     * nbsp, tab, trail
+        hi NonText    ctermbg=None ctermfg=13
+        hi SpecialKey ctermbg=None ctermfg=13
+
+    " }}}
+
+    " mark {{{
+        au ColorScheme * hi InterestingWord1 ctermfg=0 ctermbg=47  " みどり
+        au ColorScheme * hi InterestingWord2 ctermfg=0 ctermbg=45  " 水色
+        au ColorScheme * hi InterestingWord3 ctermfg=0 ctermbg=212 " ピンク
     " }}}
 
     " Haskell {{{
@@ -71,19 +43,68 @@ syntax on
         au ColorScheme * hi Haskell03 ctermfg=255  " 白
     " }}}
 
-    " mark {{{
-        au ColorScheme * hi InterestingWord1 ctermfg=0 ctermbg=47  " みどり
-        au ColorScheme * hi InterestingWord2 ctermfg=0 ctermbg=45  " 水色
-        au ColorScheme * hi InterestingWord3 ctermfg=0 ctermbg=212 " ピンク
+    " Prefix for color scheme {{{
+        " Color scheme extension  " one dark {{{
+            function! s:onedark()
+                if g:colors_name == "onedark"
+                    hi Normal       ctermbg=none
+
+                    " 行番号
+                    hi LineNr       ctermbg=none ctermfg=240 cterm=italic
+
+                    " アクティブなステータスライン
+                    hi StatusLine   ctermbg=none
+
+                     " 非アクティブなステータスライン
+                    hi StatusLineNC ctermbg=none
+
+                    " コメントアウト
+                    hi Comment      ctermfg=243 cterm=italic
+
+                    hi Statement    ctermfg=45
+
+                    " 追加行
+                    hi DiffAdd      ctermbg=24
+
+                    hi Identifier   ctermfg=45 "cterm=bold
+                endif
+            endfunction
+        " }}}
+
+        " Color scheme extension " night_owl {{{
+            function! s:iceberg()
+                if g:colors_name == "iceberg"
+                    " bracket
+                    hi MatchParen cterm=bold ctermfg=214 ctermbg=black
+                endif
+            endfunction
+        " }}}
+
+        " Color scheme extension " nord {{{
+            function! s:nord()
+                if g:colors_name == "nord"
+                    " bracket
+                    hi MatchParen cterm=bold ctermfg=214 ctermbg=black
+
+                    " Check spells
+                    hi SpellBad ctermfg=none ctermbg=none cterm=underline
+                endif
+            endfunction
+        " }}}
+
+        " Prefix for color schemes
+        au ColorScheme * :call s:onedark()
+        au ColorScheme * :call s:iceberg()
+        au ColorScheme * :call s:nord()
     " }}}
 " }}}
 
 " Set color scheme {{{
     set background=dark
-    colo iceberg
+    "colo iceberg
     "colo nord
     "colo night-owl
-    "colo onedark
+    colo onedark
     "colo tomorrow
     "colo hybrid
 " }}}
@@ -108,7 +129,8 @@ syntax on
 " 行末スペース、行末タブの表示 {{{
     " highlight TrailingSpaces ctermbg=red guibg=#FF0000
     " highlight TrailingSpaces ctermbg=blue guibg=#FF0000
-    highlight TrailingSpaces ctermbg=50 ctermfg=50 cterm=bold " or 46 (緑), 240 (灰色), 50 (水色)
+    "46 (緑), 240 (灰色), 50 (水色)
+    highlight TrailingSpaces ctermbg=50 ctermfg=50 cterm=bold
     highlight Tabs ctermbg=black guibg=8 " guibg=#000000
     au BufNewFile,BufRead * call matchadd('TrailingSpaces', ' \{-1,}$')
     au BufNewFile,BufRead * call matchadd('Tabs', '\t')

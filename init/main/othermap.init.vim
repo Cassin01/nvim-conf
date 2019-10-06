@@ -9,6 +9,8 @@ scriptencoding utf-8
         inoremap (( (
         inoremap {{ {
         inoremap [[ [
+        inoremap "" "
+        inoremap '' '
         inoremap ( ()<left>
         inoremap { {}<left>
         inoremap [ []<left>

@@ -190,5 +190,8 @@ Plug 'junegunn/vim-easy-align'
 " icon
 Plug 'ryanoasis/vim-devicons'
 
+" Visual mode 範囲拡大
+Plug 'terryma/vim-expand-region'
+
 
 call plug#end()
