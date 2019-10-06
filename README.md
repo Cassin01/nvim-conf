@@ -1,21 +1,5 @@
 # ReiwaVimConfiguration
 
-```vim
-██╗███╗   ██╗██╗████████╗██╗   ██╗██╗███╗   ███╗
-██║████╗  ██║██║╚══██╔══╝██║   ██║██║████╗ ████║
-██║██╔██╗ ██║██║   ██║   ██║   ██║██║██╔████╔██║
-██║██║╚██╗██║██║   ██║   ╚██╗ ██╔╝██║██║╚██╔╝██║
-██║██║ ╚████║██║   ██║██╗ ╚████╔╝ ██║██║ ╚═╝ ██║
-╚═╝╚═╝  ╚═══╝╚═╝   ╚═╝╚═╝  ╚═══╝  ╚═╝╚═╝     ╚═╝
-
-                presented by
-
-              ╔═╗┌─┐┌─┐┌─┐┬┌┐┌
-              ║  ├─┤└─┐└─┐││││
-              ╚═╝┴ ┴└─┘└─┘┴┘└┘
-
-```
-
 # Features
 
 - **Powerful editing.** Use more than 80 plugins.
@@ -45,4 +29,13 @@ Both ``Devicon-plugin`` and ``Airline-plugin`` require [nerd-fonts](https://gith
  " mac only!!!!!!!!!!!!!! {{{
  nnoremap ,? :!open dict://<cword><CR>
  " }}}
- `)``
+ ```
+
+# Screenshots
+
+<h1 align="center">
+  <img src="images/ex01.png" alt="pic" />
+  <img src="images/ex02.gif" alt="pic" />
+  <img src="images/ex03.png" alt="pic" />
+</h1>
+
