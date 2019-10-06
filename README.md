@@ -4,7 +4,7 @@
 
 - **Powerful editing.** Use more than 80 plugins.
 
-- **Simple key-bind.** systematized key-binding's prefix.
+- **Simple key-binds.** systematized key-binding's prefixs.
 
 ## Installation
 
