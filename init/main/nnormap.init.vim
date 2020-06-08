@@ -9,30 +9,52 @@ scriptencoding utf-8
     nnoremap ,, ,
     nmap , [,]
 
+    nnoremap [;] <Nop>
+    nnoremap ;; ;
+    nmap ; [;]
+
     nnoremap [s] <Nop>
     nnoremap s <Nop>
     nmap s [s]
 " }}}
 
 " classic commands {{{
-    " clipboard
-    nnoremap <space>p :<c-u>set clipboard+=unnamed<cr>
-    nnoremap <space>n :<c-u>set clipboard-=unnamed<cr>
+    " clipboard " {{{
+    set clipboard+=unnamed " Enable to use clipboard
+    nnoremap ]f :<c-u>set clipboard+=unnamed<cr>
+    nnoremap [f :<c-u>set clipboard-=unnamed<cr>
+    " }}}
+
+    " show all concealed character
+    nnoremap [;]f :<c-u>setlocal conceallevel=0<cr>
 
     " move middle of the current line
     nnoremap [s]m :<C-u>call cursor(0,strlen(getline("."))/2)<CR>
 
     " modes short cut
-    nnoremap [s]<space> :<C-u>terminal<cr>
+    nnoremap [;]t :<C-u>terminal<cr>
 
     " 開いているファイルのカレントディレクトリを開く
-    nnoremap [,]t :sp<cr>:edit %:h<tab><cr>
+    nnoremap [m]t :sp<cr>:edit %:h<tab><cr>
 
     " カーソル下の単語をハイライトする
     nnoremap <silent> <Space><Space> "zyiw:let @/ = '\<' . @z . '\>'<CR>:set hlsearch<CR>
 
     " カーソル下の単語をハイライトしてから置換する
     nnoremap # <Space><Space>:%s/<C-r>///g<Left><Left>
+
+    " カーソル下の単語をGoogleで検索する
+    function! s:search_by_google()
+        let line = line(".")
+        let col  = col(".")
+        let searchWord = expand("<cword>")
+        if searchWord  != ''
+            execute 'read !open https://www.google.co.jp/search\?q\=' . searchWord
+            execute 'call cursor(' . line . ',' . col . ')'
+        endif
+    endfunction
+    command! SearchByGoogle call s:search_by_google()
+    nnoremap <silent> <Space>g :SearchByGoogle<CR>
 
     " nerdtree
     map <space>s :<c-u>NERDTreeToggle<CR>
@@ -62,6 +84,20 @@ scriptencoding utf-8
 
     " color scheme
     nnoremap [,]c :<c-u>Unite colorscheme -auto-preview<cr>
+
+    " Grep {{{
+        " same meaning as ``:vim {pattern} {file} | cw``
+        augroup GrepCmd
+            autocmd!
+            autocmd QuickFixCmdPost *grep* cwindow  " add ``| cw`` automatically
+        augroup END
+        " depend on vim-unimpaired {{{
+        nnoremap [q :cprevious<CR>   " 前へ
+        nnoremap ]q :cnext<CR>       " 次へ
+        nnoremap [Q :<C-u>cfirst<CR> " 最初へ
+        nnoremap ]Q :<C-u>clast<CR>  " 最後へ
+        " }}}
+    " }}}
 " }}}
 
 " split windows {{{
@@ -92,7 +128,10 @@ scriptencoding utf-8
     nnoremap [s]B :<C-u>Unite buffer -buffer-name=file<CR>
 
     " 下部に幅10のコマンドラインを生成
-    nnoremap [s]; :<c-u>sp<cr><c-w>J:<c-u>res 10<cr>:<C-u>terminal<cr>i
+    nnoremap [s]; :<c-u>sp<cr><c-w>J:<c-u>res 10<cr>:<C-u>terminal<cr>:<c-u>setlocal noequalalways<cr>i
+
+    " delte the current buffer
+    nnoremap [s]d :<C-u>bd<CR>
 " }}}
 
 " folding {{{
@@ -135,7 +174,15 @@ scriptencoding utf-8
     nnoremap <silent> <space>o zMzv  " 自分以外とじる
 " }}}
 
+" Destructive commands {{{
+    " I don't recommend using this command without deep understanding.
+    " This command has a lot of side effects.
+
+    " Remove trailing whitespace
+    command RemoveTrailingWhitespace :%s/\s\+$//ge
+" }}}
+
 " mac only!!!!!!!!!!!!!! {{{
-    " Search meaning of the current word
+    " Search meaning of the current word.
     nnoremap [,]? :!open dict://<cword><CR>
 " }}}

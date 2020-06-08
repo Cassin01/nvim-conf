@@ -23,13 +23,13 @@ Both ``Devicon-plugin`` and ``Airline-plugin`` require [nerd-fonts](https://gith
 
 ### Mac
 
- If you don't use this configuration on mac, You should remove this code from ``init/main/nnoremap.init.vim``.
+If you don't use this configuration on mac, You should remove this code from ``init/main/nnoremap.init.vim``.
 
- ```nnoremap.init.vim
- " mac only!!!!!!!!!!!!!! {{{
- nnoremap ,? :!open dict://<cword><CR>
- " }}}
- ```
+```nnoremap.init.vim
+" mac only!!!!!!!!!!!!!! {{{
+    nnoremap ,? :!open dict://<cword><CR>
+" }}}
+```
 
 # Screenshots
 

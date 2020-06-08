@@ -1,9 +1,12 @@
 scriptencoding utf-8
 
 " indent-guides {{{
-    let g:indent_guides_enable_on_vim_startup=1 " enable indent-guides let g:indent_guides_guide_size =1
+    let g:indent_guides_enable_on_vim_startup=1 " enable indent-guides
     let g:indent_guides_start_level=1
-    let g:indent_guides_auto_colors=0 " enable auto colors
+    hi IndentGuidesOdd  ctermbg=239
+    hi IndentGuidesEven ctermbg=242
+    "let g:indent_guides_auto_colors=0 " enable auto colors
+    let g:indent_guides_guide_size=1 " width of identifier
     let g:indent_guides_exclude_filetypes = ['help', 'nerdtree']
     autocmd VimEnter,Colorscheme * :hi IndentGuidesOdd   ctermbg=237
     autocmd VimEnter,Colorscheme * :hi IndentGuidesEven  ctermbg=237
@@ -195,13 +198,13 @@ scriptencoding utf-8
     endif
 
     " Python
-    if executable('pyls')
-        au User lsp_setup call lsp#register_server({
-            \ 'name': 'pyls',
-            \ 'cmd': {server_info->['pyls']},
-            \ 'whitelist': ['python'],
-            \ })
-    endif
+    "if executable('pyls')
+    "    au User lsp_setup call lsp#register_server({
+    "        \ 'name': 'pyls',
+    "        \ 'cmd': {server_info->['pyls']},
+    "        \ 'whitelist': ['python'],
+    "        \ })
+    "endif
 
     set completeopt+=menuone "候補が一つでも実行
 " }}}
@@ -231,6 +234,9 @@ scriptencoding utf-8
     if has('conceal')
       set conceallevel=2 concealcursor=niv
     endif
+" }}}
+
+" Spotify {{{
 " }}}
 
 " vim-autoformat {{{
@@ -267,6 +273,6 @@ scriptencoding utf-8
 
 " FZF {{{
     nnoremap [m]ff :<c-u>FZF<space>
-    nnoremap [m]fr :<c-u>FZF<space> ~/<cr>
-    nnoremap [m]fc :<c-u>FZF<space> ./<cr>
+    nnoremap [m]fr :<c-u>FZF<space>~/<cr>
+    nnoremap [m]fc :<c-u>FZF<space>./<cr>
 " }}}

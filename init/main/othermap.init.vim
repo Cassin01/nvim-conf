@@ -4,7 +4,6 @@ scriptencoding utf-8
     inoremap <silent><C-b> <right>
     inoremap <silent><C-k> <up>
     inoremap <silent><C-l> <down>
-
     " 括弧補完 {{{
         inoremap (( (
         inoremap {{ {
@@ -30,17 +29,21 @@ scriptencoding utf-8
         augroup FolowFile
             au!
             au BufRead,BufNewFile *.c    :call s:set_c_cpp()
+            au BufRead,BufNewFile *.h    :call s:set_c_cpp()
             au BufRead,BufNewFile *.cpp  :call s:set_c_cpp()
             au BufRead,BufNewFile *.rs   :call s:set_rs()
             au BufRead,BufNewFile *.py   :call s:set_py()
             au BufRead,BufNewFile *.vim  :call s:set_vim()
             au BufRead,BufNewFile *.tex  :call s:set_tex()
+            au BufRead,BufNewFile *.hs   :call s:set_haskell()
+            au BufRead,BufNewFile *.md   :call s:set_markdown()
             au BufRead,BufNewFile *.dart :call s:indent()
             au BufRead,BufNewFile *.go   :call s:indent()
             au BufRead,BufNewFile *.css  :call s:indent()
             au BufRead,BufNewFile *.js   :call s:indent()
             au BufRead,BufNewFile *.php  :call s:indent()
             au BufRead,BufNewFile *.html :call s:indent()
+            au BufRead,BufNewFile *.java :call s:indent()
             au FileType c,cpp,cs,java,rust setlocal commentstring=//\ %s
         augroup END
 
@@ -67,6 +70,20 @@ scriptencoding utf-8
         function! s:set_tex()
             "tex ギリシャ文字可視化無効
             let g:tex_conceal = ''
+        endfunction
+
+        function! s:set_haskell()
+            let g:rainbow_active=1
+              let w:m3 = matchadd("Haskell03", '(')
+              let w:m3 = matchadd("Haskell03", '(')
+              let w:m3 = matchadd("Haskell03", ')')
+              let w:m3 = matchadd("Haskell03", ')')
+              "let w:m3 = matchadd("Haskell04", '$')
+              "let w:m3 = matchadd("Haskell04", '$')
+        endfunction
+
+        function! s:set_markdown()
+            inoremap [ [
         endfunction
 
         function! s:indent()

@@ -14,21 +14,24 @@ syntax on
     " 111 : 薄青 (暗)
     " 214 : オレンジ (暗)
     " }}}
-
     " Check {{{
         " スペルチェック
         au Colorscheme * hi SpellBad ctermfg=none ctermbg=none cterm=underline
     " }}}
 
     " Tab, Space, etc...{{{
-        " Note:
+        " NOTE:
         "   * NonText
         "     * eol, extends, precedes
         "   * SpecialKey
         "     * nbsp, tab, trail
-        hi NonText    ctermbg=None ctermfg=13
-        hi SpecialKey ctermbg=None ctermfg=13
+        au Colorscheme * hi NonText    ctermbg=None ctermfg=13
+        au Colorscheme * hi SpecialKey ctermbg=None ctermfg=13 cterm=italic
 
+    " }}}
+
+    " Visual mode {{{
+        au Colorscheme * hi Visual cterm=reverse
     " }}}
 
     " mark {{{
@@ -41,9 +44,33 @@ syntax on
         au ColorScheme * hi Haskell01 ctermfg=179  " 黄色
         au ColorScheme * hi Haskell02 ctermfg=45   " 水色
         au ColorScheme * hi Haskell03 ctermfg=255  " 白
+        au ColorScheme * hi Haskell04 ctermfg=240  " 灰色
     " }}}
 
     " Prefix for color scheme {{{
+        " Color scheme extension  " molokai {{{
+            function! s:molokai()
+                if g:colors_name == "molokai"
+                    " コメントアウト
+                    hi Comment ctermfg=244 cterm=italic
+
+                    " blacket
+                    hi MatchParen cterm=bold ctermfg=214 ctermbg=black
+
+                    " Check spells
+                    "hi SpellBad ctermfg=none ctermbg=none cterm=underline
+
+                    " Conceal {{{
+                        " Note:
+                        " vim2hsというHaskell用
+                        " のプラグインにてlambda式(\)がλに変換されるがこのとき見にくいので
+                    hi clear Conceal
+                    hi Conceal ctermbg=1 ctermbg=darkblue
+                    " }}}
+                endif
+            endfunction
+        " }}}
+
         " Color scheme extension  " one dark {{{
             function! s:onedark()
                 if g:colors_name == "onedark"
@@ -92,38 +119,37 @@ syntax on
             endfunction
         " }}}
 
+        " Color scheme extension " purify {{{
+            function! s:purify()
+                if g:colors_name == "purify"
+                    let g:airline_theme='purify'
+                endif
+            endfunction
+        " }}}
+
         " Prefix for color schemes
         au ColorScheme * :call s:onedark()
         au ColorScheme * :call s:iceberg()
         au ColorScheme * :call s:nord()
+        au ColorScheme * :call s:molokai()
+        au ColorScheme * :call s:purify()
     " }}}
 " }}}
 
 " Set color scheme {{{
     set background=dark
+    "colo Tomorrow                " 明るいところ、逆光で見やすい
+    colo mrkn256                " 暗闇で見やすい
+
+    "colo molokai
     "colo iceberg
     "colo nord
     "colo night-owl
-    colo onedark
+    "colo onedark
+    "colo Tomorrow-Night-Bright
+    "colo gruvbox               " default
     "colo tomorrow
     "colo hybrid
-" }}}
-
-" Language {{{
-    augroup filetypedetect
-      au BufRead,BufNewFile *.hs :call ColHaskell()
-    augroup END
-
-    " Haskell 用のシンタックスハイライト {{{
-    function! ColHaskell()
-      au BufWinEnter * let w:m3 = matchadd("Haskell02", '(')
-      au WinEnter    * let w:m3 = matchadd("Haskell02", '(')
-      au BufWinEnter * let w:m3 = matchadd("Haskell02", ')')
-      au WinEnter    * let w:m3 = matchadd("Haskell02", ')')
-      au BufWinEnter * let w:m3 = matchadd("Haskell02", '$')
-      au WinEnter    * let w:m3 = matchadd("Haskell02", '$')
-    endfunction
-    " }}}
 " }}}
 
 " 行末スペース、行末タブの表示 {{{

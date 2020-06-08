@@ -14,7 +14,8 @@ scriptencoding utf-8
 " Visualize {{{
     " 不可視文字 {{{
         set list
-        set listchars=tab:»-,trail:†,eol:↲
+        "set listchars=tab:»-,trail:_,eol:↲
+        set listchars=tab:»-,trail:_
     " }}}
 
     " 英語と日本語のスペルチェック z= で修正候補 {{{
