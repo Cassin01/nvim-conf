@@ -1,8 +1,12 @@
 {
+    "rust-analyzer.cargo.loadOutDirsFromCheck": true,
+    "rust-analyzer.procMacro.enable": true,
     "languageserver": {
         "haskell": {
             "command": "hie-wrapper",
+            "args": ["--lsp"],
             "rootPatterns": [
+                "*.cabal",
                 ".stack.yaml",
                 "cabal.config",
                 "package.yaml"
@@ -16,9 +20,7 @@
                 "languageServerHaskell": {
                 }
             }
-        }
-    },
-    "languageserver": {
+        },
         "ccls": {
             "command": "ccls",
             "filetypes": ["c", "cpp", "objc", "objcpp"],
@@ -28,16 +30,7 @@
                     "directory": "/tmp/ccls"
                 }
             }
-        }
-    },
-    "languageserver": {
-        "rust": {
-            "command": "ra_lsp_server",
-            "filetypes": ["rust"],
-            "rootPatterns": ["Cargo.toml"]
-        }
-    },
-    "languageserver": {
+        },
         "python": {
             "command": "python",
             "args": [

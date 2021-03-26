@@ -4,15 +4,15 @@ syntax on
 
 " color definition {{{
     " NOTE: color {{{
-    " 179 : 黄色
-    " 51  : 水色 (少し明るい)
-    " 45  : 水色
-    " 6   : 水色 (少し暗い)
-    " 24  : 水色 (より暗い)
-    " 255 : 白色
-    " 240 : 灰色
-    " 111 : 薄青 (暗)
-    " 214 : オレンジ (暗)
+        " 179 : 黄色
+        " 51  : 水色 (少し明るい)
+        " 45  : 水色
+        " 6   : 水色 (少し暗い)
+        " 24  : 水色 (より暗い)
+        " 255 : 白色
+        " 240 : 灰色
+        " 111 : 薄青 (暗)
+        " 214 : オレンジ (暗)
     " }}}
     " Check {{{
         " スペルチェック
@@ -40,6 +40,10 @@ syntax on
         au ColorScheme * hi InterestingWord3 ctermfg=0 ctermbg=212 " ピンク
     " }}}
 
+    " cursourline {{{
+    "    au ColorScheme * hi CursorLine term=bold cterm=bold guibg=Grey40
+    " }}}
+
     " Haskell {{{
         au ColorScheme * hi Haskell01 ctermfg=179  " 黄色
         au ColorScheme * hi Haskell02 ctermfg=45   " 水色
@@ -47,109 +51,229 @@ syntax on
         au ColorScheme * hi Haskell04 ctermfg=240  " 灰色
     " }}}
 
+    " a note using floating window
+    au ColorScheme * hi MMathGlossary ctermfg=255 ctermbg=0
+
     " Prefix for color scheme {{{
         " Color scheme extension  " molokai {{{
             function! s:molokai()
-                if g:colors_name == "molokai"
-                    " コメントアウト
-                    hi Comment ctermfg=244 cterm=italic
+                " " コメントアウト
+                " hi Comment ctermfg=244 cterm=italic
 
-                    " blacket
-                    hi MatchParen cterm=bold ctermfg=214 ctermbg=black
+                " `(` と `)`
+                hi Delimiter cterm=bold ctermfg=116
 
-                    " Check spells
-                    "hi SpellBad ctermfg=none ctermbg=none cterm=underline
+                " コメントアウト
+                "hi Comment ctermfg=47 cterm=italic
+                hi Comment ctermfg=179 cterm=italic
 
-                    " Conceal {{{
-                        " Note:
-                        " vim2hsというHaskell用
-                        " のプラグインにてlambda式(\)がλに変換されるがこのとき見にくいので
+                " blacket
+                hi MatchParen cterm=bold ctermfg=214 ctermbg=black
+
+                " Check spells
+                "hi SpellBad ctermfg=none ctermbg=none cterm=underline
+
+                " Conceal {{{
+                    " Note:
+                    " vim2hsというHaskell用
+                    " のプラグインにてlambda式(\)がλに変換されるがこのとき背景色と被り見にくいので
                     hi clear Conceal
                     hi Conceal ctermbg=1 ctermbg=darkblue
-                    " }}}
-                endif
+                " }}}
             endfunction
         " }}}
 
         " Color scheme extension  " one dark {{{
             function! s:onedark()
-                if g:colors_name == "onedark"
-                    hi Normal       ctermbg=none
+                hi Normal       ctermbg=none
 
-                    " 行番号
-                    hi LineNr       ctermbg=none ctermfg=240 cterm=italic
+                " 行番号
+                hi LineNr       ctermbg=none ctermfg=240 cterm=italic
 
-                    " アクティブなステータスライン
-                    hi StatusLine   ctermbg=none
+                " アクティブなステータスライン
+                hi StatusLine   ctermbg=none
 
-                     " 非アクティブなステータスライン
-                    hi StatusLineNC ctermbg=none
+                 " 非アクティブなステータスライン
+                hi StatusLineNC ctermbg=none
 
-                    " コメントアウト
-                    hi Comment      ctermfg=243 cterm=italic
+                " コメントアウト
+                "hi Comment      ctermfg=243 cterm=italic
+                hi Comment ctermfg=179 cterm=italic
 
-                    hi Statement    ctermfg=45
+                hi Statement    ctermfg=45
 
-                    " 追加行
-                    hi DiffAdd      ctermbg=24
+                " 追加行
+                hi DiffAdd      ctermbg=24
 
-                    hi Identifier   ctermfg=45 "cterm=bold
-                endif
+                hi Identifier   ctermfg=45 "cterm=bold
             endfunction
         " }}}
 
         " Color scheme extension " night_owl {{{
             function! s:iceberg()
-                if g:colors_name == "iceberg"
-                    " bracket
-                    hi MatchParen cterm=bold ctermfg=214 ctermbg=black
-                endif
+                " bracket
+                hi MatchParen cterm=bold ctermfg=214 ctermbg=black
             endfunction
         " }}}
 
         " Color scheme extension " nord {{{
             function! s:nord()
-                if g:colors_name == "nord"
-                    " bracket
-                    hi MatchParen cterm=bold ctermfg=214 ctermbg=black
+                " bracket
+                hi MatchParen cterm=bold ctermfg=214 ctermbg=black
 
-                    " Check spells
-                    hi SpellBad ctermfg=none ctermbg=none cterm=underline
-                endif
+                " Check spells
+                hi SpellBad ctermfg=none ctermbg=none cterm=underline
             endfunction
         " }}}
 
         " Color scheme extension " purify {{{
             function! s:purify()
-                if g:colors_name == "purify"
-                    let g:airline_theme='purify'
-                endif
+                let g:airline_theme='purify'
+            endfunction
+        " }}}
+
+        " Color scheme extension " wolf {{{
+            function! s:wolf()
+                " コメントアウト
+                hi Comment ctermfg=179 cterm=italic
+                hi Normal ctermbg=0
+                hi Folded ctermfg=208
+            endfunction
+        " }}}
+
+        " Color scheme extension " mrkn256 {{{
+            function! s:mrkn256()
+                " blacket
+                hi MatchParen cterm=bold ctermfg=214 ctermbg=black
+
+                hi Normal ctermbg=black
+
+                hi CursorLine term=bold cterm=bold guibg=Grey40
+            endfunction
+        " }}}
+
+        " Color scheme extension " default {{{
+            function! s:default()
+                " blacket
+                hi MatchParen cterm=bold ctermfg=214 ctermbg=black
             endfunction
         " }}}
 
         " Prefix for color schemes
-        au ColorScheme * :call s:onedark()
-        au ColorScheme * :call s:iceberg()
-        au ColorScheme * :call s:nord()
-        au ColorScheme * :call s:molokai()
-        au ColorScheme * :call s:purify()
+        au ColorScheme * :call s:set_each_color_settings()
+        function! s:set_each_color_settings()
+            if g:colors_name == "molokai"
+                call s:molokai()
+            elseif g:colors_name == "onedark"
+                call s:onedark()
+            elseif g:colors_name == "iceberg"
+                call s:iceberg()
+            elseif g:colors_name == "nord"
+                call s:nord()
+            elseif g:colors_name == "purify"
+                call s:purify()
+            elseif g:colors_name == "goodwolf"
+                call s:wolf()
+            elseif g:colors_name == "badwolf"
+                call s:wolf()
+            elseif g:colors_name == "mrkn256"
+                call s:mrkn256()
+            elseif g:colors_name == "default"
+                call s:default()
+            else
+            endif
+        endfunction
     " }}}
 " }}}
 
+" " Language {{{
+"     augroup FlowWriteFile
+"         au!
+"         autocmd BufWrite *    :call s:w_set_default()
+"         autocmd BufWrite *.md :call s:w_set_markdown()
+"     augroup END
+"
+"     augroup FolowFile
+"         au!
+"         au BufRead,BufNewFile *      :call s:w_set_default()
+"         au BufRead,BufNewFile *.md   :call s:w_set_markdown()
+"         au BufRead,BufNewFile *.cpp  :call s:set_c_cpp()
+"     augroup END
+"
+"     function! s:w_set_default()
+"             if exists('g:my_color')
+"                 exe("colo ". g:my_color)
+"                 if exists('*s:set_each_color_settings()')
+"                     call s:set_each_color_settings()
+"                 else
+"                     echom 's:wolf() is not exists (at color.init.vim)'
+"                 endif
+"             else
+"                 echom 'Err: g:my_color is not exists. [at othermap.init.vim]'
+"             endif
+"
+"         " FIXME:
+"         " こっちで読んでいるのでnmapの方で呼ばれない．簡易的にこちらに書く {{{
+"             if exists('g:auto_save')
+"                 let g:auto_save = 0
+"             else
+"                 echom 'g:auto_save is not exists (at othermap.init.vim)'
+"             endif
+"         " }}}
+"     endfunction
+"
+"     function! s:w_set_markdown()
+"         if g:colors_name != 'goodwolf'
+"             colo goodwolf
+"             if exists('*s:wolf()')
+"                 call s:wolf()
+"             else
+"                 echom 's:wolf() is not exists (at color.init.vim)'
+"             endif
+"         endif
+"
+"         " FIXME:
+"         " こっちで読んでいるのでnmapの方で呼ばれない．簡易的にこちらに書く {{{
+"             if exists('g:auto_save')
+"                 let g:auto_save = 1
+"             else
+"                 echom 'g:auto_save is not exists (at othermap.init.vim)'
+"             endif
+"
+"             if &conceallevel != 0
+"                 setlocal conceallevel=0
+"             endif
+"
+"             inoremap $<enter> $$$$<left><left><cr><cr><up>
+"             inoremap $$       $$<left>
+"         " }}}
+"     endfunction
+"
+"     function! s:set_c_cpp()
+"         setlocal commentstring=//\ %s
+"         call s:indent()
+"         call s:comment()
+"         setlocal foldmethod=indent
+"     endfunction
+"
+"     function! s:indent()
+"         inoremap {<enter> {}<left><cr><cr><up><tab>
+"     endfunction
+"
+"     function! s:comment()
+"         inoremap /* <kDivide><kMultiply><space>
+"             \<space><kMultiply><kDivide>
+"             \<left><left><left>
+"     endfunction
+" " }}}
+
 " Set color scheme {{{
     set background=dark
-    "colo Tomorrow                " 明るいところ、逆光で見やすい
-    colo mrkn256                " 暗闇で見やすい
-
-    "colo molokai
-    "colo iceberg
-    "colo nord
-    "colo night-owl
-    "colo onedark
-    "colo Tomorrow-Night-Bright
-    "colo gruvbox               " default
-    "colo tomorrow
-    "colo hybrid
+    if exists('g:my_color')
+        exe("colo ". g:my_color)
+    else
+        echom 'Err: g:my_color is not exists. [at othermap.init.vim]'
+    endif
 " }}}
 
 " 行末スペース、行末タブの表示 {{{

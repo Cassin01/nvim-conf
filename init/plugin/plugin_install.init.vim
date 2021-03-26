@@ -12,6 +12,11 @@ Plug 'kana/vim-submode'                 " resize split windows
 " Spotify integration
 Plug 'HendrikPetertje/vimify'
 
+" ranger file manager {{{
+Plug 'francoiscabrol/ranger.vim'
+Plug 'rbgrouleff/bclose.vim'
+" }}}
+
 " indent guides
 "Plug 'Yggdroot/indentLine'
 Plug 'nathanaelkane/vim-indent-guides'
@@ -51,7 +56,7 @@ Plug 'davidhalter/jedi-vim'             " completion
 Plug 'numirias/semshi', {'do': ':UpdateRemotePlugins'} " Semantic Highlighting for Python in Neovim
 
 " Go
-Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
+"Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 
 " c++
 Plug 'octol/vim-cpp-enhanced-highlight' " syntax highlight
@@ -62,6 +67,7 @@ Plug 'vim-ruby/vim-ruby'
 
 " Rust
 Plug 'rust-lang/rust.vim'              " completion
+
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 " Dart
@@ -76,6 +82,16 @@ Plug 'pangloss/vim-javascript' "indentation and syntax support
 Plug 'keith/swift.vim'
 Plug 'jpsim/SourceKitten'
 
+" tex {{{
+Plug 'lervag/vimtex'
+let g:vimtex_compiler_latexmk_engines = {'_': '-pdfdvi'}
+let g:vimtex_view_method= 'skim'
+let g:vimtex_quickfix_latexlog = {'default': 0}
+if empty(v:servername) && exists('*remote_startserver')
+    call remote_startserver('VIM')
+endif
+" }}}
+
 " toml
 Plug 'cespare/vim-toml'
 
@@ -83,10 +99,32 @@ Plug 'cespare/vim-toml'
 Plug 'elzr/vim-json'
 
 "markdown {{{
-    "Plug 'godlygeek/tabular'
-    "Plug 'plasticboy/vim-markdown'
-    Plug 'suan/vim-instant-markdown', {'for': 'markdown'}
-    let g:instant_markdown_autostart = 0
+    Plug 'godlygeek/tabular'
+    Plug 'plasticboy/vim-markdown'
+
+    " Preview系 {{{
+        " 一軍 {{{
+        " Plug 'suan/vim-instant-markdown', {'for': 'markdown'}
+        " let g:instant_markdown_autostart = 0
+        " }}}
+
+        " 二軍 {{{
+        Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app & yarn install'  }
+
+        " set to 1, the nvim will auto close current preview window when change
+        " from markdown buffer to another buffer
+        " default: 1
+        let g:mkdp_auto_close = 0
+
+        let g:mkdp_preview_options = {
+                    \ 'katex': {},
+                    \ 'disable_sync_scroll': 0,
+                    \ }
+
+        " normal/insert
+        nmap [,]p <Plug>MarkdownPreview
+        " }}}
+    " }}}
 
     " Automatic table creator & formatte
     Plug 'dhruvasagar/vim-table-mode' " {{{
@@ -149,10 +187,23 @@ Plug 'ujihisa/unite-colorscheme'
     Plug 'hzchirs/vim-material'               "vim-material"
     Plug 'kyoz/purify', {'rtp': 'vim'}        "purify"
     Plug 'relastle/bluewery.vim'              "bluewery"
+    Plug 'mhartington/oceanic-next'           "OceanicNext
+    Plug 'nightsense/snow'                    "snow
 " }}}
 
 " others
+" Nerdtree {{{
 Plug 'scrooloose/nerdtree'
+" {{{
+
+" Change current directory.
+nnoremap <silent> <Space>cd :<C-u>CD<CR>
+
+" Pythons path {{{
+    let g:python2_host_prog = '/usr/local/bin/python'
+    let g:python3_host_prog = '/usr/local/bin/python3'
+" }}}
+
 
 " fzf completion
 Plug '/usr/local/opt/fzf'
@@ -188,14 +239,14 @@ Plug 'tpope/vim-surround'
 Plug 'itchyny/calendar.vim'
 
 " shougo completion start
-if has('nvim')
-  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-else
-  Plug 'Shougo/deoplete.nvim'
-  Plug 'roxma/nvim-yarp'
-  Plug 'roxma/vim-hug-neovim-rpc'
-endif
-let g:deoplete#enable_at_startup = 1 " Use deoplate
+" if has('nvim')
+"   Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+" else
+"   Plug 'Shougo/deoplete.nvim'
+"   Plug 'roxma/nvim-yarp'
+"   Plug 'roxma/vim-hug-neovim-rpc'
+" endif
+" let g:deoplete#enable_at_startup = 1 " Use deoplate
 
 Plug 'Shougo/neosnippet.vim'
 Plug 'Shougo/neosnippet-snippets'
@@ -237,6 +288,7 @@ Plug 'terryma/vim-expand-region'
 
 " rainbow parentheses
 Plug 'luochen1990/rainbow'
+let g:rainbow_active = 0
 
 " quickrun
 Plug 'thinca/vim-quickrun'
@@ -247,6 +299,18 @@ Plug 'rhysd/clever-f.vim'
 
 "  complementary pairs of mappings. -> ] or [
 Plug 'tpope/vim-unimpaired'
+
+" Automatically save
+Plug  'vim-scripts/vim-auto-save' " {{{
+let g:auto_save_events = ["InsertLeave", "TextChanged"]
+let g:auto_save = 0
+" }}}
+
+" notes {{{
+Plug 'xolox/vim-notes'
+Plug 'xolox/vim-misc'
+" }}}
+
 
 " Open URL with your browser {{{
 Plug 'tyru/open-browser.vim'

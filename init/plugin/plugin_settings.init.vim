@@ -107,11 +107,11 @@ scriptencoding utf-8
     let g:clang_auto = 0
 " }}}
 
-" vim-go {{{
-    let g:go_fmt_options = "-tabwidth=4"
-    autocmd FileType go nmap <leader>b  <Plug>(go-build)
-    autocmd FileType go nmap <leader>r  <Plug>(go-run)
-" }}}
+"" vim-go {{{
+"    let g:go_fmt_options = "-tabwidth=4"
+"    autocmd FileType go nmap <leader>b  <Plug>(go-build)
+"    autocmd FileType go nmap <leader>r  <Plug>(go-run)
+"" }}}
 
 " coc.nvim {{{
     " if hidden is not set, TextEdit might fail.
@@ -130,8 +130,14 @@ scriptencoding utf-8
     " don't give |ins-completion-menu| messages.
     set shortmess+=c
 
-    " always show signcolumns
-    set signcolumn=yes
+    " Always show the signcolumn, otherwise it would shift the text each time
+    " diagnostics appear/become resolved.
+    if has("patch-8.1.1564")
+        " Recently vim can merge signcolumn and number column into one
+        set signcolumn=number
+    else
+        set signcolumn=yes
+    endif
 
     " Use tab for trigger completion with characters ahead and navigate.
     " Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
@@ -236,9 +242,6 @@ scriptencoding utf-8
     endif
 " }}}
 
-" Spotify {{{
-" }}}
-
 " vim-autoformat {{{
     let g:formatter_yapf_style = 'pep8'
 " }}}
@@ -249,6 +252,7 @@ scriptencoding utf-8
 
 " majutsushi/tagbar {{{
     nmap <space>t :TagbarToggle<CR>
+    g:tagbar_ctags_bin = /usr/local/opt/universal-ctags
 " }}}
 
 " goyo {{{

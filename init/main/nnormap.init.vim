@@ -26,7 +26,8 @@ scriptencoding utf-8
     " }}}
 
     " show all concealed character
-    nnoremap [;]f :<c-u>setlocal conceallevel=0<cr>
+    nnoremap ]x :<c-u>setlocal conceallevel=1<cr>
+    nnoremap [x :<c-u>setlocal conceallevel=0<cr>
 
     " move middle of the current line
     nnoremap [s]m :<C-u>call cursor(0,strlen(getline("."))/2)<CR>
@@ -81,6 +82,162 @@ scriptencoding utf-8
 
     " open file
     nnoremap [m]v :vi<space>
+
+    " markdownの目次取得 {{{
+    function! s:get_toc() abort
+        let lines=getline(1, '$')
+        let toc = []
+        for line in lines
+            if line =~ '#\+ .\+'
+                let tmp = substitute(line, "#", "    ", "g")
+                call add(toc, tmp)
+            endif
+        endfor
+        "echo join(toc, "\n")
+        "call s:sessions()
+        "return join(toc, "\n")
+        return toc
+    endfunction
+    let s:session_list_buffer = 'SESSIONS'
+
+    function! s:get_toc_sessions() abort
+        let files = s:get_toc()
+        if empty(files) == 'tex'
+            return
+        endif
+
+        " バッファが存在している場合
+        if bufexists(s:session_list_buffer)
+            " バッファがウィンドウに表示されている場合は`win_gotoid`でウィンドウに移動します
+            let winid = bufwinid(s:session_list_buffer)
+            if winid isnot# -1
+                call win_gotoid(winid)
+
+                " バッファがウィンドウに表示されていない場合は`sbuffer`で新しいウィンドウを作成してバッファを開きます
+            else
+                execute 'vert' 'sbuffer' s:session_list_buffer
+            endif
+
+        else
+            " バッファが存在していない場合は`new`で新しいバッファを作成します
+            " execute 'new' s:session_list_buffer
+            setlocal splitright
+            execute 'vsplit' s:session_list_buffer
+
+            " バッファの種類を指定します
+            " ユーザが書き込むことはないバッファなので`nofile`に設定します
+            " 詳細は`:h buftype`を参照してください
+            set buftype=nofile
+
+            " 1. セッション一覧のバッファで`q`を押下するとバッファを破棄
+            " 2. `Enter`でセッションをロード
+            " の2つのキーマッピングを定義します。
+            "
+            " <C-u>と<CR>はそれぞれコマンドラインでCTRL-uとEnterを押下した時の動作になります
+            " <buffer>は現在のバッファにのみキーマップを設定します
+            " <silent>はキーマップで実行されるコマンドがコマンドラインに表示されないようにします
+            " <Plug>という特殊な文字を使用するとキーを割り当てないマップを用意できます
+            " ユーザはこのマップを使用して自分の好きなキーマップを設定できます
+            "
+            " \ は改行するときに必要です
+            nnoremap <silent> <buffer>
+                        \ <Plug>(session-close)
+                        \ :<C-u>bwipeout!<CR>
+
+            nnoremap <silent> <buffer>
+                        \ <Plug>(session-open)
+                        \ :<C-u>call session#load_session(trim(getline('.')))<CR>
+
+            " <Plug>マップをキーにマッピングします
+            " `q` は最終的に :<C-u>bwipeout!<CR>
+            " `Enter` は最終的に :<C-u>call session#load_session()<CR>
+            " が実行されます
+            nmap <buffer> q <Plug>(session-close)
+            nmap <buffer> <CR> <Plug>(session-open)
+        endif
+
+        " セッションファイルを表示する一時バッファのテキストをすべて削除して、取得したファイル一覧をバッファに挿入します
+        %delete _
+        "call setline(1, files)
+        let i = 0
+        while i < len(files)
+            let item = files[i]
+            call setline(i+1, item)
+            let i = i + 1
+        endwhile
+    endfunction
+    command! GetTOC :call s:get_toc_sessions()
+    " }}}
+
+    " reload init.vim
+    command! ReloadInitVim :so $MYVIMRC
+
+    " ファイル名表示
+    command! FileName :echo expand("%:t")
+
+    " ファイルパス表示
+    command! FilePath :echo expand("%:p")
+
+    " a note using floating window {{{
+    function! s:m_math_glossary()
+        let buf = nvim_create_buf(v:false, v:true)
+        call nvim_buf_set_lines(buf, 0, 0, v:true, [
+                    \ '⊆ \mathbb{R}',
+                    \ 'ℝ \mathbb{z}',
+                    \ 'ℕ \mathbb{n}',
+                    \ '⊂ \subset',
+                    \ '⊆ \subseteq',
+                    \ '⊃ \supset',
+                    \ '∈ \in',
+                    \ '∩ \cap',
+                    \ '∪ \cup',
+                    \ '∣ \mid',
+                    \ '∉ \notin',
+                    \ '= \eq',
+                    \ '≠ \neq',
+                    \ '∼ \sim',
+                    \ '≃ \simeq',
+                    \ '≈ \approx',
+                    \ '≒ \fallingdotseq',
+                    \ '≓ \risingdotseq',
+                    \ '≡ \equiv',
+                    \ '≥ \geq',
+                    \ '≧ \geqq',
+                    \ '≤ \leq',
+                    \ '≦ \leqq',
+                    \ '≫ \gg',
+                    \ '≪ \ll',
+                    \ '⊕ \oplus',
+                    \ '⋅ \cdot',
+                    \ '∑ \sum',
+                    \ '∏ \prod',
+                    \ '∫ \int',
+                    \ '∀ \forall',
+                    \ '∃ \exists',
+                    \ '← \leftarrow',
+                    \ '→ \rightarrow',
+                    \ '⇐ \Leftarrow',
+                    \ '⇒ \Rightarrow',
+                    \ '⇔ \Leftrightarrow',
+                    \ 'θ \theta',
+                    \ 'ϕ \phi',
+                    \ 'ψ \psi',
+                    \ 'Ω \Omega',
+                    \ '∂ \partial',
+                    \ 'ξ \xi',
+                    \ '∙ \bullet',
+                    \ '1文字分のスペース \quad',
+                    \ '2文字分のスペース \qquad'
+                    \ ])
+        let opts = {'relative': 'cursor', 'width': 30, 'height': 15, 'col': 0,
+                    \ 'row': 1, 'anchor': 'NW', 'style': 'minimal'}
+        let win = nvim_open_win(buf, 1, opts)
+        " optional: change highlight, otherwise Pmenu is used
+        call nvim_win_set_option(win, 'winhl', 'Normal:MMathGlossary')
+    endfunction
+
+    command! MathGlossary :call s:m_math_glossary()
+    " }}}
 
     " color scheme
     nnoremap [,]c :<c-u>Unite colorscheme -auto-preview<cr>
@@ -179,7 +336,53 @@ scriptencoding utf-8
     " This command has a lot of side effects.
 
     " Remove trailing whitespace
-    command RemoveTrailingWhitespace :%s/\s\+$//ge
+    command! RemoveTrailingWhitespace :%s/\s\+$//ge
+
+    " Replace tab with space
+    command! ReplaceTabWithSpace :%s/\t/ /g
+" }}}
+
+" Shell Command execution {{{
+   " Compile Latex
+   function! s:compile_latex()
+       if expand("%") == 'lua_my.tex'
+           function! s:OnEvent(job_id, data, event) dict
+               if a:event == 'stdout'
+                   let str = self.shell.' stdout: '.join(a:data)
+               elseif a:event == 'stderr'
+                   let str = self.shell.' stderr: '.join(a:data)
+               else
+                   let str = self.shell.' exited'
+               endif
+           endfunction
+           let s:callbacks = {
+                       \ 'on_stdout': function('s:OnEvent'),
+                       \ 'on_stderr': function('s:OnEvent'),
+                       \ 'on_exit': function('s:OnEvent')
+                       \ }
+           let s:job1 = jobstart(['zsh', '-c', 'lualatex ' . expand('%:r')], extend({'shell': 'shell 1'}, s:callbacks))
+       endif
+   endfunction
+
+   command! CompileLatex call s:compile_latex()
+
+     "function! s:reload_ctags()
+     "    if expand('%:e') == 'rs'
+     "        let fe =  system('ctags', '-R')
+     "        if v:shell_error != 0
+     "            echo fe
+     "        endif
+     "    else
+     "        echo expand('%:e')
+     "        echo 'Error: 拡張子が`rs`でないのでコンパイルできません.'
+     "    endif
+     "endfunction
+
+     augroup FlowWriteFile
+         au!
+         autocmd BufWritePost *.tex :call s:compile_latex()
+         "autocmd BufWritePost *.rs :call s:reload_ctags()
+     augroup END
 " }}}
 
 " mac only!!!!!!!!!!!!!! {{{
