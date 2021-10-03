@@ -37,7 +37,7 @@ scriptencoding utf-8
     " }}}
 
     " Default color scheme {{{
-    let g:my_color = 'OceanicNext'
+    let g:my_color = 'purify'
 
     "colo industry
     "colo Tomorrow              " 明るいところ、逆光で見やすい

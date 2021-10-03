@@ -209,6 +209,7 @@ scriptencoding utf-8
                     \ '≪ \ll',
                     \ '⊕ \oplus',
                     \ '⋅ \cdot',
+                    \ '⊥ \bot',
                     \ '∑ \sum',
                     \ '∏ \prod',
                     \ '∫ \int',
@@ -225,6 +226,8 @@ scriptencoding utf-8
                     \ 'Ω \Omega',
                     \ '∂ \partial',
                     \ 'ξ \xi',
+                    \ 'δ \delta',
+                    \ 'γ \gamma',
                     \ '∙ \bullet',
                     \ '1文字分のスペース \quad',
                     \ '2文字分のスペース \qquad'
@@ -345,12 +348,13 @@ scriptencoding utf-8
 " Shell Command execution {{{
    " Compile Latex
    function! s:compile_latex()
-       if expand("%") == 'lua_my.tex'
+       if expand("%") == 'l02.tex'
            function! s:OnEvent(job_id, data, event) dict
                if a:event == 'stdout'
                    let str = self.shell.' stdout: '.join(a:data)
                elseif a:event == 'stderr'
                    let str = self.shell.' stderr: '.join(a:data)
+                   echo str
                else
                    let str = self.shell.' exited'
                endif

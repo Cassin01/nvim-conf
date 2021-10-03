@@ -5,9 +5,9 @@ scriptencoding utf-8
     inoremap <silent><C-k> <up>
     inoremap <silent><C-l> <down>
     " 括弧補完 {{{
-        "inoremap () ()<left>
-        "inoremap {} {}<left>
-        "inoremap [] []<left>
+        inoremap () ()<left>
+        inoremap {} {}<left>
+        inoremap [] []<left>
 
         " 例外処理: の後に続けて)を押したとき
         " inoremap <expr> )  strpart(getline('.'), col('.')-1, 1) == ")" ? "\<Right>" : ")"
@@ -21,36 +21,36 @@ scriptencoding utf-8
     " }}}
 
     " Language FIXME: colorの方で呼ばれるので呼ばれない {{{
-        augroup FlowWriteFile
-            autocmd BufWrite *    :call s:w_set_default()
-            autocmd BufWrite *.md :call s:w_set_markdown()
-        augroup END
+        " augroup FlowWriteFile
+        "     autocmd BufWrite *    :call s:w_set_default()
+        "     autocmd BufWrite *.md :call s:w_set_markdown()
+        " augroup END
 
-        function! s:w_set_default()
-            " if exists(':CocDisable')
-            "     CocDisable
-            " else
-            "     echom 'Err: CocDisable is not exists (at othermap.init.vim)'
-            " endif
+        " function! s:w_set_default()
+        "     " if exists(':CocDisable')
+        "     "     CocDisable
+        "     " else
+        "     "     echom 'Err: CocDisable is not exists (at othermap.init.vim)'
+        "     " endif
 
-            if exists('g:auto_save')
-                let g:auto_save = 0
-            else
-                echom 'g:auto_save is not exists (at othermap.init.vim)'
-            endif
-        endfunction
+        "     if exists('g:auto_save')
+        "         let g:auto_save = 0
+        "     else
+        "         echom 'g:auto_save is not exists (at othermap.init.vim)'
+        "     endif
+        " endfunction
 
-        function! s:w_set_markdown()
-            if exists('g:auto_save')
-                let g:auto_save = 1
-            else
-                echom 'g:auto_save is not exists (at othermap.init.vim)'
-            endif
+        " function! s:w_set_markdown()
+        "     if exists('g:auto_save')
+        "         let g:auto_save = 1
+        "     else
+        "         echom 'g:auto_save is not exists (at othermap.init.vim)'
+        "     endif
 
-            if &conceallevel != 0
-                setlocal conceallevel=0
-            endif
-        endfunction
+        "     if &conceallevel != 0
+        "         setlocal conceallevel=0
+        "     endif
+        " endfunction
 
 
         augroup FolowFile
@@ -67,15 +67,15 @@ scriptencoding utf-8
             au BufRead,BufNewFile *.lisp :call s:set_lisp()
             au BufRead,BufNewFile *.ros  :call s:set_ros()
             au BufRead,BufNewFile *.md   :call s:set_markdown()
-            au BufRead,BufNewFile *.dart :call s:indent()
-            au BufRead,BufNewFile *.go   :call s:indent()
-            au BufRead,BufNewFile *.css  :call s:indent()
-            au BufRead,BufNewFile *.js   :call s:indent()
-            au BufRead,BufNewFile *.ts   :call s:indent()
-            au BufRead,BufNewFile *.php  :call s:indent()
-            au BufRead,BufNewFile *.html :call s:indent()
-            au BufRead,BufNewFile *.java :call s:indent()
-            au BufRead,BufNewFile *.bib  :call s:indent()
+            "au BufRead,BufNewFile *.dart :call s:indent()
+            "au BufRead,BufNewFile *.go   :call s:indent()
+            "au BufRead,BufNewFile *.css  :call s:indent()
+            "au BufRead,BufNewFile *.js   :call s:indent()
+            "au BufRead,BufNewFile *.ts   :call s:indent()
+            "au BufRead,BufNewFile *.php  :call s:indent()
+            "au BufRead,BufNewFile *.html :call s:indent()
+            "au BufRead,BufNewFile *.java :call s:indent()
+            "au BufRead,BufNewFile *.bib  :call s:indent()
         augroup END
 
         function! s:set_default()
@@ -83,14 +83,14 @@ scriptencoding utf-8
 
         function! s:set_c_cpp()
             setlocal commentstring=//\ %s
-            call s:indent()
+            "call s:indent()
             call s:comment()
             setlocal foldmethod=indent
         endfunction
 
         function! s:set_rs()
             setlocal commentstring=//\ %s
-            call s:indent()
+            "call s:indent()
             call s:comment()
             setlocal foldmethod=indent
         endfunction
@@ -123,12 +123,13 @@ scriptencoding utf-8
         function! s:set_markdown()
             inoremap $<enter> $$$$<left><left><cr><cr><up>
             inoremap $$       $$<left>
+            set nofoldenable    " disable folding
         endfunction
 
 
-        function! s:indent()
-           " inoremap {<enter> {}<left><cr><cr><up><tab>
-        endfunction
+        "function! s:indent()
+        "    inoremap {<enter> {}<left><cr><cr><up><tab>
+        "endfunction
 
         function! s:comment()
             inoremap /* <kDivide><kMultiply><space>

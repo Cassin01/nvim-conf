@@ -21,13 +21,71 @@ Plug 'rbgrouleff/bclose.vim'
 "Plug 'Yggdroot/indentLine'
 Plug 'nathanaelkane/vim-indent-guides'
 
-" colorlise status line {{{
+": colorlise status line {{{
+": SpaceLine {{{
+    Plug 'glepnir/spaceline.vim'
+    let g:spaceline_colorscheme = 'space'
+    let g:spaceline_seperate_style = 'curve'
+
+    " Goyo
+    " ----
+    " s:goyo_enter() "{{{
+    " Disable visual candy in Goyo mode
+    function! s:goyo_enter()
+        if has('gui_running')
+            " Gui fullscreen
+            set fullscreen
+            set background=light
+            set linespace=7
+        elseif exists('$TMUX')
+            " Hide tmux status
+            silent !tmux set status off
+        endif
+        " Activate Limelight
+        let g:loaded_spaceline=0
+        Limelight
+    endfunction
+    " }}}
+    " s:goyo_leave() "{{{
+    " Enable visuals when leaving Goyo mode
+    function! s:goyo_leave()
+        if has('gui_running')
+            " Gui exit fullscreen
+            set nofullscreen
+            set background=dark
+            set linespace=0
+        elseif exists('$TMUX')
+            " Show tmux status
+            silent !tmux set status on
+        endif
+        " De-activate Limelight
+        let g:loaded_spaceline =1
+        Limelight!
+    endfunction
+    " }}}
+    " Goyo Commands {{{
+    augroup user_plugin_goyo
+        autocmd!
+        autocmd! User GoyoEnter
+        autocmd! User GoyoLeave
+        autocmd  User GoyoEnter nested call <SID>goyo_enter()
+        autocmd  User GoyoLeave nested call <SID>goyo_leave()
+    augroup END
+    " }}}
+": }}}
+
+": LightLine
 " Plug 'itchyny/lightline.vim'
+
+": NeoLine
 " Plug 'Cassin01/neoline.vim'
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
-Plug 'enricobacis/vim-airline-clock'    " vim-airline clock extension
-" }}}
+
+": AirLine {{{
+" Plug 'vim-airline/vim-airline'
+" Plug 'vim-airline/vim-airline-themes'
+" Plug 'enricobacis/vim-airline-clock'    " vim-airline clock extension
+": }}}
+": }}}
 
 " syntastic
 Plug 'vim-syntastic/syntastic'
@@ -77,6 +135,9 @@ Plug 'dart-lang/dart-vim-plugin'
 Plug 'othree/yajs.vim' "syntax highlight
 Plug 'ternjs/tern_for_vim' "auto completion
 Plug 'pangloss/vim-javascript' "indentation and syntax support
+
+" processing-java
+Plug 'sophacles/vim-processing'
 
 " swift
 Plug 'keith/swift.vim'
@@ -211,16 +272,16 @@ Plug '/usr/local/opt/fzf'
 " snippets && vim-lsp
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
-Plug 'prabirshrestha/async.vim'           "vim-lsp
-Plug 'prabirshrestha/vim-lsp'             "vim-lsp
-" After vim-lsp, etc
-Plug 'ryanolsonx/vim-lsp-python'          "python
-
-"Plug 'autozimu/LanguageClient-neovim'     " lsp support
-Plug 'autozimu/LanguageClient-neovim', {
-    \ 'branch': 'next',
-    \ 'do': './install.sh'
-    \ }
+"Plug 'prabirshrestha/async.vim'           "vim-lsp
+"Plug 'prabirshrestha/vim-lsp'             "vim-lsp
+"" After vim-lsp, etc
+"Plug 'ryanolsonx/vim-lsp-python'          "python
+"
+""Plug 'autozimu/LanguageClient-neovim'     " lsp support
+"Plug 'autozimu/LanguageClient-neovim', {
+"    \ 'branch': 'next',
+"    \ 'do': './install.sh'
+"    \ }
 
 " multiple cursors
 Plug 'terryma/vim-multiple-cursors'
