@@ -179,72 +179,26 @@ scriptencoding utf-8
     command! FilePath :echo expand("%:p")
 
     " a note using floating window {{{
+    function! s:tttt20()
+        let ctext =  "\\" . split(getline('.'), ',')[0]
+        execute  "quit"
+        execute "normal! a" . ctext . "\<Esc>"
+    endfunction
     function! s:m_math_glossary()
         let buf = nvim_create_buf(v:false, v:true)
-        call nvim_buf_set_lines(buf, 0, 0, v:true, map(readfile('latex_commands.csv'), {_, a->substitute(a, '"', '', 'g')}) ) 
-        
-        "call nvim_buf_set_lines(buf, 0, 0, v:true, [
-        "            \ '⊆ \mathbb{R}',
-        "            \ 'ℝ \mathbb{z}',
-        "            \ 'ℕ \mathbb{n}',
-        "            \ '⊂ \subset',
-        "            \ '⊆ \subseteq',
-        "            \ '⊃ \supset',
-        "            \ '∈ \in',
-        "            \ '∩ \cap',
-        "            \ '∪ \cup',
-        "            \ '∣ \mid',
-        "            \ '∉ \notin',
-        "            \ '= \eq',
-        "            \ '≠ \neq',
-        "            \ '∼ \sim',
-        "            \ '≃ \simeq',
-        "            \ '≈ \approx',
-        "            \ '≒ \fallingdotseq',
-        "            \ '≓ \risingdotseq',
-        "            \ '≡ \equiv',
-        "            \ '≥ \geq',
-        "            \ '≧ \geqq',
-        "            \ '≤ \leq',
-        "            \ '≦ \leqq',
-        "            \ '≫ \gg',
-        "            \ '≪ \ll',
-        "            \ '⊕ \oplus',
-        "            \ '⋅ \cdot',
-        "            \ '⊥ \bot',
-        "            \ '∑ \sum',
-        "            \ '∏ \prod',
-        "            \ '∫ \int',
-        "            \ '∀ \forall',
-        "            \ '∃ \exists',
-        "            \ '← \leftarrow',
-        "            \ '→ \rightarrow',
-        "            \ '⇐ \Leftarrow',
-        "            \ '⇒ \Rightarrow',
-        "            \ '⇔ \Leftrightarrow',
-        "            \ 'θ \theta',
-        "            \ 'ϕ \phi',
-        "            \ 'ψ \psi',
-        "            \ 'Ω \Omega',
-        "            \ '∂ \partial',
-        "            \ 'ξ \xi',
-        "            \ 'δ \delta',
-        "            \ 'γ \gamma',
-        "            \ '∙ \bullet',
-        "            \ '1文字分のスペース \quad',
-        "            \ '2文字分のスペース \qquad',
-        "            \ '太字(ベクトル等) \mathbf',
-        "            \ '筆記体 \mathcal',
-        "            \ '黒板太字(集合) \mathbb'
-        "            \ ])
+        call nvim_buf_set_lines(buf, 0, 0, v:true, map(readfile(glob('~/.config/nvim/init/main/latex_commands.csv')), {_, a->substitute(a, '"', '', 'g')}) ) 
         let opts = {'relative': 'cursor', 'width': 30, 'height': 15, 'col': 0,
                     \ 'row': 1, 'anchor': 'NW', 'style': 'minimal'}
         let win = nvim_open_win(buf, 1, opts)
         " optional: change highlight, otherwise Pmenu is used
         call nvim_win_set_option(win, 'winhl', 'Normal:MMathGlossary')
+
+        command! TCommands call s:tttt20()
+        nnoremap <buffer> <silent> [,]t :TCommands<CR>
     endfunction
 
-    command! MathGlossary :call s:m_math_glossary()
+    command! TexCommands :call s:m_math_glossary()
+    nnoremap <silent> [,]t :TexCommands<CR>
     " }}}
 
     " color scheme
