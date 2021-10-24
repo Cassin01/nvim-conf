@@ -198,9 +198,12 @@ nnoremap [,]kkk :Conv30<CR>
     " }}}
 
     " a note using floating window {{{
+    "TODO:タブでカーソル移動できるようにする．
     function! s:parser10(txt) " 作りかけ
         return s:retf10(a:txt, "")
     endfunction
+
+    " reft10(iter:入力値, ret:返り値)
     function! s:retf10(iter, ret)
         if strlen(a:iter) == 0
             return a:ret
@@ -215,7 +218,7 @@ nnoremap [,]kkk :Conv30<CR>
                 endif
             endfor
             if matchstr(join(l:buf, ''), '\$\\{[0-9]+:.+\\}') >= 0
-                return s:retf10(a:iter[len(l:buf):], a:ret . ' ')
+                return s:retf10(a:iter[len(l:buf):], a:ret)
             endif
         endif
         return s:retf10(a:iter[1:], a:ret . l:element)
