@@ -334,5 +334,26 @@ snippet equation "方程式 equation"
 \end{equation}
 endsnippet
 
+snippet base "基底 base"
+$\\{ {\mathbf b}_0, \ldots, {\mathbf b}_{n-1} \\}$
+endsnippet
+
+snippet mathbf "太字(ベクトル等)"
+{\mathbf $1}$0
+endsnippet
+
+snippet mathbb "黒板太字 集合"
+{\mathbb $1}$0
+endsnippet
+
+snippet algorithm "アルゴリズム"
+\begin{algorithm}[H]
+\SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
+% \SetAlgoLined % vlinedのときは使えない
+\DontPrintSemicolon
+$1
+\caption{Extreme Pruning \label{alg:ecdsa_generate_key}}
+\end{algorithm}
+endsnippet
 
 # vim:ft=snippets:
