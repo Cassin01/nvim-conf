@@ -178,9 +178,50 @@ scriptencoding utf-8
     " ファイルパス表示
     command! FilePath :echo expand("%:p")
 
+    " python呼び出しの練習に使用(使ってない) {{{
+let s:script_dir = fnamemodify(resolve(expand('<sfile>', ':p')), ':h')
+function! s:Convert30()
+py3 << EOF
+import vim
+script_dir = vim.eval('s:script_dir')
+sys.path.insert(0, script_dir)
+import parser0
+def convert():
+    out = parser0.convert2(vim.current.line)
+    vim.current.line = out
+convert()
+EOF
+endfunction
+
+com! Conv30 call s:Convert30()
+nnoremap [,]kkk :Conv30<CR>
+    " }}}
+
     " a note using floating window {{{
-    function! s:tttt20()
-        let ctext =  "\\" . split(getline('.'), ',')[0]
+    function! s:parser10(txt) " 作りかけ
+        return s:retf10(a:txt, "")
+    endfunction
+    function! s:retf10(iter, ret)
+        if strlen(a:iter) == 0
+            return a:ret
+        endif
+        let l:element = a:iter[0]
+        if l:element == '$'
+            let l:buf = []
+            for l:e in split(a:iter, '\zs')
+                let l:buf = add(l:buf, l:e)
+                if l:e == '}'
+                    break
+                endif
+            endfor
+            if matchstr(join(l:buf, ''), '\$\\{[0-9]+:.+\\}') >= 0
+                return s:retf10(a:iter[len(l:buf):], a:ret . ' ')
+            endif
+        endif
+        return s:retf10(a:iter[1:], a:ret . l:element)
+    endfunction
+    function! s:t20_exit_buf()
+        let ctext =  "\\" . s:parser10(split(getline('.'), ',')[0])
         execute  "quit"
         execute "normal! a" . ctext . "\<Esc>"
     endfunction
@@ -193,7 +234,7 @@ scriptencoding utf-8
         " optional: change highlight, otherwise Pmenu is used
         call nvim_win_set_option(win, 'winhl', 'Normal:MMathGlossary')
 
-        command! TCommands call s:tttt20()
+        command! TCommands call s:t20_exit_buf()
         nnoremap <buffer> <silent> [,]t :TCommands<CR>
     endfunction
 
