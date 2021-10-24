@@ -1,4 +1,4 @@
-# ReiwaVimConfiguration
+# My neovim configuration
 
 # Features
 
