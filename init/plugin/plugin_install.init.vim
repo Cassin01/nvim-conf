@@ -119,6 +119,13 @@ Plug 'numirias/semshi', {'do': ':UpdateRemotePlugins'} " Semantic Highlighting f
 " c++
 Plug 'octol/vim-cpp-enhanced-highlight' " syntax highlight
 Plug 'justmao945/vim-clang'             " completion
+Plug 'rhysd/vim-clang-format'
+let g:clang_format#style_options = {
+            \ "AccessModifierOffset" : -4,
+            \ "AllowShortIfStatementsOnASingleLine" : "true",
+            \ "AlwaysBreakTemplateDeclarations" : "true",
+            \ "Standard" : "C++11",
+            \ "BreakBeforeBraces" : "Stroustrup"}
 
 " Ruby
 Plug 'vim-ruby/vim-ruby'
@@ -259,12 +266,6 @@ Plug 'scrooloose/nerdtree'
 
 " Change current directory.
 nnoremap <silent> <Space>cd :<C-u>CD<CR>
-
-" Pythons path {{{
-    let g:python2_host_prog = '/usr/local/bin/python'
-    let g:python3_host_prog = '/usr/local/bin/python3'
-" }}}
-
 
 " fzf completion
 Plug '/usr/local/opt/fzf'

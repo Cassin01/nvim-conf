@@ -1,5 +1,10 @@
 scriptencoding utf-8
 
+" Pythons path {{{
+    let g:python2_host_prog = '/usr/local/bin/python'
+    let g:python3_host_prog = '/usr/local/bin/python3'
+" }}}
+
 " Initialization {{{
     set fenc=utf-8
     set nobackup
