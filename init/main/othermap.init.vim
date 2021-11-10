@@ -127,7 +127,8 @@ scriptencoding utf-8
 
         function! s:set_texlike_math()
             inoremap $<enter> $$$$<left><left><cr><cr><up>
-            inoremap $$       $$<left>
+            "inoremap $$       $$<left>
+            inoremap $$       $<space><space>$<left><left>
         endfunction
 
 
