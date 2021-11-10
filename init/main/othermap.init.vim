@@ -107,7 +107,7 @@ scriptencoding utf-8
         function! s:set_tex()
             "tex ギリシャ文字可視化無効
             let g:tex_conceal = ''
-            inoremap $$  $$<left>
+            call s:set_texlike_math()
         endfunction
 
         function! s:set_haskell()
@@ -121,9 +121,13 @@ scriptencoding utf-8
         endfunction
 
         function! s:set_markdown()
+            set nofoldenable    " disable folding
+            call s:set_texlike_math()
+        endfunction
+
+        function! s:set_texlike_math()
             inoremap $<enter> $$$$<left><left><cr><cr><up>
             inoremap $$       $$<left>
-            set nofoldenable    " disable folding
         endfunction
 
 
