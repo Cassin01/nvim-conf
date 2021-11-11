@@ -8,6 +8,8 @@ scriptencoding utf-8
     " nnoremap mm m
     " nmap m [m]
     " ```
+    " と記述していた．
+    " また，
     " which-keyを
     " ``nnoremap <silent> m :<c-u>WhichKey '[m]'<CR>[]``
     " と記述していた.
@@ -25,7 +27,6 @@ scriptencoding utf-8
     nnoremap <silent> <SID>(m)<Space> :<C-u>echo '誤爆防止'<CR>
     nnoremap <silent> <SID>(m), :<C-u>echom '誤爆防止'<CR>
     nnoremap <silent> <SID>(m); :<C-u>echom '誤爆防止'<CR>
-    nnoremap <silent> <SID>(m)s :<C-u>echom '誤爆防止'<CR>
     " }}}
     " }}}
 
@@ -94,7 +95,8 @@ scriptencoding utf-8
 
     " 移動
     nnoremap H ^
-    nnoremap L g_
+    nnoremap L $
+"    nnoremap L g_
 
     " 読み込み
     nnoremap ms :<C-u>source %<cr>

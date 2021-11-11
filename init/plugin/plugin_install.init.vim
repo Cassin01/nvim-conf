@@ -428,9 +428,9 @@ Plug 'liuchengxu/vim-which-key', { 'on': ['WhichKey', 'WhichKey!'] }
 nnoremap <silent> <leader>      :<c-u>WhichKey '<leader>'<CR>
 nnoremap <silent> <localleader> :<c-u>WhichKey  '<localleader>'<CR>
 nnoremap <silent> m :<c-u>WhichKey 'm'<CR>
-nnoremap <silent> [s] :<c-u>WhichKey '[s]'<CR>
-nnoremap <silent> [,] :<c-u>WhichKey '[,]'<CR>
-nnoremap <silent> [,] :<c-u>WhichKey '[;]'<CR>
+nnoremap <silent> [s] :<c-u>WhichKey '[s]'<CR>[]
+nnoremap <silent> [,] :<c-u>WhichKey '[,]'<CR>[]
+nnoremap <silent> [,] :<c-u>WhichKey '[;]'<CR>[]
 nnoremap <silent> <space> :<c-u>WhichKey '<space>'<CR>
 " }}}
 
