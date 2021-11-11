@@ -298,9 +298,9 @@ nnoremap <silent> <Space>cd :<C-u>CD<CR>
 
 " fzf completion
 Plug '/usr/local/opt/fzf'
-nnoremap [m]ff :<c-u>FZF<space>
-nnoremap [m]fr :<c-u>FZF<space>~/<cr>
-nnoremap [m]fc :<c-u>FZF<space>./<cr>
+nnoremap mff :<c-u>FZF<space>
+nnoremap mfr :<c-u>FZF<space>~/<cr>
+nnoremap mfc :<c-u>FZF<space>./<cr>
 
 " snippets && vim-lsp
 Plug 'SirVer/ultisnips'
@@ -321,9 +321,9 @@ Plug 'terryma/vim-multiple-cursors'
 
 " git " {{{
 Plug 'tpope/vim-fugitive'
-nnoremap [m]gg :<c-u>Git<CR>
-nnoremap [m]gc :<c-u>Git commit<CR>
-nnoremap [m]gp :<c-u>Git push<CR>
+nnoremap mgg :<c-u>Git<CR>
+nnoremap mgc :<c-u>Git commit<CR>
+nnoremap mgp :<c-u>Git push<CR>
 " }}}
 
 " shows a git diff in the gutter (sign column) and stages/undoes (partial) hunks.
@@ -373,7 +373,7 @@ Plug 'amix/vim-zenroom2' "A Vim extension that emulates iA Writer environment wh
 
 " vim motion on speed! {{{
 Plug 'easymotion/vim-easymotion'
-map [s]<space> <Plug>(easymotion-prefix)
+nnoremap <leader>k <Plug>(easymotion-prefix)
 " }}}
 
 " Jump to any visible line in the buffer by using letters instead of numbers. {{{
@@ -397,7 +397,6 @@ xmap ga <Plug>(EasyAlign)
 " Start interactive EasyAlign for a motion/text object (e.g. gaip)
 nmap ga <Plug>(EasyAlign)
 " }}}
-
 
 " icon {{{
 Plug 'ryanoasis/vim-devicons'
@@ -428,11 +427,11 @@ Plug 'Jorengarenar/vim-MvVis'
 Plug 'liuchengxu/vim-which-key', { 'on': ['WhichKey', 'WhichKey!'] }
 nnoremap <silent> <leader>      :<c-u>WhichKey '<leader>'<CR>
 nnoremap <silent> <localleader> :<c-u>WhichKey  '<localleader>'<CR>
-nnoremap <silent> [m] :<c-u>WhichKey  '[m]'<CR>[]
-nnoremap <silent> [s] :<c-u>WhichKey  '[s]'<CR>[]
-nnoremap <silent> [,] :<c-u>WhichKey  '[,]'<CR>[]
-nnoremap <silent> [,] :<c-u>WhichKey  '[;]'<CR>[]
-nnoremap <silent> <space> :<c-u>WhichKey  '<space>'<CR>
+nnoremap <silent> m :<c-u>WhichKey 'm'<CR>
+nnoremap <silent> [s] :<c-u>WhichKey '[s]'<CR>
+nnoremap <silent> [,] :<c-u>WhichKey '[,]'<CR>
+nnoremap <silent> [,] :<c-u>WhichKey '[;]'<CR>
+nnoremap <silent> <space> :<c-u>WhichKey '<space>'<CR>
 " }}}
 
 "  complementary pairs of mappings. -> ] or [

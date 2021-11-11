@@ -1,9 +1,34 @@
 scriptencoding utf-8
 
 " Initialization {{{
-    nnoremap [m] <Nop>
-    nnoremap mm m
-    nmap m [m]
+    " TODO {{{
+    " プレフィックスを
+    " ```
+    " nnoremap [m] <Nop>
+    " nnoremap mm m
+    " nmap m [m]
+    " ```
+    " which-keyを
+    " ``nnoremap <silent> m :<c-u>WhichKey '[m]'<CR>[]``
+    " と記述していた.
+    "
+    " vim-texで``[m``というコマンドがあり，これがwhich-keyと相性が良くなかった.
+    " 従って以下の方法で書く
+    " https://thinca.hatenablog.com/entry/q-as-prefix-key-in-vim
+
+    " m単体のキーがあった場合に停止する.
+    nnoremap <script> <expr> m reg_recording() is# '' ? '<SID>(m)' : 'm' 
+
+    " 他のプレフィックスとの誤爆防止 {{{
+    nnoremap <silent> <SID>(m) m
+    nnoremap <silent> <SID>(m)m :<C-u>echom '誤爆防止'<CR>
+    nnoremap <silent> <SID>(m)<Space> :<C-u>echo '誤爆防止'<CR>
+    nnoremap <silent> <SID>(m), :<C-u>echom '誤爆防止'<CR>
+    nnoremap <silent> <SID>(m); :<C-u>echom '誤爆防止'<CR>
+    nnoremap <silent> <SID>(m)s :<C-u>echom '誤爆防止'<CR>
+    " }}}
+    " }}}
+
 
     nnoremap [,] <Nop>
     nnoremap ,, ,
@@ -36,7 +61,7 @@ scriptencoding utf-8
     nnoremap [;]t :<C-u>terminal<cr>
 
     " 開いているファイルのカレントディレクトリを開く
-    nnoremap [m]t :sp<cr>:edit %:h<tab><cr>
+    nnoremap mt :sp<cr>:edit %:h<tab><cr>
 
     " カーソル下の単語をハイライトする
     nnoremap <silent> <Space><Space> "zyiw:let @/ = '\<' . @z . '\>'<CR>:set hlsearch<CR>
@@ -72,7 +97,7 @@ scriptencoding utf-8
     nnoremap L g_
 
     " 読み込み
-    nnoremap [m]s :<C-u>source %<cr>
+    nnoremap ms :<C-u>source %<cr>
 
     " マーク
     nnoremap <silent> <leader>hh :execute 'match  InterestingWord1 /\<<c-r><c-w>\>/'<cr>
@@ -81,7 +106,7 @@ scriptencoding utf-8
     nnoremap <silent> <leader>h3 :execute '3match InterestingWord3 /\<<c-r><c-w>\>/'<cr>
 
     " open file
-    nnoremap [m]v :vi<space>
+    nnoremap mv :vi<space>
 
     " markdownの目次取得 {{{
     function! s:get_toc() abort
