@@ -12,33 +12,8 @@ scriptencoding utf-8
     autocmd VimEnter,Colorscheme * :hi IndentGuidesEven  ctermbg=237
 " }}}
 
-" indentLine {{{
-    let g:indentLine_enabled = 1 " disable by default
-    let g:indentLine_char = '⎸'
-" }}}
-
-" elzr/vim-json {{{
-    let g:vim_json_syntax_conceal=0
-" }}}
-
 " fugitive.vim  {{{
     "set statusline+=%{FugitiveStatusline()}
-" }}}
-
-" syntasic {{{
-    set statusline+=%#warningmsg#
-    set statusline+=%{SyntasticStatuslineFlag()}
-    set statusline+=%*
-    let g:syntastic_always_populate_loc_list = 1
-    let g:syntastic_auto_loc_list = 1
-    let g:syntastic_check_on_open = 1
-    let g:syntastic_check_on_wq = 0
-    let g:syntastic_mode_map = {
-          \ 'mode': 'passive',
-          \ 'active_filetypes': ['c','cpp']
-          \}
-    let g:syntastic_cpp_compiler = 'clang++'
-    let g:syntastic_cpp_compiler_options = ' -std=c++11 -stdlib=libc++'
 " }}}
 
 " submode start {{{
@@ -98,13 +73,6 @@ scriptencoding utf-8
     let g:airline_symbols.readonly = ''
     let g:airline_symbols.linenr = '☰'
     let g:airline_symbols.maxlinenr = ''
-" }}}
-
-"vim-clang {{{
-    let g:clang_c_options = '-std=gnu11'
-    let g:clang_cpp_options = '-std=c++11 -stdlib=libc++' " c++11 用
-    " disable auto completion for vim-clang
-    let g:clang_auto = 0
 " }}}
 
 "" vim-go {{{
@@ -215,11 +183,6 @@ scriptencoding utf-8
     set completeopt+=menuone "候補が一つでも実行
 " }}}
 
-" calender {{{
-    let g:calendar_google_calendar = 1
-    let g:calendar_google_task = 1
-" }}}
-
 " neosnippet {{{
     " Plugin key-mappings.
     " Note: It must be "imap" and "smap".  It uses <Plug> mappings.
@@ -240,43 +203,4 @@ scriptencoding utf-8
     if has('conceal')
       set conceallevel=2 concealcursor=niv
     endif
-" }}}
-
-" vim-autoformat {{{
-    let g:formatter_yapf_style = 'pep8'
-" }}}
-
-" easymotion/vim-easymotion {{{
-    map <Leader><Leader> <Plug>(easymotion-prefix)
-" }}}
-
-" majutsushi/tagbar {{{
-    nmap <space>t :TagbarToggle<CR>
-    g:tagbar_ctags_bin = /usr/local/opt/universal-ctags
-" }}}
-
-" goyo {{{
-    nnoremap <silent> <leader>z :Goyo<cr>
-" }}}
-
-" EasyAlign {{{
-    " Start interactive EasyAlign in visual mode (e.g. vipga)
-    xmap ga <Plug>(EasyAlign)
-    " Start interactive EasyAlign for a motion/text object (e.g. gaip)
-    nmap ga <Plug>(EasyAlign)
-" }}}
-
-"  vim-devicons {{{
-    set guifont=DroidSansMono_Nerd_Font:h11
-" }}}
-
-" terryma/vim-expand-region {{{
-    vmap v <Plug>(expand_region_expand)
-    vmap <C-v> <Plug>(expand_region_shrink)
-" }}}
-
-" FZF {{{
-    nnoremap [m]ff :<c-u>FZF<space>
-    nnoremap [m]fr :<c-u>FZF<space>~/<cr>
-    nnoremap [m]fc :<c-u>FZF<space>./<cr>
 " }}}

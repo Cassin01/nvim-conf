@@ -1,6 +1,6 @@
 Command, Description
-"mathbb{R}",     "⊆"
-"mathbb{z}",     "ℝ"
+"mathbb{R}",     "ℝ"
+"mathbb{z}",     "ℤ"
 "mathbb{n}",     "ℕ"
 "subset",        "⊂"
 "subseteq",      "⊆"

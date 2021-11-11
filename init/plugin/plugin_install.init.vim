@@ -17,8 +17,11 @@ Plug 'francoiscabrol/ranger.vim'
 Plug 'rbgrouleff/bclose.vim'
 " }}}
 
-" indent guides
-"Plug 'Yggdroot/indentLine'
+" " indent guides {{{
+" Plug 'Yggdroot/indentLine'
+" let g:indentLine_enabled = 1 " disable by default
+" let g:indentLine_char = '⎸'
+" "}}}
 Plug 'nathanaelkane/vim-indent-guides'
 
 ": colorlise status line {{{
@@ -87,14 +90,31 @@ Plug 'nathanaelkane/vim-indent-guides'
 ": }}}
 ": }}}
 
-" syntastic
+" syntastic {{{
 Plug 'vim-syntastic/syntastic'
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+let g:syntastic_mode_map = {
+      \ 'mode': 'passive',
+      \ 'active_filetypes': ['c','cpp']
+      \}
+let g:syntastic_cpp_compiler = 'clang++'
+let g:syntastic_cpp_compiler_options = ' -std=c++11 -stdlib=libc++'
+" }}}
+
 
 " pathogen for syntastic
 Plug 'tpope/vim-pathogen'
 
-" auto format
+" auto format {{{
 Plug 'Chiel92/vim-autoformat'
+let g:formatter_yapf_style = 'pep8'
+" }}}
 
 " haskell {{{
 Plug 'eagletmt/neco-ghc'                " completion
@@ -116,9 +136,14 @@ Plug 'numirias/semshi', {'do': ':UpdateRemotePlugins'} " Semantic Highlighting f
 " Go
 "Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 
-" c++
+" c++ {{{
 Plug 'octol/vim-cpp-enhanced-highlight' " syntax highlight
-Plug 'justmao945/vim-clang'             " completion
+" completion {{{
+Plug 'justmao945/vim-clang'
+let g:clang_c_options = '-std=gnu11'
+let g:clang_cpp_options = '-std=c++11 -stdlib=libc++' " c++11 用
+let g:clang_auto = 0 " disable auto completion for vim-clang
+" }}}
 Plug 'rhysd/vim-clang-format'
 let g:clang_format#style_options = {
             \ "AccessModifierOffset" : -4,
@@ -126,6 +151,7 @@ let g:clang_format#style_options = {
             \ "AlwaysBreakTemplateDeclarations" : "true",
             \ "Standard" : "C++11",
             \ "BreakBeforeBraces" : "Stroustrup"}
+" }}}
 
 " Ruby
 Plug 'vim-ruby/vim-ruby'
@@ -154,7 +180,8 @@ Plug 'jpsim/SourceKitten'
 Plug 'lervag/vimtex'
 let g:vimtex_compiler_latexmk_engines = {'_': '-pdfdvi'}
 let g:vimtex_view_method= 'skim'
-let g:vimtex_quickfix_latexlog = {'default': 0}
+"let g:vimtex_quickfix_latexlog = {'default': 0}
+let g:vimtex_quickfix_igonre_filters = {'default': 0}
 if empty(v:servername) && exists('*remote_startserver')
     call remote_startserver('VIM')
 endif
@@ -163,8 +190,10 @@ endif
 " toml
 Plug 'cespare/vim-toml'
 
-" json
+" json {{{
 Plug 'elzr/vim-json'
+let g:vim_json_syntax_conceal=0
+" }}}
 
 "markdown {{{
     Plug 'godlygeek/tabular'
@@ -257,18 +286,21 @@ Plug 'ujihisa/unite-colorscheme'
     Plug 'relastle/bluewery.vim'              "bluewery"
     Plug 'mhartington/oceanic-next'           "OceanicNext
     Plug 'nightsense/snow'                    "snow
+    Plug 'folke/tokyonight.nvim', { 'branch': 'main' }
 " }}}
 
 " others
 " Nerdtree {{{
 Plug 'scrooloose/nerdtree'
-" {{{
-
 " Change current directory.
 nnoremap <silent> <Space>cd :<C-u>CD<CR>
+" {{{
 
 " fzf completion
 Plug '/usr/local/opt/fzf'
+nnoremap [m]ff :<c-u>FZF<space>
+nnoremap [m]fr :<c-u>FZF<space>~/<cr>
+nnoremap [m]fc :<c-u>FZF<space>./<cr>
 
 " snippets && vim-lsp
 Plug 'SirVer/ultisnips'
@@ -297,8 +329,12 @@ Plug 'tpope/vim-rhubarb' " enable :Gbrowse
 " quoting/parenthesizing made simple
 Plug 'tpope/vim-surround'
 
-" calender
+" calender {{{
 Plug 'itchyny/calendar.vim'
+let g:calendar_google_calendar = 1
+let g:calendar_google_task = 1
+" }}}
+
 
 " shougo completion start
 " if has('nvim')
@@ -328,25 +364,47 @@ Plug 'jceb/vim-orgmode'
 
 " Distraction-free writing in Vim
 Plug 'junegunn/goyo.vim'
+nnoremap <silent> <leader>z :Goyo<cr>
 Plug 'amix/vim-zenroom2' "A Vim extension that emulates iA Writer environment when editing Markdown, reStructuredText or text files
 
-" vim motion on speed!
+" vim motion on speed! {{{
 Plug 'easymotion/vim-easymotion'
+map [s]<space> <Plug>(easymotion-prefix)
+" }}}
 
-" Vim plugin that displays tags in a window,
+" Jump to any visible line in the buffer by using letters instead of numbers. {{{
+Plug 'skamsie/vim-lineletters'
+map <silent>[s]a <Plug>LineLetters
+" }}}
+
+" Vim plugin that displays tags in a window, {{{
 Plug 'majutsushi/tagbar'
+nmap <space>t :TagbarToggle<CR>
+g:tagbar_ctags_bin = /usr/local/opt/universal-ctags
+" }}}
 
 " Comment stuff out.
 Plug 'tpope/vim-commentary'
 
-" 揃える
+" 揃える {{{
 Plug 'junegunn/vim-easy-align'
+" Start interactive EasyAlign in visual mode (e.g. vipga)
+xmap ga <Plug>(EasyAlign)
+" Start interactive EasyAlign for a motion/text object (e.g. gaip)
+nmap ga <Plug>(EasyAlign)
+" }}}
 
-" icon
+
+" icon {{{
 Plug 'ryanoasis/vim-devicons'
+set guifont=DroidSansMono_Nerd_Font:h11
+" }}}
 
-" Visual mode 範囲拡大
+" Visual mode 範囲拡大 {{{
 Plug 'terryma/vim-expand-region'
+vmap v <Plug>(expand_region_expand)
+vmap <C-v> <Plug>(expand_region_shrink)
+" }}}
 
 " rainbow parentheses
 Plug 'luochen1990/rainbow'
@@ -358,6 +416,20 @@ Plug 'thinca/vim-quickrun'
 " f,F,t,T による前方検索
 " nnoremap `f,F,t,T` extention
 Plug 'rhysd/clever-f.vim'
+
+" Move visually selected text
+Plug 'Jorengarenar/vim-MvVis'
+
+" WhichKey :displays available keybindings in popup. {{{
+Plug 'liuchengxu/vim-which-key', { 'on': ['WhichKey', 'WhichKey!'] }
+nnoremap <silent> <leader>      :<c-u>WhichKey '<leader>'<CR>
+nnoremap <silent> <localleader> :<c-u>WhichKey  '<localleader>'<CR>
+nnoremap <silent> [m] :<c-u>WhichKey  '[m]'<CR>[]
+nnoremap <silent> [s] :<c-u>WhichKey  '[s]'<CR>[]
+nnoremap <silent> [,] :<c-u>WhichKey  '[,]'<CR>[]
+nnoremap <silent> [,] :<c-u>WhichKey  '[;]'<CR>[]
+nnoremap <silent> <space> :<c-u>WhichKey  '<space>'<CR>
+" }}}
 
 "  complementary pairs of mappings. -> ] or [
 Plug 'tpope/vim-unimpaired'
@@ -372,7 +444,6 @@ let g:auto_save = 0
 Plug 'xolox/vim-notes'
 Plug 'xolox/vim-misc'
 " }}}
-
 
 " Open URL with your browser {{{
 Plug 'tyru/open-browser.vim'
