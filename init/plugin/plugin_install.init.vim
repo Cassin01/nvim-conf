@@ -319,8 +319,12 @@ Plug 'honza/vim-snippets'
 " multiple cursors
 Plug 'terryma/vim-multiple-cursors'
 
-" git
+" git " {{{
 Plug 'tpope/vim-fugitive'
+nnoremap [m]gg :<c-u>Git<CR>
+nnoremap [m]gc :<c-u>Git commit<CR>
+nnoremap [m]gp :<c-u>Git push<CR>
+" }}}
 
 " shows a git diff in the gutter (sign column) and stages/undoes (partial) hunks.
 Plug 'airblade/vim-gitgutter'
