@@ -129,6 +129,8 @@ syntax on
         " Color scheme extension " purify {{{
             function! s:purify()
                 let g:airline_theme='purify'
+                " hi CursorLine gui=none guibg=#181c27
+                hi CursorLine gui=none guibg=#242a3b
             endfunction
         " }}}
 

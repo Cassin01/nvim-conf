@@ -22,7 +22,19 @@ Plug 'rbgrouleff/bclose.vim'
 " let g:indentLine_enabled = 1 " disable by default
 " let g:indentLine_char = '⎸'
 " "}}}
+" indent-guides {{{
 Plug 'nathanaelkane/vim-indent-guides'
+    let g:indent_guides_enable_on_vim_startup=1 " enable indent-guides
+    let g:indent_guides_start_level=1
+    hi IndentGuidesOdd  ctermbg=239
+    hi IndentGuidesEven ctermbg=242
+    "let g:indent_guides_auto_colors=0 " enable auto colors
+    let g:indent_guides_guide_size=1 " width of identifier
+    let g:indent_guides_exclude_filetypes = ['help', 'nerdtree']
+    autocmd VimEnter,Colorscheme * :hi IndentGuidesOdd   ctermbg=237
+    autocmd VimEnter,Colorscheme * :hi IndentGuidesEven  ctermbg=237
+
+" }}}
 
 ": colorlise status line {{{
 ": SpaceLine {{{
@@ -77,8 +89,12 @@ Plug 'nathanaelkane/vim-indent-guides'
     " }}}
 ": }}}
 
-": LightLine
+": LightLine {{{
 " Plug 'itchyny/lightline.vim'
+" let g:lightline = {
+"      \ 'colorscheme': 'onedark',
+"      \ }
+" }}}
 
 ": NeoLine
 " Plug 'Cassin01/neoline.vim'
@@ -87,6 +103,44 @@ Plug 'nathanaelkane/vim-indent-guides'
 " Plug 'vim-airline/vim-airline'
 " Plug 'vim-airline/vim-airline-themes'
 " Plug 'enricobacis/vim-airline-clock'    " vim-airline clock extension
+" set laststatus=2
+" let g:airline_powerline_fonts = 1
+" let g:airline#extensions#tabline#enabled = 1
+" let g:airline#extensions#tabline#buffer_idx_mode = 1
+" let g:airline#extensions#whitespace#mixed_indent_algo = 1
+" "let g:airline_theme = 'tomorrow'
+" if !exists('g:airline_symbols')
+"     let g:airline_symbols = {}
+" endif
+" " unicode symbols
+" let g:airline_left_sep = '»'
+" let g:airline_left_sep = '▶'
+" let g:airline_right_sep = '«'
+" let g:airline_right_sep = '◀'
+" let g:airline_symbols.crypt = '🔒'
+" let g:airline_symbols.linenr = '☰'
+" let g:airline_symbols.linenr = '␊'
+" let g:airline_symbols.linenr = '␤'
+" let g:airline_symbols.linenr = '¶'
+" let g:airline_symbols.maxlinenr = ''
+" let g:airline_symbols.maxlinenr = '㏑'
+" let g:airline_symbols.branch = '⎇'
+" let g:airline_symbols.paste = 'ρ'
+" let g:airline_symbols.paste = 'Þ'
+" let g:airline_symbols.paste = '∥'
+" let g:airline_symbols.spell = 'Ꞩ'
+" let g:airline_symbols.notexists = '∄'
+" let g:airline_symbols.whitespace = 'Ξ'
+
+" " powerline symbols
+" let g:airline_left_sep = ''
+" let g:airline_left_alt_sep = ''
+" let g:airline_right_sep = ''
+" let g:airline_right_alt_sep = ''
+" let g:airline_symbols.branch = ''
+" let g:airline_symbols.readonly = ''
+" let g:airline_symbols.linenr = '☰'
+" let g:airline_symbols.maxlinenr = ''
 ": }}}
 ": }}}
 
@@ -106,7 +160,6 @@ let g:syntastic_mode_map = {
 let g:syntastic_cpp_compiler = 'clang++'
 let g:syntastic_cpp_compiler_options = ' -std=c++11 -stdlib=libc++'
 " }}}
-
 
 " pathogen for syntastic
 Plug 'tpope/vim-pathogen'
@@ -134,7 +187,12 @@ Plug 'davidhalter/jedi-vim'             " completion
 Plug 'numirias/semshi', {'do': ':UpdateRemotePlugins'} " Semantic Highlighting for Python in Neovim
 
 " Go
-"Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
+" vim-go {{{
+" Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' } 
+" let g:go_fmt_options = "-tabwidth=4"
+" autocmd FileType go nmap <leader>b  <Plug>(go-build)
+" autocmd FileType go nmap <leader>r  <Plug>(go-run)
+" }}}
 
 " c++ {{{
 Plug 'octol/vim-cpp-enhanced-highlight' " syntax highlight
@@ -219,7 +277,7 @@ let g:vim_json_syntax_conceal=0
                     \ }
 
         " normal/insert
-        nmap [,]p <Plug>MarkdownPreview
+        nmap ,p <Plug>MarkdownPreview
         " }}}
     " }}}
 
@@ -289,7 +347,10 @@ Plug 'ujihisa/unite-colorscheme'
     Plug 'folke/tokyonight.nvim', { 'branch': 'main' }
 " }}}
 
-" others
+" --------
+"  others
+" --------
+
 " Nerdtree {{{
 Plug 'scrooloose/nerdtree'
 " Change current directory.
@@ -321,6 +382,7 @@ Plug 'terryma/vim-multiple-cursors'
 
 " git " {{{
 Plug 'tpope/vim-fugitive'
+"set statusline+=%{FugitiveStatusline()}
 nnoremap mgg :<c-u>Git<CR>
 nnoremap mgc :<c-u>Git commit<CR>
 nnoremap mgp :<c-u>Git push<CR>
@@ -339,8 +401,7 @@ let g:calendar_google_calendar = 1
 let g:calendar_google_task = 1
 " }}}
 
-
-" shougo completion start
+" shougo completion {{{
 " if has('nvim')
 "   Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 " else
@@ -352,7 +413,7 @@ let g:calendar_google_task = 1
 
 Plug 'Shougo/neosnippet.vim'
 Plug 'Shougo/neosnippet-snippets'
-" shougo completion end
+" }}}
 
 " :terminal親のvimを操作できるようにする
 Plug 'mhinz/neovim-remote'
@@ -373,12 +434,11 @@ Plug 'amix/vim-zenroom2' "A Vim extension that emulates iA Writer environment wh
 
 " vim motion on speed! {{{
 Plug 'easymotion/vim-easymotion'
-nnoremap <leader>k <Plug>(easymotion-prefix)
 " }}}
 
 " Jump to any visible line in the buffer by using letters instead of numbers. {{{
 Plug 'skamsie/vim-lineletters'
-map <silent>[s]a <Plug>LineLetters
+map <silent>sa <Plug>LineLetters
 " }}}
 
 " Vim plugin that displays tags in a window, {{{
@@ -428,9 +488,9 @@ Plug 'liuchengxu/vim-which-key', { 'on': ['WhichKey', 'WhichKey!'] }
 nnoremap <silent> <leader>      :<c-u>WhichKey '<leader>'<CR>
 nnoremap <silent> <localleader> :<c-u>WhichKey  '<localleader>'<CR>
 nnoremap <silent> m :<c-u>WhichKey 'm'<CR>
-nnoremap <silent> [s] :<c-u>WhichKey '[s]'<CR>[]
-nnoremap <silent> [,] :<c-u>WhichKey '[,]'<CR>[]
-nnoremap <silent> [,] :<c-u>WhichKey '[;]'<CR>[]
+nnoremap <silent> s :<c-u>WhichKey 's'<CR>
+nnoremap <silent> , :<c-u>WhichKey ','<CR>
+nnoremap <silent> ; :<c-u>WhichKey ';'<CR>
 nnoremap <silent> <space> :<c-u>WhichKey '<space>'<CR>
 " }}}
 

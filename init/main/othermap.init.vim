@@ -1,9 +1,65 @@
 scriptencoding utf-8
 
 " insert mode {{{
-    inoremap <silent><C-b> <right>
+    " Using Default key bindings {{{
+    " Reference: 
+    " https://qiita.com/kentarosasaki/items/785d8c1e1c4433df6ac9
+ 
+    " enter digraph
     inoremap <silent><C-k> <up>
-    inoremap <silent><C-l> <down>
+
+    " same as <cr>
+    inoremap <silent><C-j> <down>
+
+    " 'c-f insert the character which is below the cursor'
+    inoremap <silent><C-f> <right>
+
+
+    " 'c-e insert the character which is below the cursor'
+    " -> カーソルを行の末尾に移動
+    inoremap <silent><C-e> <END>
+
+    " 'c-a insert previously inserted text'
+    " -> カーソルを行の先頭へ移動
+    inoremap <silent><C-a> <C-o>:call <SID>to_head_of_line()<CR>
+
+    " 現在のカーソル位置から行末尾までを切り取り
+    inoremap <silent><C-l> <C-r>=<SID>retrive_till_tail()<CR>
+
+    " delete one shiftwidth of indent in the current line
+    " -> カーソルの右の文字を削除
+    inoremap <C-d> <Del>
+
+    " }}}
+    inoremap <silent><C-b> <left>
+
+    function! s:to_head_of_line()
+        let start_column = col('.')
+        normal! ^
+        if col('.') == start_column
+            normal! 0
+        endif
+        return ''
+    endfunction
+
+    function! s:retrive_till_tail()
+        let [text_before, text_after] = s:split_line()
+        if len(text_after) == 0
+            normal! J
+        else
+            call setline(line('.'), text_before)
+        endif
+        return ''
+    endfunction
+
+    function! s:split_line()
+        let line_text = getline(line('.'))
+        let text_after  = line_text[col('.')-1 :]
+        let text_before = (col('.') > 1) ? line_text[: col('.')-2] : ''
+        return [text_before, text_after]
+    endfunction
+
+
     " 括弧補完 {{{
         inoremap () ()<left>
         inoremap {} {}<left>
@@ -130,7 +186,6 @@ scriptencoding utf-8
             "inoremap $$       $$<left>
             inoremap $$       $<space><space>$<left><left>
         endfunction
-
 
         "function! s:indent()
         "    inoremap {<enter> {}<left><cr><cr><up><tab>

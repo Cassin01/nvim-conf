@@ -1,85 +1,15 @@
 scriptencoding utf-8
-
-" indent-guides {{{
-    let g:indent_guides_enable_on_vim_startup=1 " enable indent-guides
-    let g:indent_guides_start_level=1
-    hi IndentGuidesOdd  ctermbg=239
-    hi IndentGuidesEven ctermbg=242
-    "let g:indent_guides_auto_colors=0 " enable auto colors
-    let g:indent_guides_guide_size=1 " width of identifier
-    let g:indent_guides_exclude_filetypes = ['help', 'nerdtree']
-    autocmd VimEnter,Colorscheme * :hi IndentGuidesOdd   ctermbg=237
-    autocmd VimEnter,Colorscheme * :hi IndentGuidesEven  ctermbg=237
-" }}}
-
-" fugitive.vim  {{{
-    "set statusline+=%{FugitiveStatusline()}
-" }}}
-
 " submode start {{{
     " resize window
-    call submode#enter_with('bufmove', 'n', '', '[s]>', '<C-w>>')
-    call submode#enter_with('bufmove', 'n', '', '[s]<', '<C-w><')
-    call submode#enter_with('bufmove', 'n', '', '[s]+', '<C-w>+')
-    call submode#enter_with('bufmove', 'n', '', '[s]-', '<C-w>-')
+    call submode#enter_with('bufmove', 'n', '', 's>', '<C-w>>')
+    call submode#enter_with('bufmove', 'n', '', 's<', '<C-w><')
+    call submode#enter_with('bufmove', 'n', '', 's+', '<C-w>+')
+    call submode#enter_with('bufmove', 'n', '', 's-', '<C-w>-')
     call submode#map('bufmove', 'n', '', '>', '<C-w>>')
     call submode#map('bufmove', 'n', '', '<', '<C-w><')
     call submode#map('bufmove', 'n', '', '+', '<C-w>+')
     call submode#map('bufmove', 'n', '', '-', '<C-w>-')
 " }}}
-
-" lightline {{{
-    " let g:lightline = {
-    "      \ 'colorscheme': 'onedark',
-    "      \ }
-" }}}
-
-" vim-airline {{{
-    set laststatus=2
-    let g:airline_powerline_fonts = 1
-    let g:airline#extensions#tabline#enabled = 1
-    let g:airline#extensions#tabline#buffer_idx_mode = 1
-    let g:airline#extensions#whitespace#mixed_indent_algo = 1
-    "let g:airline_theme = 'tomorrow'
-    if !exists('g:airline_symbols')
-        let g:airline_symbols = {}
-    endif
-    " unicode symbols
-    let g:airline_left_sep = '»'
-    let g:airline_left_sep = '▶'
-    let g:airline_right_sep = '«'
-    let g:airline_right_sep = '◀'
-    let g:airline_symbols.crypt = '🔒'
-    let g:airline_symbols.linenr = '☰'
-    let g:airline_symbols.linenr = '␊'
-    let g:airline_symbols.linenr = '␤'
-    let g:airline_symbols.linenr = '¶'
-    let g:airline_symbols.maxlinenr = ''
-    let g:airline_symbols.maxlinenr = '㏑'
-    let g:airline_symbols.branch = '⎇'
-    let g:airline_symbols.paste = 'ρ'
-    let g:airline_symbols.paste = 'Þ'
-    let g:airline_symbols.paste = '∥'
-    let g:airline_symbols.spell = 'Ꞩ'
-    let g:airline_symbols.notexists = '∄'
-    let g:airline_symbols.whitespace = 'Ξ'
-
-    " powerline symbols
-    let g:airline_left_sep = ''
-    let g:airline_left_alt_sep = ''
-    let g:airline_right_sep = ''
-    let g:airline_right_alt_sep = ''
-    let g:airline_symbols.branch = ''
-    let g:airline_symbols.readonly = ''
-    let g:airline_symbols.linenr = '☰'
-    let g:airline_symbols.maxlinenr = ''
-" }}}
-
-"" vim-go {{{
-"    let g:go_fmt_options = "-tabwidth=4"
-"    autocmd FileType go nmap <leader>b  <Plug>(go-build)
-"    autocmd FileType go nmap <leader>r  <Plug>(go-run)
-"" }}}
 
 " coc.nvim {{{
     " if hidden is not set, TextEdit might fail.
@@ -186,9 +116,9 @@ scriptencoding utf-8
 " neosnippet {{{
     " Plugin key-mappings.
     " Note: It must be "imap" and "smap".  It uses <Plug> mappings.
-    imap <C-k> <Plug>(neosnippet_expand_or_jump)
-    smap <C-k> <Plug>(neosnippet_expand_or_jump)
-    xmap <C-k> <Plug>(neosnippet_expand_target)
+    " imap <C-k> <Plug>(neosnippet_expand_or_jump)
+    " smap <C-k> <Plug>(neosnippet_expand_or_jump)
+    " xmap <C-k> <Plug>(neosnippet_expand_target)
 
     " SuperTab like snippets behavior.
     " Note: It must be "imap" and "smap".  It uses <Plug> mappings.

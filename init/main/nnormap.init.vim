@@ -1,7 +1,6 @@
 scriptencoding utf-8
 
 " Initialization {{{
-    " TODO {{{
     " プレフィックスを
     " ```
     " nnoremap [m] <Nop>
@@ -14,34 +13,21 @@ scriptencoding utf-8
     " ``nnoremap <silent> m :<c-u>WhichKey '[m]'<CR>[]``
     " と記述していた.
     "
-    " vim-texで``[m``というコマンドがあり，これがwhich-keyと相性が良くなかった.
+    " vim-tex プラグインの``[m``というコマンド,
+    " which-key プラグインと相性が良くなかった.
     " 従って以下の方法で書く
     " https://thinca.hatenablog.com/entry/q-as-prefix-key-in-vim
 
     " m単体のキーがあった場合に停止する.
-    nnoremap <script> <expr> m reg_recording() is# '' ? '<SID>(m)' : 'm' 
-
-    " 他のプレフィックスとの誤爆防止 {{{
-    nnoremap <silent> <SID>(m) m
-    nnoremap <silent> <SID>(m)m :<C-u>echom '誤爆防止'<CR>
-    nnoremap <silent> <SID>(m)<Space> :<C-u>echo '誤爆防止'<CR>
-    nnoremap <silent> <SID>(m), :<C-u>echom '誤爆防止'<CR>
-    nnoremap <silent> <SID>(m); :<C-u>echom '誤爆防止'<CR>
-    " }}}
-    " }}}
-
-
-    nnoremap [,] <Nop>
-    nnoremap ,, ,
-    nmap , [,]
-
-    nnoremap [;] <Nop>
-    nnoremap ;; ;
-    nmap ; [;]
-
-    nnoremap [s] <Nop>
+    nnoremap m <Nop>
+    nnoremap mm m
     nnoremap s <Nop>
-    nmap s [s]
+    nnoremap ss s
+    nnoremap , <Nop>
+    nnoremap ,, ,
+    nnoremap ; <Nop>
+    nnoremap ;; ;
+    nnoremap <space> <Nop>
 " }}}
 
 " classic commands {{{
@@ -56,10 +42,10 @@ scriptencoding utf-8
     nnoremap [x :<c-u>setlocal conceallevel=0<cr>
 
     " move middle of the current line
-    nnoremap [s]m :<C-u>call cursor(0,strlen(getline("."))/2)<CR>
+    nnoremap sm :<C-u>call cursor(0,strlen(getline("."))/2)<CR>
 
     " modes short cut
-    nnoremap [;]t :<C-u>terminal<cr>
+    nnoremap ;t :<C-u>terminal<cr>
 
     " 開いているファイルのカレントディレクトリを開く
     nnoremap mt :sp<cr>:edit %:h<tab><cr>
@@ -221,7 +207,7 @@ EOF
 endfunction
 
 com! Conv30 call s:Convert30()
-nnoremap [,]kkk :Conv30<CR>
+nnoremap ,kkk :Conv30<CR>
     " }}}
 
     " a note using floating window {{{
@@ -265,15 +251,15 @@ nnoremap [,]kkk :Conv30<CR>
         call nvim_win_set_option(win, 'winhl', 'Normal:MMathGlossary')
 
         command! TCommands call s:t20_exit_buf()
-        nnoremap <buffer> <silent> [,]t :TCommands<CR>
+        nnoremap <buffer> <silent> ,t :TCommands<CR>
     endfunction
 
     command! TexCommands :call s:m_math_glossary()
-    nnoremap <silent> [,]t :TexCommands<CR>
+    nnoremap <silent> ,t :TexCommands<CR>
     " }}}
 
     " color scheme
-    nnoremap [,]c :<c-u>Unite colorscheme -auto-preview<cr>
+    nnoremap ,c :<c-u>Unite colorscheme -auto-preview<cr>
 
     " Grep {{{
         " same meaning as ``:vim {pattern} {file} | cw``
@@ -291,37 +277,37 @@ nnoremap [,]kkk :Conv30<CR>
 " }}}
 
 " split windows {{{
-    nnoremap [s]j <C-w>j
-    nnoremap [s]k <C-w>k
-    nnoremap [s]l <C-w>l
-    nnoremap [s]h <C-w>h
-    nnoremap [s]J <C-w>J
-    nnoremap [s]K <C-w>K
-    nnoremap [s]L <C-w>L
-    nnoremap [s]H <C-w>H
-    nnoremap [s]n gt
-    nnoremap [s]p gT
-    nnoremap [s]r <C-w>r
-    nnoremap [s]= <C-w>=
-    nnoremap [s]w <C-w>w
-    nnoremap [s]o <C-w>_<C-w>|
-    nnoremap [s]O <C-w>=
-    nnoremap [s]N :<C-u>bn<CR>
-    nnoremap [s]P :<C-u>bp<CR>
-    nnoremap [s]t :<C-u>tabnew<CR>
-    nnoremap [s]T :<C-u>Unite tab<CR>
-    nnoremap [s]s :<C-u>sp<CR>
-    nnoremap [s]v :<C-u>vs<CR>
-    nnoremap [s]q :<C-u>q<CR>
-    nnoremap [s]Q :<C-u>bd<CR>
-    nnoremap [s]b :<C-u>Unite buffer_tab -buffer-name=file<CR>
-    nnoremap [s]B :<C-u>Unite buffer -buffer-name=file<CR>
+    nnoremap sj <C-w>j
+    nnoremap sk <C-w>k
+    nnoremap sl <C-w>l
+    nnoremap sh <C-w>h
+    nnoremap sJ <C-w>J
+    nnoremap sK <C-w>K
+    nnoremap sL <C-w>L
+    nnoremap sH <C-w>H
+    nnoremap sn gt
+    nnoremap sp gT
+    nnoremap sr <C-w>r
+    nnoremap s= <C-w>=
+    nnoremap sw <C-w>w
+    nnoremap so <C-w>_<C-w>|
+    nnoremap sO <C-w>=
+    nnoremap sN :<C-u>bn<CR>
+    nnoremap sP :<C-u>bp<CR>
+    nnoremap st :<C-u>tabnew<CR>
+    nnoremap sT :<C-u>Unite tab<CR>
+    nnoremap ss :<C-u>sp<CR>
+    nnoremap sv :<C-u>vs<CR>
+    nnoremap sq :<C-u>q<CR>
+    nnoremap sQ :<C-u>bd<CR>
+    nnoremap sb :<C-u>Unite buffer_tab -buffer-name=file<CR>
+    nnoremap sB :<C-u>Unite buffer -buffer-name=file<CR>
 
     " 下部に幅10のコマンドラインを生成
-    nnoremap [s]; :<c-u>sp<cr><c-w>J:<c-u>res 10<cr>:<C-u>terminal<cr>:<c-u>setlocal noequalalways<cr>i
+    nnoremap s; :<c-u>sp<cr><c-w>J:<c-u>res 10<cr>:<C-u>terminal<cr>:<c-u>setlocal noequalalways<cr>i
 
     " delte the current buffer
-    nnoremap [s]d :<C-u>bd<CR>
+    nnoremap sd :<C-u>bd<CR>
 " }}}
 
 " folding {{{
@@ -421,5 +407,5 @@ nnoremap [,]kkk :Conv30<CR>
 
 " mac only!!!!!!!!!!!!!! {{{
     " Search meaning of the current word.
-    nnoremap [,]? :!open dict://<cword><CR>
+    nnoremap ,? :!open dict://<cword><CR>
 " }}}
