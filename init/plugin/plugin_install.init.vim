@@ -5,23 +5,21 @@ scriptencoding utf-8
 " :UpdateRemotePlugins
 
 call plug#begin()
-Plug 'SirVer/ultisnips'
-Plug 'honza/vim-snippets'
 Plug 'kana/vim-submode'                 " resize split windows
 
 " Spotify integration
 Plug 'HendrikPetertje/vimify'
 
-" ranger file manager {{{
-Plug 'francoiscabrol/ranger.vim'
-Plug 'rbgrouleff/bclose.vim'
-" }}}
+" ---------------------------------------
+" Indent
+" ---------------------------------------
 
 " " indent guides {{{
 " Plug 'Yggdroot/indentLine'
 " let g:indentLine_enabled = 1 " disable by default
 " let g:indentLine_char = '⎸'
 " "}}}
+
 " indent-guides {{{
 Plug 'nathanaelkane/vim-indent-guides'
     let g:indent_guides_enable_on_vim_startup=1 " enable indent-guides
@@ -144,6 +142,10 @@ Plug 'nathanaelkane/vim-indent-guides'
 ": }}}
 ": }}}
 
+" ---------------------------------------
+" Syntax
+" ---------------------------------------
+
 " syntastic {{{
 Plug 'vim-syntastic/syntastic'
 set statusline+=%#warningmsg#
@@ -168,6 +170,14 @@ Plug 'tpope/vim-pathogen'
 Plug 'Chiel92/vim-autoformat'
 let g:formatter_yapf_style = 'pep8'
 " }}}
+
+" nvim-treesitter
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}  " We recommend updating the parsers on update
+
+
+" ---------------------------------------
+" Language
+" ---------------------------------------
 
 " haskell {{{
 Plug 'eagletmt/neco-ghc'                " completion
@@ -345,11 +355,12 @@ Plug 'ujihisa/unite-colorscheme'
     Plug 'mhartington/oceanic-next'           "OceanicNext
     Plug 'nightsense/snow'                    "snow
     Plug 'folke/tokyonight.nvim', { 'branch': 'main' }
+    Plug 'Mangeshrex/uwu.vim'                 "uwu"
 " }}}
 
-" --------
-"  others
-" --------
+" ---------------------------------------------------------------
+"  Files
+" ---------------------------------------------------------------
 
 " Nerdtree {{{
 Plug 'scrooloose/nerdtree'
@@ -362,6 +373,11 @@ Plug '/usr/local/opt/fzf'
 nnoremap mff :<c-u>FZF<space>
 nnoremap mfr :<c-u>FZF<space>~/<cr>
 nnoremap mfc :<c-u>FZF<space>./<cr>
+
+" ranger file manager {{{
+Plug 'francoiscabrol/ranger.vim'
+Plug 'rbgrouleff/bclose.vim'
+" }}}
 
 " snippets && vim-lsp
 Plug 'SirVer/ultisnips'
@@ -391,6 +407,10 @@ nnoremap mgp :<c-u>Git push<CR>
 " shows a git diff in the gutter (sign column) and stages/undoes (partial) hunks.
 Plug 'airblade/vim-gitgutter'
 Plug 'tpope/vim-rhubarb' " enable :Gbrowse
+
+" ---------------------------------------
+" Others
+" ---------------------------------------
 
 " quoting/parenthesizing made simple
 Plug 'tpope/vim-surround'
@@ -518,3 +538,18 @@ vmap <leader>b <Plug>(openbrowser-smart-search)
 Plug 'Cassin01/vim-conceal'
 
 call plug#end()
+
+" ---------------------------------------
+" Lua config
+" ---------------------------------------
+
+lua <<EOF
+-- nvim-treesitter/nvim-treesitter
+require'nvim-treesitter.configs'.setup {
+  ensure_installed = "maintained", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
+  highlight = {
+    enable = true,              -- false will disable the whole extension
+    disable = { "vue", "ruby" },  -- list of language that will be disabled
+  },
+}
+EOF
