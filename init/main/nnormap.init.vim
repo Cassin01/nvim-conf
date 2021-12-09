@@ -15,7 +15,7 @@ scriptencoding utf-8
     "
     " vim-tex プラグインの``[m``というコマンド,
     " which-key プラグインと相性が良くなかった.
-    " 従って以下の方法で書く
+    " 従って以下の方法で書く.
     " https://thinca.hatenablog.com/entry/q-as-prefix-key-in-vim
 
     " m単体のキーがあった場合に停止する.
@@ -28,6 +28,14 @@ scriptencoding utf-8
     nnoremap ; <Nop>
     nnoremap ;; ;
     nnoremap <space> <Nop>
+" }}}
+
+" コマンド上塗り系 {{{
+" 行が折り返し表示されていた場合, 行単位ではなく表示行単位でカーソルを移動する
+nnoremap j gj
+nnoremap k gk
+nnoremap <down> gj
+nnoremap <up> gk
 " }}}
 
 " classic commands {{{
