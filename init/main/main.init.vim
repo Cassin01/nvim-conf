@@ -24,6 +24,9 @@ scriptencoding utf-8
     " mouse
     set mouse=a
 
+    " incremental search
+    set incsearch
+
     " veonimの文字化け防止
     lang en_US.UTF-8
 
@@ -77,4 +80,3 @@ scriptencoding utf-8
     "検索で大文字小文字を区別しない
     set ignorecase
 " }}}
-

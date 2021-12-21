@@ -471,7 +471,7 @@ map <Leader><Leader>h <Plug>(easymotion-linebackward)
 
     " インクリメンタルサーチ {{{
     Plug 'haya14busa/incsearch.vim'
-    Plug 'haya14busa/incsearch-easymotion.vim'
+    Plug 'haya14busa/incsearch-easymotion.vim' " easy motion extension
     function! s:incsearch_config(...) abort
       return incsearch#util#deepextend(deepcopy({
       \   'modules': [incsearch#config#easymotion#module({'overwin': 1})],
@@ -485,6 +485,14 @@ map <Leader><Leader>h <Plug>(easymotion-linebackward)
     noremap <silent><expr> /  incsearch#go(<SID>incsearch_config())
     noremap <silent><expr> ?  incsearch#go(<SID>incsearch_config({'command': '?'}))
     noremap <silent><expr> g/ incsearch#go(<SID>incsearch_config({'is_stay': 1}))
+    " }}}
+
+    " 日本語の検索 {{{
+    Plug 'Shougo/vimproc.vim', {'do' : 'make'}
+    Plug 'haya14busa/incsearch-migemo.vim'     " migemo extension
+    map m/ <Plug>(incsearch-migemo-/)
+    map m? <Plug>(incsearch-migemo-?)
+    map mg/ <Plug>(incsearch-migemo-stay)
     " }}}
 
     " Fuzzy サーチ {{{
