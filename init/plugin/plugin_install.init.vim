@@ -318,6 +318,10 @@ Plug 'sheerun/vim-polyglot'
 let g:polyglot_disabled = ['markdown']
 " }}}
 
+" ---------------------------------------
+" Color scheme
+" ---------------------------------------
+
 " :Unite colorscheme -auto-preview
 Plug 'Shougo/unite.vim'
 Plug 'ujihisa/unite-colorscheme'
@@ -453,6 +457,7 @@ nnoremap <silent> <leader>z :Goyo<cr>
 Plug 'amix/vim-zenroom2' "A Vim extension that emulates iA Writer environment when editing Markdown, reStructuredText or text files
 
 " vim motion on speed! {{{
+" ``<Leader><Leader>w``で各単語の先頭に移動
 Plug 'easymotion/vim-easymotion'
 " }}}
 
