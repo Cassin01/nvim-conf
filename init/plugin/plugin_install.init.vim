@@ -457,8 +457,50 @@ nnoremap <silent> <leader>z :Goyo<cr>
 Plug 'amix/vim-zenroom2' "A Vim extension that emulates iA Writer environment when editing Markdown, reStructuredText or text files
 
 " vim motion on speed! {{{
-" ``<Leader><Leader>w``で各単語の先頭に移動
 Plug 'easymotion/vim-easymotion'
+" Migemo search for Japanese
+let g:EasyMotion_use_migemo = 1
+
+" ``<Leader><Leader>w``で各単語の先頭に移動
+" ``<Leader><Leader>``Search word to jamp to
+" Gif config
+map <Leader><Leader>l <Plug>(easymotion-lineforward)
+map <Leader><Leader>j <Plug>(easymotion-j)
+map <Leader><Leader>k <Plug>(easymotion-k)
+map <Leader><Leader>h <Plug>(easymotion-linebackward)
+
+    " インクリメンタルサーチ {{{
+    Plug 'haya14busa/incsearch.vim'
+    Plug 'haya14busa/incsearch-easymotion.vim'
+    function! s:incsearch_config(...) abort
+      return incsearch#util#deepextend(deepcopy({
+      \   'modules': [incsearch#config#easymotion#module({'overwin': 1})],
+      \   'keymap': {
+      \     "\<CR>": '<Over>(easymotion)'
+      \   },
+      \   'is_expr': 0
+      \ }), get(a:, 1, {}))
+    endfunction
+
+    noremap <silent><expr> /  incsearch#go(<SID>incsearch_config())
+    noremap <silent><expr> ?  incsearch#go(<SID>incsearch_config({'command': '?'}))
+    noremap <silent><expr> g/ incsearch#go(<SID>incsearch_config({'is_stay': 1}))
+    " }}}
+
+    " Fuzzy サーチ {{{
+    Plug 'haya14busa/incsearch-fuzzy.vim'
+        function! s:config_easyfuzzymotion(...) abort
+      return extend(copy({
+      \   'converters': [incsearch#config#fuzzyword#converter()],
+      \   'modules': [incsearch#config#easymotion#module({'overwin': 1})],
+      \   'keymap': {"\<CR>": '<Over>(easymotion)'},
+      \   'is_expr': 0,
+      \   'is_stay': 1
+      \ }), get(a:, 1, {}))
+    endfunction
+
+    noremap <silent><expr> <space>/ incsearch#go(<SID>config_easyfuzzymotion())
+    " }}}
 " }}}
 
 " Jump to any visible line in the buffer by using letters instead of numbers. {{{
