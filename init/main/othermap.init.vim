@@ -209,8 +209,10 @@ scriptencoding utf-8
 
             " 閉じ括弧補完 {{{
                 function! s:curly_bracket_completion2()
-                    "カーソルの後ろに文字がなければ閉じ括弧を補完
+                    " カーソルの後ろに文字がない
+                    " または空白文字があるときに閉じ括弧を補完
                     if matchstr(getline('.'), '.', col('.')-1, 1)==''
+                        \ || match(getline('.'), ' ', col('.')-1, 1) >= 0
                         return "{}\<left>"
                     else
                         return "{"
@@ -231,8 +233,10 @@ scriptencoding utf-8
 
             " 閉じ括弧補完 {{{
                 function! s:bracket_completion2()
-                    "カーソルの後ろに文字がなければ閉じ括弧を補完
+                    " カーソルの後ろに文字がない
+                    " または空白文字があるときに閉じ括弧を補完
                     if matchstr(getline('.'), '.', col('.')-1, 1)==''
+                        \ || match(getline('.'), ' ', col('.')-1, 1) >= 0
                         return "()\<left>"
                     else
                         return "("
