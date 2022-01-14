@@ -300,7 +300,7 @@ let g:terminal_color_15 = '#eeeeec'
     endif
 " }}}
 
-" 行末スペース、行末タブの表示 {{{
+" 行末スペース、行末タブの表示 {{{ FIXME: 動かない
     " highlight TrailingSpaces ctermbg=red guibg=#FF0000
     " highlight TrailingSpaces ctermbg=blue guibg=#FF0000
     "46 (緑), 240 (灰色), 50 (水色)
@@ -310,7 +310,7 @@ let g:terminal_color_15 = '#eeeeec'
     au BufNewFile,BufRead * call matchadd('Tabs', '\t')
 " }}}
 
-" 全角スペースの表示 {{{
+" 全角スペースの表示 {{{ FIXME: 動かない
     highlight ZenkakuSpace cterm=underline ctermbg=BLUE
     au BufWinEnter * let w:m3 = matchadd("ZenkakuSpace", '　')
     au WinEnter    * let w:m3 = matchadd("ZenkakuSpace", '　')
