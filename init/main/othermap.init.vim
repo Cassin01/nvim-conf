@@ -2,14 +2,13 @@ scriptencoding utf-8
 
 " insert mode {{{
     " Using Default key bindings {{{
-    " Reference: 
+    " Reference:
     " https://qiita.com/kentarosasaki/items/785d8c1e1c4433df6ac9
 
     if has("mac")
 lua << EOF
-    require('init')
+    -- require('init')
     -- 移動
-    keys = Keys:new()
     keys:set_map_i('π', '<up>', '<opt-p>: up')
     keys:set_map_i('˜', '<down>', '<opt-n>: down')
     keys:set_map_i('ƒ', '<right>', '<opt-f>: right')
@@ -125,8 +124,9 @@ function! s:ceil(a, b)
 endfunction
 
 function! s:evil_witch_syntax()
+    " https://github.com/liuchengxu/vim-which-key/tree/master/syntax
     if exists('b:current_syntax')
-      finish
+        finish
     endif
     let b:current_syntax = 'evil_witch'
     let s:sep = '→'
@@ -438,20 +438,6 @@ inoremap <silent>  <esc>:KeyWindow<cr>
         function! s:set_default()
         endfunction
 
-        function! s:highlight_invisible_chars()
-            " 行末スペース、行末タブの表示
-            if hlexists('TrailingSpaces')
-                call matchadd('TrailingSpaces', ' \{-1,}$')
-            endif
-            if hlexists('Tabs')
-                call matchadd('Tabs', '\t')
-            endif
-            " 全角スペースの表示 
-            if hlexists('ZenkakuSpace')
-                call matchadd("ZenkakuSpace", '\<　\>')
-            endif
-        endfunction
-
         function! s:set_c_cpp()
             setlocal commentstring=//\ %s
             "call s:indent()
@@ -479,7 +465,6 @@ inoremap <silent>  <esc>:KeyWindow<cr>
             "tex ギリシャ文字可視化無効
             let g:tex_conceal = ''
             call s:set_texlike_math()
-            call s:highlight_invisible_chars()
             if has_key(g:plugs, 'vim-auto-save')
                 let g:auto_save = 1
             endif
@@ -489,7 +474,7 @@ inoremap <silent>  <esc>:KeyWindow<cr>
         endfunction
 
         function! s:set_lisp()
-             setlocal shiftwidth=2
+            setlocal shiftwidth=2
         endfunction
 
         function! s:set_ros()
@@ -530,8 +515,8 @@ inoremap <silent>  <esc>:KeyWindow<cr>
                 function! s:curly_bracket_completion2()
                     " カーソルの後ろに文字がない
                     " または空白文字があるときに閉じ括弧を補完
-                    if matchstr(getline('.'), '.', col('.')-1, 1)==''
-                        \ || match(getline('.'), ' ', col('.')-1, 1) >= 0
+                    if matchstr(getline('.'), '.', col('.'), 1)==''
+                        \ || match(getline('.'), ' ', col('.'), 1) >= 0
                         return "{}\<left>"
                     else
                         return "{"
@@ -554,8 +539,8 @@ inoremap <silent>  <esc>:KeyWindow<cr>
                 function! s:bracket_completion2()
                     " カーソルの後ろに文字がない
                     " または空白文字があるときに閉じ括弧を補完
-                    if matchstr(getline('.'), '.', col('.')-1, 1)==''
-                        \ || match(getline('.'), ' ', col('.')-1, 1) >= 0
+                    if matchstr(getline('.'), '.', col('.'), 1)==''
+                        \ || match(getline('.'), ' ', col('.'), 1) >= 0
                         return "()\<left>"
                     else
                         return "("

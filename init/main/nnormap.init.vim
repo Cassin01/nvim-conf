@@ -349,17 +349,30 @@ nnoremap ,kkk :Conv30<CR>
     " 折りたたみ単位でジャンプ
     " zj -- move to the next fold
     " zk -- move to the previous fold
+lua << EOF
+    require('init')
+    keys = Keys:new()
+    keys:set_map_n('<space>j', 'zj', 'move to the next fold')
+    keys:set_map_n('<space>k', 'zk', 'move to the previous fold')
 
-    nnoremap <silent> <space>j zj
-    nnoremap <silent> <space>k zk
+    keys:set_map_n('<space>h', 'zc', 'close one fold under the cursor')
+    keys:set_map_n('<space>l', 'zO', 'open all fold under the cursor recursively')
 
-    nnoremap <silent> <space>h zc    " 折りたたみ
-    nnoremap <silent> <space>l zO    " 展開
+    keys:set_map_n('<space>H', 'zM', 'fold more')
+    keys:set_map_n('<space>L', 'zR', 'open all folds')
 
-    nnoremap <silent> <space>H zM    " 折りたたみ
-    nnoremap <silent> <space>L zR    " 展開
+    keys:set_map_n('<space>o', 'zMzv', 'close other folds')
+EOF
+    " nnoremap <silent> <space>j zj
+    " nnoremap <silent> <space>k zk
 
-    nnoremap <silent> <space>o zMzv  " 自分以外とじる
+    " nnoremap <silent> <space>h zc    " 折りたたみ
+    " nnoremap <silent> <space>l zO    " 展開
+
+    " nnoremap <silent> <space>H zM    " 折りたたみ
+    " nnoremap <silent> <space>L zR    " 展開
+
+    " nnoremap <silent> <space>o zMzv  " 自分以外とじる
 " }}}
 
 " Destructive commands {{{
