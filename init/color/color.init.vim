@@ -304,16 +304,19 @@ let g:terminal_color_15 = '#eeeeec'
     " highlight TrailingSpaces ctermbg=red guibg=#FF0000
     " highlight TrailingSpaces ctermbg=blue guibg=#FF0000
     "46 (緑), 240 (灰色), 50 (水色)
-    highlight TrailingSpaces ctermbg=50 ctermfg=50 cterm=bold
-    highlight Tabs ctermbg=black guibg=8 " guibg=#000000
-    au BufNewFile,BufRead * call matchadd('TrailingSpaces', ' \{-1,}$')
-    au BufNewFile,BufRead * call matchadd('Tabs', '\t')
+    highlight TrailingSpaces ctermbg=50 ctermfg=50 guibg=#FF0000 cterm=bold
+    highlight Tabs ctermbg=black guibg=#eeeeec guibg=#FF0000
+    " au BufNewFile,BufRead * call matchadd('TrailingSpaces', ' \{-1,}$')
+    " au BufNewFile,BufRead * call matchadd('Tabs', '\t')
+    syntax match TrailingSpaces ' \{-1,}$'
+    syntax match Tabs '\t'
 " }}}
 
 " 全角スペースの表示 {{{ FIXME: 動かない
-    highlight ZenkakuSpace cterm=underline ctermbg=BLUE
-    au BufWinEnter * let w:m3 = matchadd("ZenkakuSpace", '　')
-    au WinEnter    * let w:m3 = matchadd("ZenkakuSpace", '　')
+    highlight ZenkakuSpace cterm=underline ctermbg=BLUE guibg=#FF0000
+    " au BufWinEnter * let w:m3 = matchadd("ZenkakuSpace", '　')
+    " au WinEnter    * let w:m3 = matchadd("ZenkakuSpace", '　')
+    syntax match ZenkakuSpace '\<　\>'
 " }}}
 
 " ハイライトグループの確認 {{{
@@ -355,4 +358,5 @@ let g:terminal_color_15 = '#eeeeec'
             \ " guibg: " . linkedSyn.guibg
     endfunction
     command! SyntaxInfo call s:get_syn_info()
+    nnoremap <buffer> <silent> ,n :SyntaxInfo<CR>
 " }}}
