@@ -77,7 +77,7 @@ function! s:trimer(str, till)
     endfor
     return l:new_str
 endfunction
-function! s:formatter(matched, inputed_length) " FIXME: 辞書が2つだけだとうまく行かない
+function! s:formatter(matched, inputed_length)
     let l:formatted_lines = []
     for l:k in sort(keys(a:matched))
         call add(l:formatted_lines, '      ' . strcharpart(l:k, a:inputed_length, a:inputed_length+1) . ' → ' .  strpart(s:add_spaces(a:matched[l:k], 45)  , 0, 45) )
@@ -88,14 +88,19 @@ function! s:formatter(matched, inputed_length) " FIXME: 辞書が2つだけだ�
     let l:actuall_lines = []
     let l:i = 0
     let l:each_line = ""
+    let l:add_each_line2actual_line_at_least_onece = 0
     for l:k in l:formatted_lines
         let l:each_line = l:each_line . l:k
         let l:i =l:i + 1
         if l:i % s:split_num == 0
             call add(l:actuall_lines, l:each_line)
+            let l:add_each_line2actual_line_at_least_onece = 1
             let l:each_line = ""
         endif
     endfor
+    if add_each_line2actual_line_at_least_onece == 0
+        call add(l:actuall_lines, l:each_line)
+    endif
     return l:actuall_lines
 endfunction
 
@@ -181,7 +186,7 @@ function! s:key_selecter(self) dict
         call self.OnMatched(keys(l:matched)[0])
         call self.AfterQuit()
     else
-        echom "didn't matched" . len(l:matched)
+        echom "matched nothing"
         execute "quit"
         call self.AfterQuit()
     endif
@@ -298,18 +303,21 @@ function! s:reg_On_Matched(key) dict
 endfunction
 
 function! s:reg_After_Quit() dict
-    startinsert
 endfunction
 
 function! s:reg_Load_Index() dict
-     let regs=split('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789/-"', '\zs')
+     let regs=split('abcdefghijklmnopqrstuvwxyz0123456789/-"', '\zs')
      let l:reg_index = {}
      for reg_key in regs
-         let l:reg_index[reg_key] = getreg(reg_key)
+         let l:tmp_string = getreg(reg_key)
+         let l:tmp_string = substitute(l:tmp_string, '[[:cntrl:]]', '', 'g')  " remove control character
+         let l:tmp_string = substitute(l:tmp_string, '[^\d0-\d177]', '', 'g') " Japanese to alphabet
+         if len(l:tmp_string) > 0
+            let l:reg_index[reg_key] = l:tmp_string
+         endif
      endfor
     return l:reg_index
 endfunction
-
 function! s:reg_Event() dict
     command! REGWITCH :call regwitch.Witch(regwitch)
     nnoremap <silent> ,reg :REGWITCH<CR>
