@@ -127,6 +127,8 @@ function! s:evil_witch_syntax()
 endfunction
 
 " ---------------------------------------------------------
+" Hyper Witch
+" ---------------------------------------------------------
 
 function! s:listen_commands(self) dict
     redraw!
@@ -240,20 +242,14 @@ endfunction
 let HyperWitch = Object.Override("HyperWitch", function("HyperWitch_New"))
 let hyperwitch = HyperWitch.New()
 
-" if exists("hyperwitch")|unlet hyperwitch|endif
-" let hyperwitch = HyperWitch.New()
-" echo hyperwitch.AfterQuit()
-"
-" function! After_Quit() dict
-"     return "evil afeter"
-" endfunction
-
+" ---------------------------------------------------------
+" HWich-EvilWitch
 " ---------------------------------------------------------
 
-" Evil Witch
 lua << EOF
 require("key_register")
 EOF
+
 function! s:On_Matched(key) dict
     let l:command = "normal a" . a:key
     try
@@ -273,7 +269,7 @@ endfunction
 
 function! s:Event() dict
     command! KeyWindow :call evilwitch.Witch(evilwitch)
-    nnoremap <silent> ,o :KeyWindow<CR>
+    nnoremap <silent> ,evil :KeyWindow<CR>
     inoremap <silent>   <esc>:KeyWindow<cr>
 endfunction
 
@@ -288,11 +284,10 @@ let EvilWitch = {
 let evilwitch = hyperwitch.Extend(EvilWitch)
 call evilwitch.Event()
 
-"if exists("evilwitch")|unlet evilwitch|endif
-" let evilwitch = EvilWitch.New()
-
 " ---------------------------------------------------------
-" register
+" HWich-Register
+" ---------------------------------------------------------
+
 function! s:reg_On_Matched(key) dict
     let l:command = 'normal "' . a:key . 'p'
     try
@@ -335,33 +330,100 @@ let regwitch = hyperwitch.Extend(RegWitch)
 call regwitch.Event()
 
 " ---------------------------------------------------------
+" HWich-Tex
+" ---------------------------------------------------------
 
-" function! Human_Sing() dict
-"     return self.perfix . "は" . self.name . "．" . self.title
-" endfunction
-"
-" function! Human_New(...) dict
-"     let instance = copy(self)
-"     let instance.perfix = a:1
-"     let instance.name = a:2
-"     let instance.title = a:3
-"     let instance.Sing = function("Human_Sing")
-"     return instance
-" endfunction
-"
-" let Human = Object.Override("Human", function("Human_New"))
-"
-" if exists("human")|unlet human|endif
-" let human = Human.New("私", "人間", "一般人")
-" echo human.ToString() . ":" . human.Sing()
-"
-" function! Gian_Boxing(who) dict
-"     return a:who . "のくせに生意気だぞ!!"
-" endfunction
-"
-" let Gian = Human.Override("Gian", {})
-" let Gian.Boxing = function("Gian_Boxing")
-" if exists("gian")|unlet gian|endif
-" let gian = Gian.New("俺", "ジャイアン", "ガキ大将")
-" echo gian.ToString() . ":" .gian.Sing()
-" echo gian.Boxing("のび太")
+function! s:On_Matched(key) dict
+    let l:command = 'normal! a' . a:key . '\<Esc>'
+    try
+        execute l:command
+    catch /error!/
+        echom "err occured"
+    endtry
+endfunction
+
+function! s:After_Quit() dict
+endfunction
+
+function! s:Load_Index() dict
+    let tex_index = {
+        \ "mathbb{R}":     "ℝ",
+        \ "mathbb{z}":     "ℤ",
+        \ "mathbb{n}":     "ℕ",
+        \ "subset":        "⊂",
+        \ "subseteq":      "⊆",
+        \ "supset":        "⊃",
+        \ "in":            "∈",
+        \ "cap":           "∩",
+        \ "cup":           "∪",
+        \ "mid":           "∣",
+        \ "notin":         "∉",
+        \ "eq":            "=",
+        \ "neq":           "≠",
+        \ "sim":           "∼",
+        \ "simeq":         "≃",
+        \ "approx":        "≈",
+        \ "fallingdotseq": "≒",
+        \ "risingdotseq":  "≓",
+        \ "equiv":         "≡",
+        \ "geq":           "≥",
+        \ "geqq":          "≧",
+        \ "leq":           "≤",
+        \ "leqq":          "≦",
+        \ "gg":            "≫",
+        \ "ll":            "≪",
+        \ "oplus":         "⊕",
+        \ "cdot":          "⋅",
+        \ "bot":           "⊥",
+        \ "sum":           "∑",
+        \ "prod":          "∏",
+        \ "int":           "∫",
+        \ "infty":         "∞",
+        \ "forall":        "∀",
+        \ "exists":        "∃",
+        \ "leftarrow":     "←",
+        \ "rightarrow":    "→",
+        \ "Leftarrow":     "⇐",
+        \ "Rightarrow":    "⇒",
+        \ "Leftrightarrow":"⇔",
+        \ "theta":         "θ",
+        \ "phi":           "ϕ",
+        \ "psi":           "ψ",
+        \ "Omega":         "Ω",
+        \ "partial":       "∂",
+        \ "xi":            "ξ",
+        \ "delta":         "δ",
+        \ "gamma":         "γ",
+        \ "Gamma":         "Γ",
+        \ "kappa":         "κ",
+        \ "bullet":        "∙",
+        \ "circ":          "∘",
+        \ "quad": "1文字分のスペース",
+        \ "qquad": "2文字分のスペース",
+        \ "mathbf": "太字(ベクトル等)",
+        \ "mathbb": "黒板太字(集合)",
+        \ "bm": "斜体太字(格子Lに使う)",
+        \ "mathcal": "筆記体",
+        \ "textit": "イタリック",
+        \ "textgt": "ゴシック",
+        \ "KwRet": "Return (algorithm2e)",
+        \ "tcp*[h]{ ${1:comment} }\;": "コメント(algorithm2e)",
+        \ }
+    " return map(tex_index, {-> substitute(v:key, '[^\d0-\d177]', '', 'g') })
+    return tex_index
+endfunction
+function! s:Event() dict
+    nnoremap <silent> <Plug>(hwich-tex) :<c-u>call hwichtex.Witch(hwichtex)<cr>
+    nmap ,tex <Plug>(hwich-tex)
+endfunction
+
+let Hwichtex = {
+    \ '__NAME':'Hwichtex',
+    \ 'OnMatched': function("s:On_Matched"),
+    \ 'AfterQuit': function("s:After_Quit"),
+    \ 'LoadIndex': function("s:Load_Index"),
+    \ 'Event': function("s:Event")}
+
+if exists("hwichtex")|unlet hwichtex|endif
+let hwichtex = hyperwitch.Extend(Hwichtex)
+call hwichtex.Event()
