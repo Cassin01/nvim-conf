@@ -44,6 +44,9 @@ let Object = {
 " echo object.ToString() . ":..."
 
 " ---------------------------------------------------------
+" Hyper Witch
+" ---------------------------------------------------------
+
 " 先頭から比較して含まれてたらtureを返す
 function! s:incremental_search(str, txt)
     if strlen(a:str) > strlen(a:txt)
@@ -83,24 +86,42 @@ function! s:formatter(matched, inputed_length)
         call add(l:formatted_lines, '      ' . strcharpart(l:k, a:inputed_length, a:inputed_length+1) . ' → ' .  strpart(s:add_spaces(a:matched[l:k], 45)  , 0, 45) )
     endfor
 
+    " 列の数
     let s:split_num = &columns / 50
 
-    let l:actuall_lines = []
-    let l:i = 0
-    let l:each_line = ""
-    let l:add_each_line2actual_line_at_least_onece = 0
-    for l:k in l:formatted_lines
-        let l:each_line = l:each_line . l:k
-        let l:i =l:i + 1
-        if l:i % s:split_num == 0
-            call add(l:actuall_lines, l:each_line)
-            let l:add_each_line2actual_line_at_least_onece = 1
-            let l:each_line = ""
+
+    " FUTURE_DELETE
+    " let l:actuall_lines = []
+    " let l:i = 0
+    " let l:each_line = ""
+    " let l:add_each_line2actual_line_at_least_onece = 0
+    " for l:k in l:formatted_lines
+    "     let l:each_line = l:each_line . l:k
+    "     let l:i =l:i + 1
+    "     if l:i % s:split_num == 0
+    "         call add(l:actuall_lines, l:each_line)
+    "         let l:add_each_line2actual_line_at_least_onece = 1
+    "         let l:each_line = ""
+    "     endif
+    " endfor
+    " if add_each_line2actual_line_at_least_onece == 0
+    "     call add(l:actuall_lines, l:each_line)
+    " endif
+
+    " FUTURE
+    " 行の数
+    let row_size = (len(l:formatted_lines) + s:split_num - 1)/ s:split_num
+
+    let row_counter = 0
+    let l:actuall_lines = map(range(row_size), {-> ''})
+    for formatted_line in l:formatted_lines
+        let l:actuall_lines[row_counter] = l:actuall_lines[row_counter] .  formatted_line
+        let row_counter = row_counter + 1
+        if row_counter % row_size == 0
+            let row_counter = 0
         endif
     endfor
-    if add_each_line2actual_line_at_least_onece == 0
-        call add(l:actuall_lines, l:each_line)
-    endif
+
     return l:actuall_lines
 endfunction
 
@@ -127,8 +148,9 @@ function! s:evil_witch_syntax()
 endfunction
 
 " ---------------------------------------------------------
-" Hyper Witch
+" Hyper Witch method
 " ---------------------------------------------------------
+
 
 function! s:listen_commands(self) dict
     redraw!
@@ -181,7 +203,6 @@ function! s:Event() dict
 endfunction
 
 function! s:key_selecter(self) dict
-    " let l:matched = s:listen_commands()
     let l:matched = self.Listen(self)
     if len(l:matched) == 1
         execute "quit"
@@ -250,7 +271,7 @@ lua << EOF
 require("key_register")
 EOF
 
-function! s:On_Matched(key) dict
+function! s:evil_On_Matched(key) dict
     let l:command = "normal a" . a:key
     try
         execute l:command
@@ -259,15 +280,15 @@ function! s:On_Matched(key) dict
     endtry
 endfunction
 
-function! s:After_Quit() dict
+function! s:evil_After_Quit() dict
     startinsert
 endfunction
 
-function! s:Load_Index() dict
+function! s:evil_Load_Index() dict
     return luaeval('keys:get_i()')
 endfunction
 
-function! s:Event() dict
+function! s:evil_Event() dict
     command! KeyWindow :call evilwitch.Witch(evilwitch)
     nnoremap <silent> ,evil :KeyWindow<CR>
     inoremap <silent>   <esc>:KeyWindow<cr>
@@ -275,10 +296,10 @@ endfunction
 
 let EvilWitch = {
     \ '__NAME': 'EvilWitch',
-     \ 'OnMatched': function("s:On_Matched"),
-     \ 'AfterQuit': function("s:After_Quit"),
-     \ 'LoadIndex': function("s:Load_Index"),
-     \ 'Event': function("s:Event")
+     \ 'OnMatched': function("s:evil_On_Matched"),
+     \ 'AfterQuit': function("s:evil_After_Quit"),
+     \ 'LoadIndex': function("s:evil_Load_Index"),
+     \ 'Event': function("s:evil_Event")
      \ }
 
 let evilwitch = hyperwitch.Extend(EvilWitch)
@@ -298,6 +319,7 @@ function! s:reg_On_Matched(key) dict
 endfunction
 
 function! s:reg_After_Quit() dict
+    startinsert!
 endfunction
 
 function! s:reg_Load_Index() dict
@@ -333,19 +355,21 @@ call regwitch.Event()
 " HWich-Tex
 " ---------------------------------------------------------
 
-function! s:On_Matched(key) dict
-    let l:command = 'normal! a' . a:key . '\<Esc>'
+function! s:hwichtex_On_Matched(key) dict
+    let l:command = 'normal! a\' . a:key
     try
         execute l:command
+        execute 'normal w'
     catch /error!/
         echom "err occured"
     endtry
 endfunction
 
-function! s:After_Quit() dict
+function! s:hwichtex_After_Quit() dict
+    startinsert!
 endfunction
 
-function! s:Load_Index() dict
+function! s:hwichtex_Load_Index() dict
     let tex_index = {
         \ "mathbb{R}":     "ℝ",
         \ "mathbb{z}":     "ℤ",
@@ -412,17 +436,17 @@ function! s:Load_Index() dict
     " return map(tex_index, {-> substitute(v:key, '[^\d0-\d177]', '', 'g') })
     return tex_index
 endfunction
-function! s:Event() dict
+function! s:hwichtex_Event() dict
     nnoremap <silent> <Plug>(hwich-tex) :<c-u>call hwichtex.Witch(hwichtex)<cr>
     nmap ,tex <Plug>(hwich-tex)
 endfunction
 
 let Hwichtex = {
     \ '__NAME':'Hwichtex',
-    \ 'OnMatched': function("s:On_Matched"),
-    \ 'AfterQuit': function("s:After_Quit"),
-    \ 'LoadIndex': function("s:Load_Index"),
-    \ 'Event': function("s:Event")}
+    \ 'OnMatched': function("s:hwichtex_On_Matched"),
+    \ 'AfterQuit': function("s:hwichtex_After_Quit"),
+    \ 'LoadIndex': function("s:hwichtex_Load_Index"),
+    \ 'Event': function("s:hwichtex_Event")}
 
 if exists("hwichtex")|unlet hwichtex|endif
 let hwichtex = hyperwitch.Extend(Hwichtex)
