@@ -1,8 +1,11 @@
+" -----------------------------------------------------
+" Object
+" -----------------------------------------------------
+
 function! Class_Prototype() dict
     return self
 endfunction
 
-" function! Class_Override(...) dict
 function! Class_Override(name, class_new) dict
     let class = copy(self)
     let class.__NAME = a:name
@@ -110,12 +113,12 @@ function! s:formatter(matched, inputed_length)
 
     " FUTURE
     " 行の数
-    let row_size = (len(l:formatted_lines) + s:split_num - 1)/ s:split_num
+    let row_size = (len(l:formatted_lines) + s:split_num - 1) / s:split_num
 
     let row_counter = 0
     let l:actuall_lines = map(range(row_size), {-> ''})
     for formatted_line in l:formatted_lines
-        let l:actuall_lines[row_counter] = l:actuall_lines[row_counter] .  formatted_line
+        let l:actuall_lines[row_counter] = l:actuall_lines[row_counter] . formatted_line
         let row_counter = row_counter + 1
         if row_counter % row_size == 0
             let row_counter = 0
@@ -148,9 +151,8 @@ function! s:evil_witch_syntax()
 endfunction
 
 " ---------------------------------------------------------
-" Hyper Witch method
+" Hyper Witch methods
 " ---------------------------------------------------------
-
 
 function! s:listen_commands(self) dict
     redraw!
@@ -451,3 +453,46 @@ let Hwichtex = {
 if exists("hwichtex")|unlet hwichtex|endif
 let hwichtex = hyperwitch.Extend(Hwichtex)
 call hwichtex.Event()
+
+" -----------------------------------------------------
+": HWich-UltiSnips
+" -----------------------------------------------------
+
+" -----------------------------------------------------
+": HWich-Normal
+" -----------------------------------------------------
+
+" WARN: NOT WORKING YET
+function! s:normal_On_Matched(key) dict
+    let l:command = "normal a" . a:key
+    try
+        execute l:command
+    catch /error!/
+        echom "err occured"
+    endtry
+endfunction
+
+function! s:normal_After_Quit() dict
+    startinsert
+endfunction
+
+function! s:normal_Load_Index() dict
+    return luaeval('keys:get_n()')
+endfunction
+
+function! s:normal_Event() dict
+    command! KeyWindow :call normalwitch.Witch(normalwitch)
+    nnoremap <silent> ,normal :KeyWindow<CR>
+endfunction
+
+let NormalWitch = {
+    \ '__NAME': 'NormalWitch',
+     \ 'OnMatched': function("s:normal_On_Matched"),
+     \ 'AfterQuit': function("s:normal_After_Quit"),
+     \ 'LoadIndex': function("s:normal_Load_Index"),
+     \ 'Event': function("s:normal_Event")
+     \ }
+
+let normalwitch = hyperwitch.Extend(NormalWitch)
+call normalwitch.Event()
+
