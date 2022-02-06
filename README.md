@@ -2,9 +2,9 @@
 
 # Features
 
-- **[Powerful editing]** Use more than 80 plugins.
+- **[Powerful editing]** using more than 80 plugins.
 
-- **[Simple key-binding]** systematized key-binding's prefixs.
+- **[Simple key-binding]** systematized prefix.
 
 ## Installation
 
@@ -29,13 +29,3 @@ If you don't use this configuration on mac, You should remove this code from ``i
 " mac only!!!!!!!!!!!!!! {{{
     nnoremap ,? :!open dict://<cword><CR>
 " }}}
-```
-
-# Screenshots
-
-<h1 align="center">
-  <img src="images/ex01.png" alt="pic" />
-  <img src="images/ex02.gif" alt="pic" />
-  <img src="images/ex03.png" alt="pic" />
-</h1>
-
