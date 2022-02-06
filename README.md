@@ -2,9 +2,9 @@
 
 # Features
 
-- **Powerful editing.** Use more than 80 plugins.
+- **[Powerful editing]** Use more than 80 plugins.
 
-- **Simple key-binds.** systematized key-binding's prefixs.
+- **[Simple key-binding]** systematized key-binding's prefixs.
 
 ## Installation
 
