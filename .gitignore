@@ -2,3 +2,4 @@ plugged
 .netrwhist
 .DS_Store
 tools
+init/secret/secret.vim
