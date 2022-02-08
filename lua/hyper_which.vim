@@ -1,7 +1,7 @@
 " -----------------------------------------------------
 " Object
 " -----------------------------------------------------
-
+" {{{
 function! Class_Prototype() dict
     return self
 endfunction
@@ -44,12 +44,13 @@ let Object = {
 " TEST
 " if exists("object")|unlet object|endif
 " let object = Object.New()
-" echo object.ToString() . ":..."
+" echo object.ToString()
+" }}}
 
 " ---------------------------------------------------------
 " Hyper Witch
 " ---------------------------------------------------------
-
+" {{{
 " 先頭から比較して含まれてたらtureを返す
 function! s:incremental_search(str, txt)
     if strlen(a:str) > strlen(a:txt)
@@ -92,29 +93,10 @@ function! s:formatter(matched, inputed_length)
     " 列の数
     let s:split_num = &columns / 50
 
-
-    " FUTURE_DELETE
-    " let l:actuall_lines = []
-    " let l:i = 0
-    " let l:each_line = ""
-    " let l:add_each_line2actual_line_at_least_onece = 0
-    " for l:k in l:formatted_lines
-    "     let l:each_line = l:each_line . l:k
-    "     let l:i =l:i + 1
-    "     if l:i % s:split_num == 0
-    "         call add(l:actuall_lines, l:each_line)
-    "         let l:add_each_line2actual_line_at_least_onece = 1
-    "         let l:each_line = ""
-    "     endif
-    " endfor
-    " if add_each_line2actual_line_at_least_onece == 0
-    "     call add(l:actuall_lines, l:each_line)
-    " endif
-
-    " FUTURE
     " 行の数
     let row_size = (len(l:formatted_lines) + s:split_num - 1) / s:split_num
 
+    " View
     let row_counter = 0
     let l:actuall_lines = map(range(row_size), {-> ''})
     for formatted_line in l:formatted_lines
@@ -149,11 +131,12 @@ function! s:evil_witch_syntax()
     highlight default link WitchKeyGroup     Keyword
     highlight default link WitchKeyDesc      Identifier
 endfunction
+" }}}
 
 " ---------------------------------------------------------
 " Hyper Witch methods
 " ---------------------------------------------------------
-
+"  {{{
 function! s:listen_commands(self) dict
     redraw!
     setlocal filetype=evil_witch
@@ -168,7 +151,10 @@ function! s:listen_commands(self) dict
             continue
         endif
         let l:inputted_st = l:inputted_st . nr2char(l:c)
-        let l:matched = filter(l:keys_dict, {key, _ -> s:incremental_search(l:inputted_st, key)})
+        echom nr2char(l:c)
+        echom l:keys_dict
+        let l:matched = copy(filter(l:keys_dict, {key, _ -> s:incremental_search(l:inputted_st, key)}))
+        echom l:keys_dict
 
         " call nvim_buf_set_lines(s:buf, 0, -1, v:true, values(map(l:matched, {key, val -> key . ' ' . val})))
         call nvim_buf_set_lines(s:buf, 0, -1, v:true, s:formatter(l:matched, strchars(l:inputted_st)))
@@ -194,7 +180,6 @@ function! s:On_Matched() dict
 endfunction
 
 function! s:After_Quit() dict
-    return "witch afeter"
 endfunction
 
 function! s:Load_Index() dict
@@ -264,11 +249,12 @@ endfunction
 
 let HyperWitch = Object.Override("HyperWitch", function("HyperWitch_New"))
 let hyperwitch = HyperWitch.New()
+" }}}
 
 " ---------------------------------------------------------
 " HWich-EvilWitch
 " ---------------------------------------------------------
-
+" {{{
 lua << EOF
 require("key_register")
 EOF
@@ -306,10 +292,12 @@ let EvilWitch = {
 
 let evilwitch = hyperwitch.Extend(EvilWitch)
 call evilwitch.Event()
+" }}}
 
 " ---------------------------------------------------------
 " HWich-Register
 " ---------------------------------------------------------
+" {{{
 
 function! s:reg_On_Matched(key) dict
     let l:command = 'normal "' . a:key . 'p'
@@ -321,7 +309,7 @@ function! s:reg_On_Matched(key) dict
 endfunction
 
 function! s:reg_After_Quit() dict
-    startinsert!
+    " startinsert!
 endfunction
 
 function! s:reg_Load_Index() dict
@@ -352,11 +340,12 @@ let RegWitch = {
 if exists("regwitch")|unlet regwitch|endif
 let regwitch = hyperwitch.Extend(RegWitch)
 call regwitch.Event()
+" }}}
 
 " ---------------------------------------------------------
 " HWich-Tex
 " ---------------------------------------------------------
-
+" {{{
 function! s:hwichtex_On_Matched(key) dict
     let l:command = 'normal! a\' . a:key
     try
@@ -453,18 +442,19 @@ let Hwichtex = {
 if exists("hwichtex")|unlet hwichtex|endif
 let hwichtex = hyperwitch.Extend(Hwichtex)
 call hwichtex.Event()
+" }}}
 
 " -----------------------------------------------------
-": HWich-UltiSnips
+" HWich-UltiSnips
 " -----------------------------------------------------
 
 " -----------------------------------------------------
-": HWich-Normal
+" HWich-Normal
 " -----------------------------------------------------
-
+" {{{
 " WARN: NOT WORKING YET
 function! s:normal_On_Matched(key) dict
-    let l:command = "normal a" . a:key
+    let l:command = "normal " . a:key
     try
         execute l:command
     catch /error!/
@@ -473,7 +463,6 @@ function! s:normal_On_Matched(key) dict
 endfunction
 
 function! s:normal_After_Quit() dict
-    startinsert
 endfunction
 
 function! s:normal_Load_Index() dict
@@ -481,8 +470,10 @@ function! s:normal_Load_Index() dict
 endfunction
 
 function! s:normal_Event() dict
-    command! KeyWindow :call normalwitch.Witch(normalwitch)
-    nnoremap <silent> ,normal :KeyWindow<CR>
+    nnoremap <silent> <buffer>
+        \ <plug>(hwhich-normal)
+        \ :<c-u>call normalwitch.Witch(normalwitch)<cr>
+    nmap <silent> ,nor <plug>(hwhich-normal)
 endfunction
 
 let NormalWitch = {
@@ -495,4 +486,4 @@ let NormalWitch = {
 
 let normalwitch = hyperwitch.Extend(NormalWitch)
 call normalwitch.Event()
-
+" }}}
