@@ -1,6 +1,6 @@
-" -----------------------------------------------------
+" ---------------------------------------------------------
 " Object
-" -----------------------------------------------------
+" ---------------------------------------------------------
 " {{{
 function! Class_prototype() dict
     return self
@@ -51,6 +51,40 @@ let Object = #{
 " if exists("object")|unlet object|endif
 " let object = Object.New()
 " echo object.tostring()
+" }}}
+
+" ---------------------------------------------------------
+" Window
+" ---------------------------------------------------------
+" {{{
+function! s:update_config(self, config) dict
+    let self.config = extend(self.config, a:config)
+    call nvim_win_set_config(self.win, self.config)
+endfunction
+
+function! s:window_start(self, config) dict
+    let self.config = extend(self.config, a:config)
+    let self.win = nvim_open_win(s:buf, 1, copy(self.config))
+    call nvim_win_set_option(self.win, 'winblend', 10)
+
+endfunction
+
+function! s:window_new() dict
+    let instance = copy(self)
+    let instance.config = {
+        \ 'col': 0,
+        \ 'relative': "editor",
+        \ 'anchor': 'NW',
+        \ 'style': 'minimal',
+        \ 'border': 'rounded',
+        \ }
+    let instance.new = function("s:window_new")
+    let instance.start = function("s:window_start")
+    let instance.update = function("s:update_config")
+    return instance
+endfunction
+let Window = Object.override("Window", function("s:window_new"))
+
 " }}}
 
 " ---------------------------------------------------------
@@ -162,40 +196,6 @@ function! s:hyper_wich_syntax()
     highlight default link WitchKeyGroup     Keyword
     highlight default link WitchKeyDesc      Identifier
 endfunction
-" }}}
-
-" ---------------------------------------------------------
-" Window
-" ---------------------------------------------------------
-" {{{
-function! s:update_config(self, config) dict
-    let self.config = extend(self.config, a:config)
-    call nvim_win_set_config(self.win, self.config)
-endfunction
-
-function! s:window_start(self, config) dict
-    let self.config = extend(self.config, a:config)
-    let self.win = nvim_open_win(s:buf, 1, copy(self.config))
-    call nvim_win_set_option(self.win, 'winblend', 10)
-
-endfunction
-
-function! s:window_new() dict
-    let instance = copy(self)
-    let instance.config = {
-        \ 'col': 0,
-        \ 'relative': "editor",
-        \ 'anchor': 'NW',
-        \ 'style': 'minimal',
-        \ 'border': 'rounded',
-        \ }
-    let instance.new = function("s:window_new")
-    let instance.start = function("s:window_start")
-    let instance.update = function("s:update_config")
-    return instance
-endfunction
-let Window = Object.override("Window", function("s:window_new"))
-
 " }}}
 
 " ---------------------------------------------------------
@@ -540,13 +540,13 @@ let hwichtex = hyperwitch.extend(Hwichtex)
 call hwichtex.Event()
 " }}}
 
-" -----------------------------------------------------
+" ---------------------------------------------------------
 " HWich-UltiSnips
-" -----------------------------------------------------
+" ---------------------------------------------------------
 
-" -----------------------------------------------------
+" ---------------------------------------------------------
 " HWich-Normal
-" -----------------------------------------------------
+" ---------------------------------------------------------
 " {{{ WARN: NOT WORKING YET
 function! s:get_raw_map_info(key) abort
   return split(execute('map '.a:key), "\n")
