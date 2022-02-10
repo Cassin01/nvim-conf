@@ -2,19 +2,19 @@
 " Object
 " -----------------------------------------------------
 " {{{
-function! Class_Prototype() dict
+function! Class_prototype() dict
     return self
 endfunction
 
-function! Class_Override(name, class_new) dict
+function! Class_override(name, class_new) dict
     let class = copy(self)
-    let class.__NAME = a:name
-    let class.New = a:class_new
-    let class.__SUPER = self
+    let class.__name = a:name
+    let class.new = a:class_new
+    let class.__super = self
     return class
 endfunction
 
-function! Class_Extend(class) dict
+function! Class_extend(class) dict
     let class = copy(self)
     let class = extend(class, a:class)
     return class
@@ -23,34 +23,60 @@ endfunction
 function! Class_New() dict
     let instance = copy(self)
     call remove(instance, "New")
-    call remove(instance, "Override")
-    let instance.__SUPER = self
+    call remove(instance, "override")
+    let instance.__super = self
     return instance
 endfunction
 
 function! Class_ToStrting() dict
-    return self.__NAME
+    return self.__name
 endfunction
 
-let Object = {
-    \ "__NAME": "Object",
-    \ "Prototype": function("Class_Prototype"),
-    \ "Override": function("Class_Override"),
-    \ "Extend" : function("Class_Extend"),
-    \ "__SUPER": {},
-    \ "New": function("Class_New"),
-    \ "ToString": function("Class_ToStrting")}
+function! s:super() dict
+    return self.__super
+endfunction
+
+
+let Object = #{
+    \ __name: "Object",
+    \ __super: {},
+    \ prototype: function("Class_prototype"),
+    \ override: function("Class_override"),
+    \ extend : function("Class_extend"),
+    \ new: function("Class_New"),
+    \ super: function("s:super"),
+    \ tostring: function("Class_ToStrting")}
 
 " TEST
 " if exists("object")|unlet object|endif
 " let object = Object.New()
-" echo object.ToString()
+" echo object.tostring()
 " }}}
 
 " ---------------------------------------------------------
 " Hyper Witch
 " ---------------------------------------------------------
 " {{{
+" TODO:
+" [x]: スペースキーの表示と入力
+"   - 表示: ⎵
+"   - 入力: スペース
+" [ ]: タブキーの表示と入力
+"   - 表示: ⇥
+"   - 入力: タブ文字
+"   INFO: どう実現するか
+"       - view
+"           - 入力されていない文字を^<tab> -> ⇥ する．
+"       - 入力
+"           - 9 が入力されて, かつ残りの文字が^<tab>であれば6文字進める.
+" [x]: 入力が一方が短いとき決定できないバグ -> <cr>を押したら即時評価する
+
+" global valuables {{{
+" length mast be 1
+let g:hwhich_char_tab = '⇥'
+let g:hwhich_char_space = '⎵'
+" }}}
+
 " 先頭から比較して含まれてたらtureを返す
 function! s:incremental_search(str, txt)
     if strlen(a:str) > strlen(a:txt)
@@ -84,10 +110,16 @@ function! s:trimer(str, till)
     endfor
     return l:new_str
 endfunction
-function! s:formatter(matched, inputed_length)
+
+" View
+" args
+"   - inputted_length: the length of inputted characters
+function! s:formatter(matched, inputted_length)
     let l:formatted_lines = []
     for l:k in sort(keys(a:matched))
-        call add(l:formatted_lines, '      ' . strcharpart(l:k, a:inputed_length, a:inputed_length+1) . ' → ' .  strpart(s:add_spaces(a:matched[l:k], 45)  , 0, 45) )
+        let l:k_tmp = substitute(l:k,' ' ,g:hwhich_char_space, 'g') " COMBAK
+        let discription = strpart(s:add_spaces(a:matched[l:k], 45)  , 0, 45)
+        call add(l:formatted_lines, '      ' . strcharpart(k_tmp,  a:inputted_length, a:inputted_length+1) . ' → ' .  discription )
     endfor
 
     " 列の数
@@ -106,7 +138,6 @@ function! s:formatter(matched, inputed_length)
             let row_counter = 0
         endif
     endfor
-
     return l:actuall_lines
 endfunction
 
@@ -114,10 +145,10 @@ function! s:ceil(a, b)
     return  (a:a + a:b - 1) / a:b
 endfunction
 
-function! s:evil_witch_syntax()
+function! s:hyper_wich_syntax()
     " https://github.com/liuchengxu/vim-which-key/tree/master/syntax
     if exists('b:current_syntax')
-        finish
+        return
     endif
     let b:current_syntax = 'evil_witch'
     let s:sep = '→'
@@ -134,14 +165,57 @@ endfunction
 " }}}
 
 " ---------------------------------------------------------
+" Window
+" ---------------------------------------------------------
+" {{{
+function! s:update_config(self, config) dict
+    let self.config = extend(self.config, a:config)
+    call nvim_win_set_config(self.win, self.config)
+endfunction
+
+function! s:window_start(self, config) dict
+    let self.config = extend(self.config, a:config)
+    let self.win = nvim_open_win(s:buf, 1, copy(self.config))
+    call nvim_win_set_option(self.win, 'winblend', 10)
+
+endfunction
+
+function! s:window_new() dict
+    let instance = copy(self)
+    let instance.config = {
+        \ 'col': 0,
+        \ 'relative': "editor",
+        \ 'anchor': 'NW',
+        \ 'style': 'minimal',
+        \ 'border': 'rounded',
+        \ }
+    let instance.new = function("s:window_new")
+    let instance.start = function("s:window_start")
+    let instance.update = function("s:update_config")
+    return instance
+endfunction
+let Window = Object.override("Window", function("s:window_new"))
+
+" }}}
+
+" ---------------------------------------------------------
 " Hyper Witch methods
 " ---------------------------------------------------------
 "  {{{
+function! s:key_converter_for_input(key_dict)
+    let new_dict = {}
+    for key in keys(a:key_dict)
+        let new_key = substitute(key, '<space>', ' ', 'g')
+        let new_dict[new_key] = a:key_dict[key]
+    endfor
+    return new_dict
+endfunction
+
 function! s:listen_commands(self) dict
     redraw!
     setlocal filetype=evil_witch
-    " let l:keys_dict = luaeval('keys:get_i()') " MARK: 継承
     let l:keys_dict = self.LoadIndex()
+    let l:keys_dict = s:key_converter_for_input(l:keys_dict)
     let l:inputted_st = ""
     while v:true
         let l:c = ""
@@ -150,21 +224,26 @@ function! s:listen_commands(self) dict
         else
             continue
         endif
-        let l:inputted_st = l:inputted_st . nr2char(l:c)
-        echom nr2char(l:c)
-        echom l:keys_dict
-        let l:matched = copy(filter(l:keys_dict, {key, _ -> s:incremental_search(l:inputted_st, key)}))
-        echom l:keys_dict
-
-        " call nvim_buf_set_lines(s:buf, 0, -1, v:true, values(map(l:matched, {key, val -> key . ' ' . val})))
+        if l:c == 13
+            " when <cr> plessed evaluate input immediately.
+            let l:matched = copy(filter(l:keys_dict, {key, _ -> l:inputted_st ==# key}))
+        else
+            let l:inputted_st = l:inputted_st . nr2char(l:c)
+            let l:matched = copy(filter(l:keys_dict, {key, _ -> s:incremental_search(l:inputted_st, key)}))
+        endif
         call nvim_buf_set_lines(s:buf, 0, -1, v:true, s:formatter(l:matched, strchars(l:inputted_st)))
-        " echom values(map(l:matched, {key, val -> key . ' ' . val}))
 
-        let l:line_size = s:ceil(len(values(map(l:matched, {key, val -> key . ' ' . val}))), s:split_num)+1
-        " call nvim_win_set_height(s:win, line_size)
-        let s:opts.height=line_size
-        let s:opts.row = &lines-line_size-s:row_offset
-        call nvim_win_set_config(s:win, s:opts)
+        let buf_row = nvim_buf_line_count(s:buf)
+        let row_offset = &cmdheight + (&laststatus > 0 ? 1 : 0)
+        let k = {'height': buf_row, 'row': &lines-buf_row-row_offset-1, 'width': &columns-self.window.config.col}
+        call self.window.update(self.window, k)
+
+
+        " let self.win_config.height=buf_row
+        " let self.win_config.row = &lines-buf_row-s:row_offset - 1
+        " call nvim_win_set_config(s:win, self.win_config)
+        call s:hyper_wich_syntax()
+
         redraw!
 
         if len(l:matched) == 1
@@ -205,23 +284,39 @@ endfunction
 function! s:Witch(self) dict
     let s:buf = nvim_create_buf(v:false, v:true)
 
-    let l:keys_dict = self.LoadIndex() " MARK: 継承
-    call nvim_buf_set_lines(s:buf, 0, 0, v:true, s:formatter(l:keys_dict, 0))
+    let l:keys_dict = self.LoadIndex()
+    let l:keys_dict = s:key_converter_for_input(l:keys_dict)
+    call nvim_buf_set_lines(s:buf, 0,-1, v:true, s:formatter(l:keys_dict, 0))
 
-    let s:row_offset = &cmdheight + (&laststatus > 0 ? 1 : 0)
-    let s:opts = {'relative': 'win', 'height': nvim_buf_line_count(s:buf), 'col': 0,
-                \ 'row': &lines-nvim_buf_line_count(s:buf)-s:row_offset, 'anchor': 'NW', 'style': 'minimal'}
-    let s:opts.width = &columns - s:opts.col
+    let buf_row = nvim_buf_line_count(s:buf)
+    let row_offset = &cmdheight + (&laststatus > 0 ? 1 : 0)
 
-    let s:win = nvim_open_win(s:buf, 1, s:opts)
+    let k = {'height': buf_row, 'row': &lines-buf_row-row_offset-1, 'width': &columns-self.window.config.col}
+    call self.window.start(self.window, k)
 
-    " optional: change highlight, otherwise Pmenu is used
-    call nvim_win_set_option(s:win, 'winhl', 'Normal:Pmenu')
+    " let self.win_config = {
+    "     \ 'relative': 'editor',
+    "     \ 'anchor': 'NW',
+    "     \ 'style': 'minimal',
+    "     \ 'border': 'rounded',
+    "     \ 'col': 0,
+    "     \ }
+    " let s:row_offset = &cmdheight + (&laststatus > 0 ? 1 : 0)
+    " let buf_row = nvim_buf_line_count(s:buf)
+    " let self.win_config.width = &columns - self.win_config.col
 
-    call s:evil_witch_syntax()
+    " let self.win_config.height = buf_row
+    " let self.win_config.row = &lines-buf_row-s:row_offset - 1
 
-    " 疑似的に半透明にする
-    call nvim_win_set_option(s:win, 'winblend', 10)
+    " let s:win = nvim_open_win(s:buf, 1, self.win_config)
+
+    " " optional: change highlight, otherwise Pmenu is used
+    " call nvim_win_set_option(s:win, 'winhl', 'Normal:Pmenu')
+
+    call s:hyper_wich_syntax()
+
+    " " 疑似的に半透明にする
+    " call nvim_win_set_option(s:win, 'winblend', 10)
 
     " command! WichESC call s:escape()
     " nnoremap <buffer> <silent> <esc> :WichESC<CR>
@@ -235,8 +330,10 @@ function! s:Witch(self) dict
     call self.CMDSelecter(self)
 endfunction
 
-function! HyperWitch_New(...) dict
+function! s:hyperwitch_new(...) dict
     let instance = copy(self)
+    let instance.win_config = {}
+    let instance.window = instance.super().new()
     let instance.Listen = function('s:listen_commands')
     let instance.OnMatched = function("s:On_Matched")
     let instance.AfterQuit = function("s:After_Quit")
@@ -247,12 +344,12 @@ function! HyperWitch_New(...) dict
     return instance
 endfunction
 
-let HyperWitch = Object.Override("HyperWitch", function("HyperWitch_New"))
-let hyperwitch = HyperWitch.New()
+let HyperWitch = Window.override("HyperWitch", function("s:hyperwitch_new"))
+let hyperwitch = HyperWitch.new()
 " }}}
 
 " ---------------------------------------------------------
-" HWich-EvilWitch
+" HWich-Evil
 " ---------------------------------------------------------
 " {{{
 lua << EOF
@@ -282,15 +379,15 @@ function! s:evil_Event() dict
     inoremap <silent>   <esc>:KeyWindow<cr>
 endfunction
 
-let EvilWitch = {
-    \ '__NAME': 'EvilWitch',
-     \ 'OnMatched': function("s:evil_On_Matched"),
-     \ 'AfterQuit': function("s:evil_After_Quit"),
-     \ 'LoadIndex': function("s:evil_Load_Index"),
-     \ 'Event': function("s:evil_Event")
-     \ }
+let EvilWitch = #{
+    \ __name: 'EvilWitch',
+    \ OnMatched: function("s:evil_On_Matched"),
+    \ AfterQuit: function("s:evil_After_Quit"),
+    \ LoadIndex: function("s:evil_Load_Index"),
+    \ Event: function("s:evil_Event")
+    \ }
 
-let evilwitch = hyperwitch.Extend(EvilWitch)
+let evilwitch = hyperwitch.extend(EvilWitch)
 call evilwitch.Event()
 " }}}
 
@@ -298,7 +395,6 @@ call evilwitch.Event()
 " HWich-Register
 " ---------------------------------------------------------
 " {{{
-
 function! s:reg_On_Matched(key) dict
     let l:command = 'normal "' . a:key . 'p'
     try
@@ -331,14 +427,14 @@ function! s:reg_Event() dict
 endfunction
 
 let RegWitch = {
-    \ '__NAME':'RegWitch',
+    \ '__name':'RegWitch',
     \ 'OnMatched': function("s:reg_On_Matched"),
     \ 'AfterQuit': function("s:reg_After_Quit"),
     \ 'LoadIndex': function("s:reg_Load_Index"),
     \ 'Event': function("s:reg_Event")}
 
 if exists("regwitch")|unlet regwitch|endif
-let regwitch = hyperwitch.Extend(RegWitch)
+let regwitch = hyperwitch.extend(RegWitch)
 call regwitch.Event()
 " }}}
 
@@ -413,15 +509,15 @@ function! s:hwichtex_Load_Index() dict
         \ "kappa":         "κ",
         \ "bullet":        "∙",
         \ "circ":          "∘",
-        \ "quad": "1文字分のスペース",
-        \ "qquad": "2文字分のスペース",
-        \ "mathbf": "太字(ベクトル等)",
-        \ "mathbb": "黒板太字(集合)",
-        \ "bm": "斜体太字(格子Lに使う)",
-        \ "mathcal": "筆記体",
-        \ "textit": "イタリック",
-        \ "textgt": "ゴシック",
-        \ "KwRet": "Return (algorithm2e)",
+        \ "quad":          "1 space",
+        \ "qquad":         "2 space",
+        \ "mathbf":        "vector",
+        \ "mathbb":        "set",
+        \ "bm":            "itaric bold (for lattice 'L')",
+        \ "mathcal":       "cursive",
+        \ "textit":        "itaric",
+        \ "textgt":        "gosick",
+        \ "KwRet":         "Return (algorithm2e)",
         \ "tcp*[h]{ ${1:comment} }\;": "コメント(algorithm2e)",
         \ }
     " return map(tex_index, {-> substitute(v:key, '[^\d0-\d177]', '', 'g') })
@@ -433,14 +529,14 @@ function! s:hwichtex_Event() dict
 endfunction
 
 let Hwichtex = {
-    \ '__NAME':'Hwichtex',
+    \ '__name':'Hwichtex',
     \ 'OnMatched': function("s:hwichtex_On_Matched"),
     \ 'AfterQuit': function("s:hwichtex_After_Quit"),
     \ 'LoadIndex': function("s:hwichtex_Load_Index"),
     \ 'Event': function("s:hwichtex_Event")}
 
 if exists("hwichtex")|unlet hwichtex|endif
-let hwichtex = hyperwitch.Extend(Hwichtex)
+let hwichtex = hyperwitch.extend(Hwichtex)
 call hwichtex.Event()
 " }}}
 
@@ -451,12 +547,17 @@ call hwichtex.Event()
 " -----------------------------------------------------
 " HWich-Normal
 " -----------------------------------------------------
-" {{{
-" WARN: NOT WORKING YET
+" {{{ WARN: NOT WORKING YET
+function! s:get_raw_map_info(key) abort
+  return split(execute('map '.a:key), "\n")
+endfunction
+
 function! s:normal_On_Matched(key) dict
-    let l:command = "normal " . a:key
+    " let key_t = substitute(a:key, ' ', '\<space>', 'g')
+    let key_t = substitute(a:key, '<tab>', nr2char(9), 'g')
     try
-        execute l:command
+        " execute l:command
+        call feedkeys(key_t)
     catch /error!/
         echom "err occured"
     endtry
@@ -477,13 +578,13 @@ function! s:normal_Event() dict
 endfunction
 
 let NormalWitch = {
-    \ '__NAME': 'NormalWitch',
+    \ '__name': 'NormalWitch',
      \ 'OnMatched': function("s:normal_On_Matched"),
      \ 'AfterQuit': function("s:normal_After_Quit"),
      \ 'LoadIndex': function("s:normal_Load_Index"),
      \ 'Event': function("s:normal_Event")
      \ }
 
-let normalwitch = hyperwitch.Extend(NormalWitch)
+let normalwitch = hyperwitch.extend(NormalWitch)
 call normalwitch.Event()
 " }}}
