@@ -1,5 +1,21 @@
 scriptencoding utf-8
 
+" ---------------------------------------------------------------------------------------------------+
+" -- Commands \ Modes | Normal | Insert | Command | Visual | Select | Operator | Terminal | Lang-Arg |
+" -- ================================================================================================+
+" -- map  / noremap   |    @   |   -    |    -    |   @    |   @    |    @     |    -     |    -     |
+" -- nmap / nnoremap  |    @   |   -    |    -    |   -    |   -    |    -     |    -     |    -     |
+" -- map! / noremap!  |    -   |   @    |    @    |   -    |   -    |    -     |    -     |    -     |
+" -- imap / inoremap  |    -   |   @    |    -    |   -    |   -    |    -     |    -     |    -     |
+" -- cmap / cnoremap  |    -   |   -    |    @    |   -    |   -    |    -     |    -     |    -     |
+" -- vmap / vnoremap  |    -   |   -    |    -    |   @    |   @    |    -     |    -     |    -     |
+" -- xmap / xnoremap  |    -   |   -    |    -    |   @    |   -    |    -     |    -     |    -     |
+" -- smap / snoremap  |    -   |   -    |    -    |   -    |   @    |    -     |    -     |    -     |
+" -- omap / onoremap  |    -   |   -    |    -    |   -    |   -    |    @     |    -     |    -     |
+" -- tmap / tnoremap  |    -   |   -    |    -    |   -    |   -    |    -     |    @     |    -     |
+" -- lmap / lnoremap  |    -   |   @    |    @    |   -    |   -    |    -     |    -     |    @     |
+" ---------------------------------------------------------------------------------------------------+
+
 " Initialization {{{
     " プレフィックスを
     " ```
@@ -19,15 +35,15 @@ scriptencoding utf-8
     " https://thinca.hatenablog.com/entry/q-as-prefix-key-in-vim
 
     " m単体のキーがあった場合に停止する.
-    nnoremap m <Nop>
+    " nnoremap m <Nop>
     nnoremap mm m
-    nnoremap s <Nop>
+    " nnoremap s <Nop>
     nnoremap ss s
-    nnoremap , <Nop>
+    " nnoremap , <Nop>
     nnoremap ,, ,
-    nnoremap ; <Nop>
+    " nnoremap ; <Nop>
     nnoremap ;; ;
-    nnoremap <space> <Nop>
+    " nnoremap <space> <Nop>
 " }}}
 
 " コマンド上塗り系 {{{
@@ -58,8 +74,8 @@ nnoremap <up> gk
     " 開いているファイルのカレントディレクトリを開く
     nnoremap mt :sp<cr>:edit %:h<tab><cr>
 
-    " カーソル下の単語をハイライトする
-    nnoremap <silent> <Space><Space> "zyiw:let @/ = '\<' . @z . '\>'<CR>:set hlsearch<CR>
+    " カーソル下の単語をハイライトする -> アスタリスク'*'でできる
+    " nnoremap <silent> <Space><Space> "zyiw:let @/ = '\<' . @z . '\>'<CR>:set hlsearch<CR>
 
     " カーソル下の単語をハイライトしてから置換する
     nnoremap # <Space><Space>:%s/<C-r>///g<Left><Left>
@@ -91,9 +107,9 @@ nnoremap <up> gk
     " bracket
     nnoremap <tab> %
 
-    " 移動
-    nnoremap H ^
-    nnoremap L $
+    " 移動 -> Hはページのうえ，Lはページのした, Mでページの真ん中
+    " nnoremap H ^
+    " nnoremap L $
 "    nnoremap L g_
 
     " 読み込み
@@ -204,22 +220,22 @@ nnoremap <up> gk
     command! FilePath :echo expand("%:p")
 
     " python呼び出しの練習に使用(使ってない) {{{
-let s:script_dir = fnamemodify(resolve(expand('<sfile>', ':p')), ':h')
-function! s:Convert30()
-py3 << EOF
-import vim
-script_dir = vim.eval('s:script_dir')
-sys.path.insert(0, script_dir)
-import parser0
-def convert():
-    out = parser0.convert2(vim.current.line)
-    vim.current.line = out
-convert()
-EOF
-endfunction
-
-com! Conv30 call s:Convert30()
-nnoremap ,kkk :Conv30<CR>
+    " let s:script_dir = fnamemodify(resolve(expand('<sfile>', ':p')), ':h')
+    " function! s:Convert30()
+    " py3 << EOF
+    " import vim
+    " script_dir = vim.eval('s:script_dir')
+    " sys.path.insert(0, script_dir)
+    " import parser0
+    " def convert():
+    "     out = parser0.convert2(vim.current.line)
+    "     vim.current.line = out
+    " convert()
+    " EOF
+    " endfunction
+    "
+    " com! Conv30 call s:Convert30()
+    " nnoremap ,kkk :Conv30<CR>
     " }}}
 
     " " a note using floating window {{{
@@ -362,7 +378,10 @@ lua << EOF
     keys:set_map_n('<space>L', 'zR', 'open all folds')
 
     keys:set_map_n('<space>o', 'zMzv', 'close other folds')
+    keys:set_map_n('<space><tab>d', ':<C-u>call Logger.log("hugaga")<CR>', 'tttt')
+    keys:set_map_n('<space><tab>k', ':<C-u>echom 1<CR>', 'td')
 EOF
+source $HOME/.config/nvim/lua/hyper_which.vim
     " nnoremap <silent> <space>j zj
     " nnoremap <silent> <space>k zk
 
