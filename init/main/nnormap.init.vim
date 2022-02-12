@@ -314,7 +314,7 @@ lua << EOF
     keys:set_map_n('<space><tab>d', ':<C-u>call Logger.log("hugaga")<CR>', 'tttt')
     keys:set_map_n('<space><tab>k', ':<C-u>echom 1<CR>', 'td')
 EOF
-source $HOME/.config/nvim/lua/hyper_which.vim
+" source $HOME/.config/nvim/lua/hyper_which.vim
     " nnoremap <silent> <space>j zj
     " nnoremap <silent> <space>k zk
 
