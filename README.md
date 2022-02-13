@@ -1,6 +1,7 @@
 # My neovim configuration
 
 # Features
+- [fennel power🔥] using lisp for configuration.
 
 - **[Powerful editing]** using more than 80 plugins.
 
