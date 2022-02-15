@@ -3,13 +3,11 @@
 ; (macro M.se-2 [k v]
 ;   (if (= (type v) "boolean")
 ;         `(vim.api.nvim_set_option ,(tostring k) ,v) `(set ,(sym (.. "vim.o." (tostring k))) ,v) ))
-(macro se-m [k v]
+
+(macro seg [k v]
   `(set ,(sym (.. "vim.o." (tostring k))) ,v))
 
-;(fn se-t [k v]
-;  [:set (.. "vim.o". (tostring k)) v])
-
-(fn se []
+(fn hoge []
   (print "hoge"))
 
-{:se-m se2}
+{:sem hoge}

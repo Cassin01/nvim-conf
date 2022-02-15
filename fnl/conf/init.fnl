@@ -60,7 +60,7 @@
 ;   (if (= (type v) "boolean")
 ;         `(vim.api.nvim_set_option ,(tostring k) ,v) `(set ,(sym (.. "vim.o." (tostring k))) ,v) ))
 (macro se- [k v]
-  `(set ,(sym (.. "vim.o." (tostring k))) ,v))
+   `(set ,(sym (.. "vim.o." (tostring k))) ,v))
  
 ; auto
 (fn auc [eve pat rhs]
@@ -78,22 +78,18 @@
 ;; }}}
 
 ; TODO 1 fennelにマクロのパスを追加
-; (local fennel (require :fennel))
-; (fn my-searcher [module-name]
-;   (let [filename (.. "fnl/conf/" module-name ".fnl" )]
-;     (match (find-in-archive filename)
-;       code (values (partial fennel.eval code {:env :_COMPILER})
-;                    filename))))
-
-;(table.insert fennel.macro-searchers my-searcher)
+(local fennel (require :fennel))
+(fn my-searcher [module-name]
+  (let [filename (.. "fnl/conf/" module-name ".fnl" )]
+    (match (find-in-archive filename)
+      code (values (partial fennel.eval code {:env :_COMPILER})
+                   filename))))
+(table.insert fennel.macro-searchers my-searcher)
+(print fennel.macro-path)
 
 ; TODO 2 マクロの読み込み
-(local (module-name file-name) ...)
-(print module-name)
-(print fennel.macro-path)
-(import-macros {: se} :fnl.conf.macros)
 
-(print (vim.fn.expand "%:p"))
+(import-macros {: sem} :fnl.conf.macros)
 
 (let-g python2_host_prog "/usr/local/bin/python")
 (let-g python3_host_prog "/Users/cassin/.pyenv/shims/python")
