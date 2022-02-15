@@ -55,11 +55,13 @@
   "set 'k' to 'v' on vim.g table"
   `(tset vim.g ,(tostring k) ,v))
 
-; set
+;  set
+; (macro se- [k v]
+;   (if (= (type v) "boolean")
+;         `(vim.api.nvim_set_option ,(tostring k) ,v) `(set ,(sym (.. "vim.o." (tostring k))) ,v) ))
 (macro se- [k v]
-  (if (= (type v) "boolean")
-        `(vim.api.nvim_set_option ,(tostring k) ,v) `(set ,(sym (.. "vim.o." (tostring k))) ,v) ))
-
+  `(set ,(sym (.. "vim.o." (tostring k))) ,v))
+ 
 ; auto
 (fn auc [eve pat rhs]
   (let [data (bind {:kind "autocmd" : eve : pat : rhs})]
@@ -73,12 +75,15 @@
   (vim.cmd "autocmd!") ; TODO dirty stuff
   (vim.cmd f)
   (vim.cmd "augroup END"))
-
 ;; }}}
+
+(local fennel (require :fennel))
+; (import-macros {: se-m} :conf.macros)
+
+(print (vim.fn.expand "%:p"))
 
 (let-g python2_host_prog "/usr/local/bin/python")
 (let-g python3_host_prog "/Users/cassin/.pyenv/shims/python")
-
 (se- fenc "utf-8")
 (se- backup false)
 (se- swapfile false)
@@ -95,15 +100,13 @@
 (se- listchars "tab:»-,trail:□")
 (se- spell true)
 (se- spelllang "en,cjk")
-(vim.cmd "hi clear SpellBad")
 (se- ignorecase true)
+(vim.cmd "hi clear SpellBad")
 (vim.cmd "set mouse=a")
 (vim.cmd "lang en_US.UTf-8")
 (vim.cmd "filetype plugin indent on")
 (let-g my_color "purify")
 (vim.cmd "set t_8f=^[[38;2;%lu;%lu;%lum")
 (vim.cmd "set t_8b=^[[48;2;%lu;%lu;%lum")
-
-; (def-augroup "vimrcEx" (def-autocmd ["BufRead"] ["*"] "if line(\"'\\\"\") > 0 && line(\"'\\\"\") <= line(\"$\") | exe \"normal g`\\\"\" | endif")  )
 (let [cmd (auc ["BufRead"] ["*"] "if line(\"'\\\"\") > 0 && line(\"'\\\"\") <= line(\"$\") | exe \"normal g`\\\"\" | endif")]
 (aug "vimrcEx" cmd))
