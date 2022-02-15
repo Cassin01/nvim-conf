@@ -77,8 +77,21 @@
   (vim.cmd "augroup END"))
 ;; }}}
 
-(local fennel (require :fennel))
-; (import-macros {: se-m} :conf.macros)
+; TODO 1 fennelにマクロのパスを追加
+; (local fennel (require :fennel))
+; (fn my-searcher [module-name]
+;   (let [filename (.. "fnl/conf/" module-name ".fnl" )]
+;     (match (find-in-archive filename)
+;       code (values (partial fennel.eval code {:env :_COMPILER})
+;                    filename))))
+
+;(table.insert fennel.macro-searchers my-searcher)
+
+; TODO 2 マクロの読み込み
+(local (module-name file-name) ...)
+(print module-name)
+(print fennel.macro-path)
+(import-macros {: se} :fnl.conf.macros)
 
 (print (vim.fn.expand "%:p"))
 
