@@ -1,14 +1,11 @@
 # My neovim configuration
 
 # Features
-- [fennel power🔥] using lisp for configuration.
-
 - **[Powerful editing]** using more than 80 plugins.
 
 - **[Simple key-binding]** systematized prefix.
 
 ## Installation
-0. `$ make`
 1. ``pip3 install pynvim``
 2. check ``let g:python3_host_prog``'s (at ``init/main/main.init.vim``) path is collect
 3. Install [vim-plug](https://github.com/junegunn/vim-plug/releases) beforehand.
