@@ -1,8 +1,10 @@
 (import-macros {
                 :set-option se-
                 :let-global let-g
-                :def-aucmd auc
-                :def-autogroup aug} :macros.embedded)
+                } :macros.embedded)
+
+(import-macros
+  {: def-augroup : def-autocmd-fn } :zest.macros)
 
 (let-g python2_host_prog "/usr/local/bin/python")
 (let-g python3_host_prog "/Users/cassin/.pyenv/shims/python")
@@ -34,5 +36,9 @@
 (vim.cmd "set t_8f=^[[38;2;%lu;%lu;%lum")
 (vim.cmd "set t_8b=^[[48;2;%lu;%lu;%lum")
 
-(let [cmd (auc ["BufRead"] ["*"] "if line(\"'\\\"\") > 0 && line(\"'\\\"\") <= line(\"$\") | exe \"normal g`\\\"\" | endif") ]
-  (aug "vimrcEx" cmd))
+
+(def-augroup :restore-position
+  (def-autocmd-fn :BufReadPost "*"
+    (when (and (> (vim.fn.line "'\"") 1)
+               (<= (vim.fn.line "'\"") (vim.fn.line "$")))
+      (vim.cmd "normal! g'\""))))
