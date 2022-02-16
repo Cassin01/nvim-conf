@@ -1,4 +1,3 @@
-;(import-macros {: se1} :macros.embedded)
 (import-macros {
                 :set-option se-
                 :let-global let-g
