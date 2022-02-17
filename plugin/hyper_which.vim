@@ -1,12 +1,14 @@
 " ---------------------------------------------------------
 " Object
-" ---------------------------------------------------------
+" mattn 意外と知られていないvimのtips(vimでオブジェクト継承)
+" https://mattn.kaoriya.net/software/vim/20070817164837.htm
+" --------------------------------------------------------
 " {{{
-function! Class_prototype() dict
+function! s:class_prototype() dict
     return self
 endfunction
 
-function! Class_override(name, class_new) dict
+function! s:class_override(name, class_new) dict
     let class = copy(self)
     let class.__name = a:name
     let class.new = a:class_new
@@ -14,21 +16,21 @@ function! Class_override(name, class_new) dict
     return class
 endfunction
 
-function! Class_extend(class) dict
+function! s:class_extend(class) dict
     let class = copy(self)
     let class = extend(class, a:class)
     return class
 endfunction
 
-function! Class_New() dict
+function! s:class_new() dict
     let instance = copy(self)
-    call remove(instance, "New")
+    call remove(instance, "new")
     call remove(instance, "override")
     let instance.__super = self
     return instance
 endfunction
 
-function! Class_ToStrting() dict
+function! s:class_tostrting() dict
     return self.__name
 endfunction
 
@@ -40,17 +42,33 @@ endfunction
 let Object = #{
     \ __name: "Object",
     \ __super: {},
-    \ prototype: function("Class_prototype"),
-    \ override: function("Class_override"),
-    \ extend : function("Class_extend"),
-    \ new: function("Class_New"),
+    \ prototype: function("s:class_prototype"),
+    \ override: function("s:class_override"),
+    \ extend : function("s:class_extend"),
+    \ new: function("s:class_new"),
     \ super: function("s:super"),
-    \ tostring: function("Class_ToStrting")}
+    \ tostring: function("s:class_tostrting")}
 
 " TEST
 " if exists("object")|unlet object|endif
 " let object = Object.New()
 " echo object.tostring()
+" }}}
+
+" ---------------------------------------------------------
+" key
+" ---------------------------------------------------------
+" {{
+function! s:get_i(self) dict
+    return self.n
+endfunction
+function! s:new() dict
+    let instance = copy(self)
+    let instance.n = {}
+    let instance.get_i = function("s:get_i")
+    let instance.new = function("s:key_new")
+    return instance
+endfunction
 " }}}
 
 " ---------------------------------------------------------
@@ -148,7 +166,7 @@ endfunction
 " View
 " args
 "   - inputted_length: the length of inputted characters
-function! s:formatter(matched, inputted_length)
+function! s:formatter(matched, inputted_length, column_size)
     let l:formatted_lines = []
     for l:k in sort(keys(a:matched))
         let l:k_tmp = substitute(l:k,' ' ,g:hwhich_char_space, 'g') " COMBAK
@@ -157,7 +175,7 @@ function! s:formatter(matched, inputted_length)
     endfor
 
     " 列の数
-    let s:split_num = &columns / 50
+    let s:split_num = a:column_size / 50
 
     " 行の数
     let row_size = (len(l:formatted_lines) + s:split_num - 1) / s:split_num
@@ -231,7 +249,7 @@ function! s:listen_commands(self) dict
             let l:inputted_st = l:inputted_st . nr2char(l:c)
             let l:matched = copy(filter(l:keys_dict, {key, _ -> s:incremental_search(l:inputted_st, key)}))
         endif
-        call nvim_buf_set_lines(s:buf, 0, -1, v:true, s:formatter(l:matched, strchars(l:inputted_st)))
+        call nvim_buf_set_lines(s:buf, 0, -1, v:true, s:formatter(l:matched, strchars(l:inputted_st), self.column_size))
 
         let buf_row = nvim_buf_line_count(s:buf)
         let row_offset = &cmdheight + (&laststatus > 0 ? 1 : 0)
@@ -286,7 +304,13 @@ function! s:Witch(self) dict
 
     let l:keys_dict = self.LoadIndex()
     let l:keys_dict = s:key_converter_for_input(l:keys_dict)
-    call nvim_buf_set_lines(s:buf, 0,-1, v:true, s:formatter(l:keys_dict, 0))
+
+    if self.column_size < 55
+        let self.column_size = &columns
+    else
+        let self.window.config.col = &columns - self.column_size
+    endif
+    call nvim_buf_set_lines(s:buf, 0,-1, v:true, s:formatter(l:keys_dict, 0, self.column_size))
 
     let buf_row = nvim_buf_line_count(s:buf)
     let row_offset = &cmdheight + (&laststatus > 0 ? 1 : 0)
@@ -334,6 +358,7 @@ function! s:hyperwitch_new(...) dict
     let instance = copy(self)
     let instance.win_config = {}
     let instance.window = instance.super().new()
+    let instance.column_size = 0
     let instance.Listen = function('s:listen_commands')
     let instance.OnMatched = function("s:On_Matched")
     let instance.AfterQuit = function("s:After_Quit")
@@ -587,4 +612,58 @@ let NormalWitch = {
 
 let normalwitch = hyperwitch.extend(NormalWitch)
 call normalwitch.Event()
+" }}}
+
+" ---------------------------------------------------------
+" HWich-bookmark
+" ---------------------------------------------------------
+" {{{
+let s:bookmark = {
+            \ "home: nvim": "~/.config/nvim/",
+            \ "fnl: nvim": "~/.config/nvim/fnl",
+            \ "plug: nvim": "~/.config/nvim/plugin",
+            \ "vim: nvim": "~/.config/nvim/init/main",
+            \ "lua: nvim": "~/.config/nvim/lua",
+            \ "macros: nvim": "~/.config/nvim/lua/macros",
+            \ }
+
+function! s:bookmark_On_Matched(key) dict
+    let command = "e " . s:bookmark[a:key]
+    try
+        " execute l:command
+        execute command
+    catch /error!/
+        echom "err occured"
+    endtry
+endfunction
+
+function! s:bookmark_After_Quit() dict
+endfunction
+
+function! s:bookmark_Load_Index() dict
+    let bookmark_view = {}
+    for k in keys(s:bookmark)
+        let bookmark_view[k] = k . s:bookmark[k]
+    endfor
+    return bookmark_view
+endfunction
+
+function! s:bookmark_Event() dict
+    nnoremap <silent> <buffer>
+        \ <plug>(hwhich-bookmark)
+        \ :<c-u>call bookmark_wich.Witch(bookmark_wich)<cr>
+    nmap <silent> ,book <plug>(hwhich-bookmark)
+endfunction
+
+let BookmarkWich = {
+            \ '__name': 'BookmarkWich',
+            \ 'column_size': 55,
+            \ 'OnMatched': function("s:bookmark_On_Matched"),
+            \ 'AfterQuit': function("s:bookmark_After_Quit"),
+            \ 'LoadIndex': function("s:bookmark_Load_Index"),
+            \ 'Event': function("s:bookmark_Event")
+            \ }
+
+let bookmark_wich = hyperwitch.extend(BookmarkWich)
+call bookmark_wich.Event()
 " }}}
