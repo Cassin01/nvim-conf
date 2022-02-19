@@ -45,7 +45,6 @@ EOF
 " 情報を表示
 " inoremap <silent>  <c-o>:lua keys:show_i()<cr>
 
-
 " floating window
 " ref: https://qiita.com/delphinus/items/a202d0724a388f6cdbc3
 function! s:search_selected_key()
@@ -79,204 +78,6 @@ function! s:incremental_search(str, txt)
     return v:true
 endfunction
 
-function! s:add_spaces(str, num)
-    let l:new_str = a:str
-    for l:i in range(0, a:num)
-        let l:new_str = l:new_str . ' '
-    endfor
-    return l:new_str
-endfunction
-
-function! s:trimer(str, till)
-    let l:new_str = ""
-    for l:i in range(0, len(a:str)-1)
-        if l:i > a:till
-            return l:new_str
-        endif
-        let l:new_str  = l:new_str . a:str[l:i]
-    endfor
-    return l:new_str
-endfunction
-function! s:formatter(matched, inputed_length)
-    let l:formatted_lines = []
-    for l:k in sort(keys(a:matched))
-        call add(l:formatted_lines, '      ' . strcharpart(l:k, a:inputed_length, a:inputed_length+1) . ' → ' .  strpart(s:add_spaces(a:matched[l:k], 45)  , 0, 45) )
-    endfor
-
-    let s:split_num = &columns / 50
-
-    let l:actuall_lines = []
-    let l:i = 0
-    let l:each_line = ""
-    for l:k in l:formatted_lines
-        let l:each_line = l:each_line . l:k
-        let l:i =l:i + 1
-        if l:i % s:split_num == 0
-            call add(l:actuall_lines, l:each_line)
-            let l:each_line = ""
-        endif
-    endfor
-    return l:actuall_lines
-endfunction
-
-function! s:ceil(a, b)
-    return  (a:a + a:b - 1) / a:b
-endfunction
-
-function! s:evil_witch_syntax()
-    " https://github.com/liuchengxu/vim-which-key/tree/master/syntax
-    if exists('b:current_syntax')
-        finish
-    endif
-    let b:current_syntax = 'evil_witch'
-    let s:sep = '→'
-    execute 'syntax match WitchKeySeperator' '/'.s:sep.'/' 'contained'
-    execute 'syntax match WitchKey' '/\(^\s*\|\s\{2,}\)\S.\{-}'.s:sep.'/' 'contains=WitchKeySeperator'
-    syntax match WhichKeyGroup / +[0-9A-Za-z_/-]*/
-    syntax region WhichKeyDesc start="^" end="$" contains=WitchKey, WitchKeyGroup, WitchKeySeperator
-
-    highlight default link WitchKey          Function
-    highlight default link WitchKeySeperator DiffAdded
-    highlight default link WitchKeyGroup     Keyword
-    highlight default link WitchKeyDesc      Identifier
-endfunction
-
-function! s:listen_commands()
-    redraw!
-    setlocal filetype=evil_witch
-
-    let l:keys_dict = luaeval('keys:get_i()')
-    let l:inputted_st = ""
-    while v:true
-        let l:c = ""
-        if getchar(1)
-            let l:c = getchar()
-        else
-            continue
-        endif
-        let l:inputted_st = l:inputted_st . nr2char(l:c)
-        let l:matched = filter(l:keys_dict, {key, _ -> s:incremental_search(l:inputted_st, key)})
-
-        " call nvim_buf_set_lines(s:buf, 0, -1, v:true, values(map(l:matched, {key, val -> key . ' ' . val})))
-        call nvim_buf_set_lines(s:buf, 0, -1, v:true, s:formatter(l:matched, strchars(l:inputted_st)))
-        " echom values(map(l:matched, {key, val -> key . ' ' . val}))
-
-        let l:line_size = s:ceil(len(values(map(l:matched, {key, val -> key . ' ' . val}))), s:split_num)+1
-        " call nvim_win_set_height(s:win, line_size)
-        let s:opts.height=line_size
-        let s:opts.row = &lines-line_size-s:row_offset
-        call nvim_win_set_config(s:win, s:opts)
-        redraw!
-
-        if len(l:matched) == 1
-            return l:matched
-        endif
-        if len(l:matched) == 0
-            return l:matched
-        endif
-    endwhile
-endfunction
-
-function! s:key_selecter()
-    let l:matched = s:listen_commands()
-    if len(l:matched) == 1
-        let l:command = "normal a" . keys(l:matched)[0]
-        execute "quit"
-        try
-            execute l:command
-        catch /error!/
-            echom "err occured"
-        endtry
-        startinsert
-    else
-        execute "quit"
-        startinsert
-    endif
-endfunction
-
-function! s:escape()
-    execute "quit"
-    startinsert
-endfunction
-
-function! s:key_window()
-    let s:buf = nvim_create_buf(v:false, v:true)
-    " call nvim_buf_set_lines(s:buf, 0, 0, v:true, luaeval('keys:get_info()') )
-
-    let l:keys_dict = luaeval('keys:get_i()')
-    call nvim_buf_set_lines(s:buf, 0, 0, v:true, s:formatter(l:keys_dict, 0))
-    " let opts = {'relative': 'cursor', 'width': 30, 'height': 15, 'col': 0,
-    "             \ 'row': 1, 'anchor': 'NW', 'style': 'minimal'}
-
-    let s:row_offset = &cmdheight + (&laststatus > 0 ? 1 : 0)
-    let s:opts = {'relative': 'win', 'height': nvim_buf_line_count(s:buf), 'col': 0,
-                \ 'row': &lines-nvim_buf_line_count(s:buf)-s:row_offset, 'anchor': 'NW', 'style': 'minimal'}
-    let s:opts.width = &columns - s:opts.col
-
-    let s:win = nvim_open_win(s:buf, 1, s:opts)
-
-    " optional: change highlight, otherwise Pmenu is used
-    call nvim_win_set_option(s:win, 'winhl', 'Normal:Pmenu')
-
-    call s:evil_witch_syntax()
-
-    " 疑似的に半透明にする
-    call nvim_win_set_option(s:win, 'winblend', 60)
-
-    " command! KeyWindowE call s:search_selected_key()
-    " nnoremap <buffer> <silent> ,d :KeyWindowE<CR>
-    " command! SelecteE call s:key_selecter()
-    " nnoremap <buffer> <silent> <space> :SelecteE<CR>
-    command! WichESC call s:escape()
-    nnoremap <buffer> <silent> <esc> :WichESC<CR>
-    call s:key_selecter()
-endfunction
-
-command! KeyWindow :call s:key_window()
-nnoremap <silent> ,d :KeyWindow<CR>
-inoremap <silent>  <esc>:KeyWindow<cr>
-
-        " " p
-        " inoremap <silent>π <up>
-
-        " " n
-        " inoremap <silent>˜ <down>
-
-        " " f
-        " inoremap <silent>ƒ <right>
-
-        " " b
-        " inoremap <silent>∫ <left>
-
-        " " e: 行末
-        " inoremap <silent>´ <END>
-
-        " " a: 行頭
-        " inoremap <silent>å <C-o>:call <SID>to_head_of_line()<CR>
-
-        " " k: 現在のカーソル位置から行末尾までを切り取り
-        " inoremap <silent>˚ <C-r>=<SID>retrive_till_tail()<CR>
-
-        " " d: Delete カーソルの後ろを削除
-        " inoremap <silent>∂ <Del>
-
-        " " h: backspace カーソルの前を削除
-        " inoremap <silent>˙ <c-h>
-
-        " " y: 貼り付け
-        " inoremap <silent>¥ <esc>pa
-
-        " " shift+option+f 1単語前に移動
-        " inoremap <silent>Ï <esc>ea
-
-        " " shift+option+b 1単語後に移動
-        " inoremap <silent>ı <esc>bi
-
-        " " -: undo
-        " inoremap <silent>— <esc>ua
-
-        " " +: redo
-        " inoremap <silent>± <esc><c-r>a
     else
         " enter digraph
         inoremap <silent><C-k> <up>
@@ -332,37 +133,9 @@ inoremap <silent>  <esc>:KeyWindow<cr>
     endfunction
     " }}}
 
-"     " Show current IME status on cursor color. {{{
-" augroup IMEInsert
-"     autocmd InsertCharPre * :call s:currentIME()
-" augroup END
-" let s:script_dir = fnamemodify(resolve(expand('<sfile>', ':p')), ':h')
-" function! s:currentIME()
-" py3 << EOF
-" import vim
-" script_dir = vim.eval('s:script_dir')
-" sys.path.insert(0, script_dir)
-" import ime
-" vim.command("let s:ime_result = %d" % int(ime.current_ime()))
-" EOF
-" let s:capstatus = system('xset -q | grep "Caps Lock" | awk ''{print $4}''')
-" if s:capstatus[0:-2] == 'on'
-"     echom 'called'
-"     highlight iCursor guibg=#8F1D21
-"     set guicursor+=i:ver25-iCursor
-" elseif s:ime_result == 0
-"     highlight iCursor guibg=#cc6666
-"     set guicursor+=i:ver25-iCursor
-" else
-"     highlight iCursor guibg=#5FAFFF
-"     set guicursor+=i:ver25-iCursor
-" endif
-" endfunction
-"     "}}}
-
     " 括弧補完 {{{
-        inoremap () ()<left>
-        inoremap {} {}<left>
+        "inoremap () ()<left>
+        "inoremap {} {}<left>
         inoremap [] []<left>
 
         " 例外処理: の後に続けて)を押したとき
@@ -501,6 +274,15 @@ inoremap <silent>  <esc>:KeyWindow<cr>
                 \<left><left><left>
         endfunction
 
+        function! s:bracket_helper()
+            let f1 = match(getline('.'), '.', col('.')-1, 1)!=col('.')-1
+            let f2 = match(getline('.'), ' ', col('.')-1, 1) == col('.')-1
+            let f3 = match(getline('.'), ')', col('.')-1, 1) == col('.')-1
+            let f4 = match(getline('.'), ']', col('.')-1, 1) == col('.')-1
+            let f5 = match(getline('.'), '}', col('.')-1, 1) == col('.')-1
+            return f1 || f2 || f3 || f4 || f5
+        endfunction
+
         " 波括弧補完 {{{
             " 改行補完 {{{
             " indentについて: http://psy.swansea.ac.uk/staff/carter/Vim/vim_indent.html
@@ -515,8 +297,7 @@ inoremap <silent>  <esc>:KeyWindow<cr>
                 function! s:curly_bracket_completion2()
                     " カーソルの後ろに文字がない
                     " または空白文字があるときに閉じ括弧を補完
-                    if matchstr(getline('.'), '.', col('.'), 1)==''
-                        \ || match(getline('.'), ' ', col('.'), 1) >= 0
+                    if s:bracket_helper()
                         return "{}\<left>"
                     else
                         return "{"
@@ -528,25 +309,25 @@ inoremap <silent>  <esc>:KeyWindow<cr>
         " 括弧補完 {{{
             " 改行補完 {{{
             " indentについて: http://psy.swansea.ac.uk/staff/carter/Vim/vim_indent.html
-                function! s:bracket_completion1()
-                    let l:tabs = join(map(range(1, indent(line(".")) + &tabstop), {_index, _val -> " "}), '')
-                    return "()\<left>\<cr>\<cr>\<up>" . l:tabs
-                endfunction
-                inoremap <expr> (<enter> <SID>bracket_completion1()
+            function! s:bracket_completion1()
+                let l:tabs = join(map(range(1, indent(line(".")) + &tabstop), {_index, _val -> " "}), '')
+                return "()\<left>\<cr>\<cr>\<up>" . l:tabs
+            endfunction
+            inoremap <expr> (<enter> <SID>bracket_completion1()
             " }}}
 
             " 閉じ括弧補完 {{{
-                function! s:bracket_completion2()
-                    " カーソルの後ろに文字がない
-                    " または空白文字があるときに閉じ括弧を補完
-                    if matchstr(getline('.'), '.', col('.'), 1)==''
-                        \ || match(getline('.'), ' ', col('.'), 1) >= 0
-                        return "()\<left>"
-                    else
-                        return "("
-                    endif
-                endfunction
-                inoremap <expr> ( <SID>bracket_completion2()
+            function! s:bracket_completion2()
+                " カーソルの後ろに文字がない
+                " または空白文字があるときに閉じ括弧を補完
+                " またはカッコがある時
+                if s:bracket_helper()
+                    return "()\<left>"
+                else
+                    return "("
+                endif
+            endfunction
+            inoremap <expr> ( <SID>bracket_completion2()
             " }}}
         " }}}
     " }}}
