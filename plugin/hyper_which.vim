@@ -9,7 +9,7 @@ function! s:class_prototype() dict
 endfunction
 
 function! s:class_override(name, class_new) dict
-    let class = copy(self)
+    let class = deepcopy(self)
     let class.__name = a:name
     let class.new = a:class_new
     let class.__super = self
@@ -17,13 +17,13 @@ function! s:class_override(name, class_new) dict
 endfunction
 
 function! s:class_extend(class) dict
-    let class = copy(self)
+    let class = deepcopy(self)
     let class = extend(class, a:class)
     return class
 endfunction
 
 function! s:class_new() dict
-    let instance = copy(self)
+    let instance = deepcopy(self)
     call remove(instance, "new")
     call remove(instance, "override")
     let instance.__super = self
@@ -58,12 +58,12 @@ let Object = #{
 " ---------------------------------------------------------
 " key
 " ---------------------------------------------------------
-" {{
+" {{{
 function! s:get_i(self) dict
     return self.n
 endfunction
 function! s:new() dict
-    let instance = copy(self)
+    let instance = deepcopy(self)
     let instance.n = {}
     let instance.get_i = function("s:get_i")
     let instance.new = function("s:key_new")
@@ -82,13 +82,13 @@ endfunction
 
 function! s:window_start(self, config) dict
     let self.config = extend(self.config, a:config)
-    let self.win = nvim_open_win(s:buf, 1, copy(self.config))
+    let self.win = nvim_open_win(s:buf, 1, deepcopy(self.config))
     call nvim_win_set_option(self.win, 'winblend', 10)
 
 endfunction
 
 function! s:window_new() dict
-    let instance = copy(self)
+    let instance = deepcopy(self)
     let instance.config = {
         \ 'col': 0,
         \ 'relative': "editor",
@@ -102,7 +102,6 @@ function! s:window_new() dict
     return instance
 endfunction
 let Window = Object.override("Window", function("s:window_new"))
-
 " }}}
 
 " ---------------------------------------------------------
@@ -231,8 +230,7 @@ endfunction
 
 function! s:listen_commands(self) dict
     redraw!
-    setlocal filetype=evil_witch
-    let l:keys_dict = self.LoadIndex()
+    let l:keys_dict = self.LoadIndex(self)
     let l:keys_dict = s:key_converter_for_input(l:keys_dict)
     let l:inputted_st = ""
     while v:true
@@ -244,10 +242,10 @@ function! s:listen_commands(self) dict
         endif
         if l:c == 13
             " when <cr> plessed evaluate input immediately.
-            let l:matched = copy(filter(l:keys_dict, {key, _ -> l:inputted_st ==# key}))
+            let l:matched = deepcopy(filter(l:keys_dict, {key, _ -> l:inputted_st ==# key}))
         else
             let l:inputted_st = l:inputted_st . nr2char(l:c)
-            let l:matched = copy(filter(l:keys_dict, {key, _ -> s:incremental_search(l:inputted_st, key)}))
+            let l:matched = deepcopy(filter(l:keys_dict, {key, _ -> s:incremental_search(l:inputted_st, key)}))
         endif
         call nvim_buf_set_lines(s:buf, 0, -1, v:true, s:formatter(l:matched, strchars(l:inputted_st), self.column_size))
 
@@ -256,10 +254,6 @@ function! s:listen_commands(self) dict
         let k = {'height': buf_row, 'row': &lines-buf_row-row_offset-1, 'width': &columns-self.window.config.col}
         call self.window.update(self.window, k)
 
-
-        " let self.win_config.height=buf_row
-        " let self.win_config.row = &lines-buf_row-s:row_offset - 1
-        " call nvim_win_set_config(s:win, self.win_config)
         call s:hyper_wich_syntax()
 
         redraw!
@@ -276,10 +270,10 @@ endfunction
 function! s:On_Matched() dict
 endfunction
 
-function! s:After_Quit() dict
+function! s:After_Quit(self) dict
 endfunction
 
-function! s:Load_Index() dict
+function! s:Load_Index(self) dict
     return {}
 endfunction
 
@@ -291,18 +285,20 @@ function! s:key_selecter(self) dict
     if len(l:matched) == 1
         execute "quit"
         call self.OnMatched(keys(l:matched)[0])
-        call self.AfterQuit()
+        call self.AfterQuit(self)
     else
         echom "matched nothing"
         execute "quit"
-        call self.AfterQuit()
+        call self.AfterQuit(self)
     endif
 endfunction
 
 function! s:Witch(self) dict
+    let self.filetype=&filetype
+
     let s:buf = nvim_create_buf(v:false, v:true)
 
-    let l:keys_dict = self.LoadIndex()
+    let l:keys_dict = self.LoadIndex(self)
     let l:keys_dict = s:key_converter_for_input(l:keys_dict)
 
     if self.column_size < 55
@@ -317,33 +313,9 @@ function! s:Witch(self) dict
 
     let k = {'height': buf_row, 'row': &lines-buf_row-row_offset-1, 'width': &columns-self.window.config.col}
     call self.window.start(self.window, k)
-
-    " let self.win_config = {
-    "     \ 'relative': 'editor',
-    "     \ 'anchor': 'NW',
-    "     \ 'style': 'minimal',
-    "     \ 'border': 'rounded',
-    "     \ 'col': 0,
-    "     \ }
-    " let s:row_offset = &cmdheight + (&laststatus > 0 ? 1 : 0)
-    " let buf_row = nvim_buf_line_count(s:buf)
-    " let self.win_config.width = &columns - self.win_config.col
-
-    " let self.win_config.height = buf_row
-    " let self.win_config.row = &lines-buf_row-s:row_offset - 1
-
-    " let s:win = nvim_open_win(s:buf, 1, self.win_config)
-
-    " " optional: change highlight, otherwise Pmenu is used
-    " call nvim_win_set_option(s:win, 'winhl', 'Normal:Pmenu')
+    setlocal filetype=evil_witch
 
     call s:hyper_wich_syntax()
-
-    " " 疑似的に半透明にする
-    " call nvim_win_set_option(s:win, 'winblend', 10)
-
-    " command! WichESC call s:escape()
-    " nnoremap <buffer> <silent> <esc> :WichESC<CR>
 
     nnoremap <silent> <buffer>
         \ <plug>(session-close)
@@ -355,7 +327,7 @@ function! s:Witch(self) dict
 endfunction
 
 function! s:hyperwitch_new(...) dict
-    let instance = copy(self)
+    let instance = deepcopy(self)
     let instance.win_config = {}
     let instance.window = instance.super().new()
     let instance.column_size = 0
@@ -390,11 +362,11 @@ function! s:evil_On_Matched(key) dict
     endtry
 endfunction
 
-function! s:evil_After_Quit() dict
+function! s:evil_After_Quit(self) dict
     startinsert
 endfunction
 
-function! s:evil_Load_Index() dict
+function! s:evil_Load_Index(self) dict
     return luaeval('keys:get_i()')
 endfunction
 
@@ -429,11 +401,11 @@ function! s:reg_On_Matched(key) dict
     endtry
 endfunction
 
-function! s:reg_After_Quit() dict
+function! s:reg_After_Quit(self) dict
     " startinsert!
 endfunction
 
-function! s:reg_Load_Index() dict
+function! s:reg_Load_Index(self) dict
      let regs=split('abcdefghijklmnopqrstuvwxyz0123456789/-"', '\zs')
      let l:reg_index = {}
      for reg_key in regs
@@ -477,11 +449,11 @@ function! s:hwichtex_On_Matched(key) dict
     endtry
 endfunction
 
-function! s:hwichtex_After_Quit() dict
+function! s:hwichtex_After_Quit(self) dict
     startinsert!
 endfunction
 
-function! s:hwichtex_Load_Index() dict
+function! s:hwichtex_Load_Index(self) dict
     let tex_index = {
         \ "mathbb{R}":     "ℝ",
         \ "mathbb{z}":     "ℤ",
@@ -569,6 +541,78 @@ call hwichtex.Event()
 " HWich-UltiSnips
 " ---------------------------------------------------------
 
+" INFO
+" search with file type -> filetype.snippet
+" directory: g:UltiSnipsSnippetsDir like `~/.config/nvim/UltiSnips`
+let s:ultisnips_index = {}
+
+function! s:ultisnips_On_Matched(key) dict
+    let command = "normal a" . a:key . "\<tab>"
+    try
+        " execute l:command
+        execute command
+    catch /error!/
+        echom "err occured"
+    endtry
+endfunction
+
+function! s:ultisnips_After_Quit(self) dict
+    let self.column_size = 55
+endfunction
+
+
+
+" helper function
+
+function! s:_parser(path)
+
+    if !filereadable(a:path)
+        echom 'file: ' . a:path . ' not exists'
+        return {}
+    endif
+    let lines = readfile(a:path)
+    let ret = {}
+    for line in lines
+        let table = split(line)
+        if len(table) >= 3
+            if table[0] ==# 'snippet'
+                let ret[table[1]] = table[2]
+            endif
+        endif
+    endfor
+    return ret
+endfunction
+
+function! s:ultisnips_Load_Index(self) dict
+    if !exists("g:UltiSnipsSnippetsDir")
+        echom 'ultisnips not loaded on vim'
+        return {}
+    endif
+
+    let path = g:UltiSnipsSnippetsDir . '/' . self.filetype . '.snippets'
+    let new_index = s:_parser(expand(path))
+    let ultisnips_index = new_index
+    return new_index
+endfunction
+
+function! s:ultisnips_Event() dict
+    nnoremap <silent> <plug>(hwich-ultisnips) :<c-u>call ultisnips_wich.Witch(ultisnips_wich)<cr>
+    nmap <silent> ,ult <plug>(hwich-ultisnips)
+endfunction
+
+let UltiSnipsWich = {
+            \ '__name': 'UltiSnipsWich',
+            \ 'column_size': 55,
+            \ 'OnMatched': function("s:ultisnips_On_Matched"),
+            \ 'AfterQuit': function("s:ultisnips_After_Quit"),
+            \ 'LoadIndex': function("s:ultisnips_Load_Index"),
+            \ 'Event': function("s:ultisnips_Event")
+            \ }
+
+let ultisnips_wich = hyperwitch.extend(UltiSnipsWich)
+call ultisnips_wich.Event()
+" }}}
+
 " ---------------------------------------------------------
 " HWich-Normal
 " ---------------------------------------------------------
@@ -588,15 +632,15 @@ function! s:normal_On_Matched(key) dict
     endtry
 endfunction
 
-function! s:normal_After_Quit() dict
+function! s:normal_After_Quit(self) dict
 endfunction
 
-function! s:normal_Load_Index() dict
+function! s:normal_Load_Index(self) dict
     return luaeval('keys:get_n()')
 endfunction
 
 function! s:normal_Event() dict
-    nnoremap <silent> <buffer>
+    nnoremap <silent>
         \ <plug>(hwhich-normal)
         \ :<c-u>call normalwitch.Witch(normalwitch)<cr>
     nmap <silent> ,nor <plug>(hwhich-normal)
@@ -619,12 +663,14 @@ call normalwitch.Event()
 " ---------------------------------------------------------
 " {{{
 let s:bookmark = {
-            \ "home: nvim": "~/.config/nvim/",
-            \ "fnl: nvim": "~/.config/nvim/fnl",
-            \ "plug: nvim": "~/.config/nvim/plugin",
-            \ "vim: nvim": "~/.config/nvim/init/main",
-            \ "lua: nvim": "~/.config/nvim/lua",
+            \ "home: nvim":   "~/.config/nvim",
+            \ "fnl: nvim":    "~/.config/nvim/fnl",
+            \ "plug: nvim":   "~/.config/nvim/main/plugin",
+            \ "vim: nvim": "   ~/.config/nvim/init/main",
             \ "macros: nvim": "~/.config/nvim/lua/macros",
+            \ "packer: nvim": "~/.config/nvim/lua/plugins.lua",
+            \ "snip: nvim":   "~/.config/nvim/UltiSnips",
+            \ "which: nvim":  "~/.config/nvim/plugin/hyper_which.vim"
             \ }
 
 function! s:bookmark_On_Matched(key) dict
@@ -637,10 +683,11 @@ function! s:bookmark_On_Matched(key) dict
     endtry
 endfunction
 
-function! s:bookmark_After_Quit() dict
+function! s:bookmark_After_Quit(self) dict
+    let self.column_size = 55
 endfunction
 
-function! s:bookmark_Load_Index() dict
+function! s:bookmark_Load_Index(self) dict
     let bookmark_view = {}
     for k in keys(s:bookmark)
         let bookmark_view[k] = k . s:bookmark[k]
@@ -649,9 +696,7 @@ function! s:bookmark_Load_Index() dict
 endfunction
 
 function! s:bookmark_Event() dict
-    nnoremap <silent> <buffer>
-        \ <plug>(hwhich-bookmark)
-        \ :<c-u>call bookmark_wich.Witch(bookmark_wich)<cr>
+    nnoremap <silent> <plug>(hwhich-bookmark) :<c-u>call bookmark_wich.Witch(bookmark_wich)<cr>
     nmap <silent> ,book <plug>(hwhich-bookmark)
 endfunction
 
