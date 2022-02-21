@@ -540,6 +540,7 @@ call hwichtex.Event()
 " ---------------------------------------------------------
 " HWich-UltiSnips
 " ---------------------------------------------------------
+" {{{
 
 " INFO
 " search with file type -> filetype.snippet
@@ -560,10 +561,7 @@ function! s:ultisnips_After_Quit(self) dict
     let self.column_size = 55
 endfunction
 
-
-
 " helper function
-
 function! s:_parser(path)
 
     if !filereadable(a:path)
