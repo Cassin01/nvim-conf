@@ -563,7 +563,6 @@ endfunction
 
 " helper function
 function! s:_parser(path)
-
     if !filereadable(a:path)
         echom 'file: ' . a:path . ' not exists'
         return {}
@@ -581,6 +580,15 @@ function! s:_parser(path)
     return ret
 endfunction
 
+" (s:add_spaces(a:matched[l:k], 45)  , 0, 45)
+function! s:gen_view(index)
+    let index_view = {}
+    for k in keys(a:index)
+        let index_view[k] = '[' . k . '] ' . a:index[k]
+    endfor
+    return index_view
+endfunction
+
 function! s:ultisnips_Load_Index(self) dict
     if !exists("g:UltiSnipsSnippetsDir")
         echom 'ultisnips not loaded on vim'
@@ -590,7 +598,14 @@ function! s:ultisnips_Load_Index(self) dict
     let path = g:UltiSnipsSnippetsDir . '/' . self.filetype . '.snippets'
     let new_index = s:_parser(expand(path))
     let ultisnips_index = new_index
-    return new_index
+
+    let index_view = {}
+    for k in keys(new_index)
+        let index_view[k] = '[' . k . '] ' . new_index[k]
+    endfor
+
+
+    return index_view
 endfunction
 
 function! s:ultisnips_Event() dict
@@ -661,14 +676,14 @@ call normalwitch.Event()
 " ---------------------------------------------------------
 " {{{
 let s:bookmark = {
-            \ "home: nvim":   "~/.config/nvim",
-            \ "fnl: nvim":    "~/.config/nvim/fnl",
-            \ "plug: nvim":   "~/.config/nvim/main/plugin",
-            \ "vim: nvim": "   ~/.config/nvim/init/main",
-            \ "macros: nvim": "~/.config/nvim/lua/macros",
-            \ "packer: nvim": "~/.config/nvim/lua/plugins.lua",
-            \ "snip: nvim":   "~/.config/nvim/UltiSnips",
-            \ "which: nvim":  "~/.config/nvim/plugin/hyper_which.vim"
+            \ "home":   "~/.config/nvim",
+            \ "fnl":    "~/.config/nvim/fnl",
+            \ "plug":   "~/.config/nvim/init/main/plugin",
+            \ "vim":    "~/.config/nvim/init/main",
+            \ "macros": "~/.config/nvim/lua/macros",
+            \ "packer": "~/.config/nvim/lua/plugins.lua",
+            \ "snip":   "~/.config/nvim/UltiSnips",
+            \ "which":  "~/.config/nvim/plugin/hyper_which.vim"
             \ }
 
 function! s:bookmark_On_Matched(key) dict
@@ -685,13 +700,25 @@ function! s:bookmark_After_Quit(self) dict
     let self.column_size = 55
 endfunction
 
+function! s:max_length(index)
+    let length = 0
+    for k in keys(a:index)
+        if length < len(k)
+            let length = len(k)
+        endif
+    endfor
+    return length
+endfunction
+
 function! s:bookmark_Load_Index(self) dict
     let bookmark_view = {}
+    let max_key_length = s:max_length(s:bookmark)
     for k in keys(s:bookmark)
-        let bookmark_view[k] = k . s:bookmark[k]
+        let bookmark_view[k] = strpart(s:add_spaces('[' . k . ']',max_key_length+3),0,max_key_length+3) . s:bookmark[k]
     endfor
     return bookmark_view
 endfunction
+" (s:add_spaces(a:matched[l:k], 45)  , 0, 45)
 
 function! s:bookmark_Event() dict
     nnoremap <silent> <plug>(hwhich-bookmark) :<c-u>call bookmark_wich.Witch(bookmark_wich)<cr>
