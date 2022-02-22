@@ -22,20 +22,37 @@ return require('packer').startup(function()
       end
   }
 
+  -- hotload
+  use {'notomo/lreload.nvim', opt=true}
+
+  -------------------------------------------------------------
+  -- UI
+  -------------------------------------------------------------
+  -- {{{
+  -- minimap
+  use {'rinx/nvim-minimap', opt=true}
+  use { 'wfxr/minimap.vim', opt=true }
+
+
   -- which key
-  use {
-  "folke/which-key.nvim",
-  config = function()
-    require("which-key").setup {
-      -- your configuration comes here
-      -- or leave it empty to use the default settings
-      -- refer to the configuration section below
-    }
-  end
-}
+  -- use {
+  --     "folke/which-key.nvim",
+  --     config = function()
+  --         require("which-key").setup {
+  --             -- your configuration comes here
+  --             -- or leave it empty to use the default settings
+  --             -- refer to the configuration section below
+  --         }
+  --     end
+  -- }
 
   -- rainbow bracket
   use {'p00f/nvim-ts-rainbow'}
+  -- }}}
+
+  -------------------------------------------------------------
+  -- language
+  -------------------------------------------------------------
 
   -- fennel {{{
   use 'bakpakin/fennel.vim'  -- syntax
@@ -47,7 +64,7 @@ return require('packer').startup(function()
       end
   }       -- interactive environment
   use 'Olical/nvim-local-fennel'
-  use {'Olical/aniseed'}
+  -- use {'Olical/aniseed'}
   use {
     'rktjmp/hotpot.nvim',
     -- packer says this is "code to run after this plugin is loaded."
