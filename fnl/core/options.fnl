@@ -1,7 +1,20 @@
-(import-macros {
-                :set-option se-
-                :let-global let-g
-                } :macros.embedded)
+; core/init.fnlから呼ばれる場合
+;(local fennel (require :fennel))
+;
+;(fn my-searcher [module-name]
+;  (let [filename (.. "/Users/cassin/.config/nvim/fnl/core" module-name ".fnl" )]
+;    (match (fennel.find-in-archive filename)
+;      code (values (partial fennel.eval code {:env :_COMPILER})
+;                   filename))))
+;(table.insert fennel.macro-searchers my-searcher)
+;
+;(import-macros
+;  {:set-option se-
+;   :let-global let-g} :embedded)
+
+(import-macros
+  {:set-option se-
+   :let-global let-g} :core.embedded)
 
 (import-macros
   {: def-augroup : def-autocmd-fn } :zest.macros)
@@ -26,16 +39,16 @@
 (se- list true)
 (se- listchars "tab:»-,trail:□")
 (se- spell true)
+(se- startofline true)
 (se- spelllang "en,cjk")
 (se- ignorecase true)
-
+(se- guifont "Hack Nerd Font")
 (vim.cmd "hi clear SpellBad")
 (vim.cmd "set mouse=a")
 (vim.cmd "lang en_US.UTf-8")
 (vim.cmd "filetype plugin indent on")
 (vim.cmd "set t_8f=^[[38;2;%lu;%lu;%lum")
 (vim.cmd "set t_8b=^[[48;2;%lu;%lu;%lum")
-
 
 (def-augroup :restore-position
   (def-autocmd-fn :BufReadPost "*"
