@@ -1,7 +1,7 @@
 # My neovim configuration
 
 # Features
-- **[Fennel based]**
+- **[Fennel based]** enjoying lisp's powerful expression
 
 - **[Powerful editing]** using more than 80 plugins.
 
@@ -9,14 +9,12 @@
 
 ## Installation
 1. ``pip3 install pynvim``
-2. check ``let g:python3_host_prog``'s (at ``init/main/main.init.vim``) path is collect
+2. Check ``let g:python3_host_prog``'s (at ``fnl/core/options.fnl``) path is collect.
 3. Install [vim-plug](https://github.com/junegunn/vim-plug/releases) and [packer](https://github.com/wbthomason/packer.nvim) beforehand.
 4. Set this code at ``~/.config/nvim/``.
 5. Place [fennel-util-functions](https://github.com/Cassin01?tab=repositories)'s `src` on $HOME/.config/nvim/fnl/util
-6. ``pip3 install neovim-remote`` for ``mhinz/neovim-remote``
-7. ``:PlugInstall`` for installing plugins
-
-## Dependencies
+6. ``pip3 install neovim-remote`` for ``mhinz/neovim-remote``.
+7. ``:PlugInstall`` for installing plugins.
 
 ### NerdFonts
 
