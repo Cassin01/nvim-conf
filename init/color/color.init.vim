@@ -331,9 +331,18 @@ let g:terminal_color_15 = '#eeeeec'
 " match:
 augroup call_match
     autocmd!
-    autocmd ColorScheme * call s:my_match()
-    autocmd BufRead,BufNew * call s:my_match()
+    autocmd ColorScheme * call s:add_todo()
+    autocmd BufRead,BufNew * call s:add_todo()
 augroup END
+
+
+let s:todo_ignore_filetype = ['dashboard', 'help', 'nerdtree', 'telescopePrompt']
+let s:todo_ids = []
+
+function! s:find(val)
+    return len(filter(copy(s:todo_ignore_filetype), {index, val -> val ==? a:val})) > 0
+endfunction
+
 function! s:matched(key)
     for k in getmatches()
         if k['group'] == a:key
@@ -342,16 +351,23 @@ function! s:matched(key)
     endfor
     return v:false
 endfunction
-function! s:my_match()
+
+
+function! s:add_todo()
+    if s:find(&filetype)
+        call clearmatches()
+        return
+    endif
     if s:matched('TodoEX')
         return
     endif
 
-    call matchadd('TrailingSpaces', ' \+$')
-    call matchadd('Tabs', '\t')
-    call matchadd('ZenkakuSpace', '　')
-    call matchadd('TodoEX', '\<\(NOTE\|MARK\|OPTION\|CHANGED\|IDEA\|REVIEW\|NB\|QUESTION\|COMBAK\|TEMP\|DEBUG\|OPTIMIZE\|REVIEW\)')
-    call matchadd('TodoEX2', '\<\(INFO\|REFACTOR\|DEPRECATED\|TASK\|UPDATE\|EXAMPLE\|ERROR\|WARN\|BROKEN\)')
+    let s:todo_ids = []
+    let s:todo_ids = add(s:todo_ids, matchadd('TrailingSpaces', ' \+$'))
+    let s:todo_ids = add(s:todo_ids, matchadd('Tabs', '\t'))
+    let s:todo_ids = add(s:todo_ids, matchadd('ZenkakuSpace', '　'))
+    let s:todo_ids = add(s:todo_ids, matchadd('TodoEX', '\<\(NOTE\|MARK\|OPTION\|CHANGED\|IDEA\|REVIEW\|NB\|QUESTION\|COMBAK\|TEMP\|DEBUG\|OPTIMIZE\|REVIEW\)'))
+    let s:todo_ids = add(s:todo_ids, matchadd('TodoEX2', '\<\(INFO\|REFACTOR\|DEPRECATED\|TASK\|UPDATE\|EXAMPLE\|ERROR\|WARN\|BROKEN\)'))
 
 " ## NOTE: TODO highlighting
 " DEFAULT: TODO FIXME HACK XXX WARNING
@@ -387,7 +403,7 @@ function! s:my_match()
 " - WARN
 " - BROKEN
 endfunction
-" command! MYMATCH call s:my_match()
+" command! MYMATCH call s:add_todo()
 " nnoremap ,b :MYMATCH<CR>
 " }}}
 
