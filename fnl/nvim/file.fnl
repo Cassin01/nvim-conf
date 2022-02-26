@@ -42,15 +42,14 @@
 (fn M.read_lines [path]
   (if (M.filereadable path)
     (do
-      (list.unfold-iter #(= nil $1) (lambda [x] (x)) (lambda [x] x) (io.lines path)))
+      (list.unfold-iter2 #(= nil $1) (lambda [x] (x)) (lambda [x] x) (io.lines path)))
     nil))
-
 
 ;; file only, depth 1
 ;; find . -maxdepth 1 -type f
-(fn M.dirlookup [dir]
-  (local p (io.popen (.. "find \"" dir  "\" -maxdepth 1 -type f")))
-  (list.unfold-iter #(= nil $1) (lambda [x] (x)) (lambda [x] x) (p.lines p)))
+(fn M.dirlookup [dir depth]
+  (local p (io.popen (.. "find \"" dir  "\" -maxdepth " depth " -type f")))
+  (list.unfold-iter (p.lines p) p (lambda [x] (io.close x))))
 
 ;;; test
 
@@ -61,7 +60,7 @@
   ; (local path (.. (M.nvim-home) "/fnl/nvim/hoge.txt"))
   ; (print (M.filereadable path))
   ; (list.dump (M.read_lines path))
-  (list.dump (M.dirlookup "/Users/cassin/.config/nvim"))
+  (list.dump (M.dirlookup "/Users/cassin/.config/nvim" 1))
 
   ; (local it (io.lines path))
   ; (print (it))
