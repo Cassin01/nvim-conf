@@ -13,7 +13,7 @@ Plug 'HendrikPetertje/vimify'
 " ---------------------------------------
 " Indent
 " ---------------------------------------
-
+" {{{
 " " indent guides {{{
 " Plug 'Yggdroot/indentLine'
 " let g:indentLine_enabled = 1 " disable by default
@@ -28,7 +28,7 @@ Plug 'nathanaelkane/vim-indent-guides'
     hi IndentGuidesEven ctermbg=242
     "let g:indent_guides_auto_colors=0 " enable auto colors
     let g:indent_guides_guide_size=1 " width of identifier
-    let g:indent_guides_exclude_filetypes = ['help', 'nerdtree']
+    let g:indent_guides_exclude_filetypes = ['help', 'NvimTree', 'evil_witch', 'WhichKey', 'dashboard']
     autocmd VimEnter,Colorscheme * :hi IndentGuidesOdd   ctermbg=237
     autocmd VimEnter,Colorscheme * :hi IndentGuidesEven  ctermbg=237
 
@@ -141,11 +141,12 @@ Plug 'nathanaelkane/vim-indent-guides'
 " let g:airline_symbols.maxlinenr = ''
 ": }}}
 ": }}}
+" }}}
 
 " ---------------------------------------
 " Syntax
 " ---------------------------------------
-
+" {{{
 " syntastic {{{
 Plug 'vim-syntastic/syntastic'
 set statusline+=%#warningmsg#
@@ -171,13 +172,16 @@ Plug 'Chiel92/vim-autoformat'
 let g:formatter_yapf_style = 'pep8'
 " }}}
 
-" nvim-treesitter
-Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}  " We recommend updating the parsers on update
+" {{{
+Plug 'Cassin01/imestatus.vim'
+" }}}
 
+" }}}
 
 " ---------------------------------------
 " Language
 " ---------------------------------------
+" {{{
 
 " haskell {{{
 Plug 'eagletmt/neco-ghc'                " completion
@@ -192,13 +196,24 @@ Plug 'neovimhaskell/haskell-vim'        " syntax
     " }}}
 " }}}
 
+" fennel {{{
+" Plug 'bakpakin/fennel.vim'  " syntax
+" Plug 'jaawerth/fennel-nvim' " native fennel support
+
+" Plug 'Olical/aniseed'       " macro
+" let g:aniseed#env = v:true
+
+ Plug 'theHamsta/nvim_rocks', {'do': 'pip3 install --user hererocks && python3 -mhererocks . -j2.1.0-beta3 -r3.0.0 && cp nvim_rocks.lua lua'}
+
+" }}}
+
 " python3
 Plug 'davidhalter/jedi-vim'             " completion
 Plug 'numirias/semshi', {'do': ':UpdateRemotePlugins'} " Semantic Highlighting for Python in Neovim
 
 " Go
 " vim-go {{{
-" Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' } 
+" Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 " let g:go_fmt_options = "-tabwidth=4"
 " autocmd FileType go nmap <leader>b  <Plug>(go-build)
 " autocmd FileType go nmap <leader>r  <Plug>(go-run)
@@ -253,6 +268,9 @@ let g:vimtex_quickfix_igonre_filters = {'default': 0}
 if empty(v:servername) && exists('*remote_startserver')
     call remote_startserver('VIM')
 endif
+
+Plug 'Cassin01/texrun.vim'
+let g:texrun#file_name = 'l03.tex'
 " }}}
 
 " toml
@@ -317,11 +335,12 @@ Plug 'sheerun/vim-polyglot'
 
 let g:polyglot_disabled = ['markdown']
 " }}}
+" }}}
 
 " ---------------------------------------
 " Color scheme
 " ---------------------------------------
-
+" {{{
 " :Unite colorscheme -auto-preview
 Plug 'Shougo/unite.vim'
 Plug 'ujihisa/unite-colorscheme'
@@ -353,24 +372,29 @@ Plug 'ujihisa/unite-colorscheme'
     Plug 'haishanh/night-owl.vim'             " night owl
     Plug 'arcticicestudio/nord-vim'           " nord
     Plug 'cocopon/iceberg.vim'                " iceberg
-    Plug 'hzchirs/vim-material'               "vim-material"
-    Plug 'kyoz/purify', {'rtp': 'vim'}        "purify"
-    Plug 'relastle/bluewery.vim'              "bluewery"
-    Plug 'mhartington/oceanic-next'           "OceanicNext
-    Plug 'nightsense/snow'                    "snow
+    Plug 'hzchirs/vim-material'               " vim-material
+    Plug 'kyoz/purify', {'rtp': 'vim'}        " purify
+    Plug 'relastle/bluewery.vim'              " bluewery
+    Plug 'mhartington/oceanic-next'           " OceanicNext
+    Plug 'nightsense/snow'                    " snow
     Plug 'folke/tokyonight.nvim', { 'branch': 'main' }
-    Plug 'Mangeshrex/uwu.vim'                 "uwu"
+    Plug 'Mangeshrex/uwu.vim'                 " uwu
+    Plug 'ulwlu/elly.vim'                     " elly
+" }}}
 " }}}
 
 " ---------------------------------------------------------------
 "  Files
 " ---------------------------------------------------------------
-
-" Nerdtree {{{
-Plug 'scrooloose/nerdtree'
-" Change current directory.
-nnoremap <silent> <Space>cd :<C-u>CD<CR>
 " {{{
+" " Nerdtree {{{
+" Plug 'scrooloose/nerdtree'
+" " Change current directory.
+" nnoremap <silent> <Space>cd :<C-u>CD<CR>
+" nnoremap <space>s :<c-u>NERDTreeToggle<CR>
+" " view the current buffer in NERDtree
+" nnoremap <space>c :<c-u>NERDTreeFind<cr>
+" " {{{
 
 " fzf completion
 Plug '/usr/local/opt/fzf'
@@ -411,10 +435,12 @@ nnoremap mgp :<c-u>Git push<CR>
 " shows a git diff in the gutter (sign column) and stages/undoes (partial) hunks.
 Plug 'airblade/vim-gitgutter'
 Plug 'tpope/vim-rhubarb' " enable :Gbrowse
+" }}}
 
 " ---------------------------------------
 " Others
 " ---------------------------------------
+" {{{
 
 " quoting/parenthesizing made simple
 Plug 'tpope/vim-surround'
@@ -475,11 +501,8 @@ map <Leader><Leader>h <Plug>(easymotion-linebackward)
     function! s:incsearch_config(...) abort
       return incsearch#util#deepextend(deepcopy({
       \   'modules': [incsearch#config#easymotion#module({'overwin': 1})],
-      \   'keymap': {
-      \     "\<CR>": '<Over>(easymotion)'
-      \   },
-      \   'is_expr': 0
-      \ }), get(a:, 1, {}))
+      \   'keymap': { "\<CR>": '<Over>(easymotion)' },
+      \   'is_expr': 0 }), get(a:, 1, {}))
     endfunction
 
     noremap <silent><expr> /  incsearch#go(<SID>incsearch_config())
@@ -497,14 +520,14 @@ map <Leader><Leader>h <Plug>(easymotion-linebackward)
 
     " Fuzzy サーチ {{{
     Plug 'haya14busa/incsearch-fuzzy.vim'
-        function! s:config_easyfuzzymotion(...) abort
-      return extend(copy({
-      \   'converters': [incsearch#config#fuzzyword#converter()],
-      \   'modules': [incsearch#config#easymotion#module({'overwin': 1})],
-      \   'keymap': {"\<CR>": '<Over>(easymotion)'},
-      \   'is_expr': 0,
-      \   'is_stay': 1
-      \ }), get(a:, 1, {}))
+    function! s:config_easyfuzzymotion(...) abort
+        return extend(copy({
+                    \   'converters': [incsearch#config#fuzzyword#converter()],
+                    \   'modules': [incsearch#config#easymotion#module({'overwin': 1})],
+                    \   'keymap': {"\<CR>": '<Over>(easymotion)'},
+                    \   'is_expr': 0,
+                    \   'is_stay': 1
+                    \ }), get(a:, 1, {}))
     endfunction
 
     noremap <silent><expr> <space>/ incsearch#go(<SID>config_easyfuzzymotion())
@@ -519,7 +542,7 @@ map <silent>sa <Plug>LineLetters
 " Vim plugin that displays tags in a window, {{{
 Plug 'majutsushi/tagbar'
 nmap <space>t :TagbarToggle<CR>
-g:tagbar_ctags_bin = /usr/local/opt/universal-ctags
+" g:tagbar_ctags_bin = /usr/local/opt/universal-ctags
 " }}}
 
 " Comment stuff out.
@@ -558,16 +581,16 @@ Plug 'rhysd/clever-f.vim'
 " Move visually selected text
 Plug 'Jorengarenar/vim-MvVis'
 
-" WhichKey :displays available keybindings in popup. {{{
-Plug 'liuchengxu/vim-which-key', { 'on': ['WhichKey', 'WhichKey!'] }
-nnoremap <silent> <leader>      :<c-u>WhichKey '<leader>'<CR>
-nnoremap <silent> <localleader> :<c-u>WhichKey  '<localleader>'<CR>
-nnoremap <silent> m :<c-u>WhichKey 'm'<CR>
-nnoremap <silent> s :<c-u>WhichKey 's'<CR>
-nnoremap <silent> , :<c-u>WhichKey ','<CR>
-nnoremap <silent> ; :<c-u>WhichKey ';'<CR>
-nnoremap <silent> <space> :<c-u>WhichKey '<space>'<CR>
-" }}}
+" " WhichKey :displays available keybindings in popup. {{{
+" Plug 'liuchengxu/vim-which-key', { 'on': ['WhichKey', 'WhichKey!'] }
+" nnoremap <silent> <leader>      :<c-u>WhichKey '<leader>'<CR>
+" nnoremap <silent> <localleader> :<c-u>WhichKey  '<localleader>'<CR>
+" nnoremap <silent> m :<c-u>WhichKey 'm'<CR>
+" nnoremap <silent> s :<c-u>WhichKey 's'<CR>
+" nnoremap <silent> , :<c-u>WhichKey ','<CR>
+" nnoremap <silent> ; :<c-u>WhichKey ';'<CR>
+" nnoremap <silent> <space> :<c-u>WhichKey '<space>'<CR>
+" " }}}
 
 "  complementary pairs of mappings. -> ] or [
 Plug 'tpope/vim-unimpaired'
@@ -591,20 +614,6 @@ vmap <leader>b <Plug>(openbrowser-smart-search)
 
 " conceal
 Plug 'Cassin01/vim-conceal'
+" }}}
 
 call plug#end()
-
-" ---------------------------------------
-" Lua config
-" ---------------------------------------
-
-lua <<EOF
--- nvim-treesitter/nvim-treesitter
-require'nvim-treesitter.configs'.setup {
-  ensure_installed = "maintained", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
-  highlight = {
-    enable = true,              -- false will disable the whole extension
-    disable = { "vue", "ruby" },  -- list of language that will be disabled
-  },
-}
-EOF
