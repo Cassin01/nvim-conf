@@ -8,15 +8,10 @@
 (vim.cmd "runtime init/plugin/plugin_settings.init.vim")
 
 (require :core)
-; (require :core.options)
-; (require :core.gui)
 
 (vim.cmd "runtime init/main/nnormap.init.vim")
 (vim.cmd "runtime init/main/othermap.init.vim")
 (vim.cmd "runtime init/color/color.init.vim")
-
-;;; test for modules
-;(require :core.util)
 
 ;;; future
 

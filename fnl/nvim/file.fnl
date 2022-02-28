@@ -1,6 +1,8 @@
-(local M {})
 (local util (require :util.src))
 (local list util.list)
+(import-macros {: fn*} :util.src.macros)
+
+(local M {})
 
 ;;; get containing path o lua file
 (fn M.script-path []
@@ -48,8 +50,25 @@
 ;; file only, depth 1
 ;; find . -maxdepth 1 -type f
 (fn M.dirlookup [dir depth]
+  "
+  file only, depth 1
+  find . -maxdepth 1 -type f
+  "
   (local p (io.popen (.. "find \"" dir  "\" -maxdepth " depth " -type f")))
   (list.unfold-iter (p.lines p) p (lambda [x] (io.close x))))
+
+(fn M.execute-cmd [cmd]
+  "Execute command and return output as list."
+  (local p (io.popen cmd))
+  (list.unfold-iter (p.lines p) p (lambda [x] (io.close x))))
+
+;; ref: https://codereview.stackexchange.com/questions/90177/get-file-name-with-extension-and-get-only-extension
+(fn* M.get-file-name {:url "string"}
+    (url.match url "^.+/(.+)$"))
+
+(fn* M.get-file-extension {:url "string"}
+     (url.match url "^.+(%..+)$"))
+
 
 ;;; test
 

@@ -1,9 +1,19 @@
+(import-macros m :util.src.macros)
+
 (fn set-option [k v]
   `(set ,(sym (.. "vim.o." (tostring k))) ,v))
 
 (fn let-global [k v]
   "set 'k' to 'v' on vim.g table"
   `(tset vim.g ,(tostring k) ,v))
+
+;; ref: https://github.com/shaunsingh/nyoom.nvim/blob/main/fnl/conf/macros.fnl
+
+(fn cmd [string]
+  "execute vim command"
+  `(vim.cmd ,string))
+
+;; ref: https://notabug.org/dm9pZCAq/dotfiles/src/master/.config/nvim/fnl/utils/vim.fnl
 
 ; (fn concat [xs d]
 ;   (let [d (or d "")]
@@ -40,4 +50,5 @@
 
 {: set-option
  : let-global
+ : cmd
  }

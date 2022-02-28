@@ -14,10 +14,12 @@
 
 (import-macros
   {:set-option se-
-   :let-global let-g} :core.embedded)
+   :let-global let-g} :nvim.embedded)
 
 (import-macros
   {: def-augroup : def-autocmd-fn } :zest.macros)
+
+(locaal {: augroup : autocmd } :nvim.embedded)
 
 (let-g python2_host_prog "/usr/local/bin/python")
 (let-g python3_host_prog "/Users/cassin/.pyenv/shims/python")
@@ -42,7 +44,8 @@
 (se- startofline true)
 (se- spelllang "en,cjk")
 (se- ignorecase true)
-(se- guifont "Hack Nerd Font")
+; (se- guifont "Hack Nerd Font:h12")
+(se- guifont "HackGen:h12")
 (vim.cmd "hi clear SpellBad")
 (vim.cmd "set mouse=a")
 (vim.cmd "lang en_US.UTf-8")

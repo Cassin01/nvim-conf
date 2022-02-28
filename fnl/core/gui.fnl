@@ -1,6 +1,6 @@
 (import-macros
   {:set-option se-
-   :let-global let-g} :core.embedded)
+   :let-global let-g} :nvim.embedded)
 
 (local M {})
 
