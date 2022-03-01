@@ -1,19 +1,10 @@
-;;;; init.fnl
+(if _G._hajikami
+  (let [kaza (require :nvim)]
+    (kaza.setup)))
 
-;;; set up zest
-(let [zest (require :zest)]
-  (zest.setup))
-
-(vim.cmd "runtime init/plugin/plugin_install.init.vim")
-(vim.cmd "runtime init/plugin/plugin_settings.init.vim")
-
+(vim.cmd "runtime vim/plugin_install.vim")
+(vim.cmd "runtime vim/plugin_settings.vim")
 (require :core)
-
-(vim.cmd "runtime init/main/nnormap.init.vim")
-(vim.cmd "runtime init/main/othermap.init.vim")
-(vim.cmd "runtime init/color/color.init.vim")
-
-;;; future
-
-;; redirect command into register
-;; https://vi.stackexchange.com/questions/8378/dump-the-output-of-internal-vim-command-into-buffer
+(vim.cmd "runtime vim/nnormap.vim")
+(vim.cmd "runtime vim/othermap.vim")
+(vim.cmd "runtime vim/color.vim")
