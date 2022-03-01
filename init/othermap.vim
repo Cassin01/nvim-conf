@@ -17,7 +17,7 @@ lua << EOF
     keys:set_map_i('å', '<C-o>:call <SID>to_head_of_line()<CR>', '<opt-a>: jump to BOL')
     keys:set_map_i('Ï', '<esc>ea', '<shift><opt-f> move forward one word')
     keys:set_map_i('ı', '<esc>bi', '<shift><opt-b> move to one word later')
-
+    keys:set_map_i('∆', '<esc>o', '<opt-j> insert new line and jump')
 
     -- copy & paste
     keys:set_map_i('˚', '<C-r>=<SID>retrive_till_tail()<CR>', '<opt-k>: delete from cursor to EOL')
@@ -136,7 +136,8 @@ endfunction
     " 括弧補完 {{{
         "inoremap () ()<left>
         "inoremap {} {}<left>
-        inoremap [] []<left>
+        " inoremap [] []<left>
+        inoremap [ []<left>
 
         " 例外処理: の後に続けて)を押したとき
         " inoremap <expr> )  strpart(getline('.'), col('.')-1, 1) == ")" ? "\<Right>" : ")"
@@ -261,7 +262,7 @@ endfunction
         function! s:set_texlike_math()
             inoremap $<enter> $$$$<left><left><cr><cr><up>
             "inoremap $$       $$<left>
-            inoremap $$       $<space><space>$<left><left>
+            inoremap $$ $$<left>
         endfunction
 
         "function! s:indent()
@@ -305,6 +306,7 @@ endfunction
                 endfunction
                 inoremap <expr> { <SID>curly_bracket_completion2()
             " }}}
+            inoremap {{{ {{{
         " }}}
         " 括弧補完 {{{
             " 改行補完 {{{
@@ -359,6 +361,11 @@ endfunction
     endfunction
     " }}}
 " }}}
+
+" Dump the output of internal vim command into buffer
+" ref: https://vi.stackexchange.com/questions/8378/dump-the-output-of-internal-vim-command-into-buffer
+command! -nargs=+ -complete=command Redir let s:reg = @@ | redir @"> | silent execute <q-args> | redir END | new | pu | 1,2d_ | let @@ = s:reg
+
 
 " Visual mode {{{
     " search {{{

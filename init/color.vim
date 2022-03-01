@@ -329,11 +329,11 @@ let g:terminal_color_15 = '#eeeeec'
      highlight! link Todo TodoEX2
 " }}}
 " match:
-augroup call_match
-    autocmd!
-    autocmd ColorScheme * call s:add_todo()
-    autocmd BufRead,BufNew * call s:add_todo()
-augroup END
+" augroup call_match
+"     autocmd!
+"     autocmd ColorScheme * call s:add_todo()
+"     autocmd BufRead,BufNew * call s:add_todo()
+" augroup END
 
 
 let s:todo_ignore_filetype = ['dashboard', 'help', 'nerdtree', 'telescopePrompt']

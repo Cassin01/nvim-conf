@@ -93,12 +93,6 @@ nnoremap <up> gk
     command! SearchByGoogle call s:search_by_google()
     nnoremap <silent> <Space>g :SearchByGoogle<CR>
 
-    " NERDTree {{{
-    nnoremap <space>s :<c-u>NERDTreeToggle<CR>
-
-    " view the current buffer in NERDtree
-    nnoremap <space>c :<c-u>NERDTreeFind<cr>
-    " }}}
 
     " 日本語
     nnoremap あ a
@@ -299,32 +293,32 @@ nnoremap <up> gk
     " zj -- move to the next fold
     " zk -- move to the previous fold
 lua << EOF
-    require('init')
+    require('key_register')
     keys = Keys:new()
-    keys:set_map_n('<space>j', 'zj', 'move to the next fold')
-    keys:set_map_n('<space>k', 'zk', 'move to the previous fold')
+    -- keys:set_map_n('<space>j', 'zj', 'move to the next fold')
+    -- keys:set_map_n('<space>k', 'zk', 'move to the previous fold')
 
-    keys:set_map_n('<space>h', 'zc', 'close one fold under the cursor')
-    keys:set_map_n('<space>l', 'zO', 'open all fold under the cursor recursively')
+    -- keys:set_map_n('<space>h', 'zc', 'close one fold under the cursor')
+    -- keys:set_map_n('<space>l', 'zO', 'open all fold under the cursor recursively')
 
-    keys:set_map_n('<space>H', 'zM', 'fold more')
-    keys:set_map_n('<space>L', 'zR', 'open all folds')
+    -- keys:set_map_n('<space>H', 'zM', 'fold more')
+    -- keys:set_map_n('<space>L', 'zR', 'open all folds')
 
-    keys:set_map_n('<space>o', 'zMzv', 'close other folds')
-    keys:set_map_n('<space><tab>d', ':<C-u>call Logger.log("hugaga")<CR>', 'tttt')
-    keys:set_map_n('<space><tab>k', ':<C-u>echom 1<CR>', 'td')
+    -- keys:set_map_n('<space>o', 'zMzv', 'close other folds')
+    -- keys:set_map_n('<space><tab>d', ':<C-u>call Logger.log("hugaga")<CR>', 'tttt')
+    -- keys:set_map_n('<space><tab>k', ':<C-u>echom 1<CR>', 'td')
 EOF
 " source $HOME/.config/nvim/lua/hyper_which.vim
-    " nnoremap <silent> <space>j zj
-    " nnoremap <silent> <space>k zk
+    nnoremap <silent> <space>j zj
+    nnoremap <silent> <space>k zk
 
-    " nnoremap <silent> <space>h zc    " 折りたたみ
-    " nnoremap <silent> <space>l zO    " 展開
+    nnoremap <silent> <space>h zc    " 折りたたみ
+    nnoremap <silent> <space>l zO    " 展開
 
-    " nnoremap <silent> <space>H zM    " 折りたたみ
-    " nnoremap <silent> <space>L zR    " 展開
+    nnoremap <silent> <space>H zM    " 折りたたみ
+    nnoremap <silent> <space>L zR    " 展開
 
-    " nnoremap <silent> <space>o zMzv  " 自分以外とじる
+    nnoremap <silent> <space>o zMzv  " 自分以外とじる
 " }}}
 
 " Destructive commands {{{

@@ -1,8 +1,8 @@
 (import-macros
   {:set-option se-
-   :let-global let-g} :nvim.embedded)
+   :let-global let-g} :kaza.macros)
 
-(local file (require :nvim.file))
+(local file (require :kaza.file))
 (local util (require :util.src))
 (local list util.list)
 
