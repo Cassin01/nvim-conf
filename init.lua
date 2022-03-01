@@ -23,6 +23,5 @@ end
 
 vim.cmd[[autocmd BufWritePost plugins.lua PackerCompile]]
 require('plugins')
-
-require("hotpot")
-require("init")
+require('hotpot')
+require('init')
