@@ -1,12 +1,12 @@
 (import-macros
   {:set-option set*
    :let-global let-g} :kaza.macros)
+(local {: execute-cmd} (require :kaza.file))
 
-(let-g python2_host_prog "/usr/local/bin/python")
-(let-g python3_host_prog "/Users/cassin/.pyenv/shims/python")
-(let-g my_color "purify")
+(let-g python3_host_prog (. (execute-cmd "which python") 1))
+(let-g my_color :tokyonight)
 
-(set* fenc "utf-8")
+(set* fenc :utf-8)
 (set* backup false)
 (set* swapfile false)
 (set* autoread true)
@@ -18,13 +18,13 @@
 (set* cursorline true)
 (set* incsearch true)
 (set* termguicolors true)
+(set* relativenumber true)
 (set* list true)
 (set* listchars "tab:»-,trail:□")
 (set* spell true)
 (set* startofline true)
 (set* spelllang "en,cjk")
-(set* ignorecase true)
-(se- guifont "HackGen:h12")
+(set* guifont "HackGen:h12")
 
 (vim.cmd "hi clear SpellBad")
 (vim.cmd "set mouse=a")
