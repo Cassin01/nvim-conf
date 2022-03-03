@@ -63,13 +63,16 @@
   (list.unfold-iter (p.lines p) p (lambda [x] (io.close x))))
 
 ;; ref: https://codereview.stackexchange.com/questions/90177/get-file-name-with-extension-and-get-only-extension
-(fn* M.get-file-name {:url "string"}
-     (url.match url "^.+/(.+)$"))
+(fn* M.get-file-name {:url :string}
+  (url.match url "^.+/(.+)$"))
 
-(fn* M.get-file-extension {:url "string"}
-     "For example return `.txt`"
-     (url.match url "^.+(%..+)$"))
+(fn* M.get-file-extension {:url :string}
+  "For example return `.txt`"
+  (url.match url "^.+(%..+)$"))
 
+
+(fn* M.warn {:msg :string}
+  ((vim.api_echo msg {:hi_group :WarningMsg :history true})))
 
 ;;; test
 

@@ -274,11 +274,11 @@ $3 & $4 \\\\
 endsnippet
 
 # 絶対値
-snippet abs "絶対値"
+snippet abs_ "絶対値"
 \\| $1 \\|$2
 endsnippet
 
-snippet $abs "絶対値"
+snippet $abs_ "絶対値"
 $\\| $1 \\|$2
 endsnippet
 
@@ -309,7 +309,7 @@ endsnippet
 
 # 一行開ける
 snippet newline "改行 break"
-\\~\
+\leavevmode\hphantom{ }
 endsnippet
 
 snippet sec "セクション[beamer] contents"
@@ -348,7 +348,10 @@ endsnippet
 
 snippet algorithm "アルゴリズム"
 \begin{algorithm}[H]
-\SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
+\SetKwInOut{Input}{Input}
+\SetKwInOut{Output}{Output}
+\SetKw{Continue}{continue}
+\SetKwFor{Loop}{loop}{}{}
 % \SetAlgoLined % vlinedのときは使えない
 \DontPrintSemicolon
 $1
