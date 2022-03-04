@@ -13,12 +13,11 @@
 (fn M.smart-concat [xs d]
   "concatenate only literal strings in seq 'xs'"
   (let [d (or d "")
-        out []
-        f (require :zest.fennel)]
+        out [] ]
     (if (= (type xs) :string)
       ; simply pass literal strings through
       (table.insert out xs)
-      (if (f.sym? xs)
+      (if (sym? xs)
         ; decide what to do with variables at runtime
         (table.insert out
           `(if (= (type ,xs) :string)
@@ -57,6 +56,7 @@
 (fn M.cmd [string]
   "execute vim command"
   `(vim.cmd ,string))
+
 
 (fn _create-augroup [dirty? name ...]
   "define a new augroup, with without autocmd"

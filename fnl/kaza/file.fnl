@@ -74,6 +74,9 @@
 (fn* M.warn {:msg :string}
   ((vim.api_echo msg {:hi_group :WarningMsg :history true})))
 
+(fn* M.exec {:cmd :string}
+  (vim.api.nvim_exec cmd true))
+
 ;;; test
 
 (local (method-name file-name) ...)

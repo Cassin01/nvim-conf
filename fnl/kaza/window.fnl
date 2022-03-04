@@ -13,7 +13,7 @@
   (tset self :win (vim.api.nvim_open_win self.buf 1 (o.deepcopy self.config)))
   (vim.api.nvim_win_set_option self.win "winblend" 10))
 
-(window.start window {:height 20 :row 3 :width 3})
+;(window.start window {:height 20 :row 3 :width 3})
 
 (local socket (require "socket"))
 
