@@ -1,5 +1,5 @@
-(if _G._hajikami
-  (let [kaza (require :nvim)]
+(if (= _G._kaza nil)
+  (let [kaza (require :kaza)]
     (kaza.setup)))
 
 (vim.cmd "runtime vim/plugin_install.vim")
