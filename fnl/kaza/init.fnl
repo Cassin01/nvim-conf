@@ -1,3 +1,6 @@
+; -- kaza (香気) --
+;   a zest fork for hotpot
+
 (fn setup []
   (set _G._kaza
        {:v {:# 1}
