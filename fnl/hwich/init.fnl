@@ -90,40 +90,37 @@
         line (.. (string.sub line 1 pos) c (string.sub line (+ pos 1) (length line)))]
     (setline "." line)))
 
+(vim.cmd "autocmd User evil-internal ++once lua _G.evil_window_open()")
+
+(fn doautocmd []
+  (vim.cmd "doautocmd <nomodeline> User evil-internal"))
+
+(local a (require "async"))
+(local do_thing (a.sync (fn [] (a.wait (doautocmd)))))
+
 (fn _controller []
   (let [c (_current_input)]
-    (local window (require :hwich.window))
-    ;(window.window_start window)
-    ;(window.buf_set_text window)
     (match c
       (a ? (= a 13)) "" ;; CR (C-m)
       ;(a ? (and (> a 0) (< a 32))) (do (_do? a ) (_controller))
       ;(a) (do (_insert_char a) (_controller))
       (a ? (and (> a 0) (< a 32)))  (do (feedkeys "i111") (_do? a ))
-      (a) (do (feedkeys "111") (nr2char a))
-      )
-    ;(window.window_close window)
-    )
-  )
+      (a) (do (feedkeys "111") (nr2char a)))))
 
 (fn _G.hwich_start []
   (_controller))
 
-(fn _G.feed_hwich []
+(fn _G.evil_window_open []
   (local window (require :hwich.window))
-  ;(window.window_start window)
-  ;(window.buf_set_text window)
-  (feedkeys "111" "n")
-  )
+  (window.window_start window)
+  (window.buf_set_text window))
 
 
 (map "i" "111" "v:lua.hwich_start()" {:noremap true :expr true :nowait true})
 ;(map "i" "111" "<cmd>lua _G.hwich_start()<cr>" {:noremap true :nowait true})
-(map "i" "222" "<cmd>v:lua.feed_hwich()<cr>" {:noremap true :nowait true})
+
 
 {}
 
 ;; https://vim.fandom.com/wiki/Wait_for_user_input_(getchar)_without_moving_cursor
 
-;; WARN on dev
-;; TODO add User autocmd for window
