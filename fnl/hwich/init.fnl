@@ -1,12 +1,14 @@
 (local {: map} (require :kaza.map))
 (local {: warn : exec} (require :kaza.file))
 (local {: nr2char : getchar : feedkeys : getpos : setpos : cursor
-        : getline : col } vim.fn)
+        : getline : col : setline} vim.fn)
 (local {: nvim_exec} vim.api)
 
 (local util (require :util.src))
 (local o util.object)
 (local l util.list)
+(local t util.talbe)
+
 
 
 ;;; key-binds
@@ -15,12 +17,11 @@
 
 ;; [bufnum, lnum, col, off]
 (fn move-pos [row col]
-  (var pos (getpos "."))
+  (local pos (getpos "."))
   (local c-row (. pos 2))
   (local c-col (. pos 3))
   (cursor (+ c-row row)
-          (+ c-col col))
-  )
+          (+ c-col col)))
 
 (set _G.key-binds [])
 (local key-bind (o.override {} :key-bind (lambda [key f] {:key key :f f})))
@@ -72,30 +73,57 @@
   (wlf.start_runner)
   c)
 
-;(fn _insert_char [c]
-;  (let  [ cmd (.. "normal \"a" c "\"")]
+; ref https://stackoverflow.com/questions/56702211/insert-chunk-of-text-after-cursor-from-vimscript
+
+; let line = getline('.')
+; let pos = col('.')-1 " IIRC
+; let line = line[:pos-1] . functionresult. line[pos:]
+; call setline('.', line)
+; ;(fn _insert_char [c]
+; ;  (let  [ cmd (.. "normal \"a" c "\"")]
 ;  (vim.cmd cmd))
 ;  "")
-;(fn _insert_char [n]i
-;  (let [c (nr2char n)
-;        line (getline ".")
-;        ])
-;  )
+(fn _insert_char [n]
+  (let [c (nr2char n)
+        line (getline ".")
+        pos (- (col ".") 1)
+        line (.. (string.sub line 1 pos) c (string.sub line (+ pos 1) (length line)))]
+    (setline "." line)))
 
 (fn _controller []
   (let [c (_current_input)]
-    (print c)
+    (local window (require :hwich.window))
+    ;(window.window_start window)
+    ;(window.buf_set_text window)
     (match c
       (a ? (= a 13)) "" ;; CR (C-m)
-      (a ? (and (> a 0) (< a 32))) (do (feedkeys "i111") (_do? a ))
+      ;(a ? (and (> a 0) (< a 32))) (do (_do? a ) (_controller))
+      ;(a) (do (_insert_char a) (_controller))
+      (a ? (and (> a 0) (< a 32)))  (do (feedkeys "i111") (_do? a ))
       (a) (do (feedkeys "111") (nr2char a))
-      )))
+      )
+    ;(window.window_close window)
+    )
+  )
 
 (fn _G.hwich_start []
   (_controller))
 
+(fn _G.feed_hwich []
+  (local window (require :hwich.window))
+  ;(window.window_start window)
+  ;(window.buf_set_text window)
+  (feedkeys "111" "n")
+  )
+
+
 (map "i" "111" "v:lua.hwich_start()" {:noremap true :expr true :nowait true})
+;(map "i" "111" "<cmd>lua _G.hwich_start()<cr>" {:noremap true :nowait true})
+(map "i" "222" "<cmd>v:lua.feed_hwich()<cr>" {:noremap true :nowait true})
 
 {}
 
 ;; https://vim.fandom.com/wiki/Wait_for_user_input_(getchar)_without_moving_cursor
+
+;; WARN on dev
+;; TODO add User autocmd for window
