@@ -5,13 +5,32 @@ vim.cmd [[packadd packer.nvim]]
 
 return require('packer').startup(function()
   -- Packer can manage itself
-  use {'wbthomason/packer.nvim', opt=true}
+  use {'wbthomason/packer.nvim',
+      setup=function()
+      end
+  }
+
+  -------------------------------------------------------------
+  -- Lua librarys
+  -------------------------------------------------------------
+
+  use_rocks 'fennel'
+  use_rocks 'luacheck'
+  use_rocks 'luasocket'
+  use_rocks 'effil'
+
+  -------------------------------------------------------------
+  -- Another Plugins
+  -------------------------------------------------------------
+
+
+  use { 'ms-jpq/lua-async-await' }
 
   -- hotload
-  use {'notomo/lreload.nvim', opt=true}
+  -- use {'notomo/lreload.nvim', opt=true}
 
   -- reload configuration
-  use {'famiu/nvim-reload'}
+  -- use {'famiu/nvim-reload'}
 
 
   -- use {'kyazdani42/nvim-tree.lua',
@@ -40,6 +59,23 @@ return require('packer').startup(function()
   -- UI
   -------------------------------------------------------------
   -- {{{
+  -- starting page
+   use { 'glepnir/dashboard-nvim',
+       config=function()
+           vim.cmd([[let g:dashboard_default_executive ='telescope']])
+           vim.cmd([[
+ let g:dashboard_custom_shortcut={
+ \ 'last_session'       : 'SPC l s l',
+ \ 'find_history'       : 'SPC l f h',
+ \ 'find_file'          : 'SPC l f f',
+ \ 'new_file'           : 'SPC l c n',
+ \ 'change_colorscheme' : 'SPC l t c',
+ \ 'find_word'          : 'SPC l f a',
+ \ 'book_marks'         : 'SPC l f b',
+ \ }]])
+       end
+   }
+
   -- minimap
   use {'rinx/nvim-minimap',
       config=function()
@@ -58,28 +94,71 @@ return require('packer').startup(function()
   use {'nvim-telescope/telescope.nvim',
       requires = { {'nvim-lua/plenary.nvim'} },
       setup=function()
-          vim.cmd([[nnoremap <leader>ff <cmd>lua require('telescope.builtin').find_files()<cr>]])
-          vim.cmd([[nnoremap <leader>fg <cmd>lua require('telescope.builtin').live_grep()<cr>]])
-          vim.cmd([[nnoremap <leader>fb <cmd>lua require('telescope.builtin').buffers()<cr>]])
-          vim.cmd([[nnoremap <leader>fh <cmd>lua require('telescope.builtin').help_tags()<cr>]])
+          vim.cmd([[nnoremap <leader>tf <cmd>Telescope find_files<cr>]])
+          vim.cmd([[nnoremap <leader>tg <cmd>Telescope live_grep<cr>]])
+          vim.cmd([[nnoremap <leader>tb <cmd>Telescope buffers<cr>]])
+          vim.cmd([[nnoremap <leader>th <cmd>Telescope help_tags<cr>]])
       end
   }
+
+  use { 'xiyaowong/nvim-transparent'}
+
+  -- one window
+ use { 'windwp/windline.nvim',
+     config=function()
+         -- require'wlsample.evil_line'
+         --require('wlsample.wind')
+         -- require('wlsample.basic')
+         require('wlsample.vscode')
+         require('wlfloatline').setup({
+                 always_active = false,
+                 show_last_status = false,
+             })
+     end
+ }
 
 
   -- which key
   -- use {
-  --     "folke/which-key.nvim",
-  --     config = function()
-  --         require("which-key").setup {
-  --             -- your configuration comes here
-  --             -- or leave it empty to use the default settings
-  --             -- refer to the configuration section below
-  --         }
+  --     "folke/which-key.nvim",opt=true,
+  --     setup = function()
+  --         require("which-key").setup {}
+  --         --local presets = require("which-key.plugins.presets")
+  --         --presets.operators["i"] = nil
+  --         --presets.operators["v"] = nil
   --     end
   -- }
 
+use { 'delphinus/skkeleton_indicator.nvim',
+    config = function()
+        vim.api.nvim_exec([[
+          hi SkkeletonIndicatorEiji guifg=#88c0d0 guibg=#2e3440 gui=bold
+          hi SkkeletonIndicatorHira guifg=#2e3440 guibg=#a3be8c gui=bold
+          hi SkkeletonIndicatorKata guifg=#2e3440 guibg=#ebcb8b gui=bold
+          hi SkkeletonIndicatorHankata guifg=#2e3440 guibg=#b48ead gui=bold
+          hi SkkeletonIndicatorZenkaku guifg=#2e3440 guibg=#88c0d0 gui=bold
+        ]], false)
+        require'skkeleton_indicator'.setup {}
+    end
+}
+
+ 
+use {'nvim-treesitter/nvim-treesitter', run = ':TSUpdate',
+    config = function()
+        require'nvim-treesitter.configs'.setup {
+              ensure_installed = "maintained",
+              sync_install = false,
+              ignore_install = { "javascript" },
+              highlight = {
+                  enable = true,
+                  disable = { "c", "rust" , "lua"},
+                  additional_vim_regex_highlighting = false,
+              },
+        }
+    end
+}
+
   -- rainbow bracket
-  use {'p00f/nvim-ts-rainbow'}
   -- }}}
 
   -------------------------------------------------------------
@@ -97,8 +176,7 @@ return require('packer').startup(function()
   }       -- interactive environment
   use 'Olical/nvim-local-fennel'
   -- use {'Olical/aniseed'}
-  -- use {
-  --   'rktjmp/hotpot.nvim',
+  -- use {'rktjmp/hotpot.nvim',
   --   -- packer says this is "code to run after this plugin is loaded."
   --   -- but it seems to run before plugin/hotpot.vim (perhaps just barely)
   --   setup = function()
@@ -136,8 +214,32 @@ return require('packer').startup(function()
   --   config = function() require("hotpot") end
   -- }
 
-  use 'tsbohc/zest.nvim' -- vim-specific macro
+  --use 'tsbohc/zest.nvim' -- vim-specific macro
   -- }}}
 
-  use_rocks {'fennel', 'luacheck'}
+  use {"ellisonleao/glow.nvim",
+      cmd={'Glow', 'GlowInstall'},
+      run=[[:GlowInstall]]
+  }
+
+  -- use {'edluffy/hologram.nvim',
+  --     config = function()
+  --         require'hologram'.setup {}
+  --         -- local function map(input, output)
+  --         --     vim.api.nvim_set_keymap('n', input, output, { noremap = true, silent = false})
+  --         -- end
+  --         -- local my_image
+  --         -- function Start()
+  --         --     my_image = require('hologram.image'):new({ source="/Users/cassin/Downloads/ex1.png", row=2,col=40})
+  --         --     my_image:transmit()
+  --         -- end
+  --         -- function End()
+  --         --   print(my_image:delete())
+  --         -- end
+  --         -- map('<space>lls', ":lua Start()<cr>")
+  --         -- map('<space>lle', ":lua End()<cr>")
+  --     end,
+  -- }
+
+
 end)
