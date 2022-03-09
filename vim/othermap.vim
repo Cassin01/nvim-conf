@@ -14,13 +14,14 @@ lua << EOF
     keys:set_map_i('ƒ', '<right>', '<opt-f>: right')
     keys:set_map_i('∫', '<left>', '<opt-b>: left')
     keys:set_map_i('´', '<end>', '<opt-e>: jump to EOL')
-    keys:set_map_i('å', '<C-o>:call <SID>to_head_of_line()<CR>', '<opt-a>: jump to BOL')
+    keys:set_map_i('å', '<C-o>:call To_head_of_line()<CR>', '<opt-a>: jump to BOL')
     keys:set_map_i('Ï', '<esc>ea', '<shift><opt-f> move forward one word')
     keys:set_map_i('ı', '<esc>bi', '<shift><opt-b> move to one word later')
-    keys:set_map_i('∆', '<esc>o', '<opt-j> insert new line and jump')
+    keys:set_map_i('∆', '<esc>o', '<opt-j> insert new line bellow and jump')
+    keys:set_map_i('ø', '<esc>O', '<opt-o> insert new line above and jump' )
 
     -- copy & paste
-    keys:set_map_i('˚', '<C-r>=<SID>retrive_till_tail()<CR>', '<opt-k>: delete from cursor to EOL')
+    keys:set_map_i('˚', '<C-r>=Retrive_till_tail()<CR>', '<opt-k>: delete from cursor to EOL')
     keys:set_map_i('∂', '<Del>', '<opt-d>: Delete (delete a char at the back of cursor)')
     keys:set_map_i('˙', '<c-h>', '<opt-h>: backspace (delete a char at the front of cursor)')
     keys:set_map_i('€', '<c-o>v', '<opt-@>: mark the start point of yank')
@@ -94,10 +95,10 @@ endfunction
 
         " 'c-a insert previously inserted text'
         " -> カーソルを行の先頭へ移動
-        inoremap <silent><C-a> <C-o>:call <SID>to_head_of_line()<CR>
+        inoremap <silent><C-a> <C-o>:call To_head_of_line()<CR>
 
         " 現在のカーソル位置から行末尾までを切り取り
-        inoremap <silent><C-l> <C-r>=<SID>retrive_till_tail()<CR>
+        inoremap <silent><C-l> <C-r>=Retrive_till_tail()<CR>
 
         " delete one shiftwidth of indent in the current line
         "" -> カーソルの右の文字を削除
@@ -106,7 +107,7 @@ endfunction
         inoremap <silent><C-b> <left>
     endif
 
-    function! s:to_head_of_line()
+    function! To_head_of_line()
         let start_column = col('.')
         normal! ^
         if col('.') == start_column
@@ -115,7 +116,7 @@ endfunction
         return ''
     endfunction
 
-    function! s:retrive_till_tail()
+    function! Retrive_till_tail()
         let [text_before, text_after] = s:split_line()
         if len(text_after) == 0
             normal! J
@@ -134,10 +135,9 @@ endfunction
     " }}}
 
     " 括弧補完 {{{
-        "inoremap () ()<left>
-        "inoremap {} {}<left>
-        " inoremap [] []<left>
-        inoremap [ []<left>
+        inoremap () ()<left>
+        inoremap {} {}<left>
+        inoremap [] []<left>
 
         " 例外処理: の後に続けて)を押したとき
         " inoremap <expr> )  strpart(getline('.'), col('.')-1, 1) == ")" ? "\<Right>" : ")"
