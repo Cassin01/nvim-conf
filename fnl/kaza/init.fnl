@@ -1,11 +1,10 @@
-; -- kaza (香気) --
-;   a zest fork for hotpot
+;;;; -- kaza (香気) --
+;;;;   a zest fork for hotpot
 
 (fn setup []
-  (set _G._kaza
-       {:v {:# 1}
-        :command {:# 1}
-        :autocmd {:# 1}
-        :keymap {:# 1}}))
+  (set _G.__kaza
+       {:keymap {}
+        :v {}
+        :f {}}))
 
 {: setup}

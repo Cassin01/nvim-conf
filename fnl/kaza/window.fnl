@@ -22,6 +22,9 @@
 ;(print package.path)
 
 
- (vim.api.nvim_win_close window.win true)
+(fn text2lists [text])
+; (vim.api.nvim_win_close window.win true)
 ;(util.list.dump util)
 
+;; Warn
+;; this file is on dev

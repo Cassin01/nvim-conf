@@ -4,4 +4,5 @@
 (require :core.options)
 (require :core.gui)
 (require :core.playground)
-(require :core.autocmd)
+(require :core.map)
+(require :core.au)
