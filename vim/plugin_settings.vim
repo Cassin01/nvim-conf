@@ -1,4 +1,31 @@
 scriptencoding utf-8
+
+" " dcc {{{
+" call ddc#custom#patch_global('sources', ['skkeleton'])
+" call ddc#custom#patch_global('sourceOptions', {
+"     \   '_': {
+"     \     'matchers': ['matcher_head'],
+"     \     'sorters': ['sorter_rank']
+"     \   },
+"     \   'skkeleton': {
+"     \     'mark': 'skkeleton',
+"     \     'matchers': ['skkeleton'],
+"     \     'sorters': [],
+"     \     'minAutoCompleteLength': 2,
+"     \   },
+"     \ })
+" call ddc#enable()
+" " }}}
+
+" " skkeleton {{{
+" call skkeleton#config({
+"     \ 'globalJisyo': '/Users/cassin/.config/nvim/data/skk/dict/SKK-JISYO.XL',
+"     \ 'completionRankFile': '/Users/cassin/.config/nvim/data/skk/rank.json',
+"     \ 'eggLikeNewline': v:true,
+"     \ 'registerConvertResult': v:true,
+"     \ })
+" " }}}
+
 " submode start {{{
     " resize window
     call submode#enter_with('bufmove', 'n', '', 's>', '<C-w>>')

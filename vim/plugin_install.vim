@@ -11,6 +11,26 @@ Plug 'kana/vim-submode'                 " resize split windows
 Plug 'HendrikPetertje/vimify'
 
 " ---------------------------------------
+" japanese
+" ---------------------------------------
+" " {{{
+" Plug 'prabirshrestha/vim-lsp'
+" Plug 'mattn/vim-lsp-settings'
+" Plug 'shun/ddc-vim-lsp'
+" Plug 'Shougo/ddc.vim'
+" Plug 'vim-denops/denops.vim'
+" Plug 'vim-skk/denops-skkeleton.vim'
+"
+" imap <C-j> <Plug>(skkeleton-toggle)
+" cmap <C-j> <Plug>(skkeleton-toggle)
+" augroup skkeleton-coc
+"     autocmd!
+"     autocmd User skkeleton-enable-pre let b:coc_suggest_disable = v:true
+"     autocmd User skkeleton-disable-pre let b:coc_suggest_disable = v:false
+" augroup END
+" " }}}
+
+" ---------------------------------------
 " Indent
 " ---------------------------------------
 " {{{
@@ -22,16 +42,15 @@ Plug 'HendrikPetertje/vimify'
 
 " indent-guides {{{
 Plug 'nathanaelkane/vim-indent-guides'
-    let g:indent_guides_enable_on_vim_startup=1 " enable indent-guides
-    let g:indent_guides_start_level=1
-    hi IndentGuidesOdd  ctermbg=239
-    hi IndentGuidesEven ctermbg=242
-    "let g:indent_guides_auto_colors=0 " enable auto colors
-    let g:indent_guides_guide_size=1 " width of identifier
-    let g:indent_guides_exclude_filetypes = ['help', 'NvimTree', 'evil_witch', 'WhichKey', 'dashboard', 'minimap']
-    autocmd VimEnter,Colorscheme * :hi IndentGuidesOdd   ctermbg=237
-    autocmd VimEnter,Colorscheme * :hi IndentGuidesEven  ctermbg=237
-
+let g:indent_guides_enable_on_vim_startup=1 " enable indent-guides
+let g:indent_guides_start_level=1
+hi IndentGuidesOdd  ctermbg=239
+hi IndentGuidesEven ctermbg=242
+"let g:indent_guides_auto_colors=0 " enable auto colors
+let g:indent_guides_guide_size=1 " width of identifier
+let g:indent_guides_exclude_filetypes = ['help', 'NvimTree', 'evil_witch', 'WhichKey', 'dashboard', 'minimap', 'glowpreview']
+autocmd VimEnter,Colorscheme * :hi IndentGuidesOdd   ctermbg=237
+autocmd VimEnter,Colorscheme * :hi IndentGuidesEven  ctermbg=237
 " }}}
 
 ": colorlise status line {{{
@@ -270,7 +289,7 @@ if empty(v:servername) && exists('*remote_startserver')
 endif
 
 Plug 'Cassin01/texrun.vim'
-let g:texrun#file_name = 'l03.tex'
+let g:texrun#file_name = 'l02.tex'
 " }}}
 
 " toml
@@ -283,7 +302,8 @@ let g:vim_json_syntax_conceal=0
 
 "markdown {{{
     Plug 'godlygeek/tabular'
-    Plug 'plasticboy/vim-markdown'
+    "Plug 'plasticboy/vim-markdown'
+    Plug 'preservim/vim-markdown'
 
     " Preview系 {{{
         " 一軍 {{{
@@ -332,7 +352,6 @@ Plug 'mattn/emmet-vim'
 
 " A solid language pack {{{
 Plug 'sheerun/vim-polyglot'
-
 let g:polyglot_disabled = ['markdown']
 " }}}
 " }}}
@@ -344,6 +363,9 @@ let g:polyglot_disabled = ['markdown']
 " :Unite colorscheme -auto-preview
 Plug 'Shougo/unite.vim'
 Plug 'ujihisa/unite-colorscheme'
+
+" :TransparentEnable
+Plug 'tribela/vim-transparent'
 
 " colorschemes {{{
     Plug 'altercation/vim-colors-solarized'   " solarized
@@ -424,6 +446,9 @@ Plug 'honza/vim-snippets'
 " multiple cursors
 Plug 'terryma/vim-multiple-cursors'
 
+" undotree
+Plug 'mbbill/undotree'
+
 " git " {{{
 Plug 'tpope/vim-fugitive'
 "set statusline+=%{FugitiveStatusline()}
@@ -433,7 +458,7 @@ nnoremap mgp :<c-u>Git push<CR>
 " }}}
 
 " shows a git diff in the gutter (sign column) and stages/undoes (partial) hunks.
-Plug 'airblade/vim-gitgutter'
+" Plug 'airblade/vim-gitgutter'
 Plug 'tpope/vim-rhubarb' " enable :Gbrowse
 " }}}
 
@@ -480,6 +505,11 @@ Plug 'jceb/vim-orgmode'
 " Distraction-free writing in Vim
 Plug 'junegunn/goyo.vim'
 nnoremap <silent> <leader>z :Goyo<cr>
+
+Plug 'junegunn/limelight.vim'
+nmap <Leader>l <Plug>(Limelight)
+xmap <Leader>l <Plug>(Limelight)
+
 Plug 'amix/vim-zenroom2' "A Vim extension that emulates iA Writer environment when editing Markdown, reStructuredText or text files
 
 " vim motion on speed! {{{
@@ -502,7 +532,7 @@ map <Leader><Leader>h <Plug>(easymotion-linebackward)
       return incsearch#util#deepextend(deepcopy({
       \   'modules': [incsearch#config#easymotion#module({'overwin': 1})],
       \   'keymap': { "\<CR>": '<Over>(easymotion)' },
-      \   'is_expr': 0 }), get(a:, 1, {}))
+      \   'is_expr': 0 }), get(a:000, 1, {}))
     endfunction
 
     noremap <silent><expr> /  incsearch#go(<SID>incsearch_config())
@@ -527,14 +557,14 @@ map <Leader><Leader>h <Plug>(easymotion-linebackward)
                     \   'keymap': {"\<CR>": '<Over>(easymotion)'},
                     \   'is_expr': 0,
                     \   'is_stay': 1
-                    \ }), get(a:, 1, {}))
+                    \ }), get(a:000, 1, {}))
     endfunction
 
     noremap <silent><expr> <space>/ incsearch#go(<SID>config_easyfuzzymotion())
     " }}}
 " }}}
 
-" Jump to any visible line in the buffer by using letters instead of numbers. {{{
+" Jump to any visible line in the buffer by using letters instead of numbers. {{{000
 Plug 'skamsie/vim-lineletters'
 map <silent>sa <Plug>LineLetters
 " }}}
@@ -582,14 +612,14 @@ Plug 'rhysd/clever-f.vim'
 Plug 'Jorengarenar/vim-MvVis'
 
 " " WhichKey :displays available keybindings in popup. {{{
-" Plug 'liuchengxu/vim-which-key', { 'on': ['WhichKey', 'WhichKey!'] }
-" nnoremap <silent> <leader>      :<c-u>WhichKey '<leader>'<CR>
-" nnoremap <silent> <localleader> :<c-u>WhichKey  '<localleader>'<CR>
-" nnoremap <silent> m :<c-u>WhichKey 'm'<CR>
-" nnoremap <silent> s :<c-u>WhichKey 's'<CR>
-" nnoremap <silent> , :<c-u>WhichKey ','<CR>
-" nnoremap <silent> ; :<c-u>WhichKey ';'<CR>
-" nnoremap <silent> <space> :<c-u>WhichKey '<space>'<CR>
+Plug 'liuchengxu/vim-which-key', { 'on': ['WhichKey', 'WhichKey!'] }
+nnoremap <silent> <leader>      :<c-u>WhichKey '<leader>'<CR>
+nnoremap <silent> <localleader> :<c-u>WhichKey  '<localleader>'<CR>
+nnoremap <silent> m :<c-u>WhichKey 'm'<CR>
+nnoremap <silent> s :<c-u>WhichKey 's'<CR>
+nnoremap <silent> , :<c-u>WhichKey ','<CR>
+nnoremap <silent> ; :<c-u>WhichKey ';'<CR>
+nnoremap <silent> <space> :<c-u>WhichKey '<space>'<CR>
 " " }}}
 
 "  complementary pairs of mappings. -> ] or [
@@ -614,6 +644,13 @@ vmap <leader>b <Plug>(openbrowser-smart-search)
 
 " conceal
 Plug 'Cassin01/vim-conceal'
+
+" ---------------------------------------
+" editing
+" ---------------------------------------
+" {{{
+" "
+" }}}
 " }}}
 
 call plug#end()
