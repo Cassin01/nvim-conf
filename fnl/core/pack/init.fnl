@@ -12,5 +12,6 @@
 ((. (require :packer) :startup)
  (λ []
    (use "wbthomason/packer.nvim")
+   (use "rktjmp/hotpot.nvim")
    (each [_ plug (ipairs (require :core.pack.plugs))]
      (use plug))))
