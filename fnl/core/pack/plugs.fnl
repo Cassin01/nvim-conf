@@ -39,7 +39,10 @@
                           :disable [ "c" "rust" "lua"]
                           :additional_vim_regex_highlighting false}}))}
 
- ;;; edit
+ ;;; Colortheme
+ :rafamadriz/neon
+
+ ;;; Edit
 
  ;; lsp
  [:neovim/nvim-lspconfig
@@ -74,7 +77,10 @@
              {:current_line_blame true}))}
 
  ;; vim
- :Shougo/echodoc.vim
+ {1 :Shougo/echodoc.vim
+  :setup (λ []
+            (tset vim.g :echodoc#enable_at_startup true)
+            (tset vim.g :echodoc#type :floating))}
 
  ;;; language
 

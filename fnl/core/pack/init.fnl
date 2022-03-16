@@ -1,11 +1,12 @@
 (local {: concat-with} (require :util.src.list))
+(local {: nvim-home} (require :kaza.file))
 
 (tset package :path
       (concat-with ";"
                    package.path
                    "./?.lua"
-                   "/Users/cassin/.config/nvim/lua5.1/share/lua/5.1/?.lua"
-                   "/Users/cassin/.config/nvim/lua5.1/share/lua/5.1/?/init.lua"))
+                   (concat-with "/" (nvim-home) "lua5.1/share/lua/5.1/?.lua")
+                   (concat-with "/" (nvim-home) "lua5.1/share/lua/5.1/?/init.lua")))
 
 (vim.cmd "packadd packer.nvim")
 
@@ -13,7 +14,7 @@
 
 ((. (require :packer) :startup)
  (λ []
-   (use "wbthomason/packer.nvim")
+   (use {1 "wbthomason/packer.nvim" :opt true})
    (use "rktjmp/hotpot.nvim")
    (each [_ plug (ipairs (require :core.pack.plugs))]
      (use plug))))
