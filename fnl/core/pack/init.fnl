@@ -1,5 +1,5 @@
 (local {: concat-with} (require :util.src.list))
- 
+
 (tset package :path
       (concat-with ";"
                    package.path
@@ -8,6 +8,8 @@
                    "/Users/cassin/.config/nvim/lua5.1/share/lua/5.1/?/init.lua"))
 
 (vim.cmd "packadd packer.nvim")
+
+(vim.cmd "autocmd BufWritePost plugs.fnl PackerCompile")
 
 ((. (require :packer) :startup)
  (λ []
