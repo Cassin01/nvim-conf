@@ -14,7 +14,7 @@
 
 ((. (require :packer) :startup)
  (λ []
-   (use {1 "wbthomason/packer.nvim" :opt true})
-   (use "rktjmp/hotpot.nvim")
+   (use {1 :wbthomason/packer.nvim :opt true})
+   (use :rktjmp/hotpot.nvim)
    (each [_ plug (ipairs (require :core.pack.plugs))]
      (use plug))))
