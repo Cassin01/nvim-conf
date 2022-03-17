@@ -6,42 +6,42 @@ scriptencoding utf-8
     " https://qiita.com/kentarosasaki/items/785d8c1e1c4433df6ac9
 
     if has("mac")
-lua << EOF
-    -- require('init')
-    -- 移動
-    keys:set_map_i('π', '<up>', '<opt-p>: up')
-    keys:set_map_i('˜', '<down>', '<opt-n>: down')
-    keys:set_map_i('ƒ', '<right>', '<opt-f>: right')
-    keys:set_map_i('∫', '<left>', '<opt-b>: left')
-    keys:set_map_i('´', '<end>', '<opt-e>: jump to EOL')
-    keys:set_map_i('å', '<C-o>:call To_head_of_line()<CR>', '<opt-a>: jump to BOL')
-    keys:set_map_i('Ï', '<esc>ea', '<shift><opt-f> move forward one word')
-    keys:set_map_i('ı', '<esc>bi', '<shift><opt-b> move to one word later')
-    keys:set_map_i('∆', '<esc>o', '<opt-j> insert new line bellow and jump')
-    keys:set_map_i('ø', '<esc>O', '<opt-o> insert new line above and jump' )
-
-    -- copy & paste
-    keys:set_map_i('˚', '<C-r>=Retrive_till_tail()<CR>', '<opt-k>: delete from cursor to EOL')
-    keys:set_map_i('∂', '<Del>', '<opt-d>: Delete (delete a char at the back of cursor)')
-    keys:set_map_i('˙', '<c-h>', '<opt-h>: backspace (delete a char at the front of cursor)')
-    keys:set_map_i('€', '<c-o>v', '<opt-@>: mark the start point of yank')
-    keys:set_map_v('∑', 'y`]i', '<opt-w>: yank')
-    keys:set_map_v('„', 'x`]i', '<opt-w>: delete and yankk')
-    keys:set_map_i('¥', '<esc>pa', '<opt>y: paste')
-
-    -- undo & redo
-    keys:set_map_i('—', '<esc>ua', '<opt-->: undo')
-    keys:set_map_i('±', '<esc><c-r>a', '<opt-+>: redo')
-
-    -- window
-    keys:set_map_i('≈0', '<c-o><c-w>q', '<opt-x>0: close a window')
-    keys:set_map_i('≈2', '<c-o>:<c-u>vs<cr>', '<opt-x>2; split-vertically')
-    keys:set_map_i('≈3', '<c-o>:<c-u>sp<cr>', '<opt-x>3: split-horizontally')
-    keys:set_map_i('≈o', '<c-o><c-w>w', '<opt-x>o: move to other windows')
-
-    -- file
-    keys:set_map_i('≈ß', '<c-o>:w<cr>', '<opt-x><opt-s>: save-file')
-EOF
+" lua << EOF
+"     -- require('init')
+"     -- 移動
+"     keys:set_map_i('π', '<up>', '<opt-p>: up')
+"     keys:set_map_i('˜', '<down>', '<opt-n>: down')
+"     keys:set_map_i('ƒ', '<right>', '<opt-f>: right')
+"     keys:set_map_i('∫', '<left>', '<opt-b>: left')
+"     keys:set_map_i('´', '<end>', '<opt-e>: jump to EOL')
+"     keys:set_map_i('å', '<C-o>:call To_head_of_line()<CR>', '<opt-a>: jump to BOL')
+"     keys:set_map_i('Ï', '<esc>ea', '<shift><opt-f> move forward one word')
+"     keys:set_map_i('ı', '<esc>bi', '<shift><opt-b> move to one word later')
+"     keys:set_map_i('∆', '<esc>o', '<opt-j> insert new line bellow and jump')
+"     keys:set_map_i('ø', '<esc>O', '<opt-o> insert new line above and jump' )
+" 
+"     -- copy & paste
+"     keys:set_map_i('˚', '<C-r>=Retrive_till_tail()<CR>', '<opt-k>: delete from cursor to EOL')
+"     keys:set_map_i('∂', '<Del>', '<opt-d>: Delete (delete a char at the back of cursor)')
+"     keys:set_map_i('˙', '<c-h>', '<opt-h>: backspace (delete a char at the front of cursor)')
+"     keys:set_map_i('€', '<c-o>v', '<opt-@>: mark the start point of yank')
+"     keys:set_map_v('∑', 'y`]i', '<opt-w>: yank')
+"     keys:set_map_v('„', 'x`]i', '<opt-w>: delete and yankk')
+"     keys:set_map_i('¥', '<esc>pa', '<opt>y: paste')
+" 
+"     -- undo & redo
+"     keys:set_map_i('—', '<esc>ua', '<opt-->: undo')
+"     keys:set_map_i('±', '<esc><c-r>a', '<opt-+>: redo')
+" 
+"     -- window
+"     keys:set_map_i('≈0', '<c-o><c-w>q', '<opt-x>0: close a window')
+"     keys:set_map_i('≈2', '<c-o>:<c-u>vs<cr>', '<opt-x>2; split-vertically')
+"     keys:set_map_i('≈3', '<c-o>:<c-u>sp<cr>', '<opt-x>3: split-horizontally')
+"     keys:set_map_i('≈o', '<c-o><c-w>w', '<opt-x>o: move to other windows')
+" 
+"     -- file
+"     keys:set_map_i('≈ß', '<c-o>:w<cr>', '<opt-x><opt-s>: save-file')
+" EOF
 
 " 情報を表示
 " inoremap <silent>  <c-o>:lua keys:show_i()<cr>

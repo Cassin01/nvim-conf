@@ -5,6 +5,8 @@
   (set _G.__kaza
        {:keymap {}
         :v {}
+        :k {:i {}
+            :v {}}
         :f {}}))
 
 {: setup}

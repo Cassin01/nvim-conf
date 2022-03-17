@@ -10,9 +10,7 @@
 
 (vim.cmd "packadd packer.nvim")
 
-(vim.cmd "autocmd BufWritePost plugs.fnl PackerCompile")
-
-((. (require :packer) :startup)
+((-> (require :packer) (. :startup))
  (λ []
    (use {1 :wbthomason/packer.nvim :opt true})
    (use :rktjmp/hotpot.nvim)

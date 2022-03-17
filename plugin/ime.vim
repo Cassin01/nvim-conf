@@ -77,13 +77,12 @@ if 'i' == mode()
         endif
     elseif   s:ime_result == 0
         if s:current_status != s:ime_kind['kana']
-            echom '0'
             " kana orange
             let s:current_status = s:ime_kind['kana']
             highlight iCursor guibg=#cc6666
             set guicursor=i:ver25-iCursor
         endif
-    else
+    elseif s:ime_result == 1
         if s:current_status != s:ime_kind['roman']
             let s:current_status = s:ime_kind['roman']
             highlight iCursor guibg=#5FAFFF
@@ -95,7 +94,7 @@ endfunction
     "}}}
 
 
-call timer_start(1500, function("s:currentIME"), {"repeat": -1})
+" call timer_start(1500, function("s:currentIME"), {"repeat": -1})
 
 "augroup IMEInsert
 "    autocmd CursorHoldI,InsertCharPre * :call s:currentIME()

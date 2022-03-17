@@ -14,6 +14,7 @@ syntax on
         " 111 : 薄青 (暗)
         " 214 : オレンジ (暗)
     " }}}
+
     " Check {{{
         " スペルチェック
         au Colorscheme * hi SpellBad ctermfg=none ctermbg=none cterm=underline
@@ -27,7 +28,6 @@ syntax on
         "     * nbsp, tab, trail
         au Colorscheme * hi NonText    ctermbg=None ctermfg=13
         au Colorscheme * hi SpecialKey ctermbg=None ctermfg=13 cterm=italic
-
     " }}}
 
     " Visual mode {{{
@@ -210,87 +210,6 @@ let g:terminal_color_14 = '#00f5e9'
 let g:terminal_color_15 = '#eeeeec'
 " }}}
 
-" " Language {{{
-"     augroup FlowWriteFile
-"         au!
-"         autocmd BufWrite *    :call s:w_set_default()
-"         autocmd BufWrite *.md :call s:w_set_markdown()
-"     augroup END
-"
-"     augroup FolowFile
-"         au!
-"         au BufRead,BufNewFile *      :call s:w_set_default()
-"         au BufRead,BufNewFile *.md   :call s:w_set_markdown()
-"         au BufRead,BufNewFile *.cpp  :call s:set_c_cpp()
-"     augroup END
-"
-"     function! s:w_set_default()
-"             if exists('g:my_color')
-"                 exe("colo ". g:my_color)
-"                 if exists('*s:set_each_color_settings()')
-"                     call s:set_each_color_settings()
-"                 else
-"                     echom 's:wolf() is not exists (at color.init.vim)'
-"                 endif
-"             else
-"                 echom 'Err: g:my_color is not exists. [at othermap.init.vim]'
-"             endif
-"
-"         " FIXME:
-"         " こっちで読んでいるのでnmapの方で呼ばれない．簡易的にこちらに書く {{{
-"             if exists('g:auto_save')
-"                 let g:auto_save = 0
-"             else
-"                 echom 'g:auto_save is not exists (at othermap.init.vim)'
-"             endif
-"         " }}}
-"     endfunction
-"
-"     function! s:w_set_markdown()
-"         if g:colors_name != 'goodwolf'
-"             colo goodwolf
-"             if exists('*s:wolf()')
-"                 call s:wolf()
-"             else
-"                 echom 's:wolf() is not exists (at color.init.vim)'
-"             endif
-"         endif
-"
-"         " FIXME:
-"         " こっちで読んでいるのでnmapの方で呼ばれない．簡易的にこちらに書く {{{
-"             if exists('g:auto_save')
-"                 let g:auto_save = 1
-"             else
-"                 echom 'g:auto_save is not exists (at othermap.init.vim)'
-"             endif
-"
-"             if &conceallevel != 0
-"                 setlocal conceallevel=0
-"             endif
-"
-"             inoremap $<enter> $$$$<left><left><cr><cr><up>
-"             inoremap $$       $$<left>
-"         " }}}
-"     endfunction
-"
-"     function! s:set_c_cpp()
-"         setlocal commentstring=//\ %s
-"         call s:indent()
-"         call s:comment()
-"         setlocal foldmethod=indent
-"     endfunction
-"
-"     function! s:indent()
-"         inoremap {<enter> {}<left><cr><cr><up><tab>
-"     endfunction
-"
-"     function! s:comment()
-"         inoremap /* <kDivide><kMultiply><space>
-"             \<space><kMultiply><kDivide>
-"             \<left><left><left>
-"     endfunction
-" " }}}
-
 " Set color scheme {{{
     set background=dark
     if exists('g:my_color')
@@ -322,22 +241,22 @@ let g:terminal_color_15 = '#eeeeec'
 " Specific fords  {{{
     highlight TodoEX guifg=none guibg=#4e9a06
     highlight TodoEX2 guifg=none guibg=#c4a000
-    " syntax match myT '\<\(NOTE\|MARK\|OPTION\)\>'
     " highlight default link Todo TodoEX
     " highlight default link Todo TodoEX2
      highlight! link Todo TodoEX
      highlight! link Todo TodoEX2
 " }}}
+
 " match:
-" augroup call_match
-"     autocmd!
-"     autocmd ColorScheme * call s:add_todo()
-"     autocmd BufRead,BufNew * call s:add_todo()
-" augroup END
+" {{{
+augroup call_match
+    autocmd!
+    autocmd ColorScheme * call s:add_todo()
+    autocmd BufRead,BufNew * call s:add_todo()
+augroup END
 
 
-let s:todo_ignore_filetype = ['dashboard', 'help', 'nerdtree', 'telescopePrompt']
-let s:todo_ids = []
+let s:todo_ignore_filetype = ['dashboard', 'help', 'nerdtree', 'telescopePrompt', '']
 
 function! s:find(val)
     return len(filter(copy(s:todo_ignore_filetype), {index, val -> val ==? a:val})) > 0
@@ -352,7 +271,6 @@ function! s:matched(key)
     return v:false
 endfunction
 
-
 function! s:add_todo()
     if s:find(&filetype)
         call clearmatches()
@@ -362,12 +280,11 @@ function! s:add_todo()
         return
     endif
 
-    let s:todo_ids = []
-    let s:todo_ids = add(s:todo_ids, matchadd('TrailingSpaces', ' \+$'))
-    let s:todo_ids = add(s:todo_ids, matchadd('Tabs', '\t'))
-    let s:todo_ids = add(s:todo_ids, matchadd('ZenkakuSpace', '　'))
-    let s:todo_ids = add(s:todo_ids, matchadd('TodoEX', '\<\(NOTE\|MARK\|OPTION\|CHANGED\|IDEA\|REVIEW\|NB\|QUESTION\|COMBAK\|TEMP\|DEBUG\|OPTIMIZE\|REVIEW\)'))
-    let s:todo_ids = add(s:todo_ids, matchadd('TodoEX2', '\<\(INFO\|REFACTOR\|DEPRECATED\|TASK\|UPDATE\|EXAMPLE\|ERROR\|WARN\|BROKEN\)'))
+    call matchadd('TrailingSpaces', ' \+$')
+    call matchadd('Tabs', '\t')
+    call matchadd('ZenkakuSpace', '　')
+    call matchadd('TodoEX', '\<\(NOTE\|MARK\|OPTION\|CHANGED\|IDEA\|REVIEW\|NB\|QUESTION\|COMBAK\|TEMP\|DEBUG\|OPTIMIZE\|REVIEW\)')
+    call matchadd('TodoEX2', '\<\(INFO\|REFACTOR\|DEPRECATED\|TASK\|UPDATE\|EXAMPLE\|ERROR\|WARN\|BROKEN\)')
 
 " ## NOTE: TODO highlighting
 " DEFAULT: TODO FIXME HACK XXX WARNING
@@ -403,8 +320,7 @@ function! s:add_todo()
 " - WARN
 " - BROKEN
 endfunction
-" command! MYMATCH call s:add_todo()
-" nnoremap ,b :MYMATCH<CR>
+" }}}
 " }}}
 
 " ハイライトグループの確認 {{{
@@ -448,4 +364,23 @@ endfunction
     command! SyntaxInfo call s:get_syn_info()
     " nnoremap <buffer> <silent> ,n :SyntaxInfo<CR>
     nnoremap <silent> ,n :SyntaxInfo<CR>
+" }}}
+
+" https://zenn.dev/kawarimidoll/articles/cf6caaa7602239
+" {{{
+command! -nargs=+ -complete=highlight MergeHighlight call s:MergeHighlight(<q-args>)
+function! s:MergeHighlight(args) abort
+  let l:args = split(a:args)
+  if len(l:args) < 2
+    echoerr '[MergeHighlight] At least 2 arguments are required.'
+    echoerr 'New highlight name and source highlight names.'
+    return
+  endif
+
+  " skip 'links' and 'cleared'
+  execute 'highlight' l:args[0] l:args[1:]
+      \ ->map({_, val -> substitute(execute('highlight ' . val),  '^\S\+\s\+xxx\s', '', '')})
+      \ ->filter({_, val -> val !~? '^links to' && val !=? 'cleared'})
+      \ ->join()
+endfunction
 " }}}

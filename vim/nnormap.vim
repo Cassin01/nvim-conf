@@ -292,22 +292,22 @@ nnoremap <up> gk
     " 折りたたみ単位でジャンプ
     " zj -- move to the next fold
     " zk -- move to the previous fold
-lua << EOF
-    require('key_register')
-    keys = Keys:new()
-    -- keys:set_map_n('<space>j', 'zj', 'move to the next fold')
-    -- keys:set_map_n('<space>k', 'zk', 'move to the previous fold')
-
-    -- keys:set_map_n('<space>h', 'zc', 'close one fold under the cursor')
-    -- keys:set_map_n('<space>l', 'zO', 'open all fold under the cursor recursively')
-
-    -- keys:set_map_n('<space>H', 'zM', 'fold more')
-    -- keys:set_map_n('<space>L', 'zR', 'open all folds')
-
-    -- keys:set_map_n('<space>o', 'zMzv', 'close other folds')
-    -- keys:set_map_n('<space><tab>d', ':<C-u>call Logger.log("hugaga")<CR>', 'tttt')
-    -- keys:set_map_n('<space><tab>k', ':<C-u>echom 1<CR>', 'td')
-EOF
+" lua << EOF
+"     -- require('key_register')
+"     -- keys = Keys:new()
+"     -- keys:set_map_n('<space>j', 'zj', 'move to the next fold')
+"     -- keys:set_map_n('<space>k', 'zk', 'move to the previous fold')
+" 
+"     -- keys:set_map_n('<space>h', 'zc', 'close one fold under the cursor')
+"     -- keys:set_map_n('<space>l', 'zO', 'open all fold under the cursor recursively')
+" 
+"     -- keys:set_map_n('<space>H', 'zM', 'fold more')
+"     -- keys:set_map_n('<space>L', 'zR', 'open all folds')
+" 
+"     -- keys:set_map_n('<space>o', 'zMzv', 'close other folds')
+"     -- keys:set_map_n('<space><tab>d', ':<C-u>call Logger.log("hugaga")<CR>', 'tttt')
+"     -- keys:set_map_n('<space><tab>k', ':<C-u>echom 1<CR>', 'td')
+" EOF
 " source $HOME/.config/nvim/lua/hyper_which.vim
     nnoremap <silent> <space>j zj
     nnoremap <silent> <space>k zk

@@ -1,7 +1,3 @@
-;;; nivm/embedded.fnl
-
-(import-macros m :util.src.macros)
-
 (local M {})
 
 (fn M.set-option [k v]

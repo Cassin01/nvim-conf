@@ -349,9 +349,9 @@ let hyperwitch = HyperWitch.new()
 " HWich-Evil
 " ---------------------------------------------------------
 " {{{
-lua << EOF
-require("key_register")
-EOF
+" lua << EOF
+" require("key_register")
+" EOF
 
 function! s:evil_On_Matched(key) dict
     let l:command = "normal a" . a:key
@@ -367,7 +367,8 @@ function! s:evil_After_Quit(self) dict
 endfunction
 
 function! s:evil_Load_Index(self) dict
-    return luaeval('keys:get_i()')
+    " return luaeval('keys:get_i()')
+    return luaeval('_G.__kaza.k.i')
 endfunction
 
 function! s:evil_Event() dict
@@ -511,7 +512,7 @@ function! s:hwichtex_Load_Index(self) dict
         \ "mathbf":        "vector",
         \ "mathbb":        "set",
         \ "bm":            "itaric bold (for lattice 'L')",
-        \ "mathcal":       "cursive",
+        \ "mathcal":       "cursive (calligraphy font",
         \ "textit":        "itaric",
         \ "textgt":        "gosick",
         \ "KwRet":         "Return (algorithm2e)",
@@ -676,14 +677,17 @@ call normalwitch.Event()
 " ---------------------------------------------------------
 " {{{
 let s:bookmark = {
-            \ "home":   "~/.config/nvim",
-            \ "fnl":    "~/.config/nvim/fnl",
-            \ "plug":   "~/.config/nvim/init/main/plugin",
-            \ "vim":    "~/.config/nvim/init/main",
-            \ "macros": "~/.config/nvim/lua/macros",
-            \ "packer": "~/.config/nvim/lua/plugins.lua",
-            \ "snip":   "~/.config/nvim/UltiSnips",
-            \ "which":  "~/.config/nvim/plugin/hyper_which.vim"
+            \ "home":     "~/.config/nvim",
+            \ "fnl":      "~/.config/nvim/fnl",
+            \ "plug":     "~/.config/nvim/vim/plugin_install.vim",
+            \ "vim":      "~/.config/nvim/vim",
+            \ "macros":   "~/.config/nvim/lua/macros",
+            \ "packer":   "~/.config/nvim/fnl/core/pack/plugs.fnl",
+            \ "snip":     "~/.config/nvim/UltiSnips",
+            \ "which":    "~/.config/nvim/plugin/hyper_which.vim",
+            \ "dotfile":  "~/dotfiles",
+            \ "memo":     "~/技術系備忘録",
+            \ "dotfiles": "~/dotfiles"
             \ }
 
 function! s:bookmark_On_Matched(key) dict
@@ -697,7 +701,7 @@ function! s:bookmark_On_Matched(key) dict
 endfunction
 
 function! s:bookmark_After_Quit(self) dict
-    let self.column_size = 55
+    "let self.column_size = 55
 endfunction
 
 function! s:max_length(index)

@@ -23,7 +23,7 @@ function! s:compute()
    let p = rand(g:cod["seed"]) % 100
 
    let do = v:false
-   if p < 50 * g:cod["char_c"] / g:cod["move_c"]
+   if p < 50 + g:cod["char_c"] / g:cod["move_c"]
        let do = v:true
    endif
 
@@ -46,12 +46,12 @@ function! s:bet()
     let g:cod["move_c"] = 0
 endfunction
 
-"augroup counter_inputa
-"    autocmd!
-"augroup
+augroup counter_inputa
+    autocmd!
+    autocmd InsertCharPre * call s:char()
+    autocmd CursorMoved * call s:move()
+augroup END
 
-autocmd InsertCharPre * call s:char()
-autocmd CursorMoved * call s:move()
 command! CodBet call s:bet()
 command! CodShow call s:show()
 

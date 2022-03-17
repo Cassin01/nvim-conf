@@ -20,9 +20,6 @@
 ;socket.sleep(sec)
 
 ;(print package.path)
-
-
-(fn text2lists [text])
 ; (vim.api.nvim_win_close window.win true)
 ;(util.list.dump util)
 
