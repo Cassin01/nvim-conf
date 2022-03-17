@@ -1,0 +1,19 @@
+{:fenc :utf-8
+ :backup false
+ :swapfile false
+ :autoread true
+ :tabstop 4
+ :shiftwidth 4
+ :expandtab true
+ :number true
+ :scrolloff 10
+ :cursorline true
+ :incsearch true
+ :termguicolors true
+ :relativenumber true
+ :list true
+ :listchars "tab:»-,trail:□"
+ :spell true
+ :startofline true
+ :spelllang "en,cjk"
+ :guifont "HackGen Console"}

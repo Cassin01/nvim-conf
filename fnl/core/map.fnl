@@ -14,6 +14,8 @@
        "show_message")
 
 ;;; insert mode
+
+;; move
 (map :i "π" "<up>" "<opt-p>: up")
 (map :i "˜" "<down>" "<opt-n>: down")
 (map :i "ƒ" "<right>" "<opt-f>: right")
