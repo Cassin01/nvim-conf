@@ -24,7 +24,7 @@
 (se* spell true)
 (se* startofline true)
 (se* spelllang "en,cjk")
-(se* guifont "HackGen:h12")
+(se* guifont "HackGen Console")
 
 (vim.cmd "hi clear SpellBad")
 (vim.cmd "set mouse=a")

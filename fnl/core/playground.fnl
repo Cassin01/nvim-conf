@@ -29,10 +29,9 @@
           (tset vim.o :scrolloff _G.__kaza.v.scrolloff-backup))
         (vim.cmd :Goyo)
         (vim.cmd :Limelight!!)
-        (vim.cmd "Goyo")
         (set _G.__kaza.v.concentrate false))
       (do
-        (vim.cmd "Goyo 120")
+        (vim.cmd "Goyo")
         (vim.cmd :Limelight!!)
         (tset _G.__kaza.v :scrolloff-backup vim.o.scrolloff)
         (set vim.o.scrolloff 99)

@@ -8,5 +8,4 @@
                (when (and (> (vim.fn.line "'\"") 1)
                           (<= (vim.fn.line "'\"") (vim.fn.line "$")))
                  (vim.cmd "normal! g'\"")))
-   :group restore-position })
-
+   :group restore-position})
