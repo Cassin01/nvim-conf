@@ -228,14 +228,19 @@ function! s:key_converter_for_input(key_dict)
     return new_dict
 endfunction
 
-function! s:listen_commands(self) dict
+function! s:listen_commands(self, ...) dict
     redraw!
     let l:keys_dict = self.LoadIndex(self)
     let l:keys_dict = s:key_converter_for_input(l:keys_dict)
     let l:inputted_st = ""
+    let l:first = v:true
     while v:true
         let l:c = ""
-        if getchar(1)
+        if l:first && a:0 == 1
+            let l:c = a:1
+            echom a:1
+            let l:first = v:false
+        elseif getchar(1)
             let l:c = getchar()
         else
             continue
@@ -280,8 +285,12 @@ endfunction
 function! s:Event() dict
 endfunction
 
-function! s:key_selecter(self) dict
-    let l:matched = self.Listen(self)
+function! s:key_selecter(self, ...) dict
+    if a:0 == 1
+        let l:matched = self.Listen(self, a:1)
+    else
+        let l:matched = self.Listen(self)
+    endif
     if len(l:matched) == 1
         execute "quit"
         call self.OnMatched(keys(l:matched)[0])
@@ -293,7 +302,8 @@ function! s:key_selecter(self) dict
     endif
 endfunction
 
-function! s:Witch(self) dict
+function! s:Witch(self, ...) dict
+
     let self.filetype=&filetype
 
     let s:buf = nvim_create_buf(v:false, v:true)
@@ -323,7 +333,15 @@ function! s:Witch(self) dict
     nmap <buffer> <silent> <esc> <plug>(session-close)
 
 
-    call self.CMDSelecter(self)
+    if a:0 == 1
+        if a:1 == "SPC"
+            call self.CMDSelecter(self, char2nr(" "))
+        else
+            call self.CMDSelecter(self, char2nr(a:1))
+        endif
+    else
+        call self.CMDSelecter(self)
+    endif
 endfunction
 
 function! s:hyperwitch_new(...) dict
@@ -367,7 +385,6 @@ function! s:evil_After_Quit(self) dict
 endfunction
 
 function! s:evil_Load_Index(self) dict
-    " return luaeval('keys:get_i()')
     return luaeval('_G.__kaza.k.i')
 endfunction
 
@@ -630,7 +647,7 @@ call ultisnips_wich.Event()
 " ---------------------------------------------------------
 " HWich-Normal
 " ---------------------------------------------------------
-" {{{ WARN: NOT WORKING YET
+" {{{
 function! s:get_raw_map_info(key) abort
   return split(execute('map '.a:key), "\n")
 endfunction
@@ -650,7 +667,21 @@ function! s:normal_After_Quit(self) dict
 endfunction
 
 function! s:normal_Load_Index(self) dict
-    return luaeval('keys:get_n()')
+   let keymap = luaeval('vim.api.nvim_get_keymap("n")')
+   let ret = {}
+   for key in keymap
+       let desc = ''
+       if has_key(key, 'desc')
+           let desc = key['desc']
+        else
+            let desc = key['rhs']
+       endif
+
+       if key['lhs'] !~ "^<Plug>.*" && desc != "" && key['lhs'] !~ "^<C-.*"
+           let ret[key['lhs']] = key['lhs'] . ' ' . desc
+       endif
+   endfor
+   return ret
 endfunction
 
 function! s:normal_Event() dict
@@ -658,6 +689,7 @@ function! s:normal_Event() dict
         \ <plug>(hwhich-normal)
         \ :<c-u>call normalwitch.Witch(normalwitch)<cr>
     nmap <silent> ,nor <plug>(hwhich-normal)
+    command! -nargs=? NormalWitch call normalwitch.Witch(normalwitch, <f-args>)
 endfunction
 
 let NormalWitch = {

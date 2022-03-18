@@ -49,6 +49,56 @@
 
  ;;; Edit
 
+ ;; thank you shougo
+ {1 :Shougo/ddu.vim
+    :requires [:vim-denops/denops.vim
+               :Shougo/ddu-ui-ff
+               :Shougo/ddu-source-file
+               :Shougo/ddu-source-register
+               :kuuote/ddu-source-mr
+               :lambdalisue/mr.vim
+               :shun/ddu-source-buffer
+               :Shougo/ddu-filter-matcher_substring
+               :Shougo/ddu-commands.vim]
+    :setup (λ []
+             ;; ddu settings
+             ((. vim.fn :ddu#custom#patch_global)
+              {:ui :ff
+               :sources [{:name :file :params {}}
+                         {:name :mr}
+                         {:name :register}
+                         {:name :buffer}]}
+              :sourceOptions { :_ {:matchers [:matcher_substring]}}
+              :kindOptions {:file {:defaultAction :open}})
+             ;; ddu-key-setting
+             (local create_augroup vim.api.nvim_create_augroup)
+             (local create_autocmd vim.api.nvim_create_autocmd)
+             (local ddu (create_augroup :ddu {:clear true}))
+             (create_autocmd :FileType
+                             {:group ddu
+                              :callback (λ []
+                                          (each [key argument (pairs {:<cr> :itemAction
+                                                                     :<space> :toggleSelectItem
+                                                                     :i :openFilterWindow
+                                                                     :q :quit})]
+                                            (vim.api.nvim_set_key_map :n key
+                                                                      (.. "<cmd>call ddu#ui#ff#do_action('" argument "')<CR>")
+                                                                      {:nnoremap true :silent true :buffer true})))})
+             (create_autocmd :FileType
+                             {:group ddu
+                              :callback (λ []
+                                          (vim.api.nvim_set_key_map :i
+                                                                    :<cr> :<cmd>close<cr>
+                                                                    {:nnoremap true :silent true :buffer true})
+                                          (vim.api.nvim_set_key_map :n
+                                                                    :<cr> :<cmd>close<cr>
+                                                                    {:nnoremap true :silent true :buffer true})
+                                          (vim.api.nvim_set_key_map :n
+                                                                    :q :<cmd>close<cr>
+                                                                    {:nnoremap true :silent true :buffer true}))}))}
+
+
+
  ;; lsp
  {1 :williamboman/nvim-lsp-installer
   :config (λ []
