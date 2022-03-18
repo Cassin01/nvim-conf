@@ -6,7 +6,9 @@
        {:keymap {}
         :v {}
         :k {:i {}
-            :v {}}
+            :v {}
+            :n {}}
+        :prefix {}
         :f {}}))
 
 {: setup}

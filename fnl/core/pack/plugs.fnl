@@ -1,8 +1,4 @@
-[{1 :preservim/nerdtree
-  :setup (λ []
-           (vim.cmd "nnoremap <space>r :NERDTreeCWD<CR>")
-           (vim.cmd "nnoremap <space>s :NERDTreeToggle<CR>")
-           (vim.cmd "nnoremap <space>n :NERDTreeFind<CR>"))}
+[:preservim/nerdtree
 
  ;;; UI
 
@@ -13,12 +9,7 @@
             (vim.cmd "let g:minimap#window#width = 10")
             (vim.cmd "let g:minimap#window#height = 50"))}
  {1 :nvim-telescope/telescope.nvim
-  :requires [:nvim-lua/plenary.nvim]
-  :setup (λ []
-           (vim.cmd "nnoremap <leader>tf <cmd>Telescope find_files<cr>")
-           (vim.cmd "nnoremap <leader>tg <cmd>Telescope live_grep<cr>")
-           (vim.cmd "nnoremap <leader>tb <cmd>Telescope buffers<cr>")
-           (vim.cmd "nnoremap <leader>th <cmd>Telescope help_tags<cr>"))}
+  :requires [:nvim-lua/plenary.nvim]}
  {1 :xiyaowong/nvim-transparent}
  {1 :akinsho/bufferline.nvim
   :requires :kyazdani42/nvim-web-devicons}
@@ -43,61 +34,71 @@
                         :extended_mode true
                         :max_file_lines nil}}))}
 
+ ;; Show git status on left of a code.
+ {1 :lewis6991/gitsigns.nvim
+  :requires :nvim-lua/plenary.nvim
+  :config (λ []
+            ((. (require :gitsigns) :setup)
+             {:current_line_blame true}))}
+
  ;;; Colortheme
 
  :rafamadriz/neon
 
  ;;; Edit
 
- ;; thank you shougo
+ ;; thank you shougo san
+ [:vim-denops/denops.vim
+  :Shougo/ddu-ui-ff
+  :Shougo/ddu-source-file
+  :Shougo/ddu-source-register
+  :kuuote/ddu-source-mr
+  :lambdalisue/mr.vim
+  :shun/ddu-source-buffer
+  :Shougo/ddu-filter-matcher_substring
+  :Shougo/ddu-commands.vim]
  {1 :Shougo/ddu.vim
-    :requires [:vim-denops/denops.vim
-               :Shougo/ddu-ui-ff
-               :Shougo/ddu-source-file
-               :Shougo/ddu-source-register
-               :kuuote/ddu-source-mr
-               :lambdalisue/mr.vim
-               :shun/ddu-source-buffer
-               :Shougo/ddu-filter-matcher_substring
-               :Shougo/ddu-commands.vim]
-    :setup (λ []
-             ;; ddu settings
-             ((. vim.fn :ddu#custom#patch_global)
-              {:ui :ff
-               :sources [{:name :file :params {}}
-                         {:name :mr}
-                         {:name :register}
-                         {:name :buffer}]}
+
+  :config (λ []
+            ;; ddu settings
+            ((. vim.fn :ddu#custom#patch_global)
+             {:ui :ff
+              :sources [{:name :file :params {}}
+                        {:name :mr}
+                        {:name :register}
+                        {:name :buffer}]
               :sourceOptions { :_ {:matchers [:matcher_substring]}}
-              :kindOptions {:file {:defaultAction :open}})
-             ;; ddu-key-setting
-             (local create_augroup vim.api.nvim_create_augroup)
-             (local create_autocmd vim.api.nvim_create_autocmd)
-             (local ddu (create_augroup :ddu {:clear true}))
-             (create_autocmd :FileType
-                             {:group ddu
-                              :callback (λ []
-                                          (each [key argument (pairs {:<cr> :itemAction
+              :kindOptions {:file {:defaultAction :open}}})
+
+            ;; ddu-key-setting
+            (local create_augroup vim.api.nvim_create_augroup)
+            (local create_autocmd vim.api.nvim_create_autocmd)
+            (local {: nvim_buf_set_keymap} vim.api)
+            (local ddu (create_augroup :ddu {:clear true}))
+            (create_autocmd :FileType
+                            {:group ddu
+                             :pattern :ddu-ff
+                             :callback (λ []
+                                         (each [key argument (pairs {:<cr> :itemAction
                                                                      :<space> :toggleSelectItem
                                                                      :i :openFilterWindow
                                                                      :q :quit})]
-                                            (vim.api.nvim_set_key_map :n key
-                                                                      (.. "<cmd>call ddu#ui#ff#do_action('" argument "')<CR>")
-                                                                      {:nnoremap true :silent true :buffer true})))})
-             (create_autocmd :FileType
-                             {:group ddu
-                              :callback (λ []
-                                          (vim.api.nvim_set_key_map :i
-                                                                    :<cr> :<cmd>close<cr>
-                                                                    {:nnoremap true :silent true :buffer true})
-                                          (vim.api.nvim_set_key_map :n
-                                                                    :<cr> :<cmd>close<cr>
-                                                                    {:nnoremap true :silent true :buffer true})
-                                          (vim.api.nvim_set_key_map :n
-                                                                    :q :<cmd>close<cr>
-                                                                    {:nnoremap true :silent true :buffer true}))}))}
-
-
+                                            (nvim_buf_set_keymap 0 :n key
+                                                        (.. "<cmd>call ddu#ui#ff#do_action('" argument "')<CR>")
+                                                        {:noremap true :silent true})))})
+            (create_autocmd :FileType
+                            {:group ddu
+                             :pattern :ddu-ff-filter
+                             :callback (λ []
+                                         (nvim_buf_set_keymap 0 :i
+                                                     :<cr> :<cmd>close<cr>
+                                                     {:noremap true :silent true})
+                                         (nvim_buf_set_keymap 0 :n
+                                                     :<cr> :<cmd>close<cr>
+                                                     {:noremap true :silent true})
+                                         (nvim_buf-set_keymap 0 :n
+                                                     :q :<cmd>close<cr>
+                                                     {:noremap true :silent true}))}))}
 
  ;; lsp
  {1 :williamboman/nvim-lsp-installer
@@ -166,12 +167,12 @@
   :requires [:hrsh7th/vim-vsnip-integ
              :rafamadriz/friendly-snippets]}
 
- ;; Show git status on left of a code.
- {1 :lewis6991/gitsigns.nvim
-  :requires :nvim-lua/plenary.nvim
+ {1 :folke/which-key.nvim
   :config (λ []
-            ((. (require :gitsigns) :setup)
-             {:current_line_blame true}))}
+    ((-> (require :which-key) (. :setup)) {})
+    (local presets (require :which-key.plugins.presets))
+    (tset presets.operators :i nil)
+    (tset presets.operators :v nil))}
 
  ;;; vim
 

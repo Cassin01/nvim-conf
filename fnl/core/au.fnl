@@ -19,6 +19,6 @@
 
 (local coc-disable (create_augroup :coc-disable {:clear true}))
 (create_autocmd
-  :VimEnter
+  :BufReadPost
   {:command :CocDisable
    :group coc-disable})
