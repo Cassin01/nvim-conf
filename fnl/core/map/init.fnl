@@ -1,8 +1,6 @@
 (local {: map : map-f : prefix} (require :kaza.map))
 (local {:string s} (require :util.src))
 
-;;; normal mode
-
 (vim.api.nvim_set_keymap :n :<space>m ""
        {:callback (lambda []
          (let  [buf (vim.api.nvim_create_buf false true)]

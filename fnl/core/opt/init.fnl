@@ -1,4 +1,5 @@
 (local {: execute-cmd} (require :kaza.file))
+{local {: hi-clear} (require :kaza.hi))
 
 (tset vim.g :python3_host_prog (. (execute-cmd "which python") 1))
 (tset vim.g :my_color :tokyonight)
@@ -6,9 +7,14 @@
 (each [key val (pairs (require :core.opt.opts))]
   (tset vim.o key val))
 
-(vim.cmd "hi clear SpellBad")
-(vim.cmd "set mouse=a")
+(hi-clear :SpellBad)
 (vim.cmd "lang en_US.UTf-8")
 (vim.cmd "filetype plugin indent on")
-(vim.cmd "set t_8f=^[[38;2;%lu;%lu;%lum")
-(vim.cmd "set t_8b=^[[48;2;%lu;%lu;%lum")
+
+;; undo
+(if (vim.fn.has :persistent_undo)
+  (let [target-path (vim.fn.expand "~/.local/share/nvim/undo")]
+    (if (not (vim.fn.isdirectory target-path))
+      (vim.fn.mkdir target-path :p 0700))
+    (tset vim.o :undodir target-path)
+    (tset vim.o :undofile true)))

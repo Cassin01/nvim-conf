@@ -11,10 +11,10 @@
  [:n "<space>gw" "<cmd>Glow<cr>" "show markdown preview"]
 
  ;; ddu
- [:n (.. ddu :m) "<cmd>Ddu mr<cr>" "history"]
- [:n (.. ddu :b) "<cmd>Ddu buffer<cr>" "buffer"]
- [:n (.. ddu :r) "<cmd>Ddu register<cr>" "register"]
- [:n (.. ddu :n) "<cmd>Ddu file -source-param-new -volatile<cr>" "gen new file"]
+ [:n (.. ddu :m) "<cmd>Ddu mr<cr>" "ddu history"]
+ [:n (.. ddu :b) "<cmd>Ddu buffer<cr>" "ddu buffer"]
+ [:n (.. ddu :r) "<cmd>Ddu register<cr>" "ddu register"]
+ [:n (.. ddu :n) "<cmd>Ddu file -source-param-new -volatile<cr>" "ddu gen new file"]
  [:n (.. ddu :f) "<cmd>Ddu file<cr>" "file"]
 
  ;; nerdtree

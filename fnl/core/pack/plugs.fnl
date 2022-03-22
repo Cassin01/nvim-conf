@@ -10,7 +10,10 @@
             (vim.cmd "let g:minimap#window#height = 50"))}
  {1 :nvim-telescope/telescope.nvim
   :requires [:nvim-lua/plenary.nvim]}
- {1 :xiyaowong/nvim-transparent}
+ {1 :xiyaowong/nvim-transparent
+  :config (λ []
+            ((-> (require :transparent) (. :setup))
+             {:enable false}))}
  {1 :akinsho/bufferline.nvim
   :requires :kyazdani42/nvim-web-devicons}
  {1 :windwp/windline.nvim
@@ -19,6 +22,8 @@
             ((. (require "wlfloatline") :setup)
              {:always_active false
               :show_last_status false}))}
+
+
  {1 :nvim-treesitter/nvim-treesitter
   :run ":TSUpdate"
   :requires :p00f/nvim-ts-rainbow
@@ -90,6 +95,7 @@
                             {:group ddu
                              :pattern :ddu-ff-filter
                              :callback (λ []
+                                         (print "hoge")
                                          (nvim_buf_set_keymap 0 :i
                                                      :<cr> :<cmd>close<cr>
                                                      {:noremap true :silent true})
@@ -180,6 +186,9 @@
   :setup (λ []
             (tset vim.g :echodoc#enable_at_startup true)
             (tset vim.g :echodoc#type :floating))}
+
+ ;;; game
+ :mattn/mahjong-vim
 
  ;;; language
 
