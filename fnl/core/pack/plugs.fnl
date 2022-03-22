@@ -9,7 +9,10 @@
             (vim.cmd "let g:minimap#window#width = 10")
             (vim.cmd "let g:minimap#window#height = 50"))}
  {1 :nvim-telescope/telescope.nvim
-  :requires [:nvim-lua/plenary.nvim]}
+  :requires [:nvim-lua/plenary.nvim
+             :nvim-telescope/telescope-live-grep-raw.nvim]
+  :config (λ []
+            ((-> (require :telescope) (. :extensions) (. :live_grep_low) (. :live_grep_low))))}
  {1 :xiyaowong/nvim-transparent
   :config (λ []
             ((-> (require :transparent) (. :setup))
@@ -22,7 +25,6 @@
             ((. (require "wlfloatline") :setup)
              {:always_active false
               :show_last_status false}))}
-
 
  {1 :nvim-treesitter/nvim-treesitter
   :run ":TSUpdate"
@@ -52,59 +54,60 @@
 
  ;;; Edit
 
- ;; thank you shougo san
- [:vim-denops/denops.vim
-  :Shougo/ddu-ui-ff
-  :Shougo/ddu-source-file
-  :Shougo/ddu-source-register
-  :kuuote/ddu-source-mr
-  :lambdalisue/mr.vim
-  :shun/ddu-source-buffer
-  :Shougo/ddu-filter-matcher_substring
-  :Shougo/ddu-commands.vim]
- {1 :Shougo/ddu.vim
+ ; ddu
+ ;[:vim-denops/denops.vim
+ ; :Shougo/ddu-ui-ff
+ ; :Shougo/ddu-source-file
+ ; :Shougo/ddu-source-register
+ ; :kuuote/ddu-source-mr
+ ; :lambdalisue/mr.vim
+ ; :shun/ddu-source-buffer
+ ; :Shougo/ddu-filter-matcher_substring
+ ; :Shougo/ddu-commands.vim]
+ ;{1 :Shougo/ddu.vim
+ ; :opt true
+ ; :setup (λ []
+ ;           ;; ddu settings
+ ;           ((. vim.fn :ddu#custom#patch_global)
+ ;            {:ui :ff
+ ;             :sources [{:name :file :params {}}
+ ;                       {:name :mr}
+ ;                       {:name :register}
+ ;                       {:name :buffer}]
+ ;             :sourceOptions { :_ {:matchers [:matcher_substring]}}
+ ;             :kindOptions {:file {:defaultAction :open}}})
 
-  :config (λ []
-            ;; ddu settings
-            ((. vim.fn :ddu#custom#patch_global)
-             {:ui :ff
-              :sources [{:name :file :params {}}
-                        {:name :mr}
-                        {:name :register}
-                        {:name :buffer}]
-              :sourceOptions { :_ {:matchers [:matcher_substring]}}
-              :kindOptions {:file {:defaultAction :open}}})
-
-            ;; ddu-key-setting
-            (local create_augroup vim.api.nvim_create_augroup)
-            (local create_autocmd vim.api.nvim_create_autocmd)
-            (local {: nvim_buf_set_keymap} vim.api)
-            (local ddu (create_augroup :ddu {:clear true}))
-            (create_autocmd :FileType
-                            {:group ddu
-                             :pattern :ddu-ff
-                             :callback (λ []
-                                         (each [key argument (pairs {:<cr> :itemAction
-                                                                     :<space> :toggleSelectItem
-                                                                     :i :openFilterWindow
-                                                                     :q :quit})]
-                                            (nvim_buf_set_keymap 0 :n key
-                                                        (.. "<cmd>call ddu#ui#ff#do_action('" argument "')<CR>")
-                                                        {:noremap true :silent true})))})
-            (create_autocmd :FileType
-                            {:group ddu
-                             :pattern :ddu-ff-filter
-                             :callback (λ []
-                                         (print "hoge")
-                                         (nvim_buf_set_keymap 0 :i
-                                                     :<cr> :<cmd>close<cr>
-                                                     {:noremap true :silent true})
-                                         (nvim_buf_set_keymap 0 :n
-                                                     :<cr> :<cmd>close<cr>
-                                                     {:noremap true :silent true})
-                                         (nvim_buf-set_keymap 0 :n
-                                                     :q :<cmd>close<cr>
-                                                     {:noremap true :silent true}))}))}
+ ;           ;; ddu-key-setting
+ ;           (local create_augroup vim.api.nvim_create_augroup)
+ ;           (local create_autocmd vim.api.nvim_create_autocmd)
+ ;           (local {: nvim_buf_set_keymap} vim.api)
+ ;           (local ddu (create_augroup :ddu {:clear true}))
+ ;           (create_autocmd :FileType
+ ;                           {:group ddu
+ ;                            :pattern :ddu-ff
+ ;                            :callback (λ []
+ ;                                        (vim.cmd "echom &filetype")
+ ;                                        (each [key argument (pairs {:<cr> :itemAction
+ ;                                                                    :<space> :toggleSelectItem
+ ;                                                                    :i :openFilterWindow
+ ;                                                                    :q :quit})]
+ ;                                           (nvim_buf_set_keymap 0 :n key
+ ;                                                       (.. "<cmd>call ddu#ui#ff#do_action('" argument "')<CR>")
+ ;                                                       {:noremap true :silent true})))})
+ ;           (create_autocmd :FileType
+ ;                           {:group ddu
+ ;                            :pattern :ddu-ff-filter
+ ;                            :callback (λ []
+ ;                                        (vim.cmd "echom &filetype")
+ ;                                        (nvim_buf_set_keymap 0 :i
+ ;                                                    :<cr> :<cmd>close<cr>
+ ;                                                    {:noremap true :silent true})
+ ;                                        (nvim_buf_set_keymap 0 :n
+ ;                                                    :<cr> :<cmd>close<cr>
+ ;                                                    {:noremap true :silent true})
+ ;                                        (nvim_buf-set_keymap 0 :n
+ ;                                                    :q :<cmd>close<cr>
+ ;                                                    {:noremap true :silent true}))}))}
 
  ;; lsp
  {1 :williamboman/nvim-lsp-installer
@@ -159,8 +162,7 @@
                                     (vim.fn.UltiSnips#Anon args.body))}
                 :sources (cmp.config.sources [{:name :ultisnips} {:name :nvim_lsp}] [{:name :buffer}])})
     (cmp.setup.cmdline :/ {:sources [{:name :buffer}]})
-    (cmp.setup.cmdline :: {:sources (cmp.config.sources [{:name :path}] [{:name :cmdline}])})
-    )}
+    (cmp.setup.cmdline :: {:sources (cmp.config.sources [{:name :path}] [{:name :cmdline}])}))}
 
  {1 :neovim/nvim-lspconfig
   :config (λ []
