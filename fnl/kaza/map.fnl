@@ -6,6 +6,10 @@
    (tset _G.__kaza.prefix prefix document)
    prefix)
 
+(fn rt [str]
+   "<tab> -> \\<tab>"
+  (vim.api.nvim_replace_termcodes str true true true))
+
 ;;; register
 
 (fn set-key [mode key description]
@@ -28,4 +32,4 @@
       (tset _G.__kaza.f name lambda-)
       (vim.api.nvim_set_keymap "n" key (.. "<cmd>call v:lua.__kaza.f." name "()<cr>") {:noremap true}))
 
-   {: map : map-f : prefix}
+   {: map : map-f : prefix : rt}

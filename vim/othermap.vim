@@ -46,38 +46,38 @@ scriptencoding utf-8
 " 情報を表示
 " inoremap <silent>  <c-o>:lua keys:show_i()<cr>
 
-" floating window
-" ref: https://qiita.com/delphinus/items/a202d0724a388f6cdbc3
-function! s:search_selected_key()
-    let l:keys_dict = luaeval('keys:get_i()')
-    let l:selected = split(getline('.'), ',')[0]
-    for k in keys(l:keys_dict)
-        if k . ' ' . l:keys_dict[k] == l:selected
-            execute  "quit"
-            let l:command ="normal a" . k
-            execute l:command
-            startinsert
-            return
-        endif
-    endfor
-    echom 'command is not founded'
-    execute  "quit"
-endfunction
-
-" 先頭から比較して含まれてたらtureを返す
-function! s:incremental_search(str, txt)
-    if strlen(a:str) > strlen(a:txt)
-        return v:false
-    endif
-
-    for l:i in range(0, strlen(a:str)-1)
-        if a:str[l:i] != a:txt[l:i]
-            return v:false
-        endif
-    endfor
-
-    return v:true
-endfunction
+" " floating window
+" " ref: https://qiita.com/delphinus/items/a202d0724a388f6cdbc3
+" function! s:search_selected_key()
+"     let l:keys_dict = luaeval('keys:get_i()')
+"     let l:selected = split(getline('.'), ',')[0]
+"     for k in keys(l:keys_dict)
+"         if k . ' ' . l:keys_dict[k] == l:selected
+"             execute  "quit"
+"             let l:command ="normal a" . k
+"             execute l:command
+"             startinsert
+"             return
+"         endif
+"     endfor
+"     echom 'command is not founded'
+"     execute  "quit"
+" endfunction
+" 
+" " 先頭から比較して含まれてたらtureを返す
+" function! s:incremental_search(str, txt)
+"     if strlen(a:str) > strlen(a:txt)
+"         return v:false
+"     endif
+" 
+"     for l:i in range(0, strlen(a:str)-1)
+"         if a:str[l:i] != a:txt[l:i]
+"             return v:false
+"         endif
+"     endfor
+" 
+"     return v:true
+" endfunction
 
     else
         " enter digraph
@@ -135,9 +135,9 @@ endfunction
     " }}}
 
     " 括弧補完 {{{
-        inoremap () ()<left>
-        inoremap {} {}<left>
-        inoremap [] []<left>
+        "inoremap () ()<left>
+        "inoremap {} {}<left>
+        "inoremap [] []<left>
 
         " 例外処理: の後に続けて)を押したとき
         " inoremap <expr> )  strpart(getline('.'), col('.')-1, 1) == ")" ? "\<Right>" : ")"
@@ -275,63 +275,63 @@ endfunction
                 \<left><left><left>
         endfunction
 
-        function! s:bracket_helper()
-            let f1 = match(getline('.'), '.', col('.')-1, 1)!=col('.')-1
-            let f2 = match(getline('.'), ' ', col('.')-1, 1) == col('.')-1
-            let f3 = match(getline('.'), ')', col('.')-1, 1) == col('.')-1
-            let f4 = match(getline('.'), ']', col('.')-1, 1) == col('.')-1
-            let f5 = match(getline('.'), '}', col('.')-1, 1) == col('.')-1
-            return f1 || f2 || f3 || f4 || f5
-        endfunction
+        " function! s:bracket_helper()
+        "     let f1 = match(getline('.'), '.', col('.')-1, 1) != col('.')-1
+        "     let f2 = match(getline('.'), ' ', col('.')-1, 1) == col('.')-1
+        "     let f3 = match(getline('.'), ')', col('.')-1, 1) == col('.')-1
+        "     let f4 = match(getline('.'), ']', col('.')-1, 1) == col('.')-1
+        "     let f5 = match(getline('.'), '}', col('.')-1, 1) == col('.')-1
+        "     return f1 || f2 || f3 || f4 || f5
+        " endfunction
 
-        " 波括弧補完 {{{
-            " 改行補完 {{{
-            " indentについて: http://psy.swansea.ac.uk/staff/carter/Vim/vim_indent.html
-                function! s:curly_bracket_completion1()
-                    let l:tabs = join(map(range(1, indent(line(".")) + &tabstop), {_index, _val -> " "}), '')
-                    return "{}\<left>\<cr>\<cr>\<up>" . l:tabs
-                endfunction
-                inoremap <expr> {<enter> <SID>curly_bracket_completion1()
-            " }}}
+        " " 波括弧補完 {{{
+        "     " 改行補完 {{{
+        "     " indentについて: http://psy.swansea.ac.uk/staff/carter/Vim/vim_indent.html
+        "         function! s:curly_bracket_completion1()
+        "             let l:tabs = join(map(range(1, indent(line(".")) + &tabstop), {_index, _val -> " "}), '')
+        "             return "{}\<left>\<cr>\<cr>\<up>" . l:tabs
+        "         endfunction
+        "         inoremap <expr> {<enter> <SID>curly_bracket_completion1()
+        "     " }}}
 
-            " 閉じ括弧補完 {{{
-                function! s:curly_bracket_completion2()
-                    " カーソルの後ろに文字がない
-                    " または空白文字があるときに閉じ括弧を補完
-                    if s:bracket_helper()
-                        return "{}\<left>"
-                    else
-                        return "{"
-                    endif
-                endfunction
-                inoremap <expr> { <SID>curly_bracket_completion2()
-            " }}}
-            inoremap {{{ {{{
-        " }}}
-        " 括弧補完 {{{
-            " 改行補完 {{{
-            " indentについて: http://psy.swansea.ac.uk/staff/carter/Vim/vim_indent.html
-            function! s:bracket_completion1()
-                let l:tabs = join(map(range(1, indent(line(".")) + &tabstop), {_index, _val -> " "}), '')
-                return "()\<left>\<cr>\<cr>\<up>" . l:tabs
-            endfunction
-            inoremap <expr> (<enter> <SID>bracket_completion1()
-            " }}}
+        "     " 閉じ括弧補完 {{{
+        "         function! s:curly_bracket_completion2()
+        "             " カーソルの後ろに文字がない
+        "             " または空白文字があるときに閉じ括弧を補完
+        "             if s:bracket_helper()
+        "                 return "{}\<left>"
+        "             else
+        "                 return "{"
+        "             endif
+        "         endfunction
+        "         inoremap <expr> { <SID>curly_bracket_completion2()
+        "     " }}}
+        "     inoremap {{{ {{{
+        " " }}}
+        " " 括弧補完 {{{
+        "     " 改行補完 {{{
+        "     " indentについて: http://psy.swansea.ac.uk/staff/carter/Vim/vim_indent.html
+        "     function! s:bracket_completion1()
+        "         let l:tabs = join(map(range(1, indent(line(".")) + &tabstop), {_index, _val -> " "}), '')
+        "         return "()\<left>\<cr>\<cr>\<up>" . l:tabs
+        "     endfunction
+        "     inoremap <expr> (<enter> <SID>bracket_completion1()
+        "     " }}}
 
-            " 閉じ括弧補完 {{{
-            function! s:bracket_completion2()
-                " カーソルの後ろに文字がない
-                " または空白文字があるときに閉じ括弧を補完
-                " またはカッコがある時
-                if s:bracket_helper()
-                    return "()\<left>"
-                else
-                    return "("
-                endif
-            endfunction
-            inoremap <expr> ( <SID>bracket_completion2()
-            " }}}
-        " }}}
+        "     " 閉じ括弧補完 {{{
+        "     function! s:bracket_completion2()
+        "         " カーソルの後ろに文字がない
+        "         " または空白文字があるときに閉じ括弧を補完
+        "         " またはカッコがある時
+        "         if s:bracket_helper()
+        "             return "()\<left>"
+        "         else
+        "             return "("
+        "         endif
+        "     endfunction
+        "     inoremap <expr> ( <SID>bracket_completion2()
+        "     " }}}
+        " " }}}
     " }}}
 " }}}
 

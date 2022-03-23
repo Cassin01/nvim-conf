@@ -6,7 +6,6 @@
  :shiftwidth 4
  :expandtab true
  :number true
- :laststatus 3
  :scrolloff 10
  :cursorline true
  :incsearch true

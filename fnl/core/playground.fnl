@@ -37,4 +37,3 @@
         (set vim.o.scrolloff 99)
         (set _G.__kaza.v.concentrate true))))
   {:force true})
-

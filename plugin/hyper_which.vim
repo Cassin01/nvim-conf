@@ -719,7 +719,8 @@ let s:bookmark = {
             \ "which":    "~/.config/nvim/plugin/hyper_which.vim",
             \ "dotfile":  "~/dotfiles",
             \ "memo":     "~/技術系備忘録",
-            \ "dotfiles": "~/dotfiles"
+            \ "dotfiles": "~/dotfiles",
+            \ "lua": "~/.cache/nvim/hotpot/Users/cassin/.config/nvim/fnl"
             \ }
 
 function! s:bookmark_On_Matched(key) dict

@@ -1,5 +1,5 @@
 (local {: execute-cmd} (require :kaza.file))
-{local {: hi-clear} (require :kaza.hi))
+(local {: hi-clear} (require :kaza.hi))
 
 (tset vim.g :python3_host_prog (. (execute-cmd "which python") 1))
 (tset vim.g :my_color :tokyonight)

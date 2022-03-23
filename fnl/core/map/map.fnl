@@ -3,6 +3,7 @@
 (local ddu (prefix ",u" :ddu))
 (local nerdtree (prefix "<space>n" :nerdtree))
 (local telescope (prefix "<space>t" :telescope))
+(local undo-tree (prefix "<space>u" :undo-tree))
 (local h-witch (prefix "<space>w" :h-witch))
 [
  ;;; normal mode
@@ -27,6 +28,10 @@
  [:n (.. telescope :g) "<cmd>Telescope live_grep<cr>" "live grep"]
  [:n (.. telescope :b) "<cmd>Telescope buffers<cr>" "buffers"]
  [:n (.. telescope :h) "<cmd>Telescope help_tags<cr>" "help tags"]
+ [:n (.. telescope :t) "<cmd>Telescope<cr>" "telescope"]
+
+ ;; undo-tree
+ [:n (.. undo-tree :t) :<cmd>UndotreeToggle<cr> "toggle undo-tree"]
 
  ;; hyper witch
  [:n (.. h-witch :<space>) "<cmd>NormalWitch SPC<cr>" "witch space"]
