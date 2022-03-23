@@ -3,35 +3,35 @@ scriptencoding utf-8
 syntax on
 
 " color definition {{{
-    " NOTE: color {{{
-        " 179 : 黄色
-        " 51  : 水色 (少し明るい)
-        " 45  : 水色
-        " 6   : 水色 (少し暗い)
-        " 24  : 水色 (より暗い)
-        " 255 : 白色
-        " 240 : 灰色
-        " 111 : 薄青 (暗)
-        " 214 : オレンジ (暗)
-    " }}}
-
-    " Check {{{
-        " スペルチェック
-        au Colorscheme * hi SpellBad ctermfg=none ctermbg=none cterm=underline
-    " }}}
-
-    " Tab, Space, etc...{{{
-        " NOTE:
-        "   * NonText
-        "     * eol, extends, precedes
-        "   * SpecialKey
-        "     * nbsp, tab, trail
-        au Colorscheme * hi NonText    ctermbg=None ctermfg=13
-        au Colorscheme * hi SpecialKey ctermbg=None ctermfg=13 cterm=italic
-    " }}}
-
-    " Visual mode {{{
-        au Colorscheme * hi Visual cterm=reverse
+"    " NOTE: color {{{
+"        " 179 : 黄色
+"        " 51  : 水色 (少し明るい)
+"        " 45  : 水色
+"        " 6   : 水色 (少し暗い)
+"        " 24  : 水色 (より暗い)
+"        " 255 : 白色
+"        " 240 : 灰色
+"        " 111 : 薄青 (暗)
+"        " 214 : オレンジ (暗)
+"    " }}}
+"
+"    " Check {{{
+"        " スペルチェック
+"        au Colorscheme * hi SpellBad ctermfg=none ctermbg=none cterm=underline
+"    " }}}
+"
+"    " Tab, Space, etc...{{{
+"        " NOTE:
+"        "   * NonText
+"        "     * eol, extends, precedes
+"        "   * SpecialKey
+"        "     * nbsp, tab, trail
+"        au Colorscheme * hi NonText    ctermbg=None ctermfg=13
+"        au Colorscheme * hi SpecialKey ctermbg=None ctermfg=13 cterm=italic
+"    " }}}
+"
+"    " Visual mode {{{
+"        au Colorscheme * hi Visual cterm=reverse
     " }}}
 
     " mark {{{

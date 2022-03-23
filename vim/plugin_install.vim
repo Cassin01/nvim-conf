@@ -365,7 +365,7 @@ Plug 'Shougo/unite.vim'
 Plug 'ujihisa/unite-colorscheme'
 
 " :TransparentEnable
-Plug 'tribela/vim-transparent'
+"Plug 'tribela/vim-transparent'
 
 " colorschemes {{{
     Plug 'altercation/vim-colors-solarized'   " solarized
@@ -402,6 +402,7 @@ Plug 'tribela/vim-transparent'
     Plug 'folke/tokyonight.nvim', { 'branch': 'main' }
     Plug 'Mangeshrex/uwu.vim'                 " uwu
     Plug 'ulwlu/elly.vim'                     " elly
+    Plug 'michaeldyrynda/carbon.vim'
 " }}}
 " }}}
 
@@ -572,6 +573,14 @@ map <silent>sa <Plug>LineLetters
 " Vim plugin that displays tags in a window, {{{
 Plug 'majutsushi/tagbar'
 nmap <space>t :TagbarToggle<CR>
+let g:tagbar_type_fennel = {
+    \ 'ctagstype' : 'fennel',
+    \ 'sort': 0,
+    \ 'kinds' : [
+        \ 'f:functions',
+        \ 'v:variables'
+    \ ],
+    \ }
 " g:tagbar_ctags_bin = /usr/local/opt/universal-ctags
 " }}}
 
@@ -611,16 +620,16 @@ Plug 'rhysd/clever-f.vim'
 " Move visually selected text
 Plug 'Jorengarenar/vim-MvVis'
 
-" " WhichKey :displays available keybindings in popup. {{{
-Plug 'liuchengxu/vim-which-key', { 'on': ['WhichKey', 'WhichKey!'] }
-nnoremap <silent> <leader>      :<c-u>WhichKey '<leader>'<CR>
-nnoremap <silent> <localleader> :<c-u>WhichKey  '<localleader>'<CR>
-nnoremap <silent> m :<c-u>WhichKey 'm'<CR>
-nnoremap <silent> s :<c-u>WhichKey 's'<CR>
-nnoremap <silent> , :<c-u>WhichKey ','<CR>
-nnoremap <silent> ; :<c-u>WhichKey ';'<CR>
-nnoremap <silent> <space> :<c-u>WhichKey '<space>'<CR>
-" " }}}
+"" WhichKey :displays available keybindings in popup. {{{
+"Plug 'liuchengxu/vim-which-key', { 'on': ['WhichKey', 'WhichKey!'] }
+"nnoremap <silent> <leader>      :<c-u>WhichKey '<leader>'<CR>
+"nnoremap <silent> <localleader> :<c-u>WhichKey  '<localleader>'<CR>
+"nnoremap <silent> m :<c-u>WhichKey 'm'<CR>
+"nnoremap <silent> s :<c-u>WhichKey 's'<CR>
+"nnoremap <silent> , :<c-u>WhichKey ','<CR>
+"nnoremap <silent> ; :<c-u>WhichKey ';'<CR>
+"nnoremap <silent> <space> :<c-u>WhichKey '<space>'<CR>
+"" }}}
 
 "  complementary pairs of mappings. -> ] or [
 Plug 'tpope/vim-unimpaired'

@@ -11,7 +11,7 @@
  {1 :nvim-telescope/telescope.nvim
   :requires [:nvim-lua/plenary.nvim
              :nvim-telescope/telescope-live-grep-raw.nvim]
-  :config (λ []
+  :setup (λ []
             ((-> (require :telescope) (. :extensions) (. :live_grep_low) (. :live_grep_low))))}
  {1 :xiyaowong/nvim-transparent
   :config (λ []
@@ -19,12 +19,13 @@
              {:enable false}))}
  {1 :akinsho/bufferline.nvim
   :requires :kyazdani42/nvim-web-devicons}
- {1 :windwp/windline.nvim
-  :config (λ []
-            (require "wlsample.vscode")
-            ((. (require "wlfloatline") :setup)
-             {:always_active false
-              :show_last_status false}))}
+
+ ;{1 :windwp/windline.nvim
+ ; :config (λ []
+ ;           (require "wlsample.vscode")
+ ;           ((. (require "wlfloatline") :setup)
+ ;            {:always_active false
+ ;             :show_last_status false}))}
 
  {1 :nvim-treesitter/nvim-treesitter
   :run ":TSUpdate"
