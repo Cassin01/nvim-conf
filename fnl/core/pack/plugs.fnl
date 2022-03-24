@@ -1,6 +1,7 @@
-[:preservim/nerdtree
-
+[
  ;;; UI
+
+:preservim/nerdtree
 
  {1 :glepnir/dashboard-nvim
   :config (λ [] (tset vim.g :dashboard_default_executive :telescope))}
@@ -127,6 +128,19 @@
   :setup (λ []
             (tset vim.g :echodoc#enable_at_startup true)
             (tset vim.g :echodoc#type :floating))}
+
+;; thank you tpope
+:tpope/vim-fugitive
+:tpope/vim-rhubarb ; enable :Gbrowse
+:tpope/vim-commentary
+:tpope/vim-unimpaired
+:tpope/vim-surround
+:tpope/vim-repeat
+:tpope/vim-sexp-mappings-for-regular-people
+{1 :guns/vim-sexp
+ :setup (λ []
+          (tset vim.g :sexp_filetypes "clojure,scheme,lisp,timl,fennel")
+          (tset vim.g :sexp_enable_insert_mode_mappings false))}
 
  ;;; game
  :mattn/mahjong-vim

@@ -5,6 +5,8 @@
 (local telescope (prefix "<space>t" :telescope))
 (local undo-tree (prefix "<space>u" :undo-tree))
 (local h-witch (prefix "<space>w" :h-witch))
+(local fugitive (prefix "mg" :fugitive))
+
 [
  ;;; normal mode
 
@@ -32,6 +34,11 @@
 
  ;; undo-tree
  [:n (.. undo-tree :t) :<cmd>UndotreeToggle<cr> "toggle undo-tree"]
+
+ ;; fugitive
+ [:n (.. fugitive :g) "<cmd>Git<cr>" "git add"]
+ [:n (.. fugitive :c) "<cmd>Git commit<cr>" "git commit"]
+ [:n (.. fugitive :p) "<cmd>Git push<cr>" "git push"]
 
  ;; hyper witch
  [:n (.. h-witch :<space>) "<cmd>NormalWitch SPC<cr>" "witch space"]

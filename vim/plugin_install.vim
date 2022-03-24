@@ -183,8 +183,8 @@ let g:syntastic_cpp_compiler = 'clang++'
 let g:syntastic_cpp_compiler_options = ' -std=c++11 -stdlib=libc++'
 " }}}
 
-" pathogen for syntastic
-Plug 'tpope/vim-pathogen'
+" " pathogen for syntastic
+" Plug 'tpope/vim-pathogen'
 
 " auto format {{{
 Plug 'Chiel92/vim-autoformat'
@@ -450,17 +450,17 @@ Plug 'terryma/vim-multiple-cursors'
 " undotree
 Plug 'mbbill/undotree'
 
-" git " {{{
-Plug 'tpope/vim-fugitive'
-"set statusline+=%{FugitiveStatusline()}
-nnoremap mgg :<c-u>Git<CR>
-nnoremap mgc :<c-u>Git commit<CR>
-nnoremap mgp :<c-u>Git push<CR>
-" }}}
+" " git " {{{
+" Plug 'tpope/vim-fugitive'
+" "set statusline+=%{FugitiveStatusline()}
+" nnoremap mgg :<c-u>Git<CR>
+" nnoremap mgc :<c-u>Git commit<CR>
+" nnoremap mgp :<c-u>Git push<CR>
+" " }}}
 
 " shows a git diff in the gutter (sign column) and stages/undoes (partial) hunks.
 " Plug 'airblade/vim-gitgutter'
-Plug 'tpope/vim-rhubarb' " enable :Gbrowse
+" Plug 'tpope/vim-rhubarb' " enable :Gbrowse
 " }}}
 
 " ---------------------------------------
@@ -468,8 +468,8 @@ Plug 'tpope/vim-rhubarb' " enable :Gbrowse
 " ---------------------------------------
 " {{{
 
-" quoting/parenthesizing made simple
-Plug 'tpope/vim-surround'
+" " quoting/parenthesizing made simple
+" Plug 'tpope/vim-surround'
 
 " calender {{{
 Plug 'itchyny/calendar.vim'
@@ -585,7 +585,7 @@ let g:tagbar_type_fennel = {
 " }}}
 
 " Comment stuff out.
-Plug 'tpope/vim-commentary'
+"Plug 'tpope/vim-commentary'
 
 " 揃える {{{
 Plug 'junegunn/vim-easy-align'
@@ -631,8 +631,8 @@ Plug 'Jorengarenar/vim-MvVis'
 "nnoremap <silent> <space> :<c-u>WhichKey '<space>'<CR>
 "" }}}
 
-"  complementary pairs of mappings. -> ] or [
-Plug 'tpope/vim-unimpaired'
+" "  complementary pairs of mappings. -> ] or [
+" Plug 'tpope/vim-unimpaired'
 
 " Automatically save
 Plug  'vim-scripts/vim-auto-save' " {{{
