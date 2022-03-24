@@ -7,4 +7,8 @@
   "set 'k' to 'v' on vim.g table"
   `(tset vim.g ,(tostring k) ,v))
 
+(fn M.use+ [plug]
+  `(if (not (-?> pack (. :disable)))
+     (use ,plug)))
+
 M

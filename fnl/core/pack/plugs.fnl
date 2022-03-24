@@ -68,7 +68,12 @@
  {1 :weilbith/nvim-code-action-menu
   :cmd :CodeActionMenu}
 
+ {1 :tami5/lspsaga.nvim
+  :config ((. (require :lspsaga) :setup)
+           {:code_action_prompt {:virtual_text false}})}
+
  {1 :kosayoda/nvim-lightbulb
+  :disable true
   :config (λ []
             ((. (require :nvim-lightbulb) :setup)
              {:ignore {}
@@ -85,6 +90,16 @@
                       :text_unavilable ""}}))
   :setup (λ []
            (vim.cmd "autocmd CursorHold,CursorHoldI * lua require'nvim-lightbulb'.update_lightbulb()"))}
+
+ ;; error list
+ {1 :folke/trouble.nvim
+  :requires :yazdani42/nvim-web-devicons
+  :config (λ [] ((-> (require :trouble) (. :setup)) {}))}
+
+ ;; show type of argument
+ {1 :ray-x/lsp_signature.nvim
+  :config ((. (require :lsp_signature) :setup) {})}
+
 
  ;; cmp plugins
  {1 :hrsh7th/nvim-cmp

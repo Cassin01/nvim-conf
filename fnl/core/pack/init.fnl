@@ -1,5 +1,6 @@
 (local {: concat-with} (require :util.src.list))
 (local {: nvim-home} (require :kaza.file))
+(import-macros {: use+} :kaza.macros)
 
 (tset package :path
       (concat-with ";"
@@ -15,4 +16,4 @@
    (use {1 :wbthomason/packer.nvim :opt true})
    (use :rktjmp/hotpot.nvim)
    (each [_ plug (ipairs (require :core.pack.plugs))]
-     (use plug))))
+     (use+ plug))))

@@ -1,14 +1,12 @@
 (import-macros
   {:set-option se-
    :let-global let-g} :kaza.macros)
-
 (local file (require :kaza.file))
 (local util (require :util.src))
 (local list util.list)
-
 (local {: nvim_add_user_command } vim.api)
 
-;;; set dashboard randomly
+;; set dashboard randomly
 (math.randomseed (os.time))
 (local custom_headers
   (list.filter
@@ -19,7 +17,7 @@
 (let-g dashboard_custom_header icon)
 (let-g dashboard_custom_footer fortune)
 
-; Concentrate mode
+;; Concentrate mode
 (nvim_add_user_command
   :Concentrate
   (lambda []
