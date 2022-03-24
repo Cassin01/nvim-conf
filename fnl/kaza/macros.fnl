@@ -8,7 +8,8 @@
   `(tset vim.g ,(tostring k) ,v))
 
 (fn M.use+ [plug]
-  `(if (not (-?> pack (. :disable)))
+  "add disable option to packer"
+  `(if (not (-?> ,plug (. :disable)))
      (use ,plug)))
 
 M

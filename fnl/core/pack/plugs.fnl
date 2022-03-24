@@ -11,10 +11,11 @@
             (vim.cmd "let g:minimap#window#height = 50"))}
  {1 :nvim-telescope/telescope.nvim
   :requires [:nvim-lua/plenary.nvim ]}
- ;{1 :xiyaowong/nvim-transparent
- ; :config (λ []
- ;           ((-> (require :transparent) (. :setup))
- ;            {:enable false}))}
+ {1 :xiyaowong/nvim-transparent
+  :disable true
+  :config (λ []
+            ((-> (require :transparent) (. :setup))
+             {:enable false}))}
  {1 :akinsho/bufferline.nvim
   :requires :kyazdani42/nvim-web-devicons}
  {1 :windwp/windline.nvim

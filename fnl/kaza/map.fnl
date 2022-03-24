@@ -7,7 +7,7 @@
    prefix)
 
 (fn rt [str]
-   "<tab> -> \\<tab>"
+   "replace termcode"
   (vim.api.nvim_replace_termcodes str true true true))
 
 ;;; register
@@ -20,16 +20,14 @@
       (assert (= (type key) :string) "must be string")
       (assert (= (type cmd) :string) "must be string")
       (assert (= (type desc) :string) "must be string"))
+   (vim.api.nvim_set_keymap mode key cmd {:noremap true :silent true :desc desc}))
 
-   ;(fn* map {:mode :string :key :string :cmd :string :desc :string}
-         (vim.api.nvim_set_keymap mode key cmd {:noremap true :silent true :desc desc}))
+;;; map-f
 
-   ;;; map-f
+(fn map-f [key lambda- name]
+   "name must be unique. lambda- must be no arguments"
+   (assert (not (in? name _G.__kaza.f)) "`name` must be unique!")
+   (tset _G.__kaza.f name lambda-)
+   (vim.api.nvim_set_keymap "n" key (.. "<cmd>call v:lua.__kaza.f." name "()<cr>") {:noremap true}))
 
-   (fn map-f [key lambda- name]
-      "name must be unique. lambda- must be no arguments"
-      (assert (not (in? name _G.__kaza.f)) "`name` must be unique!")
-      (tset _G.__kaza.f name lambda-)
-      (vim.api.nvim_set_keymap "n" key (.. "<cmd>call v:lua.__kaza.f." name "()<cr>") {:noremap true}))
-
-   {: map : map-f : prefix : rt}
+{: map : map-f : prefix : rt}
