@@ -11,6 +11,7 @@
  :incsearch true
  :termguicolors true
  :relativenumber true
+ :background :dark
  :mouse :a
  :t_8f "^[[38;2;%lu;%lu;%lum"
  :t_8b "^[[48;2;%lu;%lu;%lum"

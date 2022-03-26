@@ -1,5 +1,6 @@
 (local {: getline : col : line : indent : feedkeys} vim.fn)
 (local {: foldl : map : range} (require :util.src.list))
+(local {:keys-into-list keys :vals-into-list vals} (require :util.src.table1))
 (local {: concat-with} (require :util.src.string))
 (local {: rt} (require :kaza.map))
 (local {: nvim_set_keymap} vim.api)
@@ -12,10 +13,10 @@
 
 (fn complete-decider []
   "Return true when ...
-    - There is [right bracket | white space] in front of the cursor.
-    - There is no another word in front of cursor."
+  - There is [right bracket | white space] in front of the cursor.
+  - There is no another word in front of cursor."
   (foldl (λ [seed char] (or seed (in-front-of-the-cursor char)))
-         (not (in-front-of-the-cursor :.)) [" " ")" "]" "}"]))
+         (not (in-front-of-the-cursor :.)) [" " (unpack (vals right-brackets))]))
 
 (fn bracket-completion-default [left-bracket]
   (λ []
@@ -29,26 +30,26 @@
       (.. key (. right-brackets key) (rt :<left><cr><cr><up>) tabs))))
 
 (fn setup []
-  (each [_ key (ipairs ["(" "[" "{"])]
-    (tset (. _G.__kaza :f) (.. :bracket_completion_default :_ (string.byte key)) (bracket-completion-default key) )
-    (tset (. _G.__kaza :f) (.. :bracket_completion_cr :_ (string.byte key)) (bracket-completion-cr key))
+  (each [_ key (ipairs (keys right-brackets))]
+    (tset (. _G.__kaza :f) (.. :bracket_completion_default_ (string.byte key)) (bracket-completion-default key) )
+    (tset (. _G.__kaza :f) (.. :bracket_completion_cr_ (string.byte key)) (bracket-completion-cr key))
     (let [pair (.. key (. right-brackets key))]
       (nvim_set_keymap :i pair (.. pair :<left>) {:noremap true
-                                                       :silent true
-                                                       :desc "move cursor to center of the pair"}))
+                                                  :silent true
+                                                  :desc "move cursor to center of the pair"}))
     (nvim_set_keymap :i
                      key
                      (.. :v:lua.__kaza.f.bracket_completion_default :_ (string.byte key) "()")
                      {:noremap true
                       :silent true
                       :expr true
-                      :desc "bracket completion default" })
+                      :desc "bracket completion default"})
     (nvim_set_keymap :i
                      (.. key "<enter>")
                      (.. :v:lua.__kaza.f.bracket_completion_cr :_ (string.byte key) "()")
                      {:noremap true
                       :silent true
-                       :expr true
-                      :desc "bracket completiion cr" })))
+                      :expr true
+                      :desc "bracket completiion cr"})))
 
 {: setup}

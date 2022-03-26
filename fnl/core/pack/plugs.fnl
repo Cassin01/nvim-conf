@@ -2,7 +2,6 @@
  ;;; UI
 
 :preservim/nerdtree
-
  {1 :glepnir/dashboard-nvim
   :config (λ [] (tset vim.g :dashboard_default_executive :telescope))}
  {1 :rinx/nvim-minimap
@@ -24,7 +23,6 @@
             ((. (require "wlfloatline") :setup)
              {:always_active false
               :show_last_status false}))}
-
  {1 :nvim-treesitter/nvim-treesitter
   :run ":TSUpdate"
   :requires :p00f/nvim-ts-rainbow
@@ -39,6 +37,9 @@
               :rainbow {:enable true
                         :extended_mode true
                         :max_file_lines nil}}))}
+ {1 :norcalli/nvim-colorizer.lua
+  :config (λ []
+            ((. (require :colorizer) :setup)))}
 
  ;; Show git status on left of a code.
  {1 :lewis6991/gitsigns.nvim
@@ -101,7 +102,6 @@
  {1 :ray-x/lsp_signature.nvim
   :config ((. (require :lsp_signature) :setup) {})}
 
-
  ;; cmp plugins
  {1 :hrsh7th/nvim-cmp
   :requires [:hrsh7th/cmp-buffer       ; buffer completions
@@ -159,6 +159,7 @@
           (tset vim.g :sexp_enable_insert_mode_mappings false))}
 
  ;;; game
+
  :mattn/mahjong-vim
 
  ;;; language

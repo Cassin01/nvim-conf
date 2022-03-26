@@ -164,23 +164,24 @@ syntax on
         " Prefix for color schemes
         au ColorScheme * :call s:set_each_color_settings()
         function! s:set_each_color_settings()
-            if g:colors_name == "molokai"
+            let colors_name = g:colors_name
+            if colors_name == "molokai"
                 call s:molokai()
-            elseif g:colors_name == "onedark"
+            elseif colors_name == "onedark"
                 call s:onedark()
-            elseif g:colors_name == "iceberg"
+            elseif colors_name == "iceberg"
                 call s:iceberg()
-            elseif g:colors_name == "nord"
+            elseif colors_name == "nord"
                 call s:nord()
-            elseif g:colors_name == "purify"
+            elseif colors_name == "purify"
                 call s:purify()
-            elseif g:colors_name == "goodwolf"
+            elseif colors_name == "goodwolf"
                 call s:wolf()
-            elseif g:colors_name == "badwolf"
+            elseif colors_name == "badwolf"
                 call s:wolf()
-            elseif g:colors_name == "mrkn256"
+            elseif colors_name == "mrkn256"
                 call s:mrkn256()
-            elseif g:colors_name == "default"
+            elseif colors_name == "default"
                 call s:default()
             else
             endif
@@ -211,12 +212,12 @@ let g:terminal_color_15 = '#eeeeec'
 " }}}
 
 " Set color scheme {{{
-    set background=dark
-    if exists('g:my_color')
-        exe("colo ". g:my_color)
-    else
-        echom 'Err: g:my_color is not exists. [at othermap.init.vim]'
-    endif
+    " set background=dark
+    " if exists('g:my_color')
+    "     exe("colo ". g:my_color)
+    " else
+    "     echom 'Err: g:my_color is not exists. [at othermap.init.vim]'
+    " endif
 " }}}
 
 " 行末スペース、行末タブの表示 {{{
@@ -323,64 +324,64 @@ endfunction
 " }}}
 " }}}
 
-" ハイライトグループの確認 {{{
-    " Note: :SyntaxInfo でカーソルの下にあるコードのハイライトグループがわかる
-    function! s:get_syn_id(transparent)
-      let synid = synID(line("."), col("."), 1)
-      if a:transparent
-        return synIDtrans(synid)
-      else
-        return synid
-      endif
-    endfunction
-    function! s:get_syn_attr(synid)
-      let name = synIDattr(a:synid, "name")
-      let ctermfg = synIDattr(a:synid, "fg", "cterm")
-      let ctermbg = synIDattr(a:synid, "bg", "cterm")
-      let guifg = synIDattr(a:synid, "fg", "gui")
-      let guibg = synIDattr(a:synid, "bg", "gui")
-      return {
-            \ "name": name,
-            \ "ctermfg": ctermfg,
-            \ "ctermbg": ctermbg,
-            \ "guifg": guifg,
-            \ "guibg": guibg}
-    endfunction
-    function! s:get_syn_info()
-      let baseSyn = s:get_syn_attr(s:get_syn_id(0))
-      echo "name: " . baseSyn.name .
-            \ " ctermfg: " . baseSyn.ctermfg .
-            \ " ctermbg: " . baseSyn.ctermbg .
-            \ " guifg: " . baseSyn.guifg .
-            \ " guibg: " . baseSyn.guibg
-      let linkedSyn = s:get_syn_attr(s:get_syn_id(1))
-      echo "link to"
-      echo "name: " . linkedSyn.name .
-            \ " ctermfg: " . linkedSyn.ctermfg .
-            \ " ctermbg: " . linkedSyn.ctermbg .
-            \ " guifg: " . linkedSyn.guifg .
-            \ " guibg: " . linkedSyn.guibg
-    endfunction
-    command! SyntaxInfo call s:get_syn_info()
-    " nnoremap <buffer> <silent> ,n :SyntaxInfo<CR>
-    nnoremap <silent> ,n :SyntaxInfo<CR>
-" }}}
+" " ハイライトグループの確認 {{{
+"     " Note: :SyntaxInfo でカーソルの下にあるコードのハイライトグループがわかる
+"     function! s:get_syn_id(transparent)
+"       let synid = synID(line("."), col("."), 1)
+"       if a:transparent
+"         return synIDtrans(synid)
+"       else
+"         return synid
+"       endif
+"     endfunction
+"     function! s:get_syn_attr(synid)
+"       let name = synIDattr(a:synid, "name")
+"       let ctermfg = synIDattr(a:synid, "fg", "cterm")
+"       let ctermbg = synIDattr(a:synid, "bg", "cterm")
+"       let guifg = synIDattr(a:synid, "fg", "gui")
+"       let guibg = synIDattr(a:synid, "bg", "gui")
+"       return {
+"             \ "name": name,
+"             \ "ctermfg": ctermfg,
+"             \ "ctermbg": ctermbg,
+"             \ "guifg": guifg,
+"             \ "guibg": guibg}
+"     endfunction
+"     function! s:get_syn_info()
+"       let baseSyn = s:get_syn_attr(s:get_syn_id(0))
+"       echo "name: " . baseSyn.name .
+"             \ " ctermfg: " . baseSyn.ctermfg .
+"             \ " ctermbg: " . baseSyn.ctermbg .
+"             \ " guifg: " . baseSyn.guifg .
+"             \ " guibg: " . baseSyn.guibg
+"       let linkedSyn = s:get_syn_attr(s:get_syn_id(1))
+"       echo "link to"
+"       echo "name: " . linkedSyn.name .
+"             \ " ctermfg: " . linkedSyn.ctermfg .
+"             \ " ctermbg: " . linkedSyn.ctermbg .
+"             \ " guifg: " . linkedSyn.guifg .
+"             \ " guibg: " . linkedSyn.guibg
+"     endfunction
+"     command! SyntaxInfo call s:get_syn_info()
+"     " nnoremap <buffer> <silent> ,n :SyntaxInfo<CR>
+"     nnoremap <silent> ,n :SyntaxInfo<CR>
+" " }}}
 
-" https://zenn.dev/kawarimidoll/articles/cf6caaa7602239
-" {{{
-command! -nargs=+ -complete=highlight MergeHighlight call s:MergeHighlight(<q-args>)
-function! s:MergeHighlight(args) abort
-  let l:args = split(a:args)
-  if len(l:args) < 2
-    echoerr '[MergeHighlight] At least 2 arguments are required.'
-    echoerr 'New highlight name and source highlight names.'
-    return
-  endif
+" " https://zenn.dev/kawarimidoll/articles/cf6caaa7602239
+" " {{{
+" command! -nargs=+ -complete=highlight MergeHighlight call s:MergeHighlight(<q-args>)
+" function! s:MergeHighlight(args) abort
+"   let l:args = split(a:args)
+"   if len(l:args) < 2
+"     echoerr '[MergeHighlight] At least 2 arguments are required.'
+"     echoerr 'New highlight name and source highlight names.'
+"     return
+"   endif
 
-  " skip 'links' and 'cleared'
-  execute 'highlight' l:args[0] l:args[1:]
-      \ ->map({_, val -> substitute(execute('highlight ' . val),  '^\S\+\s\+xxx\s', '', '')})
-      \ ->filter({_, val -> val !~? '^links to' && val !=? 'cleared'})
-      \ ->join()
-endfunction
-" }}}
+"   " skip 'links' and 'cleared'
+"   execute 'highlight' l:args[0] l:args[1:]
+"       \ ->map({_, val -> substitute(execute('highlight ' . val),  '^\S\+\s\+xxx\s', '', '')})
+"       \ ->filter({_, val -> val !~? '^links to' && val !=? 'cleared'})
+"       \ ->join()
+" endfunction
+" " }}}

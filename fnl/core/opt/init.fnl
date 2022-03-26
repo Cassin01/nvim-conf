@@ -2,7 +2,7 @@
 (local {: hi-clear} (require :kaza.hi))
 
 (tset vim.g :python3_host_prog (. (execute-cmd "which python") 1))
-(tset vim.g :my_color :tokyonight)
+(tset vim.g :colors_name :tokyonight)
 
 (each [key val (pairs (require :core.opt.opts))]
   (tset vim.o key val))

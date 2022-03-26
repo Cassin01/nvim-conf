@@ -8,7 +8,7 @@
 (local fugitive (prefix "mg" :fugitive))
 
 [
- ;;; normal mode
+ [:t :<esc> :<C-\><C-n> "end insert mode"]
 
  ;; glow
  [:n "<space>gw" "<cmd>Glow<cr>" "show markdown preview"]
@@ -46,7 +46,9 @@
  [:n (.. h-witch ",") "<cmd>NormalWitch ,<cr>" "witch ,"]
  [:n (.. h-witch :\) "<cmd>NormalWitch \\<cr>" "witch \\"]
 
- ;;; insert mode
+ ;; quotation completion
+ [:i "\"" "\"\"<left>" "quotation completion"]
+ [:i "'" "''<left>" "quotation completion"]
 
  ;; move
  [:i "π" "<up>" "<opt-p>: up"]
@@ -70,8 +72,8 @@
  [:v "∑" "y`]i" "<opt-w>: yank"]
  [:v "„" "x`]i" "<opt-w>: delete and yankk"]
  [:i "¥" "<esc>pa" "<opt>y: paste"]
- [:i "—" "<esc>ua" "<opt-->: undo"]
- [:i "±" "<esc><c-r>a" "<opt-+>: redo"]
+ [:i "—" "<esc>ua" "<opt ->: undo"]
+ [:i "±" "<esc><c-r>a" "<opt +>: redo"]
  [:i "≈0" "<c-o><c-w>q" "<opt-x>0: close a window"]
  [:i "≈2" "<c-o>:<c-u>vs<cr>" "<opt-x>2; split-vertically"]
  [:i "≈3" "<c-o>:<c-u>sp<cr>" "<opt-x>3: split-horizontally"]

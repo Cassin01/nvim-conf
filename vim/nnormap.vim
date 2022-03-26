@@ -255,8 +255,8 @@ nnoremap <up> gk
     nnoremap sv :<C-u>vs<CR>
     nnoremap sq :<C-u>q<CR>
     nnoremap sQ :<C-u>bd<CR>
-    nnoremap sb :<C-u>Unite buffer_tab -buffer-name=file<CR>
-    nnoremap sB :<C-u>Unite buffer -buffer-name=file<CR>
+    "nnoremap sb :<C-u>Unite buffer_tab -buffer-name=file<CR>
+    "nnoremap sB :<C-u>Unite buffer -buffer-name=file<CR>
 
     " 下部に幅10のコマンドラインを生成
     nnoremap s; :<c-u>sp<cr><c-w>J:<c-u>res 10<cr>:<C-u>terminal<cr>:<c-u>setlocal noequalalways<cr>i
