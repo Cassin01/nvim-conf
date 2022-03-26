@@ -1,15 +1,16 @@
 (local {: execute-cmd} (require :kaza.file))
 (local {: hi-clear} (require :kaza.hi))
 
-(tset vim.g :python3_host_prog (. (execute-cmd "which python") 1))
-(tset vim.g :colors_name :tokyonight)
+(each [k v (pairs (require :core.opt.g))]
+  (tset vim.g k v))
 
 (each [key val (pairs (require :core.opt.opts))]
   (tset vim.o key val))
 
+(each [_ val (ipairs (require :core.opt.cmd))]
+  (vim.cmd val))
+
 (hi-clear :SpellBad)
-(vim.cmd "lang en_US.UTf-8")
-(vim.cmd "filetype plugin indent on")
 
 ;; undo
 (if (vim.fn.has :persistent_undo)
