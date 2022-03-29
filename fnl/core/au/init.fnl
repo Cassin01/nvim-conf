@@ -35,8 +35,8 @@
 
 ;; pattern {{{
 (fn tex_math []
-  (buf_set_keymap 0 "$<enter>" "$$$$<left><cr><cr><up>" {:noremap true})
-  (buf_set_keymap 0 "$$" "$$<left>" {:noremap true}))
+  (buf_set_keymap 0 :i "$<enter>" "$$$$<left><cr><cr><up>" {:noremap true})
+  (buf_set_keymap 0 :i "$$" "$$<left>" {:noremap true}))
 
 (create_autocmd
   :ColorScheme
@@ -50,7 +50,7 @@
   [:BufRead :BufNewFile]
   {:callback (λ []
                (buf_set_option 0 :commentstring "// %s")
-               (buf_set_option 0 :foldmethod :indent)
+               (win_set_option 0 :foldmethod :indent)
                (buf_set_keymap 0
                                :i
                                :/*
@@ -61,13 +61,13 @@
 (create_autocmd
   [:BufRead :BufNewFile]
   {:callback (λ []
-              (buf_set_option 0 :foldmethod :indent))
+              (win_set_option 0 :foldmethod :indent))
    :pattern [:*.py]
    :group pattern})
 (create_autocmd
   [:BufRead :BufNewFile]
   {:callback (λ []
-              (buf_set_option 0 :foldmethod :marker)
+              (win_set_option 0 :foldmethod :marker)
               (buf_set_keymap 0 :i "\"" "\"" {:noremap true}))
    :pattern [:*.vim]
    :group pattern})
@@ -83,7 +83,7 @@
 (create_autocmd
   [:BufRead :BufNewFile]
   {:callback (λ []
-               (buf_set_option 0 :foldenable false)
+               (win_set_option 0 :foldenable false)
                (tex_math))
    :pattern [:*.md]
    :group pattern})

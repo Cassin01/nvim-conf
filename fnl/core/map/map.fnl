@@ -1,6 +1,5 @@
 (local {: prefix} (require :kaza.map))
 
-(local ddu (prefix ",u" :ddu))
 (local nerdtree (prefix "<space>n" :nerdtree))
 (local telescope (prefix "<space>t" :telescope))
 (local undo-tree (prefix "<space>u" :undo-tree))
@@ -9,16 +8,10 @@
 
 [
  [:t :<esc> :<C-\><C-n> "end insert mode"]
+ [:v :<space>ds "<cmd>s/ //g<cr>" "delete spaces"]
 
  ;; glow
  [:n "<space>gw" "<cmd>Glow<cr>" "show markdown preview"]
-
- ;; ddu
- [:n (.. ddu :m) "<cmd>Ddu mr<cr>" "ddu history"]
- [:n (.. ddu :b) "<cmd>Ddu buffer<cr>" "ddu buffer"]
- [:n (.. ddu :r) "<cmd>Ddu register<cr>" "ddu register"]
- [:n (.. ddu :n) "<cmd>Ddu file -source-param-new -volatile<cr>" "ddu gen new file"]
- [:n (.. ddu :f) "<cmd>Ddu file<cr>" "file"]
 
  ;; nerdtree
  [:n (.. nerdtree :c) :<cmd>NERDTreeCWD<CR> "nerdtree cwd"]
@@ -47,8 +40,8 @@
  [:n (.. h-witch :\) "<cmd>NormalWitch \\<cr>" "witch \\"]
 
  ;; quotation completion
- [:i "\"" "\"\"<left>" "quotation completion"]
- [:i "'" "''<left>" "quotation completion"]
+[:i "\"" "\"\"<left>" "quotation completion"]
+[:i "'" "''<left>" "quotation completion"]
 
  ;; move
  [:i "π" "<up>" "<opt-p>: up"]

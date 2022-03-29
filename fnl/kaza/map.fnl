@@ -1,10 +1,21 @@
 (local {: in?} (require :util.src.table1))
 (import-macros {: fn*} :util.src.macros)
 
-(fn prefix [prefix document]
+(fn prefix [prefix plug-name]
    "add prefix with doc"
-   (tset _G.__kaza.prefix prefix document)
+   (tset _G.__kaza.prefix prefix plug-name)
    prefix)
+(fn prefix-o [prefix plug-name]
+   (tset _G.__kaza.prefix prefix plug-name)
+   {:map (λ [mode key cmd desc]
+           (do (assert (= (type mode) :string) "must be string")
+              (assert (= (type key) :string) "must be string")
+              (assert (= (type cmd) :string) "must be string")
+              (assert (= (type desc) :string) "must be string"))
+           (vim.api.nvim_set_keymap mode
+                                    (.. prefix key)
+                                    cmd
+                                    {:noremap true :silent true :desc (.. "[" plug-name "] " desc)}))})
 
 (fn rt [str]
    "replace termcode"
@@ -30,4 +41,4 @@
    (tset _G.__kaza.f name lambda-)
    (vim.api.nvim_set_keymap "n" key (.. "<cmd>call v:lua.__kaza.f." name "()<cr>") {:noremap true}))
 
-{: map : map-f : prefix : rt}
+{: map : map-f : prefix-o : prefix : rt}
