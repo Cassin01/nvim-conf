@@ -42,6 +42,10 @@
             ((. (require "wlfloatline") :setup)
              {:always_active false
               :show_last_status false}))}
+
+ {1 :sheerun/vim-polyglot
+  :config (λ []
+            (tset vim.g :polyglot_disabled [:markdown]))}
  {1 :nvim-treesitter/nvim-treesitter
   :run ":TSUpdate"
   :requires :p00f/nvim-ts-rainbow
@@ -219,12 +223,15 @@
            (local prefix ((. (require :kaza.map) :prefix-o) :<leader>s :open-browser))
            (prefix.map :n "" "<Plug>(openbrowser-smart-search)" "search")
            (prefix.map :v "" "<Plug>(openbrowser-smart-search)" "search"))}
-
 {1 :mbbill/undotree
  :setup (λ []
            ((. ((. (require :kaza.map) :prefix-o) :<space>u :undo-tree) :map)
             :n :t :<cmd>UndotreeToggle<cr> :toggle))}
-
+{1 :junegunn/vim-easy-align
+ :setup (λ []
+          (let [prefix ((. (require :kaza.map) :prefix-o) :<space>ea :easy-align)]
+            (prefix.map :n "" "<Plug>(EasyAlign)" :align)
+            (prefix.map :x "" "<Plug>(EasyAlign)" :align))) }
 :terryma/vim-multiple-cursors
 :rhysd/clever-f.vim
 :Jorengarenar/vim-MvVis ; Move visually selected text.
@@ -232,6 +239,40 @@
  :setup (λ []
           (vim.cmd "vmap v <Plug>(expand_region_expand)")
           (vim.cmd "vmap <C-v> <Plug>(expand_region_shrink)"))}
+
+;; easymotion {{{
+{1 :easymotion/vim-easymotion
+ :setup (λ []
+          (tset vim.g :EasyMotion_use_migemo true)
+          (let [prefix ((. (require :kaza.map) :prefix-o) :<space>e :easy-motion)]
+            (prefix.map :n "l" "<Plug>(easymotion-lineforward)" :l)
+            (prefix.map :n "j" "<Plug>(easymotion-j)" :j)
+            (prefix.map :n "k" "<Plug>(easymotion-k)" :k)
+            (prefix.map :n "h" "<Plug>(easymotion-linebackward)" :h)))}
+{1 :haya14busa/incsearch.vim
+ :requires :haya14busa/incsearch-easymotion.vim
+ :setup (λ []
+          (vim.cmd "source ~/.config/nvim/fnl/core/pack/conf/incsearch-easymotion.vim"))}
+
+{1 :Shougo/vimproc.vim
+ :run "make"}
+{1 :haya14busa/incsearch-migemo.vim
+ :requires :Shougo/vimproc.vim
+ :setup (λ []
+    (vim.cmd "map m/ <Plug>(incsearch-migemo-/)")
+    (vim.cmd "map m? <Plug>(incsearch-migemo-?)")
+    (vim.cmd "map mg/ <Plug>(incsearch-migemo-stay)"))}
+
+{1 :haya14busa/incsearch-fuzzy.vim
+ :setup (λ []
+          (vim.cmd "source ~/.config/nvim/fnl/core/pack/conf/incsearch-fuzzy.vim"))}
+;; Jump to any visible line in the buffer by using letters instead of numbers.
+{1 :skamsie/vim-lineletters
+ :setup (λ []
+          (let [prefix ((. (require :kaza.map) :prefix-o) :<space>l :lineletters)]
+            (prefix.map :n "" "<Plug>LineLetters" "jump to line"))) }
+;; }}}
+
 
 ;;; language
 
@@ -267,6 +308,9 @@
 
 ;; lua
 :bfredl/nvim-luadev
+
+;; rust
+:rust-lang/rust.vim
 
 ;; fennel
 :bakpakin/fennel.vim  ; syntax

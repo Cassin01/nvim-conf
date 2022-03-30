@@ -4,9 +4,5 @@
 "syntax on"
 "nnoremap mm m"
 "nnoremap ss s"
-"nnoremap j gj"
-"nnoremap k gk"
-"nnoremap <down> gj"
-"nnoremap <up> gk"
 "set clipboard+=unnamed"
  ]
