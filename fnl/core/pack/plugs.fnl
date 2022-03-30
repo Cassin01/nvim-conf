@@ -13,6 +13,7 @@
            (nerdtree.map :n :t :<cmd>NERDTreeToggle<CR> "toggle")
            (nerdtree.map :n :f :<cmd>NERDTreeFind<CR> "find"))}
  {1 :glepnir/dashboard-nvim
+  :disable true
   :config (λ [] (tset vim.g :dashboard_default_executive :telescope))}
  {1 :rinx/nvim-minimap
   :config (λ []
@@ -178,6 +179,7 @@
               {:capabilities capabilities})))}
 
 {1 :hrsh7th/vim-vsnip
+ :disable true
  :requires [:hrsh7th/vim-vsnip-integ
             :rafamadriz/friendly-snippets]}
 
@@ -230,11 +232,6 @@
  :setup (λ []
           (vim.cmd "vmap v <Plug>(expand_region_expand)")
           (vim.cmd "vmap <C-v> <Plug>(expand_region_shrink)"))}
-
-;;; game
-
-:mattn/mahjong-vim
-
 
 ;;; language
 
@@ -300,38 +297,38 @@
 ;; color
 :Shougo/unite.vim
 :ujihisa/unite-colorscheme
-:altercation/vim-colors-solarized   ; solarized
-:croaker/mustang-vim                ; mustang
-:jeffreyiacono/vim-colors-wombat    ; wombat
-:nanotech/jellybeans.vim            ; jellybeans
-:vim-scripts/Lucius                 ; lucius
-:vim-scripts/Zenburn                ; zenburn
-:mrkn/mrkn256.vim                   ; mrkn256
-:jpo/vim-railscasts-theme           ; railscasts
-:therubymug/vim-pyte                ; pyte
-:tomasr/molokai                     ; molokai
-:chriskempson/vim-tomorrow-theme    ; tomorrow night
-:vim-scripts/twilight               ; twilight
-:w0ng/vim-hybrid                    ; hybrid
-:freeo/vim-kalisi                   ; kalisi
-:morhetz/gruvbox                    ; gruvbox
-:toupeira/vim-desertink             ; desertink
-:sjl/badwolf                        ; badwolf
-:itchyny/landscape.vim              ; landscape
-:joshdick/onedark.vim               ; onedark in atom
-:gosukiwi/vim-atom-dark             ; atom-dark
-:liuchengxu/space-vim-dark          ; space-vim-dark
-:kristijanhusak/vim-hybrid-material ; hybrid_material
-:drewtempelmeyer/palenight.vim      ; palenight
-:haishanh/night-owl.vim             ; night owl
-:arcticicestudio/nord-vim           ; nord
-:cocopon/iceberg.vim                ; iceberg
-:hzchirs/vim-material               ; vim-material
-:relastle/bluewery.vim              ; bluewery
-:mhartington/oceanic-next           ; OceanicNext
-:nightsense/snow                    ; snow
+;:altercation/vim-colors-solarized   ; solarized
+;:croaker/mustang-vim                ; mustang
+;:jeffreyiacono/vim-colors-wombat    ; wombat
+;:nanotech/jellybeans.vim            ; jellybeans
+;:vim-scripts/Lucius                 ; lucius
+;:vim-scripts/Zenburn                ; zenburn
+;:mrkn/mrkn256.vim                   ; mrkn256
+;:jpo/vim-railscasts-theme           ; railscasts
+;:therubymug/vim-pyte                ; pyte
+;:tomasr/molokai                     ; molokai
+;:chriskempson/vim-tomorrow-theme    ; tomorrow night
+;:vim-scripts/twilight               ; twilight
+;:w0ng/vim-hybrid                    ; hybrid
+;:freeo/vim-kalisi                   ; kalisi
+;:morhetz/gruvbox                    ; gruvbox
+;:toupeira/vim-desertink             ; desertink
+;:sjl/badwolf                        ; badwolf
+;:itchyny/landscape.vim              ; landscape
+;:joshdick/onedark.vim               ; onedark in atom
+;:gosukiwi/vim-atom-dark             ; atom-dark
+;:liuchengxu/space-vim-dark          ; space-vim-dark
+;:kristijanhusak/vim-hybrid-material ; hybrid_material
+;:drewtempelmeyer/palenight.vim      ; palenight
+;:haishanh/night-owl.vim             ; night owl
+;:arcticicestudio/nord-vim           ; nord
+;:cocopon/iceberg.vim                ; iceberg
+;:hzchirs/vim-material               ; vim-material
+;:relastle/bluewery.vim              ; bluewery
+;:mhartington/oceanic-next           ; OceanicNext
+;:nightsense/snow                    ; snow
 :folke/tokyonight.nvim
-:Mangeshrex/uwu.vim                 ; uwu
-:ulwlu/elly.vim                     ; elly
-:michaeldyrynda/carbon.vim
+;:Mangeshrex/uwu.vim                 ; uwu
+;:ulwlu/elly.vim                     ; elly
+;:michaeldyrynda/carbon.vim
 ]
