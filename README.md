@@ -10,7 +10,7 @@ Powered by [hotpot.nvim](https://github.com/rktjmp/hotpot.nvim).
 
 - **[Simple key-binding]** systematized prefix.
 
-## Requires
+### Requires
 
-1. ``pip3 install pynvim
+1. ``pip3 install pynvim``
 2. [packer](https://github.com/wbthomason/packer.nvim) beforehand.
