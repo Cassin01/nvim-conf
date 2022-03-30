@@ -13,4 +13,4 @@ Powered by [hotpot.nvim](https://github.com/rktjmp/hotpot.nvim).
 ### Requires
 
 1. ``pip3 install pynvim``
-2. [packer](https://github.com/wbthomason/packer.nvim) beforehand.
+2. [packer](https://github.com/wbthomason/packer.nvim)
