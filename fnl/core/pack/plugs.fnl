@@ -1,7 +1,12 @@
 [
+ ;;; snippet
+:SirVer/ultisnips
+:honza/vim-snippets
+
  ;;; UI
 
  {1 :preservim/nerdtree
+  :requires :ryanoasis/vim-devicons
   :setup (λ []
            (local nerdtree ((. (require :kaza.map) :prefix-o) :<space>n :nerdtree))
            (nerdtree.map :n :c :<cmd>NERDTreeCWD<CR> "cwd")
@@ -218,9 +223,18 @@
            ((. ((. (require :kaza.map) :prefix-o) :<space>u :undo-tree) :map)
             :n :t :<cmd>UndotreeToggle<cr> :toggle))}
 
+:terryma/vim-multiple-cursors
+:rhysd/clever-f.vim
+:Jorengarenar/vim-MvVis ; Move visually selected text.
+{1 :terryma/vim-expand-region
+ :setup (λ []
+          (vim.cmd "vmap v <Plug>(expand_region_expand)")
+          (vim.cmd "vmap <C-v> <Plug>(expand_region_shrink)"))}
+
 ;;; game
 
 :mattn/mahjong-vim
+
 
 ;;; language
 
@@ -234,6 +248,7 @@
                  "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/*.org"]))}
 
 {1 :nvim-neorg/neorg
+ :disable true
  :ft :norg
  :after :nvim-treesitter
  :config (λ []
@@ -263,14 +278,24 @@
 :Olical/nvim-local-fennel
 
 ;; markdown
+:godlygeek/tabular
+:preservim/vim-markdown
+{1 :iamcco/markdown-preview.nvim
+ :run "cd app & yarn install"
+ :setup (λ []
+          (tset vim.g :mkdp_filetypes [:markdown])
+          (tset vim.g :mkdp_auto_close false)
+          (tset vim.g :mkdp_preview_options {:katex {}
+                                             :disable_sync_scroll false})
+           (local prefix ((. (require :kaza.map) :prefix-o) :<space>om :markdown-preview))
+           (prefix.map :n :p :<Plug>MarkdownPreview "preview"))
+ :ft [:markdown]}
 {1 :ellisonleao/glow.nvim
  :cmd [:Glow :GlowInstall]
  :run ":GlowInstall"
  :setup (λ []
            (local prefix ((. (require :kaza.map) :prefix-o) :<space>g :glow))
-           (prefix.map :n :f "<cmd>Glow<cr>" "show preview")
-          )
- }
+           (prefix.map :n :p "<cmd>Glow<cr>" "preview"))}
 
 ;; color
 :Shougo/unite.vim
