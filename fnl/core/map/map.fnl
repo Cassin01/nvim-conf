@@ -1,43 +1,45 @@
 (local {: prefix} (require :kaza.map))
 
-(local nerdtree (prefix "<space>n" :nerdtree))
-(local telescope (prefix "<space>t" :telescope))
-(local undo-tree (prefix "<space>u" :undo-tree))
 (local h-witch (prefix "<space>w" :h-witch))
 (local fugitive (prefix "mg" :fugitive))
 
 [
  [:t :<esc> :<C-\><C-n> "end insert mode"]
  [:v :<space>ds "<cmd>s/ //g<cr>" "delete spaces"]
-
- ;; glow
- [:n "<space>gw" "<cmd>Glow<cr>" "show markdown preview"]
-
- ;; nerdtree
- [:n (.. nerdtree :c) :<cmd>NERDTreeCWD<CR> "nerdtree cwd"]
- [:n (.. nerdtree :t) :<cmd>NERDTreeToggle<CR> "nerdtree toggle"]
- [:n (.. nerdtree :f) :<cmd>NERDTreeFind<CR> "nerdtree find"]
-
- ;; telesope
- [:n (.. telescope :f) "<cmd>Telescope find_files<cr>" "find files"]
- [:n (.. telescope :g) "<cmd>Telescope live_grep<cr>" "live grep"]
- [:n (.. telescope :b) "<cmd>Telescope buffers<cr>" "buffers"]
- [:n (.. telescope :h) "<cmd>Telescope help_tags<cr>" "help tags"]
- [:n (.. telescope :t) "<cmd>Telescope<cr>" "telescope"]
-
- ;; undo-tree
- [:n (.. undo-tree :t) :<cmd>UndotreeToggle<cr> "toggle undo-tree"]
+ [:n :# :*:%s/<C-r>///g<Left><Left> "replace current word"]
 
  ;; fugitive
- [:n (.. fugitive :g) "<cmd>Git<cr>" "git add"]
- [:n (.. fugitive :c) "<cmd>Git commit<cr>" "git commit"]
- [:n (.. fugitive :p) "<cmd>Git push<cr>" "git push"]
+ [:n (.. fugitive :g) "<cmd>Git<cr>" "[git] add"]
+ [:n (.. fugitive :c) "<cmd>Git commit<cr>" "[git] commit"]
+ [:n (.. fugitive :p) "<cmd>Git push<cr>" "[git] push"]
 
  ;; hyper witch
- [:n (.. h-witch :<space>) "<cmd>NormalWitch SPC<cr>" "witch space"]
- [:n (.. h-witch :m) "<cmd>NormalWitch m<cr>" "witch m"]
- [:n (.. h-witch ",") "<cmd>NormalWitch ,<cr>" "witch ,"]
- [:n (.. h-witch :\) "<cmd>NormalWitch \\<cr>" "witch \\"]
+ [:n (.. h-witch :<space>) "<cmd>NormalWitch SPC<cr>" "[witch] space"]
+ [:n (.. h-witch :m) "<cmd>NormalWitch m<cr>" "[witch] m"]
+ [:n (.. h-witch ",") "<cmd>NormalWitch ,<cr>" "[witch] ,"]
+ [:n (.. h-witch :\) "<cmd>NormalWitch \\<cr>" "[witch] \\"]
+ [:n (.. h-witch :s) "<cmd>NormalWitch s<cr>" "[witch] s"]
+
+
+ [:n :sj :<C-w>j "j"]
+ [:n :sk :<C-w>k "k"]
+ [:n :sl :<C-w>l "l"]
+ [:n :sh :<C-w>h "h"]
+ [:n :sJ :<C-w>J "J"]
+ [:n :sK :<C-w>K "K"]
+ [:n :sL :<C-w>L "L"]
+ [:n :sH :<C-w>H "H"]
+ [:n :sn :gt "tab next"]
+ [:n :sp :gT "tab previous"]
+ [:n :sN "<C-u>tabmove +1<CR>" "move tab up"]
+ [:n :sP "<C-u>tabmove -1<CR>" "move tab down"]
+ [:n :st ::<C-u>tabnew<CR> "tab new"]
+ [:n :sT ":<C-u>Unite tab<CR>" "show tab"]
+ [:n :ss ::<C-u>sp<CR> "split-horizontally"]
+ [:n :sv ::<C-u>vs<CR> "split-vertically"]
+ [:n :sq ::<C-u>q<CR> "quit"]
+ [:n :sd ::<C-u>bd<CR> "delete tab"]
+ [:n "s;" ":<c-u>sp<cr><c-w>J:<c-u>res 10<cr>:<C-u>terminal<cr>:<c-u>setlocal noequalalways<cr>i" "vscode like terminal"]
 
  ;; quotation completion
 [:i "\"" "\"\"<left>" "quotation completion"]

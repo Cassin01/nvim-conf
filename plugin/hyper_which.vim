@@ -170,7 +170,7 @@ function! s:formatter(matched, inputted_length, column_size)
     for l:k in sort(keys(a:matched))
         let l:k_tmp = substitute(l:k,' ' ,g:hwhich_char_space, 'g') " COMBAK
         let discription = strpart(s:add_spaces(a:matched[l:k], 45)  , 0, 45)
-        call add(l:formatted_lines, '      ' . strcharpart(k_tmp,  a:inputted_length, a:inputted_length+1) . ' → ' .  discription )
+        call add(l:formatted_lines, '      ' . strcharpart(k_tmp,  a:inputted_length, a:inputted_length) . ' → ' .  discription )
     endfor
 
     " 列の数
@@ -203,6 +203,7 @@ function! s:hyper_wich_syntax()
     endif
     let b:current_syntax = 'evil_witch'
     let s:sep = '→'
+    call matchadd('WitchPrefix', '\[[a-z\-]*\]')
     execute 'syntax match WitchKeySeperator' '/'.s:sep.'/' 'contained'
     execute 'syntax match WitchKey' '/\(^\s*\|\s\{2,}\)\S.\{-}'.s:sep.'/' 'contains=WitchKeySeperator'
     syntax match WhichKeyGroup / +[0-9A-Za-z_/-]*/
@@ -212,6 +213,7 @@ function! s:hyper_wich_syntax()
     highlight default link WitchKeySeperator DiffAdded
     highlight default link WitchKeyGroup     Keyword
     highlight default link WitchKeyDesc      Identifier
+    highlight default link WitchPrefix       Type
 endfunction
 " }}}
 
@@ -238,7 +240,6 @@ function! s:listen_commands(self, ...) dict
         let l:c = ""
         if l:first && a:0 == 1
             let l:c = a:1
-            echom a:1
             let l:first = v:false
         elseif getchar(1)
             let l:c = getchar()
@@ -303,6 +304,7 @@ function! s:key_selecter(self, ...) dict
 endfunction
 
 function! s:Witch(self, ...) dict
+    let self.home_buf = luaeval("vim.api.nvim_win_get_buf(0)")
 
     let self.filetype=&filetype
 
@@ -666,7 +668,7 @@ endfunction
 function! s:normal_After_Quit(self) dict
 endfunction
 
-function! s:normal_Load_Index(self) dict
+function! s:normal_load_g_index()
    let keymap = luaeval('vim.api.nvim_get_keymap("n")')
    let ret = {}
    for key in keymap
@@ -682,6 +684,31 @@ function! s:normal_Load_Index(self) dict
        endif
    endfor
    return ret
+endfunction
+
+function! s:normal_load_b_index(parent)
+   let cmd = 'vim.api.nvim_buf_get_keymap(' . a:parent.home_buf . ', "n")'
+   let keymap = luaeval(cmd)
+   let ret = {}
+   for key in keymap
+       let desc = '[buf] '
+       if has_key(key, 'desc')
+           let desc = desc . key['desc']
+        else
+            let desc = desc . key['rhs']
+       endif
+       if key['lhs'] !~ "^<Plug>.*" && desc != "" && key['lhs'] !~ "^<C-.*"
+           let ret[key['lhs']] = key['lhs'] . ' ' . desc
+       endif
+   endfor
+   return ret
+endfunction
+
+function! s:normal_Load_Index(self) dict
+   let g = s:normal_load_g_index()
+   let b = s:normal_load_b_index(self)
+   call extend(g, b)
+   return g
 endfunction
 
 function! s:normal_Event() dict
@@ -711,6 +738,8 @@ call normalwitch.Event()
 let s:bookmark = {
             \ "home":     "~/.config/nvim",
             \ "fnl":      "~/.config/nvim/fnl",
+            \ "kaza":     "~/.config/nvim/fnl/kaza",
+            \ "core":     "~/.config/nvim/fnl/core",
             \ "plug":     "~/.config/nvim/vim/plugin_install.vim",
             \ "vim":      "~/.config/nvim/vim",
             \ "macros":   "~/.config/nvim/lua/macros",
@@ -719,8 +748,8 @@ let s:bookmark = {
             \ "which":    "~/.config/nvim/plugin/hyper_which.vim",
             \ "dotfile":  "~/dotfiles",
             \ "memo":     "~/技術系備忘録",
-            \ "dotfiles": "~/dotfiles",
-            \ "lua": "~/.cache/nvim/hotpot/Users/cassin/.config/nvim/fnl"
+            \ "lua": "~/.cache/nvim/hotpot/Users/cassin/.config/nvim/fnl",
+            \ "org": "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/"
             \ }
 
 function! s:bookmark_On_Matched(key) dict

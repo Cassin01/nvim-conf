@@ -261,7 +261,7 @@ Plug 'vim-ruby/vim-ruby'
 " Rust
 Plug 'rust-lang/rust.vim'              " completion
 
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
+" Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 " Dart
 Plug 'dart-lang/dart-vim-plugin'
@@ -361,48 +361,48 @@ let g:polyglot_disabled = ['markdown']
 " ---------------------------------------
 " {{{
 " :Unite colorscheme -auto-preview
-Plug 'Shougo/unite.vim'
-Plug 'ujihisa/unite-colorscheme'
+"Plug 'Shougo/unite.vim'
+"Plug 'ujihisa/unite-colorscheme'
 
 " :TransparentEnable
 "Plug 'tribela/vim-transparent'
 
 " colorschemes {{{
-    Plug 'altercation/vim-colors-solarized'   " solarized
-    Plug 'croaker/mustang-vim'                " mustang
-    Plug 'jeffreyiacono/vim-colors-wombat'    " wombat
-    Plug 'nanotech/jellybeans.vim'            " jellybeans
-    Plug 'vim-scripts/Lucius'                 " lucius
-    Plug 'vim-scripts/Zenburn'                " zenburn
-    Plug 'mrkn/mrkn256.vim'                   " mrkn256
-    Plug 'jpo/vim-railscasts-theme'           " railscasts
-    Plug 'therubymug/vim-pyte'                " pyte
-    Plug 'tomasr/molokai'                     " molokai
-    Plug 'chriskempson/vim-tomorrow-theme'    " tomorrow night
-    Plug 'vim-scripts/twilight'               " twilight
-    Plug 'w0ng/vim-hybrid'                    " hybrid
-    Plug 'freeo/vim-kalisi'                   " kalisi
-    Plug 'morhetz/gruvbox'                    " gruvbox
-    Plug 'toupeira/vim-desertink'             " desertink
-    Plug 'sjl/badwolf'                        " badwolf
-    Plug 'itchyny/landscape.vim'              " landscape
-    Plug 'joshdick/onedark.vim'               " onedark in atom
-    Plug 'gosukiwi/vim-atom-dark'             " atom-dark
-    Plug 'liuchengxu/space-vim-dark'          " space-vim-dark -> recommended 'hi Comment cterm=italic'
-    Plug 'kristijanhusak/vim-hybrid-material' " hybrid_material
-    Plug 'drewtempelmeyer/palenight.vim'      " palenight
-    Plug 'haishanh/night-owl.vim'             " night owl
-    Plug 'arcticicestudio/nord-vim'           " nord
-    Plug 'cocopon/iceberg.vim'                " iceberg
-    Plug 'hzchirs/vim-material'               " vim-material
-    Plug 'kyoz/purify', {'rtp': 'vim'}        " purify
-    Plug 'relastle/bluewery.vim'              " bluewery
-    Plug 'mhartington/oceanic-next'           " OceanicNext
-    Plug 'nightsense/snow'                    " snow
-    Plug 'folke/tokyonight.nvim', { 'branch': 'main' }
-    Plug 'Mangeshrex/uwu.vim'                 " uwu
-    Plug 'ulwlu/elly.vim'                     " elly
-    Plug 'michaeldyrynda/carbon.vim'
+    "Plug 'altercation/vim-colors-solarized'   " solarized
+    "Plug 'croaker/mustang-vim'                " mustang
+    "Plug 'jeffreyiacono/vim-colors-wombat'    " wombat
+    "Plug 'nanotech/jellybeans.vim'            " jellybeans
+    "Plug 'vim-scripts/Lucius'                 " lucius
+    "Plug 'vim-scripts/Zenburn'                " zenburn
+    "Plug 'mrkn/mrkn256.vim'                   " mrkn256
+    "Plug 'jpo/vim-railscasts-theme'           " railscasts
+    "Plug 'therubymug/vim-pyte'                " pyte
+    "Plug 'tomasr/molokai'                     " molokai
+    "Plug 'chriskempson/vim-tomorrow-theme'    " tomorrow night
+    "Plug 'vim-scripts/twilight'               " twilight
+    "Plug 'w0ng/vim-hybrid'                    " hybrid
+    "Plug 'freeo/vim-kalisi'                   " kalisi
+    "Plug 'morhetz/gruvbox'                    " gruvbox
+    "Plug 'toupeira/vim-desertink'             " desertink
+    "Plug 'sjl/badwolf'                        " badwolf
+    "Plug 'itchyny/landscape.vim'              " landscape
+    "Plug 'joshdick/onedark.vim'               " onedark in atom
+    "Plug 'gosukiwi/vim-atom-dark'             " atom-dark
+    "Plug 'liuchengxu/space-vim-dark'          " space-vim-dark -> recommended 'hi Comment cterm=italic'
+    "Plug 'kristijanhusak/vim-hybrid-material' " hybrid_material
+    "Plug 'drewtempelmeyer/palenight.vim'      " palenight
+    "Plug 'haishanh/night-owl.vim'             " night owl
+    "Plug 'arcticicestudio/nord-vim'           " nord
+    "Plug 'cocopon/iceberg.vim'                " iceberg
+    "Plug 'hzchirs/vim-material'               " vim-material
+    "Plug 'kyoz/purify', {'rtp': 'vim'}        " purify
+    "Plug 'relastle/bluewery.vim'              " bluewery
+    "Plug 'mhartington/oceanic-next'           " OceanicNext
+    "Plug 'nightsense/snow'                    " snow
+    "Plug 'folke/tokyonight.nvim', { 'branch': 'main' }
+    "Plug 'Mangeshrex/uwu.vim'                 " uwu
+    "Plug 'ulwlu/elly.vim'                     " elly
+    "Plug 'michaeldyrynda/carbon.vim'
 " }}}
 " }}}
 
@@ -419,11 +419,11 @@ Plug 'ujihisa/unite-colorscheme'
 " nnoremap <space>c :<c-u>NERDTreeFind<cr>
 " " {{{
 
-" fzf completion
-Plug '/usr/local/opt/fzf'
-nnoremap mff :<c-u>FZF<space>
-nnoremap mfr :<c-u>FZF<space>~/<cr>
-nnoremap mfc :<c-u>FZF<space>./<cr>
+" " fzf completion
+" Plug '/usr/local/opt/fzf'
+" nnoremap mff :<c-u>FZF<space>
+" nnoremap mfr :<c-u>FZF<space>~/<cr>
+" nnoremap mfc :<c-u>FZF<space>./<cr>
 
 " ranger file manager {{{
 Plug 'francoiscabrol/ranger.vim'
@@ -447,8 +447,8 @@ Plug 'honza/vim-snippets'
 " multiple cursors
 Plug 'terryma/vim-multiple-cursors'
 
-" undotree
-Plug 'mbbill/undotree'
+" " undotree
+" Plug 'mbbill/undotree'
 
 " " git " {{{
 " Plug 'tpope/vim-fugitive'
@@ -501,7 +501,7 @@ Plug 'mattn/flappyvird-vim'
 Plug 'sedm0784/vim-you-autocorrect'
 
 " org mode
-Plug 'jceb/vim-orgmode'
+" Plug 'jceb/vim-orgmode'
 
 " Distraction-free writing in Vim
 Plug 'junegunn/goyo.vim'
@@ -570,18 +570,18 @@ Plug 'skamsie/vim-lineletters'
 map <silent>sa <Plug>LineLetters
 " }}}
 
-" Vim plugin that displays tags in a window, {{{
-Plug 'majutsushi/tagbar'
-nmap <space>t :TagbarToggle<CR>
-let g:tagbar_type_fennel = {
-    \ 'ctagstype' : 'fennel',
-    \ 'sort': 0,
-    \ 'kinds' : [
-        \ 'f:functions',
-        \ 'v:variables'
-    \ ],
-    \ }
-" g:tagbar_ctags_bin = /usr/local/opt/universal-ctags
+" " Vim plugin that displays tags in a window, {{{
+" Plug 'majutsushi/tagbar'
+" nmap <space>t :TagbarToggle<CR>
+" let g:tagbar_type_fennel = {
+"     \ 'ctagstype' : 'fennel',
+"     \ 'sort': 0,
+"     \ 'kinds' : [
+"         \ 'f:functions',
+"         \ 'v:variables'
+"     \ ],
+"     \ }
+" " g:tagbar_ctags_bin = /usr/local/opt/universal-ctags
 " }}}
 
 " Comment stuff out.
@@ -597,7 +597,7 @@ nmap ga <Plug>(EasyAlign)
 
 " icon {{{
 Plug 'ryanoasis/vim-devicons'
-set guifont=DroidSansMono_Nerd_Font:h11
+"set guifont=DroidSansMono_Nerd_Font:h11
 " }}}
 
 " Visual mode 範囲拡大 {{{
@@ -645,11 +645,11 @@ Plug 'xolox/vim-notes'
 Plug 'xolox/vim-misc'
 " }}}
 
-" Open URL with your browser {{{
-Plug 'tyru/open-browser.vim'
-nmap <leader>b <Plug>(openbrowser-smart-search)
-vmap <leader>b <Plug>(openbrowser-smart-search)
-" }}}
+" " Open URL with your browser {{{
+" Plug 'tyru/open-browser.vim'
+" nmap <leader>b <Plug>(openbrowser-smart-search)
+" vmap <leader>b <Plug>(openbrowser-smart-search)
+" " }}}
 
 " conceal
 Plug 'Cassin01/vim-conceal'

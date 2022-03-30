@@ -1,7 +1,12 @@
 [
  ;;; UI
 
- :preservim/nerdtree
+ {1 :preservim/nerdtree
+  :setup (λ []
+           (local nerdtree ((. (require :kaza.map) :prefix-o) :<space>n :nerdtree))
+           (nerdtree.map :n :c :<cmd>NERDTreeCWD<CR> "cwd")
+           (nerdtree.map :n :t :<cmd>NERDTreeToggle<CR> "toggle")
+           (nerdtree.map :n :f :<cmd>NERDTreeFind<CR> "find"))}
  {1 :glepnir/dashboard-nvim
   :config (λ [] (tset vim.g :dashboard_default_executive :telescope))}
  {1 :rinx/nvim-minimap
@@ -9,7 +14,14 @@
             (vim.cmd "let g:minimap#window#width = 10")
             (vim.cmd "let g:minimap#window#height = 50"))}
  {1 :nvim-telescope/telescope.nvim
-  :requires [:nvim-lua/plenary.nvim ]}
+  :requires [:nvim-lua/plenary.nvim ]
+  :setup (λ []
+           (local prefix ((. (require :kaza.map) :prefix-o) :<space>t :telescope))
+           (prefix.map :n :f "<cmd>Telescope find_files<cr>" "find files")
+           (prefix.map :n :g "<cmd>Telescope live_grep<cr>" "live grep")
+           (prefix.map :n :b "<cmd>Telescope buffers<cr>" "buffers")
+           (prefix.map :n :h "<cmd>Telescope help_tags<cr>" "help tags")
+           (prefix.map :n :t "<cmd>Telescope<cr>" "telescope"))}
  {1 :xiyaowong/nvim-transparent
   :disable true
   :config (λ []
@@ -61,12 +73,22 @@
            (ctrlp.map :n :s :<cmd>CtrlPMixed<cr> "file and buffer")
            (ctrlp.map :n :t :<cmd>CtrlPTag<cr> "tag"))}
 
+
+
  ;; Show git status on left of a code.
  {1 :lewis6991/gitsigns.nvim
   :requires :nvim-lua/plenary.nvim
   :config (λ []
             ((. (require :gitsigns) :setup)
              {:current_line_blame true}))}
+
+ {1 :majutsushi/tagbar
+  :setup (λ []
+           (tset vim.g :tagbar_type_fennel {:ctagstype :fennel
+                                            :sort 0
+                                            :kinds ["f:functions" "v:variables"]})
+           ((. ((. (require :kaza.map) :prefix-o) :<space>a :tagbar) :map)
+            :n :t :<cmd>TagbarToggle<cr> :toggle))}
 
  ;;; Colortheme
 
@@ -136,7 +158,10 @@
            (local cmp (require :cmp))
            (cmp.setup {:snippet {:expand (λ [args]
                                            (vim.fn.UltiSnips#Anon args.body))}
-                       :sources (cmp.config.sources [{:name :ultisnips} {:name :nvim_lsp}] [{:name :buffer}])})
+                       :sources (cmp.config.sources [{:name :ultisnips} {:name :nvim_lsp}]
+                                                    [{:name :buffer
+                                                      :option {:get_bufnrs (λ []
+                                                                             (vim.api.nvim_list_bufs))}}])})
            (cmp.setup.cmdline :/ {:sources [{:name :buffer}]})
            (cmp.setup.cmdline :: {:sources (cmp.config.sources [{:name :path}] [{:name :cmdline}])}))}
 
@@ -180,6 +205,19 @@
           (tset vim.g :sexp_filetypes "clojure,scheme,lisp,timl,fennel")
           (tset vim.g :sexp_enable_insert_mode_mappings false))}
 
+;; util
+
+{1 :tyru/open-browser.vim
+ :config (λ []
+           (local prefix ((. (require :kaza.map) :prefix-o) :<leader>s :open-browser))
+           (prefix.map :n "" "<Plug>(openbrowser-smart-search)" "search")
+           (prefix.map :v "" "<Plug>(openbrowser-smart-search)" "search"))}
+
+{1 :mbbill/undotree
+ :setup (λ []
+           ((. ((. (require :kaza.map) :prefix-o) :<space>u :undo-tree) :map)
+            :n :t :<cmd>UndotreeToggle<cr> :toggle))}
+
 ;;; game
 
 :mattn/mahjong-vim
@@ -195,6 +233,26 @@
                 ["~/org/*.org"
                  "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/*.org"]))}
 
+{1 :nvim-neorg/neorg
+ :ft :norg
+ :after :nvim-treesitter
+ :config (λ []
+           ((. (require :neorg) :setup)
+            {:load {:core.defaults {}
+                    :core.keybinds {:config {:default_keybinds true
+                                             :neorg_leader :<Leader>n}}
+                    :core.norg.completion {:config {:engine :nvim-cmp}}
+                    :core.norg.concealer {:config {:icons {:todo {:enabled true
+                                                                  :done {:enabled true
+                                                                         :icon ""}
+                                                                  :pending {:enabled true
+                                                                            :icon ""}
+                                                                  :undone {:enabled true
+                                                                           :icon "×"}}}}}
+                    :core.norg.dirman {:config {:workspaces {:nodo "~/notes/todo"}}}
+                    ;:core.integrations.telescope {}
+                    }}))}
+
 ;; lua
 :bfredl/nvim-luadev
 
@@ -207,7 +265,12 @@
 ;; markdown
 {1 :ellisonleao/glow.nvim
  :cmd [:Glow :GlowInstall]
- :run ":GlowInstall" }
+ :run ":GlowInstall"
+ :setup (λ []
+           (local prefix ((. (require :kaza.map) :prefix-o) :<space>g :glow))
+           (prefix.map :n :f "<cmd>Glow<cr>" "show preview")
+          )
+ }
 
 ;; color
 :Shougo/unite.vim

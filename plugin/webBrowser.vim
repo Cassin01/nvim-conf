@@ -6,9 +6,9 @@
 " Author: Alexandre Viau (alexandreviau@gmail.com)
 " Website: The latest version is found on "vim.org"
 "
-" Installation: {{{2 
+" Installation: {{{2
 " Copy the plugin to the vim plugin directory.
-" In the lynx.cfg file, set the following parameters: 
+" In the lynx.cfg file, set the following parameters:
 " ACCEPT_ALL_COOKIES:TRUE
 " MAKE_LINKS_FOR_ALL_IMAGES:TRUE
 " Change the following paths to your lynx files:
@@ -59,8 +59,8 @@ com! -nargs=1 WebDump call DoWebDump(<q-args>)
 
 " Mappings: To start the plugin {{{1
 " Open a new web browser tab with the address specified
-nmap <leader>wb :WebBrowser 
-" Open a new web browser tab with the address in the clipboard 
+nmap <leader>wb :WebBrowser
+" Open a new web browser tab with the address in the clipboard
 nmap <leader>wc :exe 'WebBrowser "' . @* . '"'<cr>
 " Do a google search using the specified search keywords and open the results in a new tab
 nmap <leader>wg :exe 'WebBrowser www.google.com/search?q="' . input("Google ") . '"'<cr>
@@ -71,8 +71,8 @@ nmap <leader>wd :WebDump
 
 " Suggested mappings to add to your vimrc {{{2
 " Open a web browser tab with the address specified
-" nmap <insert> :WebBrowser 
-" Open a new web browser tab with the address in the clipboard 
+" nmap <insert> :WebBrowser
+" Open a new web browser tab with the address in the clipboard
 " nmap <s-insert> :exe 'WebBrowser ' . @*<cr>
 " Show dump (history-cache) directory
 " nmap <c-insert> :exe 'VimExplorerSP ' . g:WbLynxDumpPath<cr>
@@ -82,14 +82,14 @@ nmap <leader>wd :WebDump
 " nmap <s-delete> :exe 'WebBrowser www.wikipedia.com/wiki/"' . input("Wikipedia ") . '"'<cr>
 
 " Variables {{{1
-let s:lynxPath = 'c:\lynx\'
-let s:lynxExe = s:lynxPath . 'lynx.exe'
-let s:lynxCfg = '-cfg=' . s:lynxPath . 'lynx.cfg'
-let s:lynxLss = '-lss=' . s:lynxPath . 'lynx.lss'
+" let s:lynxPath = 'c:\lynx\'
+let s:lynxExe = '/usr/local/bin/' . 'lynx'
+let s:lynxCfg = '-cfg=' . '/usr/local/etc/' . 'lynx.cfg'
+let s:lynxLss = '-lss=' . '/usr/local/etc' . 'lynx.lss'
 let s:lynxCmd = s:lynxExe . ' ' . s:lynxCfg . ' ' . s:lynxLss
 
-let g:WbLynxDumpPath = 'c:\lynx\dump\'
-let s:lynxToolsPath = 'c:\lynx\tools\'
+let g:WbLynxDumpPath = '/Users/cassin/.config/nvim/data/dump/'
+let s:lynxToolsPath = '/Users/cassin/.config/nvim/data/tools/'
 
 let g:WbAddress = ''
 
@@ -125,7 +125,7 @@ function! DoWebDump(address) " {{{2
     let l:extLen = strlen(a:address) - l:extPos
     let l:extName = strpart(a:address, l:extPos, l:extLen)
     " Open the webpage/file and dump it using the lynx -dump feature to the dump directory {{{3
-    exe 'silent ! ' . s:lynxCmd . ' -dump ' . l:address . ' > "' . g:WbLynxDumpPath . l:dumpFile . '"'
+    exe 'silent ! ' . s:lynxCmd . ' -dump ' . '"' . l:address . '"' . ' > "' . g:WbLynxDumpPath . l:dumpFile . '"'
     " Select view method according to the page/file extension {{{3
     let l:vimFile = ''
     " View image files {{{4
@@ -148,6 +148,27 @@ function! DoWebDump(address) " {{{2
     return l:vimFile
 endfunction
 
+function! GotoRef()
+    let current_line = getline('.')
+    let number = matchstr(matchstr(current_line, '\[\d\+\]', col('.')-1), '\d\+')
+    if number == ''
+        echo 'vww: no link ref'
+        return
+    endif
+    for i in range(line('$'), 1, -1)
+        let l_line=getline(i)
+        if number == matchstr(matchstr(l_line, '^\s*\d\+'), '\d\+')
+            call OpenWebBrowser(matchstr(l_line, 'https\?:\/\/\(www\.\)\?.*'), 0)
+            return
+        endif
+    endfor
+endfunction
+
+function! GotoLink()
+let l_line=getline('.')
+call OpenWebBrowser(matchstr(l_line, 'https\?:\/\/\(www\.\)\?.*'), 0)
+endfunction
+
 function! OpenWebBrowser(address, openInNewTab) " {{{2
     " Download the file
     let l:vimFile = DoWebDump(a:address)
@@ -156,8 +177,11 @@ function! OpenWebBrowser(address, openInNewTab) " {{{2
         if a:openInNewTab == 1
             exe "tabnew"
             exe "set buftype=nofile"
-            " <space>l (Open link)
-            exe 'nnoremap <buffer> <space>l F[h/^ *<c-r><c-w>. \(http\\|file\)<cr>f l"py$:call OpenWebBrowser("<c-r>p", 0)<cr>'
+            setlocal filetype=markdown
+            " " <space>l (Open link)
+            exe 'nnoremap <buffer> <space>l :call GotoRef()<cr>'
+            exe 'nnoremap <buffer> <space>r :call GotoLink()<cr>'
+            " exe 'nnoremap <buffer> <space>l F[h/^ *<c-r><c-w>. \(http\\|file\)<cr>f l"py$:call OpenWebBrowser("<c-r>p", 0)<cr>'
             " <space>h (Previous page ("back button"))
             exe 'nnoremap <buffer> <space>h :normal u<cr>'
             " <space>j (Highlight links and go to next link)
@@ -173,15 +197,15 @@ function! OpenWebBrowser(address, openInNewTab) " {{{2
         " Set syntax to have bold links
         syn reset
         syn match Keyword /\[\d*\]\w*/ contains=Ignore
-        syn match Ignore /\[\d*\]/ contained 
+        syn match Ignore /\[\d*\]/ contained
         exe "norm gg"
-        let g:WbAddress = substitute(a:address, '"', '', 'g') 
+        let g:WbAddress = substitute(a:address, '"', '', 'g')
         call append(0, [g:WbAddress])
         exe "norm k"
     else
         " Return to previous cursor position to return to where the link was executed
         exe "norm! \<c-o>"
-    endif 
+    endif
     " Add address to append register which acts as an history for the current session
     "let @H = strftime("%x %X") . ' <url:' . g:WbAddress . '>
 '

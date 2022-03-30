@@ -15,7 +15,17 @@
            (vim.api.nvim_set_keymap mode
                                     (.. prefix key)
                                     cmd
-                                    {:noremap true :silent true :desc (.. "[" plug-name "] " desc)}))})
+                                    {:noremap true :silent true :desc (.. "[" plug-name "] " desc)}))
+    :map-f (λ [mode key callback desc]
+             (do (assert (= (type mode) :string) "must be string")
+                (assert (= (type key) :string) "must be string")
+                (assert (= (type callback) :function) "must be function")
+                (assert (= (type desc) :string) "must be string"))
+             (vim.api.nvim_set_keymap mode
+                                      (.. prefix key)
+                                      ""
+                                      {:callback callback
+                                       :noremap true :silent true :desc (.. "[" plug-name "] " desc)}))})
 
 (fn rt [str]
    "replace termcode"

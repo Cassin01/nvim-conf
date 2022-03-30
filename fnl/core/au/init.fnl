@@ -31,6 +31,13 @@
   {:callback (λ [] (win_set_option 0 :relativenumber false))
    :group (create_augroup :term-conf {:clear true})})
 
+; vim grep
+(create_autocmd
+  :QuickFixCmdPost
+  {:pattern :*grep*
+  :command :cwindow
+  :group (create_augroup :grep-cmd {:clear true})})
+
 ;; settings for global status
 
 ;; pattern {{{
@@ -105,7 +112,7 @@
    :group (create_augroup :packer-compile {:clear true})})
 
 ;; disable coc at first
-(create_autocmd
-  :BufReadPost
-  {:command :CocDisable
-   :group (create_augroup :coc-disable {:clear true})})
+; (create_autocmd
+;   :BufReadPost
+;   {:command :CocDisable
+;    :group (create_augroup :coc-disable {:clear true})})

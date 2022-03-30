@@ -38,72 +38,72 @@ scriptencoding utf-8
     call submode#map('bufmove', 'n', '', '-', '<C-w>-')
 " }}}
 
-" coc.nvim {{{
-    " if hidden is not set, TextEdit might fail.
-    set hidden
-
-    " Some servers have issues with backup files, see #649
-    set nobackup
-    set nowritebackup
-
-    " Better display for messages
-    set cmdheight=2
-
-    " You will have bad experience for diagnostic messages when it's default 4000.
-    set updatetime=300
-
-    " don't give |ins-completion-menu| messages.
-    set shortmess+=c
-
-    " Always show the signcolumn, otherwise it would shift the text each time
-    " diagnostics appear/become resolved.
-    if has("patch-8.1.1564")
-        " Recently vim can merge signcolumn and number column into one
-        set signcolumn=number
-    else
-        set signcolumn=yes
-    endif
-
-    " Use tab for trigger completion with characters ahead and navigate.
-    " Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
-    inoremap <silent><expr> <TAB>
-        \ pumvisible() ? "\<C-n>" :
-        \ <SID>check_back_space() ? "\<TAB>" :
-        \ coc#refresh()
-    inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-
-    function! s:check_back_space() abort
-        let col = col('.') - 1
-        return !col || getline('.')[col - 1]  =~# '\s'
-    endfunction
-
-    " Use K to show documentation in preview window
-    nnoremap <silent> K :call <SID>show_documentation()<CR>
-
-    function! s:show_documentation()
-        if (index(['vim','help'], &filetype) >= 0)
-            execute 'h '.expand('<cword>')
-        else
-            call CocAction('doHover')
-        endif
-    endfunction
-
-    "ノーマルモードで
-    "スペース2回でCocList
-    "nmap <silent> <space>l :<C-u>CocList<cr>
-    "スペースhでHover
-    nmap <silent> <space>i :<C-u>call CocAction('doHover')<cr>
-    "スペースdfでDefinition
-    nmap <silent> <space>df <Plug>(coc-definition)
-    "スペースrfでReferences
-    nmap <silent> <space>rf <Plug>(coc-references)
-    "スペースrnでRename
-    nmap <silent> <space>rn <Plug>(coc-rename)
-    "スペースfmtでFormat
-    nmap <silent> <space>fmt <Plug>(coc-format)
-    " Fix autofix problem of current line
-    nmap <silent> <space>qf  <Plug>(coc-fix-current)
-" }}}
+" " coc.nvim {{{
+"     " if hidden is not set, TextEdit might fail.
+"     set hidden
+" 
+"     " Some servers have issues with backup files, see #649
+"     set nobackup
+"     set nowritebackup
+" 
+"     " Better display for messages
+"     set cmdheight=2
+" 
+"     " You will have bad experience for diagnostic messages when it's default 4000.
+"     set updatetime=300
+" 
+"     " don't give |ins-completion-menu| messages.
+"     set shortmess+=c
+" 
+"     " Always show the signcolumn, otherwise it would shift the text each time
+"     " diagnostics appear/become resolved.
+"     if has("patch-8.1.1564")
+"         " Recently vim can merge signcolumn and number column into one
+"         set signcolumn=number
+"     else
+"         set signcolumn=yes
+"     endif
+" 
+"     " Use tab for trigger completion with characters ahead and navigate.
+"     " Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
+"     inoremap <silent><expr> <TAB>
+"         \ pumvisible() ? "\<C-n>" :
+"         \ <SID>check_back_space() ? "\<TAB>" :
+"         \ coc#refresh()
+"     inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+" 
+"     function! s:check_back_space() abort
+"         let col = col('.') - 1
+"         return !col || getline('.')[col - 1]  =~# '\s'
+"     endfunction
+" 
+"     " Use K to show documentation in preview window
+"     nnoremap <silent> K :call <SID>show_documentation()<CR>
+" 
+"     function! s:show_documentation()
+"         if (index(['vim','help'], &filetype) >= 0)
+"             execute 'h '.expand('<cword>')
+"         else
+"             call CocAction('doHover')
+"         endif
+"     endfunction
+" 
+"     "ノーマルモードで
+"     "スペース2回でCocList
+"     "nmap <silent> <space>l :<C-u>CocList<cr>
+"     "スペースhでHover
+"     nmap <silent> <space>i :<C-u>call CocAction('doHover')<cr>
+"     "スペースdfでDefinition
+"     nmap <silent> <space>df <Plug>(coc-definition)
+"     "スペースrfでReferences
+"     nmap <silent> <space>rf <Plug>(coc-references)
+"     "スペースrnでRename
+"     nmap <silent> <space>rn <Plug>(coc-rename)
+"     "スペースfmtでFormat
+"     nmap <silent> <space>fmt <Plug>(coc-format)
+"     " Fix autofix problem of current line
+"     nmap <silent> <space>qf  <Plug>(coc-fix-current)
+" " }}}
 
 " ultisnipets {{{
     let g:UltiSnipsSnippetsDir="~/.config/nvim/UltiSnips"
