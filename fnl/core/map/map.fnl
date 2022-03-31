@@ -20,30 +20,11 @@
  [:n (.. h-witch :\) "<cmd>NormalWitch \\<cr>" "[witch] \\"]
  [:n (.. h-witch :s) "<cmd>NormalWitch s<cr>" "[witch] s"]
 
-
- [:n :sj :<C-w>j "j"]
- [:n :sk :<C-w>k "k"]
- [:n :sl :<C-w>l "l"]
- [:n :sh :<C-w>h "h"]
- [:n :sJ :<C-w>J "J"]
- [:n :sK :<C-w>K "K"]
- [:n :sL :<C-w>L "L"]
- [:n :sH :<C-w>H "H"]
- [:n :sn :gt "tab next"]
- [:n :sp :gT "tab previous"]
- [:n :sN "<C-u>tabmove +1<CR>" "move tab up"]
- [:n :sP "<C-u>tabmove -1<CR>" "move tab down"]
- [:n :st ::<C-u>tabnew<CR> "tab new"]
- [:n :sT ":<C-u>Unite tab<CR>" "show tab"]
- [:n :ss ::<C-u>sp<CR> "split-horizontally"]
- [:n :sv ::<C-u>vs<CR> "split-vertically"]
- [:n :sq ::<C-u>q<CR> "quit"]
- [:n :sd ::<C-u>bd<CR> "delete tab"]
- [:n "s;" ":<c-u>sp<cr><c-w>J:<c-u>res 10<cr>:<C-u>terminal<cr>:<c-u>setlocal noequalalways<cr>i" "vscode like terminal"]
-
  ;; quotation completion
 [:i "\"" "\"\"<left>" "quotation completion"]
+[:i "\"\"" "\"" "quotation completion"]
 [:i "'" "''<left>" "quotation completion"]
+[:i "''" "'" "quotation completion"]
 
  ;; move
  [:i "π" "<up>" "<opt-p>: up"]

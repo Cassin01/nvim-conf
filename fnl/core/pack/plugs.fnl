@@ -240,6 +240,7 @@
           (vim.cmd "vmap v <Plug>(expand_region_expand)")
           (vim.cmd "vmap <C-v> <Plug>(expand_region_shrink)"))}
 
+:ggandor/lightspeed.nvim
 ;; easymotion {{{
 {1 :easymotion/vim-easymotion
  :setup (λ []

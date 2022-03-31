@@ -7,4 +7,3 @@ endfunction
 noremap <silent><expr> /  incsearch#go(<SID>incsearch_config({}))
 noremap <silent><expr> ?  incsearch#go(<SID>incsearch_config({'command': '?'}))
 noremap <silent><expr> g/ incsearch#go(<SID>incsearch_config({'is_stay': 1}))
- 
