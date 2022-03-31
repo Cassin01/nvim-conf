@@ -1,3 +1,4 @@
+(import-macros {:pack+ p+} :kaza.macros)
 [
  ;;; snippet
 :SirVer/ultisnips
@@ -12,9 +13,9 @@
            (nerdtree.map :n :c :<cmd>NERDTreeCWD<CR> "cwd")
            (nerdtree.map :n :t :<cmd>NERDTreeToggle<CR> "toggle")
            (nerdtree.map :n :f :<cmd>NERDTreeFind<CR> "find"))}
- {1 :glepnir/dashboard-nvim
-  :disable true
-  :config (λ [] (tset vim.g :dashboard_default_executive :telescope))}
+ (p+ :glepnir/dashboard-nvim
+  {:disable true
+  :config (λ [] (tset vim.g :dashboard_default_executive :telescope))})
  {1 :rinx/nvim-minimap
   :config (λ []
             (vim.cmd "let g:minimap#window#width = 10")
@@ -28,20 +29,20 @@
            (prefix.map :n :b "<cmd>Telescope buffers<cr>" "buffers")
            (prefix.map :n :h "<cmd>Telescope help_tags<cr>" "help tags")
            (prefix.map :n :t "<cmd>Telescope<cr>" "telescope"))}
- {1 :xiyaowong/nvim-transparent
-  :disable true
+ (p+ :xiyaowong/nvim-transparent
+  {:disable true
   :config (λ []
             ((-> (require :transparent) (. :setup))
-             {:enable false}))}
+             {:enable false}))})
  {1 :akinsho/bufferline.nvim
   :requires :kyazdani42/nvim-web-devicons}
- {1 :windwp/windline.nvim
-  :disable true
-  :config (λ []
-            (require "wlsample.vscode")
-            ((. (require "wlfloatline") :setup)
-             {:always_active false
-              :show_last_status false}))}
+ (p+ :windwp/windline.nvim
+        {:disable true
+         :config (λ []
+                   (require "wlsample.vscode")
+                   ((. (require "wlfloatline") :setup)
+                    {:always_active false
+                     :show_last_status false}))})
 
  {1 :sheerun/vim-polyglot
   :config (λ []
@@ -126,24 +127,24 @@
   :config ((. (require :lspsaga) :setup)
            {:code_action_prompt {:virtual_text false}})}
 
- {1 :kosayoda/nvim-lightbulb
-  :disable true
-  :config (λ []
-            ((. (require :nvim-lightbulb) :setup)
-             {:ignore {}
-              :sign {:enabled true
-                     :priority 10 }
-              :float {:enabled false
-                      :text :💡
-                      :win_opts {}}
-              :virtual_text {:enabled false
-                             :text :💡
-                             :hl_mode :replace}
-              :status_text {:enabled false
+(p+ :kosayoda/nvim-lightbulb
+       {:disable true
+        :config (λ []
+                  ((. (require :nvim-lightbulb) :setup)
+                   {:ignore {}
+                    :sign {:enabled true
+                           :priority 10 }
+                    :float {:enabled false
                             :text :💡
-                            :text_unavilable ""}}))
+                            :win_opts {}}
+                    :virtual_text {:enabled false
+                                   :text :💡
+                                   :hl_mode :replace}
+                    :status_text {:enabled false
+                                  :text :💡
+                                  :text_unavilable ""}}))
   :setup (λ []
-           (vim.cmd "autocmd CursorHold,CursorHoldI * lua require'nvim-lightbulb'.update_lightbulb()"))}
+           (vim.cmd "autocmd CursorHold,CursorHoldI * lua require'nvim-lightbulb'.update_lightbulb()"))})
 
  ;; error list
  {1 :folke/trouble.nvim
@@ -151,8 +152,8 @@
   :config (λ [] ((-> (require :trouble) (. :setup)) {}))}
 
 ;; show type of argument
-{1 :ray-x/lsp_signature.nvim
- :config ((. (require :lsp_signature) :setup) {})}
+(p+ :ray-x/lsp_signature.nvim
+       {:config ((. (require :lsp_signature) :setup) {})})
 
 ;; cmp plugins
 {1 :hrsh7th/nvim-cmp
@@ -182,18 +183,18 @@
              ((-> (require :lspconfig) (. key) (. :setup))
               {:capabilities capabilities})))}
 
-{1 :hrsh7th/vim-vsnip
- :disable true
+(p+ :hrsh7th/vim-vsnip
+ {:disable true
  :requires [:hrsh7th/vim-vsnip-integ
-            :rafamadriz/friendly-snippets]}
+            :rafamadriz/friendly-snippets]})
 
-{1 :folke/which-key.nvim
- :disable true
+(p+ :folke/which-key.nvim
+ {:disable true
  :config (λ []
            ((-> (require :which-key) (. :setup)) {})
            (local presets (require :which-key.plugins.presets))
            (tset presets.operators :i nil)
-           (tset presets.operators :v nil))}
+           (tset presets.operators :v nil))})
 
 ;;; vim
 
@@ -279,15 +280,15 @@
 
 ;; org
 :jceb/vim-orgmode
-{1 :dhruvasagar/vim-dotoo
- :disable true
- :setup (λ []
-          (tset vim.g :org_agenda_files
-                ["~/org/*.org"
-                 "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/*.org"]))}
+(p+ :dhruvasagar/vim-dotoo
+       {:disable true
+        :setup (λ []
+                 (tset vim.g :org_agenda_files
+                       ["~/org/*.org"
+                        "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/*.org"]))})
 
-{1 :nvim-neorg/neorg
- :disable true
+(p+ :nvim-neorg/neorg
+ {:disable true
  :ft :norg
  :after :nvim-treesitter
  :config (λ []
@@ -305,7 +306,7 @@
                                                                            :icon "×"}}}}}
                     :core.norg.dirman {:config {:workspaces {:nodo "~/notes/todo"}}}
                     ;:core.integrations.telescope {}
-                    }}))}
+                    }}))})
 
 ;; lua
 :bfredl/nvim-luadev
