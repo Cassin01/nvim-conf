@@ -10,8 +10,7 @@ Powered by [hotpot.nvim](https://github.com/rktjmp/hotpot.nvim).
 
 - **[Simple key-binding]** systematized prefix.
 
-## Installation
+### Requires
 
-1. ``pip3 install pynvim``.
-2. Install [vim-plug](https://github.com/junegunn/vim-plug/releases) and [packer](https://github.com/wbthomason/packer.nvim) beforehand.
-3. ``pip3 install neovim-remote`` for ``mhinz/neovim-remote``.
+1. ``pip3 install pynvim``
+2. [packer](https://github.com/wbthomason/packer.nvim)
