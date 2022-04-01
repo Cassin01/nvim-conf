@@ -1,3 +1,4 @@
+(import-macros {:pack+ p+} :kaza.macros)
 [
  ;;; snippet
 
@@ -13,13 +14,13 @@
            (nerdtree.map :n :c :<cmd>NERDTreeCWD<CR> "cwd")
            (nerdtree.map :n :t :<cmd>NERDTreeToggle<CR> "toggle")
            (nerdtree.map :n :f :<cmd>NERDTreeFind<CR> "find"))}
- {1 :glepnir/dashboard-nvim
-  :disable true
-  :config (λ [] (tset vim.g :dashboard_default_executive :telescope))}
+ (p+ :glepnir/dashboard-nvim
+     {:disable true
+      :config (λ [] (tset vim.g :dashboard_default_executive :telescope))})
  {1 :rinx/nvim-minimap
   :config (λ []
             (vim.cmd "let g:minimap#window#width = 10")
-            (vim.cmd "let g:minimap#window#height = 50"))}
+            (vim.cmd "let g:minimap#window#height = 40"))}
  {1 :nvim-telescope/telescope.nvim
   :requires [:nvim-lua/plenary.nvim ]
   :setup (λ []
@@ -29,23 +30,21 @@
            (prefix.map :n :b "<cmd>Telescope buffers<cr>" "buffers")
            (prefix.map :n :h "<cmd>Telescope help_tags<cr>" "help tags")
            (prefix.map :n :t "<cmd>Telescope<cr>" "telescope"))}
- {1 :xiyaowong/nvim-transparent
-  :disable true
-  :config (λ []
-            ((-> (require :transparent) (. :setup))
-             {:enable false}))}
+ (p+ :xiyaowong/nvim-transparent
+     {:disable true
+      :config (λ []
+                ((-> (require :transparent) (. :setup))
+                 {:enable false}))})
  {1 :akinsho/bufferline.nvim
   :requires :kyazdani42/nvim-web-devicons}
- {1 :windwp/windline.nvim
-  :disable true
-  :config (λ [] (require "wlsample.vscode")
-            ((. (require "wlfloatline") :setup)
-             {:always_active false
-              :show_last_status false}))}
+ (p+ :windwp/windline.nvim
+     {:disable true
+      :config (λ [] (require "wlsample.vscode")
+                ((. (require "wlfloatline") :setup)
+                 {:always_active false
+                  :show_last_status false}))})
 
- {1 :sheerun/vim-polyglot
-  :config (λ []
-            (tset vim.g :polyglot_disabled [:markdown]))}
+ :sheerun/vim-polyglot
  {1 :nvim-treesitter/nvim-treesitter
   :run ":TSUpdate"
   :requires :p00f/nvim-ts-rainbow
@@ -118,8 +117,8 @@
 {1 :weilbith/nvim-code-action-menu
  :cmd :CodeActionMenu}
 
-{1 :kosayoda/nvim-lightbulb
- :disable true
+(p+ :kosayoda/nvim-lightbulb
+ {:disable true
  :config (λ []
            ((. (require :nvim-lightbulb) :setup)
             {:ignore {}
@@ -135,7 +134,7 @@
                            :text :💡
                            :text_unavilable ""}}))
  :setup (λ []
-          (vim.cmd "autocmd CursorHold,CursorHoldI * lua require'nvim-lightbulb'.update_lightbulb()"))}
+          (vim.cmd "autocmd CursorHold,CursorHoldI * lua require'nvim-lightbulb'.update_lightbulb()"))})
 
 ;; error list
 {1 :folke/trouble.nvim
@@ -179,18 +178,18 @@
 {1 :ray-x/lsp_signature.nvim
  :config (λ [] ((. (require :lsp_signature) :setup) {}))}
 
-{1 :hrsh7th/vim-vsnip
- :disable true
- :requires [:hrsh7th/vim-vsnip-integ
-            :rafamadriz/friendly-snippets]}
+(p+ :hrsh7th/vim-vsnip
+    {:disable true
+     :requires [:hrsh7th/vim-vsnip-integ
+                :rafamadriz/friendly-snippets]})
 
-{1 :folke/which-key.nvim
- :disable true
- :config (λ []
-           ((-> (require :which-key) (. :setup)) {})
-           (local presets (require :which-key.plugins.presets))
-           (tset presets.operators :i nil)
-           (tset presets.operators :v nil))}
+(p+ :folke/which-key.nvim
+    {:disable true
+     :config (λ []
+               ((-> (require :which-key) (. :setup)) {})
+               (local presets (require :which-key.plugins.presets))
+               (tset presets.operators :i nil)
+               (tset presets.operators :v nil))})
 
 ;;; vim
 
@@ -271,14 +270,13 @@
                              (prefix.map :n "" "<Plug>LineLetters" "jump to line"))) }
                  ;; }}}
 
-
 ;;; language
 
 ;; org
 :jceb/vim-orgmode
 
-{1 :nvim-neorg/neorg
- :disable true
+(p+ :nvim-neorg/neorg
+ {:disable true
  :ft :norg
  :after :nvim-treesitter
  :config (λ []
@@ -296,7 +294,7 @@
                                                                            :icon "×"}}}}}
                     :core.norg.dirman {:config {:workspaces {:nodo "~/notes/todo"}}}
                     ;:core.integrations.telescope {}
-                    }}))}
+                    }}))})
 
 ;; lua
 :bfredl/nvim-luadev
