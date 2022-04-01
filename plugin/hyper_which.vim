@@ -170,7 +170,7 @@ function! s:formatter(matched, inputted_length, column_size)
     for l:k in sort(keys(a:matched))
         let l:k_tmp = substitute(l:k,' ' ,g:hwhich_char_space, 'g') " COMBAK
         let discription = strpart(s:add_spaces(a:matched[l:k], 45)  , 0, 45)
-        call add(l:formatted_lines, '      ' . strcharpart(k_tmp,  a:inputted_length, a:inputted_length) . ' → ' .  discription )
+        call add(l:formatted_lines, '      ' . strcharpart(k_tmp,  a:inputted_length, 1) . ' → ' .  discription )
     endfor
 
     " 列の数

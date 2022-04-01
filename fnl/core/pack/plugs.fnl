@@ -1,8 +1,8 @@
-(import-macros {:pack+ p+} :kaza.macros)
 [
  ;;; snippet
-:SirVer/ultisnips
-:honza/vim-snippets
+
+ :SirVer/ultisnips
+ :honza/vim-snippets
 
  ;;; UI
 
@@ -13,9 +13,9 @@
            (nerdtree.map :n :c :<cmd>NERDTreeCWD<CR> "cwd")
            (nerdtree.map :n :t :<cmd>NERDTreeToggle<CR> "toggle")
            (nerdtree.map :n :f :<cmd>NERDTreeFind<CR> "find"))}
- (p+ :glepnir/dashboard-nvim
-  {:disable true
-  :config (λ [] (tset vim.g :dashboard_default_executive :telescope))})
+ {1 :glepnir/dashboard-nvim
+  :disable true
+  :config (λ [] (tset vim.g :dashboard_default_executive :telescope))}
  {1 :rinx/nvim-minimap
   :config (λ []
             (vim.cmd "let g:minimap#window#width = 10")
@@ -29,20 +29,19 @@
            (prefix.map :n :b "<cmd>Telescope buffers<cr>" "buffers")
            (prefix.map :n :h "<cmd>Telescope help_tags<cr>" "help tags")
            (prefix.map :n :t "<cmd>Telescope<cr>" "telescope"))}
- (p+ :xiyaowong/nvim-transparent
-  {:disable true
+ {1 :xiyaowong/nvim-transparent
+  :disable true
   :config (λ []
             ((-> (require :transparent) (. :setup))
-             {:enable false}))})
+             {:enable false}))}
  {1 :akinsho/bufferline.nvim
   :requires :kyazdani42/nvim-web-devicons}
- (p+ :windwp/windline.nvim
-        {:disable true
-         :config (λ []
-                   (require "wlsample.vscode")
-                   ((. (require "wlfloatline") :setup)
-                    {:always_active false
-                     :show_last_status false}))})
+ {1 :windwp/windline.nvim
+  :disable true
+  :config (λ [] (require "wlsample.vscode")
+            ((. (require "wlfloatline") :setup)
+             {:always_active false
+              :show_last_status false}))}
 
  {1 :sheerun/vim-polyglot
   :config (λ []
@@ -101,59 +100,48 @@
            ((. ((. (require :kaza.map) :prefix-o) :<space>a :tagbar) :map)
             :n :t :<cmd>TagbarToggle<cr> :toggle))}
 
- ;;; Colortheme
+;;; Edit
 
- :rafamadriz/neon
+;; lsp
+{1 :williamboman/nvim-lsp-installer
+ :config (λ []
+           ((. (require :nvim-lsp-installer) :on_server_ready)
+            (λ [server] (server:setup {}))))}
 
- ;;; Edit
+{1 :onsails/lspkind-nvim
+ :config (λ [] ((. (require :lspkind) :init) {}))}
 
- ;; lsp
- {1 :williamboman/nvim-lsp-installer
-  :config (λ []
-            ((. (require :nvim-lsp-installer) :on_server_ready)
-             (λ [server] (server:setup {}))))}
+;; enhance quick fix
+{1 :kevinhwang91/nvim-bqf
+ :ft :qf}
 
- {1 :onsails/lspkind-nvim
-  :config (λ [] ((. (require :lspkind) :init) {}))}
+{1 :weilbith/nvim-code-action-menu
+ :cmd :CodeActionMenu}
 
- ;; enhance quick fix
- {1 :kevinhwang91/nvim-bqf
-  :ft :qf}
-
- {1 :weilbith/nvim-code-action-menu
-  :cmd :CodeActionMenu}
-
- {1 :tami5/lspsaga.nvim
-  :config ((. (require :lspsaga) :setup)
-           {:code_action_prompt {:virtual_text false}})}
-
-(p+ :kosayoda/nvim-lightbulb
-       {:disable true
-        :config (λ []
-                  ((. (require :nvim-lightbulb) :setup)
-                   {:ignore {}
-                    :sign {:enabled true
-                           :priority 10 }
-                    :float {:enabled false
+{1 :kosayoda/nvim-lightbulb
+ :disable true
+ :config (λ []
+           ((. (require :nvim-lightbulb) :setup)
+            {:ignore {}
+             :sign {:enabled true
+                    :priority 10 }
+             :float {:enabled false
+                     :text :💡
+                     :win_opts {}}
+             :virtual_text {:enabled false
                             :text :💡
-                            :win_opts {}}
-                    :virtual_text {:enabled false
-                                   :text :💡
-                                   :hl_mode :replace}
-                    :status_text {:enabled false
-                                  :text :💡
-                                  :text_unavilable ""}}))
-  :setup (λ []
-           (vim.cmd "autocmd CursorHold,CursorHoldI * lua require'nvim-lightbulb'.update_lightbulb()"))})
+                            :hl_mode :replace}
+             :status_text {:enabled false
+                           :text :💡
+                           :text_unavilable ""}}))
+ :setup (λ []
+          (vim.cmd "autocmd CursorHold,CursorHoldI * lua require'nvim-lightbulb'.update_lightbulb()"))}
 
- ;; error list
- {1 :folke/trouble.nvim
-  :requires :yazdani42/nvim-web-devicons
-  :config (λ [] ((-> (require :trouble) (. :setup)) {}))}
+;; error list
+{1 :folke/trouble.nvim
+ :requires :yazdani42/nvim-web-devicons
+ :config (λ [] ((-> (require :trouble) (. :setup)) {}))}
 
-;; show type of argument
-(p+ :ray-x/lsp_signature.nvim
-       {:config ((. (require :lsp_signature) :setup) {})})
 
 ;; cmp plugins
 {1 :hrsh7th/nvim-cmp
@@ -183,18 +171,26 @@
              ((-> (require :lspconfig) (. key) (. :setup))
               {:capabilities capabilities})))}
 
-(p+ :hrsh7th/vim-vsnip
- {:disable true
- :requires [:hrsh7th/vim-vsnip-integ
-            :rafamadriz/friendly-snippets]})
+{1 :tami5/lspsaga.nvim
+ :config (λ [] ((. (require :lspsaga) :setup)
+                {:code_action_prompt {:virtual_text false}}))}
 
-(p+ :folke/which-key.nvim
- {:disable true
+;; show type of argument
+{1 :ray-x/lsp_signature.nvim
+ :config (λ [] ((. (require :lsp_signature) :setup) {}))}
+
+{1 :hrsh7th/vim-vsnip
+ :disable true
+ :requires [:hrsh7th/vim-vsnip-integ
+            :rafamadriz/friendly-snippets]}
+
+{1 :folke/which-key.nvim
+ :disable true
  :config (λ []
            ((-> (require :which-key) (. :setup)) {})
            (local presets (require :which-key.plugins.presets))
            (tset presets.operators :i nil)
-           (tset presets.operators :v nil))})
+           (tset presets.operators :v nil))}
 
 ;;; vim
 
@@ -226,8 +222,8 @@
            (prefix.map :v "" "<Plug>(openbrowser-smart-search)" "search"))}
 {1 :mbbill/undotree
  :setup (λ []
-           ((. ((. (require :kaza.map) :prefix-o) :<space>u :undo-tree) :map)
-            :n :t :<cmd>UndotreeToggle<cr> :toggle))}
+          ((. ((. (require :kaza.map) :prefix-o) :<space>u :undo-tree) :map)
+           :n :t :<cmd>UndotreeToggle<cr> :toggle))}
 {1 :junegunn/vim-easy-align
  :setup (λ []
           (let [prefix ((. (require :kaza.map) :prefix-o) :<space>ea :easy-align)]
@@ -243,52 +239,46 @@
 
 :ggandor/lightspeed.nvim
 ;; easymotion {{{
-{1 :easymotion/vim-easymotion
- :setup (λ []
-          (tset vim.g :EasyMotion_use_migemo true)
-          (let [prefix ((. (require :kaza.map) :prefix-o) :<space>e :easy-motion)]
-            (prefix.map :n "l" "<Plug>(easymotion-lineforward)" :l)
-            (prefix.map :n "j" "<Plug>(easymotion-j)" :j)
-            (prefix.map :n "k" "<Plug>(easymotion-k)" :k)
-            (prefix.map :n "h" "<Plug>(easymotion-linebackward)" :h)))}
-{1 :haya14busa/incsearch.vim
- :requires :haya14busa/incsearch-easymotion.vim
- :setup (λ []
-          (vim.cmd "source ~/.config/nvim/fnl/core/pack/conf/incsearch-easymotion.vim"))}
+                 {1 :easymotion/vim-easymotion
+                  :setup (λ []
+                           (tset vim.g :EasyMotion_use_migemo true)
+                           (let [prefix ((. (require :kaza.map) :prefix-o) :<space>e :easy-motion)]
+                             (prefix.map :n "l" "<Plug>(easymotion-lineforward)" :l)
+                             (prefix.map :n "j" "<Plug>(easymotion-j)" :j)
+                             (prefix.map :n "k" "<Plug>(easymotion-k)" :k)
+                             (prefix.map :n "h" "<Plug>(easymotion-linebackward)" :h)))}
+                 {1 :haya14busa/incsearch.vim
+                  :requires :haya14busa/incsearch-easymotion.vim
+                  :setup (λ []
+                           (vim.cmd "source ~/.config/nvim/fnl/core/pack/conf/incsearch-easymotion.vim"))}
 
-{1 :Shougo/vimproc.vim
- :run "make"}
-{1 :haya14busa/incsearch-migemo.vim
- :requires :Shougo/vimproc.vim
- :setup (λ []
-    (vim.cmd "map m/ <Plug>(incsearch-migemo-/)")
-    (vim.cmd "map m? <Plug>(incsearch-migemo-?)")
-    (vim.cmd "map mg/ <Plug>(incsearch-migemo-stay)"))}
+                 {1 :Shougo/vimproc.vim
+                  :run "make"}
+                 {1 :haya14busa/incsearch-migemo.vim
+                  :requires :Shougo/vimproc.vim
+                  :setup (λ []
+                           (vim.cmd "map m/ <Plug>(incsearch-migemo-/)")
+                           (vim.cmd "map m? <Plug>(incsearch-migemo-?)")
+                           (vim.cmd "map mg/ <Plug>(incsearch-migemo-stay)"))}
 
-{1 :haya14busa/incsearch-fuzzy.vim
- :setup (λ []
-          (vim.cmd "source ~/.config/nvim/fnl/core/pack/conf/incsearch-fuzzy.vim"))}
-;; Jump to any visible line in the buffer by using letters instead of numbers.
-{1 :skamsie/vim-lineletters
- :setup (λ []
-          (let [prefix ((. (require :kaza.map) :prefix-o) :<space>l :lineletters)]
-            (prefix.map :n "" "<Plug>LineLetters" "jump to line"))) }
-;; }}}
+                 {1 :haya14busa/incsearch-fuzzy.vim
+                  :setup (λ []
+                           (vim.cmd "source ~/.config/nvim/fnl/core/pack/conf/incsearch-fuzzy.vim"))}
+                 ;; Jump to any visible line in the buffer by using letters instead of numbers.
+                 {1 :skamsie/vim-lineletters
+                  :setup (λ []
+                           (let [prefix ((. (require :kaza.map) :prefix-o) :<space>l :lineletters)]
+                             (prefix.map :n "" "<Plug>LineLetters" "jump to line"))) }
+                 ;; }}}
 
 
 ;;; language
 
 ;; org
 :jceb/vim-orgmode
-(p+ :dhruvasagar/vim-dotoo
-       {:disable true
-        :setup (λ []
-                 (tset vim.g :org_agenda_files
-                       ["~/org/*.org"
-                        "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/*.org"]))})
 
-(p+ :nvim-neorg/neorg
- {:disable true
+{1 :nvim-neorg/neorg
+ :disable true
  :ft :norg
  :after :nvim-treesitter
  :config (λ []
@@ -306,7 +296,7 @@
                                                                            :icon "×"}}}}}
                     :core.norg.dirman {:config {:workspaces {:nodo "~/notes/todo"}}}
                     ;:core.integrations.telescope {}
-                    }}))})
+                    }}))}
 
 ;; lua
 :bfredl/nvim-luadev
@@ -330,15 +320,15 @@
           (tset vim.g :mkdp_auto_close false)
           (tset vim.g :mkdp_preview_options {:katex {}
                                              :disable_sync_scroll false})
-           (local prefix ((. (require :kaza.map) :prefix-o) :<space>om :markdown-preview))
-           (prefix.map :n :p :<Plug>MarkdownPreview "preview"))
+          (local prefix ((. (require :kaza.map) :prefix-o) :<space>om :markdown-preview))
+          (prefix.map :n :p :<Plug>MarkdownPreview "preview"))
  :ft [:markdown]}
 {1 :ellisonleao/glow.nvim
  :cmd [:Glow :GlowInstall]
  :run ":GlowInstall"
  :setup (λ []
-           (local prefix ((. (require :kaza.map) :prefix-o) :<space>g :glow))
-           (prefix.map :n :p "<cmd>Glow<cr>" "preview"))}
+          (local prefix ((. (require :kaza.map) :prefix-o) :<space>g :glow))
+          (prefix.map :n :p "<cmd>Glow<cr>" "preview"))}
 
 ;; color
 :Shougo/unite.vim
@@ -377,4 +367,5 @@
 ;:Mangeshrex/uwu.vim                 ; uwu
 ;:ulwlu/elly.vim                     ; elly
 ;:michaeldyrynda/carbon.vim
+;:rafamadriz/neon
 ]
