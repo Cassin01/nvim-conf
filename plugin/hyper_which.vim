@@ -610,12 +610,12 @@ function! s:gen_view(index)
 endfunction
 
 function! s:ultisnips_Load_Index(self) dict
-    if !exists("g:UltiSnipsSnippetsDir")
+    if !exists("g:UltiSnipsSnippetDirectories")
         echom 'ultisnips not loaded on vim'
         return {}
     endif
 
-    let path = g:UltiSnipsSnippetsDir . '/' . self.filetype . '.snippets'
+    let path = '~/.config/nvim/' . g:UltiSnipsSnippetDirectories[0] . '/' . self.filetype . '.snippets'
     let new_index = s:_parser(expand(path))
     let ultisnips_index = new_index
 
