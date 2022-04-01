@@ -39,14 +39,14 @@
                                                   :desc "move cursor to center of the pair"}))
     (nvim_set_keymap :i
                      key
-                     (.. :v:lua.__kaza.f.bracket_completion_default :_ (string.byte key) "()")
+                     (.. :v:lua.__kaza.f.bracket_completion_default_ (string.byte key) "()")
                      {:noremap true
                       :silent true
                       :expr true
                       :desc "bracket completion default"})
     (nvim_set_keymap :i
                      (.. key "<enter>")
-                     (.. :v:lua.__kaza.f.bracket_completion_cr :_ (string.byte key) "()")
+                     (.. :v:lua.__kaza.f.bracket_completion_cr_ (string.byte key) "()")
                      {:noremap true
                       :silent true
                       :expr true

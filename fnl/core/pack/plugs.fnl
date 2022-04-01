@@ -20,7 +20,7 @@
  {1 :rinx/nvim-minimap
   :config (λ []
             (vim.cmd "let g:minimap#window#width = 10")
-            (vim.cmd "let g:minimap#window#height = 40"))}
+            (vim.cmd "let g:minimap#window#height = 35"))}
  {1 :nvim-telescope/telescope.nvim
   :requires [:nvim-lua/plenary.nvim ]
   :setup (λ []
