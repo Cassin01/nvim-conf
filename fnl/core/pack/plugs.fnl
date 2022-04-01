@@ -1,4 +1,3 @@
-(import-macros {:pack+ p+} :kaza.macros)
 [
  ;;; snippet
 
@@ -14,9 +13,9 @@
            (nerdtree.map :n :c :<cmd>NERDTreeCWD<CR> "cwd")
            (nerdtree.map :n :t :<cmd>NERDTreeToggle<CR> "toggle")
            (nerdtree.map :n :f :<cmd>NERDTreeFind<CR> "find"))}
- (p+ :glepnir/dashboard-nvim
-     {:disable true
-      :config (λ [] (tset vim.g :dashboard_default_executive :telescope))})
+ {1 :glepnir/dashboard-nvim
+     :disable true
+      :config (λ [] (tset vim.g :dashboard_default_executive :telescope))}
  {1 :rinx/nvim-minimap
   :config (λ []
             (vim.cmd "let g:minimap#window#width = 10")
@@ -30,19 +29,19 @@
            (prefix.map :n :b "<cmd>Telescope buffers<cr>" "buffers")
            (prefix.map :n :h "<cmd>Telescope help_tags<cr>" "help tags")
            (prefix.map :n :t "<cmd>Telescope<cr>" "telescope"))}
- (p+ :xiyaowong/nvim-transparent
-     {:disable true
-      :config (λ []
-                ((-> (require :transparent) (. :setup))
-                 {:enable false}))})
+ {1 :xiyaowong/nvim-transparent
+  :disable true
+  :config (λ []
+            ((-> (require :transparent) (. :setup))
+             {:enable false}))}
  {1 :akinsho/bufferline.nvim
   :requires :kyazdani42/nvim-web-devicons}
- (p+ :windwp/windline.nvim
-     {:disable true
+ {1 :windwp/windline.nvim
+      :disable true
       :config (λ [] (require "wlsample.vscode")
                 ((. (require "wlfloatline") :setup)
                  {:always_active false
-                  :show_last_status false}))})
+                  :show_last_status false}))}
 
  :sheerun/vim-polyglot
  {1 :nvim-treesitter/nvim-treesitter
@@ -82,8 +81,6 @@
            (ctrlp.map :n :s :<cmd>CtrlPMixed<cr> "file and buffer")
            (ctrlp.map :n :t :<cmd>CtrlPTag<cr> "tag"))}
 
-
-
  ;; Show git status on left of a code.
  {1 :lewis6991/gitsigns.nvim
   :requires :nvim-lua/plenary.nvim
@@ -115,10 +112,11 @@
  :ft :qf}
 
 {1 :weilbith/nvim-code-action-menu
- :cmd :CodeActionMenu}
+    :disable true
+     :cmd :CodeActionMenu}
 
-(p+ :kosayoda/nvim-lightbulb
- {:disable true
+{1 :kosayoda/nvim-lightbulb
+ :disable true
  :config (λ []
            ((. (require :nvim-lightbulb) :setup)
             {:ignore {}
@@ -134,7 +132,7 @@
                            :text :💡
                            :text_unavilable ""}}))
  :setup (λ []
-          (vim.cmd "autocmd CursorHold,CursorHoldI * lua require'nvim-lightbulb'.update_lightbulb()"))})
+          (vim.cmd "autocmd CursorHold,CursorHoldI * lua require'nvim-lightbulb'.update_lightbulb()"))}
 
 ;; error list
 {1 :folke/trouble.nvim
@@ -178,18 +176,18 @@
 {1 :ray-x/lsp_signature.nvim
  :config (λ [] ((. (require :lsp_signature) :setup) {}))}
 
-(p+ :hrsh7th/vim-vsnip
-    {:disable true
+{1 :hrsh7th/vim-vsnip
+    :disable true
      :requires [:hrsh7th/vim-vsnip-integ
-                :rafamadriz/friendly-snippets]})
+                :rafamadriz/friendly-snippets]}
 
-(p+ :folke/which-key.nvim
-    {:disable true
+{1 :folke/which-key.nvim
+    :disable true
      :config (λ []
                ((-> (require :which-key) (. :setup)) {})
                (local presets (require :which-key.plugins.presets))
                (tset presets.operators :i nil)
-               (tset presets.operators :v nil))})
+               (tset presets.operators :v nil))}
 
 ;;; vim
 
@@ -273,18 +271,20 @@
 ;;; language
 
 ;; org
-:jceb/vim-orgmode
+{1 :jceb/vim-orgmode 
+    :setup (λ []
+             (tset vim.g :org_agenda_files ["~/org/*.org"]))}
 
-(p+ :nvim-neorg/neorg
- {:disable true
- :ft :norg
- :after :nvim-treesitter
- :config (λ []
-           ((. (require :neorg) :setup)
-            {:load {:core.defaults {}
-                    :core.keybinds {:config {:default_keybinds true
-                                             :neorg_leader :<Leader>n}}
-                    :core.norg.completion {:config {:engine :nvim-cmp}}
+{1 :nvim-neorg/neorg
+     :disable true
+     :ft :norg
+     :after :nvim-treesitter
+     :config (λ []
+               ((. (require :neorg) :setup)
+                {:load {:core.defaults {}
+                        :core.keybinds {:config {:default_keybinds true
+                                                 :neorg_leader :<Leader>n}}
+                        :core.norg.completion {:config {:engine :nvim-cmp}}
                     :core.norg.concealer {:config {:icons {:todo {:enabled true
                                                                   :done {:enabled true
                                                                          :icon ""}
@@ -294,7 +294,7 @@
                                                                            :icon "×"}}}}}
                     :core.norg.dirman {:config {:workspaces {:nodo "~/notes/todo"}}}
                     ;:core.integrations.telescope {}
-                    }}))})
+                    }}))}
 
 ;; lua
 :bfredl/nvim-luadev

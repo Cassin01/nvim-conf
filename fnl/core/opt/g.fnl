@@ -1,7 +1,7 @@
 (local {: execute-cmd} (require :kaza.file))
 {
 :python3_host_prog (. (execute-cmd "which python") 1)
-:polyglot_disabled [:markdown]
+:polyglot_disabled [:markdown :fennel]
 :colors_name :tokyonight
 :terminal_color_0  :#2e3436
 :terminal_color_1  :#cc0000
