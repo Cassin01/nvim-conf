@@ -55,5 +55,5 @@ augroup END
 command! CodBet call s:bet()
 command! CodShow call s:show()
 
-nmap <space>bb :CodBet<cr>
-nmap <space>bs :CodShow<cr>
+" nmap <space>bb :CodBet<cr>
+" nmap <space>bs :CodShow<cr>

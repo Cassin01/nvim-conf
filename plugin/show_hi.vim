@@ -38,7 +38,7 @@
     endfunction
     command! SyntaxInfo call s:get_syn_info()
     " nnoremap <buffer> <silent> ,n :SyntaxInfo<CR>
-    nnoremap <silent> ,n :SyntaxInfo<CR>
+    " nnoremap <silent> <space>msc :SyntaxInfo<CR>
 " }}}
 
 " https://zenn.dev/kawarimidoll/articles/cf6caaa7602239

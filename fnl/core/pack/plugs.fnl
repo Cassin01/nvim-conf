@@ -14,8 +14,8 @@
            (nerdtree.map :n :t :<cmd>NERDTreeToggle<CR> "toggle")
            (nerdtree.map :n :f :<cmd>NERDTreeFind<CR> "find"))}
  {1 :glepnir/dashboard-nvim
-     :disable true
-      :config (λ [] (tset vim.g :dashboard_default_executive :telescope))}
+  :disable true
+  :config (λ [] (tset vim.g :dashboard_default_executive :telescope))}
  {1 :rinx/nvim-minimap
   :config (λ []
             (vim.cmd "let g:minimap#window#width = 10")
@@ -28,7 +28,8 @@
            (prefix.map :n :g "<cmd>Telescope live_grep<cr>" "live grep")
            (prefix.map :n :b "<cmd>Telescope buffers<cr>" "buffers")
            (prefix.map :n :h "<cmd>Telescope help_tags<cr>" "help tags")
-           (prefix.map :n :t "<cmd>Telescope<cr>" "telescope"))}
+           (prefix.map :n :t "<cmd>Telescope<cr>" "telescope")
+           (prefix.map :n :o "<cmd>Telescope oldfiles<cr>" "old files"))}
  {1 :xiyaowong/nvim-transparent
   :disable true
   :config (λ []
@@ -53,7 +54,7 @@
               :sync_install false
               :ignore_install [ "javascript" ]
               :highlight {:enable true
-                          :disable [ "c" "rust" "lua"]
+                          :disable [ "c" "rust"]
                           :additional_vim_regex_highlighting false}
               :rainbow {:enable true
                         :extended_mode true
@@ -71,7 +72,7 @@
            (tset g :ctrlp_extensions [:tag :quickfix :dir :line :mixed])
            (tset g :ctrlp_match_window "bottom,order:btt,min:1,max:18")
            (local ctrlp ((. (require :kaza.map) :prefix-o) :<space>p :ctrlp))
-           (ctrlp.map :n :a :<cmd>CtrlP<Space> :folder)
+           (ctrlp.map :n :a ::<c-u>CtrlP<Space> :folder)
            (ctrlp.map :n :b :<cmd>CtrlPBuffer<cr> :buffer)
            (ctrlp.map :n :d :<cmd>CtrlPDir<cr> "directory")
            (ctrlp.map :n :f :<cmd>CtrlP<cr> "all files")
@@ -112,8 +113,10 @@
  :ft :qf}
 
 {1 :weilbith/nvim-code-action-menu
-    :disable true
-     :cmd :CodeActionMenu}
+ :cmd :CodeActionMenu
+ :setup (λ []
+          (let [prefix ((. (require :kaza.map) :prefix-o) :<space>f :code-action-menu)]
+            (prefix.map :n "" "<cmd>CodeActionMenu<cr>" :action)))}
 
 {1 :kosayoda/nvim-lightbulb
  :disable true
@@ -197,7 +200,12 @@
           (tset vim.g :echodoc#type :floating))}
 
 ;; thank you tpope
-:tpope/vim-fugitive
+{1 :tpope/vim-fugitive
+ :setup (λ []
+          (let [ prefix ((. (require :kaza.map) :prefix-o) :<space>g :git)]
+            (prefix.map :n "g" "<cmd>Git<cr>" "add")
+            (prefix.map :n "c" "<cmd>Git commit<cr>" "commit")
+            (prefix.map :n "p" "<cmd>Git push<cr>" "push")))}
 :tpope/vim-rhubarb ; enable :Gbrowse
 :tpope/vim-commentary
 :tpope/vim-unimpaired
@@ -254,9 +262,10 @@
                  {1 :haya14busa/incsearch-migemo.vim
                   :requires :Shougo/vimproc.vim
                   :setup (λ []
-                           (vim.cmd "map m/ <Plug>(incsearch-migemo-/)")
-                           (vim.cmd "map m? <Plug>(incsearch-migemo-?)")
-                           (vim.cmd "map mg/ <Plug>(incsearch-migemo-stay)"))}
+                           (let [prefix ((. (require :kaza.map) :prefix-o) :<space>i :migemo)]
+                             (prefix.map :n "/" "<Plug>(incsearch-migemo-/)" :/)
+                             (prefix.map :n "?" "<Plug>(incsearch-migemo-?)" :?)
+                             (prefix.map :n "g/" "<Plug>(incsearch-migemo-stay)" :stay)))}
 
                  {1 :haya14busa/incsearch-fuzzy.vim
                   :setup (λ []
@@ -326,7 +335,7 @@
  :run ":GlowInstall"
  :setup (λ []
           (local prefix ((. (require :kaza.map) :prefix-o) :<space>g :glow))
-          (prefix.map :n :p "<cmd>Glow<cr>" "preview"))}
+          (prefix.map :n :mp "<cmd>Glow<cr>" "preview"))}
 
 ;; color
 :Shougo/unite.vim

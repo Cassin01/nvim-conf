@@ -5,22 +5,25 @@
    "add prefix with doc"
    (tset _G.__kaza.prefix prefix plug-name)
    prefix)
+
 (fn prefix-o [prefix plug-name]
    (tset _G.__kaza.prefix prefix plug-name)
    {:map (λ [mode key cmd desc]
-           (do (assert (= (type mode) :string) "must be string")
-              (assert (= (type key) :string) "must be string")
-              (assert (= (type cmd) :string) "must be string")
-              (assert (= (type desc) :string) "must be string"))
+           (do 
+             (assert (= (type mode) :string) "must be string")
+             (assert (= (type key) :string) "must be string")
+             (assert (= (type cmd) :string) "must be string")
+             (assert (= (type desc) :string) "must be string"))
            (vim.api.nvim_set_keymap mode
                                     (.. prefix key)
                                     cmd
                                     {:noremap true :silent true :desc (.. "[" plug-name "] " desc)}))
     :map-f (λ [mode key callback desc]
-             (do (assert (= (type mode) :string) "must be string")
-                (assert (= (type key) :string) "must be string")
-                (assert (= (type callback) :function) "must be function")
-                (assert (= (type desc) :string) "must be string"))
+             (do
+               (assert (= (type mode) :string) "must be string")
+               (assert (= (type key) :string) "must be string")
+               (assert (= (type callback) :function) "must be function")
+               (assert (= (type desc) :string) "must be string"))
              (vim.api.nvim_set_keymap mode
                                       (.. prefix key)
                                       ""
@@ -31,19 +34,12 @@
    "replace termcode"
   (vim.api.nvim_replace_termcodes str true true true))
 
-;;; register
-
-(fn set-key [mode key description]
-   (tset (. _G.__kaza.k mode) key description))
-
 (fn map [mode key cmd desc]
    (do (assert (= (type mode) :string) "must be string")
       (assert (= (type key) :string) "must be string")
       (assert (= (type cmd) :string) "must be string")
       (assert (= (type desc) :string) "must be string"))
    (vim.api.nvim_set_keymap mode key cmd {:noremap true :silent true :desc desc}))
-
-;;; map-f
 
 (fn map-f [key lambda- name]
    "name must be unique. lambda- must be no arguments"

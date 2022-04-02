@@ -1,12 +1,3 @@
-function! To_head_of_line()
-let start_column = col('.')
-normal! ^
-if col('.') == start_column
-    normal! 0
-endif
-return ''
-endfunction
-
 function! Retrive_till_tail()
 let [text_before, text_after] = s:split_line()
 if len(text_after) == 0
@@ -24,23 +15,23 @@ let text_before = (col('.') > 1) ? line_text[: col('.')-2] : ''
 return [text_before, text_after]
 endfunction
 
-" Command line {{{
-" move current directory (emacs C-f) {{{
-" https://vim-jp.org/vim-users-jp/2009/09/08/Hack-69.html
-command! -nargs=? -complete=dir CD  call s:ChangeCurrentDir('<args>')
-function! s:ChangeCurrentDir(directory)
-if a:directory == ''
-    lcd %:p:h
-else
-    execute 'lcd' . a:directory
-endif
+" " Command line {{{
+" " move current directory (emacs C-f) {{{
+" " https://vim-jp.org/vim-users-jp/2009/09/08/Hack-69.html
+" command! -nargs=? -complete=dir CD  call s:ChangeCurrentDir('<args>')
+" function! s:ChangeCurrentDir(directory)
+" if a:directory == ''
+"     lcd %:p:h
+" else
+"     execute 'lcd' . a:directory
+" endif
 
-if exists("g:NERDTree")
-    exe "normal \<Plug>NerdTreeCWD"
-endif
-endfunction
-" }}}
-" }}}
+" if exists("g:NERDTree")
+"     exe "normal \<Plug>NerdTreeCWD"
+" endif
+" endfunction
+" " }}}
+" " }}}
 
 " Dump the output of internal vim command into buffer
 " ref: https://vi.stackexchange.com/questions/8378/dump-the-output-of-internal-vim-command-into-buffer

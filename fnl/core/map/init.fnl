@@ -1,6 +1,16 @@
 (local {: map : prefix-o} (require :kaza.map))
 (local {:string s} (require :util.src))
 
+(let [prefix (prefix-o :<space>w :which)]
+  (prefix.map :n :<space> "<cmd>NormalWitch SPC<cr>" :space)
+  (prefix.map :n :\ "<cmd>NormalWitch \\<cr>" :\)
+  (prefix.map :n :book "<Plug>(hwhich-bookmark)" "book mark")
+  (prefix.map :n :nor "<Plug>(hwhich-normal)" "normal wich")
+  (prefix.map :n :ult "<Plug>(hwich-ultisnips)" "ultisnips")
+  (prefix.map :n :nor "<Plug>(hwich-tex)" "tex")
+  (prefix.map :n :reg "<cmd>REGWITCH<cr>" "register")
+  (prefix.map :n :evil "<cmd>KeyWindow<cr>" "evil"))
+
 (let [prefix (prefix-o :<space>s :win)]
   (prefix.map :n :j :<C-w>j "j")
   (prefix.map :n :k :<C-w>k "k")
@@ -23,12 +33,13 @@
   (prefix.map :n ";" ":<c-u>sp<cr><c-w>J:<c-u>res 10<cr>:<C-u>terminal<cr>:<c-u>setlocal noequalalways<cr>i" "vscode like terminal"))
 
 (let [prefix (prefix-o :<space>m :me)]
-  (prefix.map :n :t "<cmd>sp<cr><cmd>edit %:h<tab><cr>" "show current directory")
-  (prefix.map :n :cs "<cmd>source %<cr>" "source a current file")
-  (prefix.map :n :c "<cmd>Unite colorscheme -auto-preview<cr>" "preview colorschemes")
+  (prefix.map :n :sd "<cmd>sp<cr><cmd>edit %:h<tab><cr>" "show current directory")
+  (prefix.map :n :sf "<cmd>source %<cr>" "source a current file")
+  (prefix.map :n :pc "<cmd>Unite colorscheme -auto-preview<cr>" "preview colorschemes")
   (prefix.map :n :rs ::%s/\s\+$//ge<cr> "remove trailing spaces")
-  (prefix.map :n :o ":vim TODO ~/org/*.org<cr>" "agenda")
-  (prefix.map :n :rts ":%s/\t/ /g<cr>" "replace tab with space")
+  (prefix.map :n :a ":vim TODO ~/org/*.org<cr>" "agenda")
+  (prefix.map :n :ts ":%s/\t/ /g<cr>" "replace tab with space")
+  (prefix.map :n :cd ":<c-u>lcd %:p:h<cr>" "move current directory to here")
   (prefix.map :n "]f" ":<c-u>set clipboard+=unnamed" "enable clipboard")
   (prefix.map :n "[f" ":<c-u>set clipboard-=unnamed" "disable clipboard")
   (prefix.map :n "]x" "<cmd>setlocal conceallevel=1" "hide conceal")
@@ -40,14 +51,16 @@
                                (tset vim.o :foldmethod :indent))
                               (print (.. "foldmethod is now " vim.o.foldmethod))) "toggle foldmethod")
   (prefix.map-f :n :lm (λ [] (local {: cursor : strlen : getline} vim.fn)
-                         (cursor 0 (/ (strlen (getline :.)) 2))) "go middle of line")
+                         (cursor 0 (/ (strlen (getline :.)) 2))) "go middle of a line")
   (prefix.map-f :n :m (λ [] (let  [buf (vim.api.nvim_create_buf false true)]
                               (vim.api.nvim_buf_set_lines buf 0 100 false (s.split (vim.api.nvim_exec "messages" true ) "\n"))
                               (local height (vim.api.nvim_buf_line_count buf))
                               (vim.api.nvim_open_win buf true {:relative :editor :style :minimal :row 3 :col 3 :height 40 :width 150})))
                 "show message")
   (when (vim.fn.has :mac)
-    (prefix.map :n :? "<cmd>!open dict://<cword><cr>" "mac dictionary")))
+    (prefix.map :n :? "<cmd>!open dict://<cword><cr>" "mac dictionary")
+    (each [_ k (ipairs (require :core.map.mac))]
+      (map (unpack k)))))
 
 (each [_ k (ipairs (require :core.map.map))]
   (map (unpack k)))

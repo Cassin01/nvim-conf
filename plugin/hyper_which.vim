@@ -1,6 +1,5 @@
 " ---------------------------------------------------------
 " Object
-" mattn 意外と知られていないvimのtips(vimでオブジェクト継承)
 " https://mattn.kaoriya.net/software/vim/20070817164837.htm
 " --------------------------------------------------------
 " {{{
@@ -392,8 +391,8 @@ endfunction
 
 function! s:evil_Event() dict
     command! KeyWindow :call evilwitch.Witch(evilwitch)
-    nnoremap <silent> ,evil :KeyWindow<CR>
-    inoremap <silent>   <esc>:KeyWindow<cr>
+    "nnoremap <silent> <space>wevil :KeyWindow<CR>
+    " inoremap <silent>   <esc>:KeyWindow<cr>
 endfunction
 
 let EvilWitch = #{
@@ -440,7 +439,7 @@ function! s:reg_Load_Index(self) dict
 endfunction
 function! s:reg_Event() dict
     command! REGWITCH :call regwitch.Witch(regwitch)
-    nnoremap <silent> ,reg :REGWITCH<CR>
+    nnoremap <silent> <space>wreg :REGWITCH<CR>
 endfunction
 
 let RegWitch = {
@@ -542,7 +541,7 @@ function! s:hwichtex_Load_Index(self) dict
 endfunction
 function! s:hwichtex_Event() dict
     nnoremap <silent> <Plug>(hwich-tex) :<c-u>call hwichtex.Witch(hwichtex)<cr>
-    nmap ,tex <Plug>(hwich-tex)
+    " nmap <space>wtex <Plug>(hwich-tex)
 endfunction
 
 let Hwichtex = {
@@ -630,7 +629,7 @@ endfunction
 
 function! s:ultisnips_Event() dict
     nnoremap <silent> <plug>(hwich-ultisnips) :<c-u>call ultisnips_wich.Witch(ultisnips_wich)<cr>
-    nmap <silent> ,ult <plug>(hwich-ultisnips)
+    " nmap <silent> <space>wult <plug>(hwich-ultisnips)
 endfunction
 
 let UltiSnipsWich = {
@@ -680,7 +679,7 @@ function! s:normal_load_g_index()
        endif
 
        if key['lhs'] !~ "^<Plug>.*" && desc != "" && key['lhs'] !~ "^<C-.*"
-           let ret[key['lhs']] = key['lhs'] . ' ' . desc
+           let ret[key['lhs']] = substitute(key['lhs'], ' ', g:hwhich_char_space, 'g') . ' ' . desc
        endif
    endfor
    return ret
@@ -715,7 +714,7 @@ function! s:normal_Event() dict
     nnoremap <silent>
         \ <plug>(hwhich-normal)
         \ :<c-u>call normalwitch.Witch(normalwitch)<cr>
-    nmap <silent> ,nor <plug>(hwhich-normal)
+    " nmap <silent> <space>wnor <plug>(hwhich-normal)
     command! -nargs=? NormalWitch call normalwitch.Witch(normalwitch, <f-args>)
 endfunction
 
@@ -752,10 +751,25 @@ let s:bookmark = {
             \ "org": "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/"
             \ }
 
+" function! s:bookmark_On_Matched(key) dict
+"     let command = "e " . s:bookmark[a:key]
+"     try
+"         " execute l:command
+"         execute command
+"     catch /error!/
+"         echom "err occured"
+"     endtry
+" endfunction
+
 function! s:bookmark_On_Matched(key) dict
-    let command = "e " . s:bookmark[a:key]
+    let path = s:bookmark[a:key]
+    if isdirectory(expand(path))
+        echom "is directory"
+        let command = "CtrlP " . path
+    else
+        let command = "vi " . path
+    endif
     try
-        " execute l:command
         execute command
     catch /error!/
         echom "err occured"
@@ -788,7 +802,7 @@ endfunction
 
 function! s:bookmark_Event() dict
     nnoremap <silent> <plug>(hwhich-bookmark) :<c-u>call bookmark_wich.Witch(bookmark_wich)<cr>
-    nmap <silent> ,book <plug>(hwhich-bookmark)
+    " nmap <silent> <space>wbook <plug>(hwhich-bookmark)
 endfunction
 
 let BookmarkWich = {
