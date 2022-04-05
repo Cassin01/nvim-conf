@@ -1,4 +1,7 @@
 [
+ ;;; lua
+ :lewis6991/impatient.nvim
+
  ;;; snippet
 
  :SirVer/ultisnips
@@ -6,81 +9,80 @@
 
  ;;; UI
 
-
-{1 :Shougo/ddu.vim
- :disable true
- :requires [:vim-denops/denops.vim
-            ; filter
-            :Shougo/ddu-filter-matcher_substring
-            ; ui
-            :Shougo/ddu-ui-ff
-            :Shougo/ddu-ui-filer
-            ; kind
-            :Shougo/ddu-kind-file
-            ; source
-            :Shougo/ddu-commands.vim
-            :Shougo/ddu-source-file
-            :Shougo/ddu-source-file_rec
-            :Shougo/ddu-source-register
-            :kuuote/ddu-source-mr
-            :lambdalisue/mr.vim
-            :shun/ddu-source-buffer
-            :4513ECHO/ddu-source-colorscheme
-            ]
- :config (λ []
-          ((. vim.fn :ddu#custom#patch_global)
-            {:ui :ff
-             :sources [{:name :file_rec :params {}}
-                       {:name :mr}
-                       {:name :file}
-                       {:name :register}
-                       {:name :buffer}]
-             :sourceOptions [:_ {:matchers [:matcher_substring]}]
-             :kindOptions {:file {:defaultAction :open}
-                           :colorscheme {:defaultAction :set}}
-             :uiParams {:ff { :startFilter false }}
-             :filterParams {:matcher_substring {:highlightMatched :Search}}})
-           (vim.api.nvim_create_autocmd
-             :FileType
-             {:pattern :ddu-ff
-              :group (vim.api.nvim_create_augroup :ddu-ff {:clear true})
-              :callback (λ []
-                             (vim.api.nvim_buf_set_keymap 0
-                                                          :n
-                                                          :<cr>
-                                                          "<Cmd>call ddu#ui#ff#do_action('itemAction')<CR>" {:noremap true :silent true :desc "item action"})
-                             (vim.api.nvim_buf_set_keymap 0
-                                                          :n
-                                                          :<space>
-                                                          "<Cmd>call ddu#ui#ff#do_action('toggleSelectItem')<CR>" {:noremap true :silent true :desc "toggle select item"})
-                             (vim.api.nvim_buf_set_keymap 0
-                                                          :n
-                                                          :i
-                                                          "<Cmd>call ddu#ui#ff#do_action('openFilterWindow')<CR>" {:noremap true :silent true :desc "open filter window" })
-                             (vim.api.nvim_buf_set_keymap 0
-                                                          :n
-                                                          :q
-                                                          "<Cmd>call ddu#ui#ff#do_action('quit')<CR>" {:noremap true :silent true :desc "quit" }))})
-           (vim.api.nvim_create_autocmd
-             :FileType
-             {:pattern :ddu-ff-filter
-              :group (vim.api.nvim_create_augroup :ddu-ff-filter {:clear true})
-              :callback (λ []
-                          (vim.api.nvim_buf_set_keymap 0
-                                                       :i
-                                                       :<cr>
-                                                       "ddu#ui#filer#is_directory() ? <cmd>call ddu#ui#filer#do_action('itemAction', {'name': 'narrow'})<cr> : <cmd>call ddu#ui#filer#do_action('itemAction', {'name': 'open'})<cr>"
-                                                       {:noremap true :silent true :desc :action: :expr true})
-                          (vim.api.nvim_buf_set_keymap 0 :n :<cr> :<cmd>close<cr> {:noremap true :silent true :desc :close})
-                          (vim.api.nvim_buf_set_keymap 0 :n :q :<cmd>close<cr> {:noremap true :silent true :desc :close}))})
-           (let [prefix ((. (require :kaza.map) :prefix-o) :n :<space>d :ddu)]
-             (prefix.map :m "<cmd>Ddu mr<cr>" :history)
-             (prefix.map :b "<cmd>Ddu buffer<cr>" :buffer)
-             (prefix.map :r "<cmd>Ddu register<cr>" :register)
-             (prefix.map :n "<cmd>Ddu file -source-param-new -volatile<cr>" "new file")
-             (prefix.map :f "<cmd>Ddu file<cr>" :file)
-             (prefix.map :c "<cmd>Ddu colorscheme<cr>" :colorscheme))
-          )}
+ {1 :Shougo/ddu.vim
+  :disable true
+  :requires [:vim-denops/denops.vim
+             ; filter
+             :Shougo/ddu-filter-matcher_substring
+             ; ui
+             :Shougo/ddu-ui-ff
+             :Shougo/ddu-ui-filer
+             ; kind
+             :Shougo/ddu-kind-file
+             ; source
+             :Shougo/ddu-commands.vim
+             :Shougo/ddu-source-file
+             :Shougo/ddu-source-file_rec
+             :Shougo/ddu-source-register
+             :kuuote/ddu-source-mr
+             :lambdalisue/mr.vim
+             :shun/ddu-source-buffer
+             :4513ECHO/ddu-source-colorscheme
+             ]
+  :config (λ []
+            ((. vim.fn :ddu#custom#patch_global)
+             {:ui :ff
+              :sources [{:name :file_rec :params {}}
+                        {:name :mr}
+                        {:name :file}
+                        {:name :register}
+                        {:name :buffer}]
+              :sourceOptions [:_ {:matchers [:matcher_substring]}]
+              :kindOptions {:file {:defaultAction :open}
+                            :colorscheme {:defaultAction :set}}
+              :uiParams {:ff { :startFilter false }}
+              :filterParams {:matcher_substring {:highlightMatched :Search}}})
+            (vim.api.nvim_create_autocmd
+              :FileType
+              {:pattern :ddu-ff
+               :group (vim.api.nvim_create_augroup :ddu-ff {:clear true})
+               :callback (λ []
+                           (vim.api.nvim_buf_set_keymap 0
+                                                        :n
+                                                        :<cr>
+                                                        "<Cmd>call ddu#ui#ff#do_action('itemAction')<CR>" {:noremap true :silent true :desc "item action"})
+                           (vim.api.nvim_buf_set_keymap 0
+                                                        :n
+                                                        :<space>
+                                                        "<Cmd>call ddu#ui#ff#do_action('toggleSelectItem')<CR>" {:noremap true :silent true :desc "toggle select item"})
+                           (vim.api.nvim_buf_set_keymap 0
+                                                        :n
+                                                        :i
+                                                        "<Cmd>call ddu#ui#ff#do_action('openFilterWindow')<CR>" {:noremap true :silent true :desc "open filter window" })
+                           (vim.api.nvim_buf_set_keymap 0
+                                                        :n
+                                                        :q
+                                                        "<Cmd>call ddu#ui#ff#do_action('quit')<CR>" {:noremap true :silent true :desc "quit" }))})
+            (vim.api.nvim_create_autocmd
+              :FileType
+              {:pattern :ddu-ff-filter
+               :group (vim.api.nvim_create_augroup :ddu-ff-filter {:clear true})
+               :callback (λ []
+                           (vim.api.nvim_buf_set_keymap 0
+                                                        :i
+                                                        :<cr>
+                                                        "ddu#ui#filer#is_directory() ? <cmd>call ddu#ui#filer#do_action('itemAction', {'name': 'narrow'})<cr> : <cmd>call ddu#ui#filer#do_action('itemAction', {'name': 'open'})<cr>"
+                                                        {:noremap true :silent true :desc :action: :expr true})
+                           (vim.api.nvim_buf_set_keymap 0 :n :<cr> :<cmd>close<cr> {:noremap true :silent true :desc :close})
+                           (vim.api.nvim_buf_set_keymap 0 :n :q :<cmd>close<cr> {:noremap true :silent true :desc :close}))})
+            (let [prefix ((. (require :kaza.map) :prefix-o) :n :<space>d :ddu)]
+              (prefix.map :m "<cmd>Ddu mr<cr>" :history)
+              (prefix.map :b "<cmd>Ddu buffer<cr>" :buffer)
+              (prefix.map :r "<cmd>Ddu register<cr>" :register)
+              (prefix.map :n "<cmd>Ddu file -source-param-new -volatile<cr>" "new file")
+              (prefix.map :f "<cmd>Ddu file<cr>" :file)
+              (prefix.map :c "<cmd>Ddu colorscheme<cr>" :colorscheme))
+            )}
 
  {1 :preservim/nerdtree
   :requires :ryanoasis/vim-devicons
@@ -106,88 +108,87 @@
            (prefix.map :h "<cmd>Telescope help_tags<cr>" "help tags")
            (prefix.map :t "<cmd>Telescope<cr>" "telescope")
            (prefix.map :o "<cmd>Telescope oldfiles<cr>" "old files"))}
- {1 :xiyaowong/nvim-transparent
-  :disable true
-  :config (λ []
-            ((-> (require :transparent) (. :setup))
-             {:enable false}))}
- {1 :akinsho/bufferline.nvim
-  :requires :kyazdani42/nvim-web-devicons}
- {1 :windwp/windline.nvim
-      :disable true
-      :config (λ [] (require "wlsample.vscode")
-                ((. (require "wlfloatline") :setup)
-                 {:always_active false
-                  :show_last_status false}))}
+{1 :xiyaowong/nvim-transparent
+ :disable true
+ :config (λ []
+           ((-> (require :transparent) (. :setup))
+            {:enable false}))}
+{1 :akinsho/bufferline.nvim
+ :requires :kyazdani42/nvim-web-devicons}
+{1 :windwp/windline.nvim
+ :disable true
+ :config (λ [] (require "wlsample.vscode")
+           ((. (require "wlfloatline") :setup)
+            {:always_active false
+             :show_last_status false}))}
 
- :sheerun/vim-polyglot
- {1 :nvim-treesitter/nvim-treesitter
-  :run ":TSUpdate"
-  :requires :p00f/nvim-ts-rainbow
-  :config (λ []
-            ((. (require :orgmode) :setup_ts_grammar))
-            ((. (require "nvim-treesitter.configs") :setup)
-             {:ensure_installed "maintained"
-              :sync_install false
-              :ignore_install [ "javascript" ]
-              :highlight {:enable true
-                          :disable [ "c" "rust" "org"]
-                          :additional_vim_regex_highlighting ["org"]}
-              :ensure_installed ["org"]
-              :rainbow {:enable true
-                        :extended_mode true
-                        :max_file_lines nil}}))}
- {1 :norcalli/nvim-colorizer.lua
-  :config (λ []
-            ((. (require :colorizer) :setup)))}
+:sheerun/vim-polyglot
+{1 :nvim-treesitter/nvim-treesitter
+ :run ":TSUpdate"
+ :requires :p00f/nvim-ts-rainbow
+ :config (λ []
+           ((. (require :orgmode) :setup_ts_grammar))
+           ((. (require "nvim-treesitter.configs") :setup)
+            {:ensure_installed "maintained"
+             :sync_install false
+             :ignore_install [ "javascript" ]
+             :highlight {:enable true
+                         :disable [ "c" "rust" "org"]
+                         :additional_vim_regex_highlighting ["org"]}
+             :ensure_installed ["org"]
+             :rainbow {:enable true
+                       :extended_mode true
+                       :max_file_lines nil}}))}
+{1 :norcalli/nvim-colorizer.lua
+ :config (λ []
+           ((. (require :colorizer) :setup)))}
 
- {1 :ctrlpvim/ctrlp.vim
-  :setup (λ []
-           (local g vim.g)
-           (tset g :ctrlp_map :<Nop>)
-           (tset g :ctrlp_working_path_mode :ra)
-           (tset g :ctrlp_open_new_file :r)
-           (tset g :ctrlp_extensions [:tag :quickfix :dir :line :mixed])
-           (tset g :ctrlp_match_window "bottom,order:btt,min:1,max:18")
-           (local ctrlp ((. (require :kaza.map) :prefix-o) :n :<space>p :ctrlp))
-           (ctrlp.map :a ::<c-u>CtrlP<Space> :folder)
-           (ctrlp.map :b :<cmd>CtrlPBuffer<cr> :buffer)
-           (ctrlp.map :d :<cmd>CtrlPDir<cr> "directory")
-           (ctrlp.map :f :<cmd>CtrlP<cr> "all files")
-           (ctrlp.map :l :<cmd>CtrlPLine<cr> "grep in a current file")
-           (ctrlp.map :m :<cmd>CtrlPMRUFiles<cr> "file history")
-           (ctrlp.map :q :<cmd>CtrlPQuickfix<cr> "quickfix")
-           (ctrlp.map :s :<cmd>CtrlPMixed<cr> "file and buffer")
-           (ctrlp.map :t :<cmd>CtrlPTag<cr> "tag"))}
+{1 :ctrlpvim/ctrlp.vim
+ :setup (λ []
+          (local g vim.g)
+          (tset g :ctrlp_map :<Nop>)
+          (tset g :ctrlp_working_path_mode :ra)
+          (tset g :ctrlp_open_new_file :r)
+          (tset g :ctrlp_extensions [:tag :quickfix :dir :line :mixed])
+          (tset g :ctrlp_match_window "bottom,order:btt,min:1,max:18")
+          (local ctrlp ((. (require :kaza.map) :prefix-o) :n :<space>p :ctrlp))
+          (ctrlp.map :a ::<c-u>CtrlP<Space> :folder)
+          (ctrlp.map :b :<cmd>CtrlPBuffer<cr> :buffer)
+          (ctrlp.map :d :<cmd>CtrlPDir<cr> "directory")
+          (ctrlp.map :f :<cmd>CtrlP<cr> "all files")
+          (ctrlp.map :l :<cmd>CtrlPLine<cr> "grep in a current file")
+          (ctrlp.map :m :<cmd>CtrlPMRUFiles<cr> "file history")
+          (ctrlp.map :q :<cmd>CtrlPQuickfix<cr> "quickfix")
+          (ctrlp.map :s :<cmd>CtrlPMixed<cr> "file and buffer")
+          (ctrlp.map :t :<cmd>CtrlPTag<cr> "tag"))}
 
- ;; Show git status on left of a code.
- {1 :lewis6991/gitsigns.nvim
-  :requires :nvim-lua/plenary.nvim
-  :config (λ []
-            ((. (require :gitsigns) :setup)
-             {:current_line_blame true}))}
+;; Show git status on left of a code.
+{1 :lewis6991/gitsigns.nvim
+ :requires :nvim-lua/plenary.nvim
+ :config (λ []
+           ((. (require :gitsigns) :setup)
+            {:current_line_blame true}))}
 
- {1 :majutsushi/tagbar
-  :setup (λ []
-           (tset vim.g :tagbar_type_fennel {:ctagstype :fennel
-                                            :sort 0
-                                            :kinds ["f:functions" "v:variables"]})
-           ((. ((. (require :kaza.map) :prefix-o) :n :<space>a :tagbar) :map)
-            :t :<cmd>TagbarToggle<cr> :toggle))}
+{1 :majutsushi/tagbar
+ :setup (λ []
+          (tset vim.g :tagbar_type_fennel {:ctagstype :fennel
+                                           :sort 0
+                                           :kinds ["f:functions" "v:variables"]})
+          ((. ((. (require :kaza.map) :prefix-o) :n :<space>a :tagbar) :map)
+           :t :<cmd>TagbarToggle<cr> :toggle))}
 
- {1 :kana/vim-submode
-  :config (λ []
-    ((. vim.fn :submode#enter_with) :bufmove :n "" :<space>s> :<C-w>>)
-    ((. vim.fn :submode#enter_with) :bufmove :n "" :<space>s< :<C-w><)
-    ((. vim.fn :submode#enter_with) :bufmove :n "" :<space>s+ :<C-w>+)
-    ((. vim.fn :submode#enter_with) :bufmove :n "" :<space>s- :<C-w>-)
-    ((. vim.fn :submode#map) :bufmove :n "" :> :<C-w>>)
-    ((. vim.fn :submode#map) :bufmove :n "" :< :<C-w><)
-    ((. vim.fn :submode#map) :bufmove :n "" :+ :<C-w>+)
-    ((. vim.fn :submode#map) :bufmove :n "" :- :<C-w>-))}
-;;; Edit
+{1 :kana/vim-submode
+ :config (λ []
+           ((. vim.fn :submode#enter_with) :bufmove :n "" :<space>s> :<C-w>>)
+           ((. vim.fn :submode#enter_with) :bufmove :n "" :<space>s< :<C-w><)
+           ((. vim.fn :submode#enter_with) :bufmove :n "" :<space>s+ :<C-w>+)
+           ((. vim.fn :submode#enter_with) :bufmove :n "" :<space>s- :<C-w>-)
+           ((. vim.fn :submode#map) :bufmove :n "" :> :<C-w>>)
+           ((. vim.fn :submode#map) :bufmove :n "" :< :<C-w><)
+           ((. vim.fn :submode#map) :bufmove :n "" :+ :<C-w>+)
+           ((. vim.fn :submode#map) :bufmove :n "" :- :<C-w>-))}
 
-;; lsp
+;;; lsp
 {1 :williamboman/nvim-lsp-installer
  :config (λ []
            ((. (require :nvim-lsp-installer) :on_server_ready)
@@ -269,17 +270,17 @@
  :config (λ [] ((. (require :lsp_signature) :setup) {}))}
 
 {1 :hrsh7th/vim-vsnip
-    :disable true
-     :requires [:hrsh7th/vim-vsnip-integ
-                :rafamadriz/friendly-snippets]}
+ :disable true
+ :requires [:hrsh7th/vim-vsnip-integ
+            :rafamadriz/friendly-snippets]}
 
 {1 :folke/which-key.nvim
-    :disable true
-     :config (λ []
-               ((-> (require :which-key) (. :setup)) {})
-               (local presets (require :which-key.plugins.presets))
-               (tset presets.operators :i nil)
-               (tset presets.operators :v nil))}
+ :disable true
+ :config (λ []
+           ((-> (require :which-key) (. :setup)) {})
+           (local presets (require :which-key.plugins.presets))
+           (tset presets.operators :i nil)
+           (tset presets.operators :v nil))}
 
 ;;; vim
 
@@ -323,8 +324,8 @@
  :setup (λ []
           (let [prefix ((. (require :kaza.map) :prefix-o) :n :<space>ea :easy-align)]
             (prefix.map "" "<Plug>(EasyAlign)" :align))
-            (local {: map} (require :kaza.map))
-            (map :x "<space>ea" "<Plug>(EasyAlign)" :align)) }
+          (local {: map} (require :kaza.map))
+          (map :x "<space>ea" "<Plug>(EasyAlign)" :align)) }
 :terryma/vim-multiple-cursors
 :rhysd/clever-f.vim
 :Jorengarenar/vim-MvVis ; Move visually selected text. Ctrl-HLJK
@@ -404,15 +405,15 @@
 
 
 {1 :nvim-neorg/neorg
-     :disable true
-     :ft :norg
-     :after :nvim-treesitter
-     :config (λ []
-               ((. (require :neorg) :setup)
-                {:load {:core.defaults {}
-                        :core.keybinds {:config {:default_keybinds true
-                                                 :neorg_leader :<Leader>n}}
-                        :core.norg.completion {:config {:engine :nvim-cmp}}
+ :disable true
+ :ft :norg
+ :after :nvim-treesitter
+ :config (λ []
+           ((. (require :neorg) :setup)
+            {:load {:core.defaults {}
+                    :core.keybinds {:config {:default_keybinds true
+                                             :neorg_leader :<Leader>n}}
+                    :core.norg.completion {:config {:engine :nvim-cmp}}
                     :core.norg.concealer {:config {:icons {:todo {:enabled true
                                                                   :done {:enabled true
                                                                          :icon ""}

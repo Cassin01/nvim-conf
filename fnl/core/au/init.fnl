@@ -96,7 +96,7 @@
   {:callback (λ []
                (tset vim.g :tex_conceal "")
                (tex_math)
-               (if (vim.fn.has_key vim.g :vim-auto-save)
+               (if (. vim.g :vim-auto-save)
                  (tset vim.g :auto_save 1)))
    :pattern [:*.tex]
    :group pattern})
