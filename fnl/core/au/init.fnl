@@ -15,12 +15,12 @@
    :group (create_augroup :restore-position {:clear true})})
 
 ; highlight
-;(create_autocmd
-;  :InsertEnter
-;  {:callback (λ []
-;               (each [_ k (ipairs (require :core.au.hi))]
-;                 (vim.api.nvim_set_hl 0 (unpack k))))
-;   :group (create_augroup :hi-match {:clear true})})
+(create_autocmd
+  :InsertEnter
+  {:callback (λ []
+               (each [_ k (ipairs (require :core.au.hi))]
+                 (vim.api.nvim_set_hl 0 (unpack k))))
+   :group (create_augroup :hi-match {:clear true})})
 
 (create_autocmd
   :InsertEnter
