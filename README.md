@@ -56,7 +56,7 @@ Powered by [hotpot.nvim](https://github.com/rktjmp/hotpot.nvim).
 - [nyoom.nvim](https://www.libhunt.com/topic/neovim-dotfiles)
     - full fennel
 
-- [cat face icon](https://notabug.org/dm9pZCAq/dotfiles/src/master/.config/nvim)
+- [dm9pZCAq](https://notabug.org/dm9pZCAq/dotfiles/src/master/.config/nvim)
     - all writen in fennel and all file will be compiled.
 
 - [datwaft](https://github.com/datwaft/nvim.conf/blob/main/fnl/conf/settings.fnl)
@@ -67,7 +67,7 @@ Powered by [hotpot.nvim](https://github.com/rktjmp/hotpot.nvim).
 
 #### using hotpot
 
- - [girl icon](https://github.com/6cdh/dotfiles/tree/main/editor/nvim)
+ - [6cdh](https://github.com/6cdh/dotfiles/tree/main/editor/nvim)
      - producer of fulib.nvim
 
 ### plugin for s-expressions
