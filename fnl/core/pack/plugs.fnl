@@ -6,8 +6,8 @@
 
  ;;; UI
 
- 
-{1 :Shougo/ddu.vim 
+
+{1 :Shougo/ddu.vim
  :disable true
  :requires [:vim-denops/denops.vim
             ; filter
@@ -45,31 +45,31 @@
              {:pattern :ddu-ff
               :group (vim.api.nvim_create_augroup :ddu-ff {:clear true})
               :callback (λ []
-                             (vim.api.nvim_buf_set_keymap 0 
-                                                          :n 
-                                                          :<cr> 
+                             (vim.api.nvim_buf_set_keymap 0
+                                                          :n
+                                                          :<cr>
                                                           "<Cmd>call ddu#ui#ff#do_action('itemAction')<CR>" {:noremap true :silent true :desc "item action"})
-                             (vim.api.nvim_buf_set_keymap 0 
-                                                          :n 
-                                                          :<space> 
+                             (vim.api.nvim_buf_set_keymap 0
+                                                          :n
+                                                          :<space>
                                                           "<Cmd>call ddu#ui#ff#do_action('toggleSelectItem')<CR>" {:noremap true :silent true :desc "toggle select item"})
-                             (vim.api.nvim_buf_set_keymap 0 
-                                                          :n 
-                                                          :i 
+                             (vim.api.nvim_buf_set_keymap 0
+                                                          :n
+                                                          :i
                                                           "<Cmd>call ddu#ui#ff#do_action('openFilterWindow')<CR>" {:noremap true :silent true :desc "open filter window" })
-                             (vim.api.nvim_buf_set_keymap 0 
-                                                          :n 
-                                                          :q 
+                             (vim.api.nvim_buf_set_keymap 0
+                                                          :n
+                                                          :q
                                                           "<Cmd>call ddu#ui#ff#do_action('quit')<CR>" {:noremap true :silent true :desc "quit" }))})
            (vim.api.nvim_create_autocmd
              :FileType
              {:pattern :ddu-ff-filter
               :group (vim.api.nvim_create_augroup :ddu-ff-filter {:clear true})
               :callback (λ []
-                          (vim.api.nvim_buf_set_keymap 0 
-                                                       :i 
-                                                       :<cr> 
-                                                       "ddu#ui#filer#is_directory() ? <cmd>call ddu#ui#filer#do_action('itemAction', {'name': 'narrow'})<cr> : <cmd>call ddu#ui#filer#do_action('itemAction', {'name': 'open'})<cr>" 
+                          (vim.api.nvim_buf_set_keymap 0
+                                                       :i
+                                                       :<cr>
+                                                       "ddu#ui#filer#is_directory() ? <cmd>call ddu#ui#filer#do_action('itemAction', {'name': 'narrow'})<cr> : <cmd>call ddu#ui#filer#do_action('itemAction', {'name': 'open'})<cr>"
                                                        {:noremap true :silent true :desc :action: :expr true})
                           (vim.api.nvim_buf_set_keymap 0 :n :<cr> :<cmd>close<cr> {:noremap true :silent true :desc :close})
                           (vim.api.nvim_buf_set_keymap 0 :n :q :<cmd>close<cr> {:noremap true :silent true :desc :close}))})
@@ -393,7 +393,7 @@
             (prefix.map "e" "<cmd>EnableAutocorrect<cr>" "enable auto correct")))}
 
 ;; org
-{1 :jceb/vim-orgmode 
+{1 :jceb/vim-orgmode
  :disable true
  :setup (λ []
           (tset vim.g :org_agenda_files ["~/org/*.org"]))}

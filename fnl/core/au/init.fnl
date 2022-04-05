@@ -15,15 +15,26 @@
    :group (create_augroup :restore-position {:clear true})})
 
 ; highlight
+;(create_autocmd
+;  :InsertEnter
+;  {:callback (λ []
+;               (each [_ k (ipairs (require :core.au.hi))]
+;                 (vim.api.nvim_set_hl 0 (unpack k))))
+;   :group (create_augroup :hi-match {:clear true})})
+
 (create_autocmd
-  :ColorScheme
+  :InsertEnter
   {:callback (λ []
-               (vim.api.nvim_set_hl 0 :NonText {:fg :#0d0000
-                                                :bg nil
-                                                :underline true})
-               (each [_ k (ipairs (require :core.au.hi))]
+               (each [_ k (ipairs [[:Tabs {:bg :#eeeeec}]
+                                   [:TrailingSpaces {:bg :#FF0000}]
+                                   [:DoubleSpace {:bg :#FF0682}]
+                                   [:TodoEx {:bg :#44a005 :fg :#FFFFF0}]])]
                  (vim.api.nvim_set_hl 0 (unpack k))))
    :group (create_augroup :hi {:clear true})})
+(create_autocmd
+  [:ColorScheme :BufRead :BufNew]
+  {:callback (. (require :core.au.match) :add-matchs)
+   :group (create_augroup :add-matchs {:clear true})})
 
 ; terminal mode
 (create_autocmd
@@ -110,9 +121,3 @@
   {:command :PackerCompile
    :pattern :plugs.fnl
    :group (create_augroup :packer-compile {:clear true})})
-
-;; disable coc at first
-; (create_autocmd
-;   :BufReadPost
-;   {:command :CocDisable
-;    :group (create_augroup :coc-disable {:clear true})})

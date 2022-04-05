@@ -10,6 +10,8 @@
 (each [_ val (ipairs (require :core.opt.cmd))]
   (vim.cmd val))
 
+(tset (. _G.__kaza :f) :dump (. (require :util.src.list) :dump))
+
 (hi-clear :SpellBad)
 
 ;; undo

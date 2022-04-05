@@ -1,6 +1,7 @@
 [[:NonText
   {:fg :#0d0000
-   :bg nil }]
+   :bg nil 
+   :underline true}]
  [:SpecialKey
   {:fg :#0d0000
    :bf nil
@@ -10,5 +11,4 @@
    :bf nil
    :underline true}]
  [:Visual
-  {:reverse true}]
- ]
+  {:reverse true}]]
