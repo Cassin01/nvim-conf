@@ -34,6 +34,7 @@
   (prefix.map ";" ":<c-u>sp<cr><c-w>J:<c-u>res 10<cr>:<C-u>terminal<cr>:<c-u>setlocal noequalalways<cr>i" "vscode like terminal"))
 
 (let [prefix (prefix-o :n :<space>m :me)]
+  (prefix.map :nh :<cmd>noh<cr> "turn off search highlighting until the next search")
   (prefix.map :sd "<cmd>sp<cr><cmd>edit %:h<tab><cr>" "show current directory")
   (prefix.map :sf "<cmd>source %<cr>" "source a current file")
   (prefix.map :pc "<cmd>Unite colorscheme -auto-preview<cr>" "preview colorschemes")

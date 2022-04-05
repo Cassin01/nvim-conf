@@ -1,4 +1,4 @@
-(if (= _G._kaza nil)
+(if (= _G.__kaza nil)
   (let [kaza (require :kaza)]
     (kaza.setup)))
 
