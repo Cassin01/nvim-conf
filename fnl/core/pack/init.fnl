@@ -6,7 +6,4 @@
    (use :rktjmp/hotpot.nvim)
    ;(use (require :core.pack.plugs))
    (each [_ k (ipairs (require :core.pack.plugs))]
-     (use k)
-     )
-
-   ))
+     (use k))))

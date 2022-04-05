@@ -439,7 +439,7 @@ function! s:reg_Load_Index(self) dict
 endfunction
 function! s:reg_Event() dict
     command! REGWITCH :call regwitch.Witch(regwitch)
-    nnoremap <silent> <space>wreg :REGWITCH<CR>
+    "nnoremap <silent> <space>wreg :REGWITCH<CR>
 endfunction
 
 let RegWitch = {
