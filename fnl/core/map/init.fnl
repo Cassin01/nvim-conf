@@ -59,7 +59,7 @@
                               (vim.api.nvim_open_win buf true {:relative :editor :style :minimal :row 3 :col 3 :height 40 :width 150})))
                 "show message")
   (when (vim.fn.has :mac)
-    (prefix.map :n :? "<cmd>!open dict://<cword><cr>" "mac dictionary")
+    (prefix.map :? "<cmd>!open dict://<cword><cr>" "mac dictionary")
     (each [_ k (ipairs (require :core.map.mac))]
       (map (unpack k)))))
 
