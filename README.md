@@ -49,6 +49,7 @@ Powered by [hotpot.nvim](https://github.com/rktjmp/hotpot.nvim).
 #### using aniseed
 - [alexaandru](https://github.com/alexaandru/nvim-config/tree/master/fnl)
     - white and brack icon
+    - barely using macros
 
 - [camspiers/dotfiles](https://github.com/camspiers/dotfiles/blob/master/files/.config/nvim/fnl/options.fnl)
     - neat
