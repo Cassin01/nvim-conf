@@ -89,7 +89,7 @@ let s:lynxLss = '-lss=' . '/usr/local/etc' . 'lynx.lss'
 let s:lynxCmd = s:lynxExe . ' ' . s:lynxCfg . ' ' . s:lynxLss
 
 let g:WbLynxDumpPath = expand('$HOME/.config/nvim/data/dump/')
-let s:lynxToolsPath = expand('$HOME/cassin/.config/nvim/data/tools/')
+let s:lynxToolsPath = expand('$HOME/.config/nvim/data/tools/')
 
 let g:WbAddress = ''
 
