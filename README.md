@@ -27,11 +27,11 @@ Powered by [hotpot.nvim](https://github.com/rktjmp/hotpot.nvim).
 
 #### syntax
 
-- [fennel.vim](https://github.com/bakpakin/fennel.vim')
+- [fennel.vim](https://github.com/bakpakin/fennel.vim)
 
 #### native fennel support
 
-- [fennel-nvim](https://github.com/jaawerth/fennel-nvim')
+- [fennel-nvim](https://github.com/jaawerth/fennel-nvim)
 
 #### transpile and path setting
 
