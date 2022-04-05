@@ -51,7 +51,7 @@ Powered by [hotpot.nvim](https://github.com/rktjmp/hotpot.nvim).
     - white and brack icon
 
 - [camspiers/dotfiles](https://github.com/camspiers/dotfiles/blob/master/files/.config/nvim/fnl/options.fnl)
-    - using aniseed, neat
+    - neat
 
 - [nyoom.nvim](https://www.libhunt.com/topic/neovim-dotfiles)
     - full fennel
