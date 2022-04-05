@@ -39,7 +39,7 @@ Powered by [hotpot.nvim](https://github.com/rktjmp/hotpot.nvim).
 
 - [aniseed](https://github.com/Olical/aniseed)
 
-#### macro libralis
+#### libralies
 
 - [zest](https://github.com/tsbohc/zest.nvim)
 - [fulib.nvim](https://github.com/6cdh/fulib.nvim)
