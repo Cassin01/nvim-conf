@@ -17,7 +17,7 @@ Powered by [hotpot.nvim](https://github.com/rktjmp/hotpot.nvim).
 
 ---
 
-## usefull infomation for one who start writing nvim setup by fennel (may be).
+## The following may be usefull infomation for one who start writing nvim setup by fennel.
 
 ### Reference
 
