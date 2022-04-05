@@ -39,7 +39,9 @@
 ; terminal mode
 (create_autocmd
   :TermOpen
-  {:callback (λ [] (win_set_option 0 :relativenumber false))
+  {:callback (λ []
+               (win_set_option 0 :relativenumber false)
+               (win_set_option 0 :number false))
    :group (create_augroup :term-conf {:clear true})})
 
 ; vim grep

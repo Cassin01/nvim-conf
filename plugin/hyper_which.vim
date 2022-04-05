@@ -739,7 +739,7 @@ let s:bookmark = {
             \ "fnl":      "~/.config/nvim/fnl",
             \ "kaza":     "~/.config/nvim/fnl/kaza",
             \ "core":     "~/.config/nvim/fnl/core",
-            \ "plug":     "~/.config/nvim/vim/plugin_install.vim",
+            \ "plug":     "~/.config/nvim/plugin",
             \ "vim":      "~/.config/nvim/vim",
             \ "macros":   "~/.config/nvim/lua/macros",
             \ "packer":   "~/.config/nvim/fnl/core/pack/plugs.fnl",
