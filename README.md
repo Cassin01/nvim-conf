@@ -53,7 +53,7 @@ Powered by [hotpot.nvim](https://github.com/rktjmp/hotpot.nvim).
 - [camspiers/dotfiles](https://github.com/camspiers/dotfiles/blob/master/files/.config/nvim/fnl/options.fnl)
     - neat
 
-- [nyoom.nvim](https://www.libhunt.com/topic/neovim-dotfiles)
+- [nyoom.nvim](https://github.com/shaunsingh/nyoom.nvim)
     - full fennel
 
 - [dm9pZCAq](https://notabug.org/dm9pZCAq/dotfiles/src/master/.config/nvim)
