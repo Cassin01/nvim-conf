@@ -21,12 +21,16 @@ for _, info in pairs(preinstall_list) do
 end
 
 if init_install then
-  require 'hotpot'
-  require 'core.pack'
-  require('packer').install()
-else
   require('impatient')
-  require('hotpot')
+  require 'hotpot'
   require('init')
+  require('packer').install()
+  print("Rerun neovim")
 end
 
+require('impatient')
+require('hotpot')
+require('init')
+
+-- Reference:
+-- [6cdh](https://github.com/6cdh/dotfiles/blob/main/editor/nvim/init.lua)
