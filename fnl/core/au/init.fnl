@@ -22,13 +22,16 @@
                  (vim.api.nvim_set_hl 0 (unpack k))))
    :group (create_augroup :hi-match {:clear true})})
 
+
+;; INFO
+;lua print(vim.fn.printf("#%06x", vim.api.nvim_get_hl_by_name("TrailingSpaces", 1).background))
 (create_autocmd
   :InsertEnter
   {:callback (λ []
-               (each [_ k (ipairs [[:Tabs {:bg :#eeeeec}]
-                                   [:TrailingSpaces {:bg :#FF0000}]
-                                   [:DoubleSpace {:bg :#FF0682}]
-                                   [:TodoEx {:bg :#44a005 :fg :#FFFFF0}]])]
+               (each [_ k (ipairs [[:Tabs {:bg :#eeaecc}]
+                                   [:TrailingSpaces {:bg :#FFa331}]
+                                   [:DoubleSpace {:bg :#cff082}]
+                                   [:TodoEx {:bg :#44a005 :fg :#F0FFF0}]])]
                  (vim.api.nvim_set_hl 0 (unpack k))))
    :group (create_augroup :hi {:clear true})})
 (create_autocmd

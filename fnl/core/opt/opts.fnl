@@ -1,9 +1,11 @@
+(local indent 4)
 {:fenc :utf-8
  :backup false
  :swapfile false
  :autoread true
- :tabstop 4
- :shiftwidth 4
+ :tabstop indent
+ :shiftwidth indent
+ :softtabstop indent
  :expandtab true
  :number true
  :scrolloff 10
