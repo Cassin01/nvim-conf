@@ -27,7 +27,7 @@
   (assert-compile (not (= (type name) :string)) "name expects symbol, vector, or list as first arugument" name)
   (assert-compile (= (type types) :table) "types expects table as first arugment" types)
   `(fn ,name [,(unpack args)] ,(icollect [i# k# (ipairs args)]
-                                    `(assert (= (type ,k#) ,(. types i#)) (.. "argument " ,k# " must be " ,(. types i#))))
+                                    `(assert (= (type ,k#) ,(. types i#)) (.. "argument " (tostring ,k#) " must be " ,(. types i#))))
                                 ;,...
                                 (let [ret# (do ,...)]
                                   (assert (= (type ret#) ,(. types (length types))) (.. "return value must be " ,(. types (length types)) " but " (type ret#)))

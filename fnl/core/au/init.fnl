@@ -15,8 +15,8 @@
 
 ;;; highlight
 
-(au :hi :ColorScheme (each [_ k (ipairs (require :kaza.hi))]
-                             (vim.api.nvim_set_hl 0 (unpack k))))
+(au :hi-default :BufWinEnter (each [_ k (ipairs (require :core.au.hi))]
+                       (vim.api.nvim_set_hl 0 (unpack k))))
 
 (au :match-hi :ColorScheme (each [_ k (ipairs [[:Tabs {:bg :#eeaecc}]
                                                [:TrailingSpaces {:bg :#FFa331}]

@@ -3,17 +3,14 @@
 (macro nmap-buf [key cmd desc]
   `(vim.api.nvim_buf_set_keymap 0 :n ,key ,cmd {:noremap true :silent true :desc ,desc}) )
 (macro cmd [s] (string.format "<cmd>%s<cr>" s))
-; (macro p+ [name opt]
-;   (if (not (-?> opt (. :disable)))
-;     (do
-;       (tset opt 1 name)
-;       `,opt)
-;     :hoge))
 (macro p+ [name opt]
-  (tset opt 1 name)
-  `,opt)
+  (if (not (-?> opt (. :disable)))
+    (do
+      (tset opt 1 name)
+      `,opt)
+    :hoge))
 
-;; speed up 5.6ms (when 9 plugs disabled)
+;; speed upped 5.6ms (with 9 disabled plugins)
 (macro cleaner [tbl]
   (icollect [_# k# (ipairs tbl)]
             (when (not (-?> k# (. :disable)))

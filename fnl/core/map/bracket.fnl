@@ -7,12 +7,12 @@
 (local {: nvim_set_keymap} vim.api)
 (local right-brackets {"{" "}" "(" ")" "[" "]"})
 
-(def in-front-of-the-cursor [char] [:string :bool]
+(def in-front-of-the-cursor [char] [:string :boolean]
   "Whether word exist in front of the cursor"
   (let [line (getline :.)]
     (= (vim.fn.match line char (- (col :.) 1) 1) (- (col :.) 1))))
 
-(def complete-decider [] [:bool]
+(def complete-decider [] [:boolean]
   "Return true when ...
   - There is [right bracket | white space] in front of the cursor.
   - There is no another word in front of cursor."
