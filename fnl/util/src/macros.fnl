@@ -12,15 +12,8 @@
 ;;; * get-scope - return the scope table for the current macro call site.
 ;;; * assert-compile - works like assert but takes a list/symbol as its third argument in order to provide pinpointed error messages.
 
-(local t (require "util.src.type"))
-(local l (require "util.src.list"))
-(local ta (require "util.src.table1"))
-(local o (require "util.src.object"))
-(local s (require "util.src.string"))
-
 (local M {})
 
-;;; {{{
 (fn M.def [name args types ...]
   "(def add [a b] [:number :number :number]
      (+ a b))"
@@ -32,9 +25,19 @@
                                 (let [ret# (do ,...)]
                                   (assert (= (type ret#) ,(. types (length types))) (.. "return value must be " ,(. types (length types)) " but " (type ret#)))
                                   ret#)))
-;;; }}}
 
+(fn M.ep [k v source body]
+  "each pairs"
+  `(each [,k ,v (pairs ,source)]
+    ,body))
 
+(fn M.epi [i v source body]
+  "each ipairs"
+  `(each [,i ,v (ipairs ,source)]
+    ,body))
+
+(fn M.req-f [f m]
+       `(. (require ,m) ,f))
 
 ;;; ref: https://notabug.org/dm9pZCAq/dotfiles/src/master/.config/nvim/fnl/macros.fnl
 
@@ -58,17 +61,17 @@
   "(local type* (require (if (empty? ...)
   :type
   :util.src.type)))"
-  (fn empty? [s]
+  (fn empty?# [s]
     (or (= s nil) (= s "")))
-  `(require (if (empty? ...)
+  `(require (if (empty?# ...)
               ,relative
               ,absolute)))
 
 (fn M.test* [body]
   "Test will be executed when called at root."
-  (fn empty? [s]
+  (fn empty?# [s]
     (or (= s nil) (= s "")))
-  `(if (empty? ...)
+  `(if (empty?# ...)
      ,body))
 
 M

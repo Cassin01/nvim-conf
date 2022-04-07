@@ -21,7 +21,7 @@
                                      {:callback callback
                                       :noremap true :silent true :desc (.. sign desc)}))})
 
-(fn rt [str]
+(def rt [str] [:string :string]
   "replace termcode"
   (vim.api.nvim_replace_termcodes str true true true))
 

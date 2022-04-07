@@ -1,18 +1,10 @@
-(local {: execute-cmd} (require :kaza.file))
-(local {: hi-clear} (require :kaza.hi))
+(import-macros {: ep : epi : req-f} :util.src.macros)
 
-(each [k v (pairs (require :core.opt.g))]
-  (tset vim.g k v))
+(ep key val (require :core.opt.g) (tset vim.g key val))
+(ep key val (require :core.opt.opts) (tset vim.o key val))
+(epi _ val (require :core.opt.cmd) (vim.cmd val))
 
-(each [key val (pairs (require :core.opt.opts))]
-  (tset vim.o key val))
-
-(each [_ val (ipairs (require :core.opt.cmd))]
-  (vim.cmd val))
-
-(tset (. _G.__kaza :f) :dump (. (require :util.src.list) :dump))
-
-(hi-clear :SpellBad)
+(tset (. _G.__kaza :f) :dump (req-f :dump :util.src.list))
 
 ;; undo
 (if (vim.fn.has :persistent_undo)
