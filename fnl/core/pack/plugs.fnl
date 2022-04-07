@@ -1,4 +1,4 @@
-(import-macros {: req-f} :util.src.macros)
+(import-macros {: req-f} :util.macros)
 (macro nmap-buf [key cmd desc]
   `(vim.api.nvim_buf_set_keymap 0 :n ,key ,cmd {:noremap true :silent true :desc ,desc}) )
 (macro cmd [s] (string.format "<cmd>%s<cr>" s))

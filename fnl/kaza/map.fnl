@@ -1,5 +1,5 @@
-(local {: in?} (require :util.src.table1))
-(import-macros {: def} :util.src.macros)
+(local {: in?} (require :util.table1))
+(import-macros {: def} :util.macros)
 
 (def prefix [prefix plug-name] [:string :string :string]
   "add prefix with doc"

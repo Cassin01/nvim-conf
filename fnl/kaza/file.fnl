@@ -1,6 +1,6 @@
-(local util (require :util.src))
+(local util (require :util))
 (local list util.list)
-(import-macros {: def} :util.src.macros)
+(import-macros {: def} :util.macros)
 
 (local M {})
 

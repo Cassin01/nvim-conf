@@ -1,7 +1,7 @@
 ;; INFO
 ;lua print(vim.fn.printf("#%06x", vim.api.nvim_get_hl_by_name("TrailingSpaces", 1).background))
 
-(local {: find : foldl} (require :util.src.list))
+(local {: find : foldl} (require :util.list))
 
 (local todo_ignore_filetype [:dashboard :help :nerdtree :telescopePrompt ""])
 (local keywords [:IDEA :INFO :REFACTOR :DEPRECATED :TASK :UPDATE :EXAMPLE :ERROR :WARN :BROKEN])

@@ -1,4 +1,4 @@
-(import-macros {: def} :util.src.macros)
+(import-macros {: def} :util.macros)
 
 (def link [name opt] [:string :table :table]
   (let [data (vim.api.nvim_get_hl_by_name name 0)]

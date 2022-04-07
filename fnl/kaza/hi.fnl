@@ -1,4 +1,4 @@
-(local {: concat-with} (require :util.src.string))
+(local {: concat-with} (require :util.string))
 
 (fn hi-clear [group-name]
   "clear highlight"

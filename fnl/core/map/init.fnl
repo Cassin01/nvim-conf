@@ -1,5 +1,5 @@
 (local {: map : prefix-o} (require :kaza.map))
-(local {:string s} (require :util.src))
+(local {:string s} (require :util))
 
 (macro cmd [s] (string.format "<cmd>%s<cr>" s))
 

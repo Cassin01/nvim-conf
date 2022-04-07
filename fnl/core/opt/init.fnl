@@ -1,10 +1,10 @@
-(import-macros {: ep : epi : req-f} :util.src.macros)
+(import-macros {: ep : epi : req-f} :util.macros)
 
 (ep key val (require :core.opt.g) (tset vim.g key val))
 (ep key val (require :core.opt.opts) (tset vim.o key val))
 (epi _ val (require :core.opt.cmd) (vim.cmd val))
 
-(tset (. _G.__kaza :f) :dump (req-f :dump :util.src.list))
+(tset (. _G.__kaza :f) :dump (req-f :dump :util.list))
 
 ;; undo
 (if (vim.fn.has :persistent_undo)
