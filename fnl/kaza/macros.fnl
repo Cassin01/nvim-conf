@@ -7,11 +7,11 @@
   "set 'k' to 'v' on vim.g table"
   `(tset vim.g ,(tostring k) ,v))
 
-(fn M.pack+ [name opt]
-  "add disable option to packer"
-  (when (not (-?> opt (. :disable)))
-    (tset opt 1 name)
-    opt))
+(fn M.use+ [name opt]
+  "add disable option to use"
+  `(when (not (-?> ,opt (. :disable)))
+     (tset ,opt 1 name)
+     (use ,opt)))
 
 
 M

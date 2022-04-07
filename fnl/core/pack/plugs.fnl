@@ -1,7 +1,10 @@
-[
- ;;; lua
- :lewis6991/impatient.nvim
+(macro req-f [f m]
+       `(. (require ,m) ,f))
+(macro nmap-buf [key cmd desc]
+  `(vim.api.nvim_buf_set_keymap 0 :n ,key ,cmd {:noremap true :silent true :desc ,desc}) )
+(macro cmd [s] (string.format "<cmd>%s<cr>" s))
 
+[
  ;;; snippet
 
  :SirVer/ultisnips
@@ -47,10 +50,7 @@
               {:pattern :ddu-ff
                :group (vim.api.nvim_create_augroup :ddu-ff {:clear true})
                :callback (λ []
-                           (vim.api.nvim_buf_set_keymap 0
-                                                        :n
-                                                        :<cr>
-                                                        "<Cmd>call ddu#ui#ff#do_action('itemAction')<CR>" {:noremap true :silent true :desc "item action"})
+                           (nmap-buf :<cr> (cmd "ddu#ui#ff#do_action('itemAction')")  "item action")
                            (vim.api.nvim_buf_set_keymap 0
                                                         :n
                                                         :<space>
@@ -62,7 +62,8 @@
                            (vim.api.nvim_buf_set_keymap 0
                                                         :n
                                                         :q
-                                                        "<Cmd>call ddu#ui#ff#do_action('quit')<CR>" {:noremap true :silent true :desc "quit" }))})
+                                                        "<Cmd>call ddu#ui#ff#do_action('quit')<CR>" {:noremap true :silent true :desc "quit" })
+                           )})
             (vim.api.nvim_create_autocmd
               :FileType
               {:pattern :ddu-ff-filter
@@ -87,7 +88,8 @@
  {1 :preservim/nerdtree
   :requires :ryanoasis/vim-devicons
   :setup (λ []
-           (local nerdtree ((. (require :kaza.map) :prefix-o) :n :<space>n :nerdtree))
+           (local nerdtree ((req-f :prefix-o :kaza.map) :n :<space>n :nerdtree))
+           ;(local nerdtree ((. (require :kaza.map) :prefix-o) :n :<space>n :nerdtree))
            (nerdtree.map :c :<cmd>NERDTreeCWD<CR> "cwd")
            (nerdtree.map :t :<cmd>NERDTreeToggle<CR> "toggle")
            (nerdtree.map :f :<cmd>NERDTreeFind<CR> "find"))}
@@ -152,7 +154,7 @@
           (tset g :ctrlp_extensions [:tag :quickfix :dir :line :mixed])
           (tset g :ctrlp_match_window "bottom,order:btt,min:1,max:18")
           (local ctrlp ((. (require :kaza.map) :prefix-o) :n :<space>p :ctrlp))
-          (ctrlp.map :a ::<c-u>CtrlP<Space> :folder)
+          (ctrlp.map :a ::<c-u>CtrlP<Space> :default)
           (ctrlp.map :b :<cmd>CtrlPBuffer<cr> :buffer)
           (ctrlp.map :d :<cmd>CtrlPDir<cr> "directory")
           (ctrlp.map :f :<cmd>CtrlP<cr> "all files")

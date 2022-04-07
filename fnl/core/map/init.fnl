@@ -1,6 +1,17 @@
 (local {: map : prefix-o} (require :kaza.map))
 (local {:string s} (require :util.src))
 
+(macro cmd [s] (string.format "<cmd>%s<cr>" s))
+(macro nmaps [prefix desc tbl]
+  `(let [prefix# (prefix-o :n ,prefix ,desc)]
+     (each [_# l# (ipairs ,tbl)]
+       (prefix#.map (unpack l#)))))
+
+(nmaps :<space>c :packer [[:c (cmd :PackerCompile) :compile]
+                          [:i (cmd :PackerInstall) :install]
+                          [:sy (cmd :PackerSync) :sync]
+                          [:st (cmd :PackerStatus) :status]])
+
 (map :n :<space> "<cmd>NormalWitch SPC<cr>" "wich")
 (let [prefix (prefix-o :n :<space>w :wich)]
   (prefix.map :<space> "<cmd>NormalWitch SPC<cr>" :space)
@@ -23,14 +34,15 @@
   (prefix.map :H :<C-w>H "H")
   (prefix.map :n :gt "tab next")
   (prefix.map :p :gT "tab previous")
-  (prefix.map :N "<C-u>tabmove +1<CR>" "move tab up")
-  (prefix.map :P "<C-u>tabmove -1<CR>" "move tab down")
+  (prefix.map :N (cmd "tabmove +1") "move tab up")
+  (prefix.map :P (cmd "tabmove -1") "move tab down")
   (prefix.map :t ::<C-u>tabnew<CR> "tab new")
   (prefix.map :T ":<C-u>Unite tab<CR>" "show tab")
-  (prefix.map :s ::<C-u>sp<CR> "split-horizontally")
-  (prefix.map :v ::<C-u>vs<CR> "split-vertically")
-  (prefix.map :q ::<C-u>q<CR> "quit")
-  (prefix.map :d ::<C-u>bd<CR> "delete tab")
+  (prefix.map :o (cmd :only) "only (close all windows(splits) except the current one)")
+  (prefix.map :s (cmd :sp) "split-horizontally")
+  (prefix.map :v (cmd :vs) "split-vertically")
+  (prefix.map :q (cmd :q) "quit")
+  (prefix.map :d (cmd :bd) "delete tab")
   (prefix.map ";" ":<c-u>sp<cr><c-w>J:<c-u>res 10<cr>:<C-u>terminal<cr>:<c-u>setlocal noequalalways<cr>i" "vscode like terminal"))
 
 (let [prefix (prefix-o :n :<space>m :me)]

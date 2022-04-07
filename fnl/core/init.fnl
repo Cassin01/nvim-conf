@@ -1,2 +1,2 @@
-(each [_ key (ipairs [:pack :opt :gui :map :au])]
+(each [_ key (ipairs [:pack :au :opt :gui :map])]
   (require (.. :core :. key)))

@@ -5,39 +5,25 @@
 (local win_set_option vim.api.nvim_win_set_option)
 (local buf_set_keymap vim.api.nvim_buf_set_keymap)
 
+(macro au [group event body]
+  `(vim.api.nvim_create_autocmd ,event {:callback (λ [] ,body) :group (vim.api.nvim_create_augroup ,group {:clear true})}))
+
 ;; remind cursor position
-(create_autocmd
-  :BufReadPost
-  {:callback (λ []
-               (when (and (> (vim.fn.line "'\"") 1)
-                          (<= (vim.fn.line "'\"") (vim.fn.line "$")))
-                 (vim.cmd "normal! g'\"")))
-   :group (create_augroup :restore-position {:clear true})})
+(au :restore-position :BufReadPost (when (and (> (vim.fn.line "'\"") 1)
+                                              (<= (vim.fn.line "'\"") (vim.fn.line "$")))
+                                     (vim.cmd "normal! g'\"")))
 
-; highlight
-(create_autocmd
-  :InsertEnter
-  {:callback (λ []
-               (each [_ k (ipairs (require :core.au.hi))]
-                 (vim.api.nvim_set_hl 0 (unpack k))))
-   :group (create_augroup :hi-match {:clear true})})
+;;; highlight
 
+(au :hi :ColorScheme (each [_ k (ipairs (require :kaza.hi))]
+                             (vim.api.nvim_set_hl 0 (unpack k))))
 
-;; INFO
-;lua print(vim.fn.printf("#%06x", vim.api.nvim_get_hl_by_name("TrailingSpaces", 1).background))
-(create_autocmd
-  :InsertEnter
-  {:callback (λ []
-               (each [_ k (ipairs [[:Tabs {:bg :#eeaecc}]
-                                   [:TrailingSpaces {:bg :#FFa331}]
-                                   [:DoubleSpace {:bg :#cff082}]
-                                   [:TodoEx {:bg :#44a005 :fg :#F0FFF0}]])]
-                 (vim.api.nvim_set_hl 0 (unpack k))))
-   :group (create_augroup :hi {:clear true})})
-(create_autocmd
-  [:ColorScheme :BufRead :BufNew]
-  {:callback (. (require :core.au.match) :add-matchs)
-   :group (create_augroup :add-matchs {:clear true})})
+(au :match-hi :ColorScheme (each [_ k (ipairs [[:Tabs {:bg :#eeaecc}]
+                                               [:TrailingSpaces {:bg :#FFa331}]
+                                               [:DoubleSpace {:bg :#cff082}]
+                                               [:TodoEx {:bg :#44a005 :fg :#F0FFF0}]])]
+                             (vim.api.nvim_set_hl 0 (unpack k))))
+(au :match [:BufWinEnter] (. (require :core.au.match) :add-matchs))
 
 ; terminal mode
 (create_autocmd
