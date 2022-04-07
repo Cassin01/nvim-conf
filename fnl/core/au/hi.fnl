@@ -1,19 +1,20 @@
 (import-macros {: def} :util.src.macros)
+
 (def link [name opt] [:string :table :table]
   (let [data (vim.api.nvim_get_hl_by_name name 0)]
     (each [k v (pairs opt)]
-      (tset data k v)
-      (print k)
-      ) data))
+      (tset data k v))
+    data))
+
 (def gen-hl [name tbl] [:string :table :table]
   [name (link name tbl)])
 
-(macro add-hl [body]
-  `(table.insert hl-info ,body))
+(macro add-hl [name tbl]
+  `(table.insert hl-info (gen-hl ,name ,tbl)))
 
 (let [hl-info [[:SpellBad {:fg nil :bg nil :underline true}]]]
-  (add-hl (gen-hl :NonText {:bg nil :underline true}))
-  (add-hl (gen-hl :SpecialKey {:bg nil :italic true}))
+  (add-hl :NonText {:bg nil :underline true})
+  (add-hl :SpecialKey {:bg nil :italic true})
   hl-info)
 
 ;;; INFO
