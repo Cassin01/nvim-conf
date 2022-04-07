@@ -1,12 +1,12 @@
 (local {: in?} (require :util.src.table1))
-(import-macros {: fn*} :util.src.macros)
+(import-macros {: def} :util.src.macros)
 
-(fn prefix [prefix plug-name]
+(def prefix [prefix plug-name] [:string :string :string]
   "add prefix with doc"
   (tset _G.__kaza.prefix prefix plug-name)
   prefix)
 
-(fn prefix-o [mode prefix name]
+(def prefix-o [mode prefix name] [:string :string :string :table]
   ;(tset _G.__kaza.prefix prefix name)
   (local sign (.. "[" name "] "))
   {:map (λ [key cmd desc]
@@ -25,11 +25,7 @@
   "replace termcode"
   (vim.api.nvim_replace_termcodes str true true true))
 
-(fn map [mode key cmd desc]
-  (do (assert (= (type mode) :string) "must be string")
-    (assert (= (type key) :string) "must be string")
-    (assert (= (type cmd) :string) "must be string")
-    (assert (= (type desc) :string) "must be string"))
+(def map [mode key cmd desc] [:string :string :string :string :nil]
   (vim.api.nvim_set_keymap mode key cmd {:noremap true :silent true :desc desc}))
 
 {: map : prefix-o : prefix : rt}

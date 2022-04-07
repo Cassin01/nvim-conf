@@ -20,28 +20,20 @@
 
 (local M {})
 
-;;; fn* {{{
-(fn _keys-into-list [tbl]
-  (var lst [])
-  (each [key value (pairs tbl)]
-    (set lst (l.append lst (sym key)))) lst)
-
-(fn _insert-asserts2 [tbl]
-  `(do ,(let  [keys (ta.keys-into-list tbl)
-               vals (ta.vals-into-list tbl)]
-          (unpack (l.map2 (lambda [k v] `(assert (= (type ,(sym k)) ,v) ,(.. "argument" k " must be " v))) keys vals )))))
-
-(fn M.fn* [name types ...]
-  "declare function with type annotation
-  usage:
-  ```
-  (fn* {a :string}
-    (print a))
-  ``` "
-  (assert-compile (not (t.string? name)) "fn* expects symbol, vector, or list as first arugument" name)
-  (assert-compile (t.table? types) "fn* expects table as first arugment" types)
-  `(fn ,name [,(unpack (_keys-into-list types))] (do  ,(_insert-asserts2 types) ,...)))
+;;; {{{
+(fn M.def [name args types ...]
+  "(def add [a b] [:number :number :number]
+     (+ a b))"
+  (assert-compile (not (= (type name) :string)) "name expects symbol, vector, or list as first arugument" name)
+  (assert-compile (= (type types) :table) "types expects table as first arugment" types)
+  `(fn ,name [,(unpack args)] ,(icollect [i# k# (ipairs args)]
+                                    `(assert (= (type ,k#) ,(. types i#)) (.. "argument " ,k# " must be " ,(. types i#))))
+                                ;,...
+                                (let [ret# (do ,...)]
+                                  (assert (= (type ret#) ,(. types (length types))) (.. "return value must be " ,(. types (length types)) " but " (type ret#)))
+                                  ret#)))
 ;;; }}}
+
 
 
 ;;; ref: https://notabug.org/dm9pZCAq/dotfiles/src/master/.config/nvim/fnl/macros.fnl

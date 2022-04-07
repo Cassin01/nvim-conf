@@ -1,6 +1,6 @@
 (local util (require :util.src))
 (local list util.list)
-(import-macros {: fn*} :util.src.macros)
+(import-macros {: def} :util.src.macros)
 
 (local M {})
 
@@ -63,18 +63,18 @@
   (list.unfold-iter (p.lines p) p (lambda [x] (io.close x))))
 
 ;; ref: https://codereview.stackexchange.com/questions/90177/get-file-name-with-extension-and-get-only-extension
-(fn* M.get-file-name {:url :string}
-  (url.match url "^.+/(.+)$"))
+(def M.get-file-name [url] [:string :string]
+  (string.match url "^.+/(.+)$"))
 
-(fn* M.get-file-extension {:url :string}
+(def M.get-file-extension [url] [:string :string]
   "For example return `.txt`"
-  (url.match url "^.+(%..+)$"))
+  (string.match url "^.+(%..+)$"))
 
 
-(fn* M.warn {:msg :string}
-  ((vim.api_echo msg {:hi_group :WarningMsg :history true})))
+(def M.warn [msg] [:string :bool]
+  ((vim.api.nvim_echo msg {:hi_group :WarningMsg :history true})))
 
-(fn* M.exec {:cmd :string}
+(def M.exec [cmd] [:string :string]
   (vim.api.nvim_exec cmd true))
 
 ;;; test

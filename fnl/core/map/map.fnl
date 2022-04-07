@@ -5,11 +5,11 @@
 
 [
  [:t :<esc> :<C-\><C-n> "end insert mode"]
- [:v :<space>ds "<cmd>s/ //g<cr>" "delete spaces"]
+ [:x :<space>ds ::s/\%V\s//g<cr><cmd>noh<cr> "delete spaces"]
  [:n :# :*:%s/<C-r>///g<Left><Left> "replace current word"]
 
  ;; quotation completion
- [:i "\"" "\"\"<left>" "quotation completion"]
- [:i "'" "''<left>" "quotation completion"]
- [:i "''" "'" "quotation completion"]
+ ;[:i "\"" "\"\"<left>" "quotation completion"]
+ ;[:i "'" "''<left>" "quotation completion"]
+ ;[:i "''" "'" "quotation completion"]
 ]

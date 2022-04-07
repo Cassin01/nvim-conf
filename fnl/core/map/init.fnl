@@ -2,6 +2,7 @@
 (local {:string s} (require :util.src))
 
 (macro cmd [s] (string.format "<cmd>%s<cr>" s))
+
 (macro nmaps [prefix desc tbl]
   `(let [prefix# (prefix-o :n ,prefix ,desc)]
      (each [_# l# (ipairs ,tbl)]
@@ -12,16 +13,16 @@
                           [:sy (cmd :PackerSync) :sync]
                           [:st (cmd :PackerStatus) :status]])
 
-(map :n :<space> "<cmd>NormalWitch SPC<cr>" "wich")
+;(map :n :<space> "<cmd>NormalWitch SPC<cr>" "wich")
 (let [prefix (prefix-o :n :<space>w :wich)]
   (prefix.map :<space> "<cmd>NormalWitch SPC<cr>" :space)
   (prefix.map :\ "<cmd>NormalWitch \\<cr>" :\)
-  (prefix.map :book "<Plug>(hwhich-bookmark)" "book mark")
-  (prefix.map :nor "<Plug>(hwhich-normal)" "normal wich")
-  (prefix.map :ult "<Plug>(hwich-ultisnips)" "ultisnips")
-  (prefix.map :tex "<Plug>(hwich-tex)" "tex")
-  (prefix.map :reg "<cmd>REGWITCH<cr>" "register")
-  (prefix.map :evil "<cmd>KeyWindow<cr>" "evil"))
+  (prefix.map :b "<Plug>(hwhich-bookmark)" "book mark")
+  (prefix.map :n "<Plug>(hwhich-normal)" "normal wich")
+  (prefix.map :u "<Plug>(hwich-ultisnips)" "ultisnips")
+  (prefix.map :t "<Plug>(hwich-tex)" "tex")
+  (prefix.map :r "<cmd>REGWITCH<cr>" "register")
+  (prefix.map :e "<cmd>KeyWindow<cr>" "evil"))
 
 (let [prefix (prefix-o :n :<space>s :win)]
   (prefix.map :j :<C-w>j "j")
@@ -54,10 +55,10 @@
   (prefix.map :a ":vim TODO ~/org/*.org<cr>" "agenda")
   (prefix.map :ts ":%s/\t/ /g<cr>" "replace tab with space")
   (prefix.map :cd ":<c-u>lcd %:p:h<cr>" "move current directory to here")
-  (prefix.map "]f" ":<c-u>set clipboard+=unnamed" "enable clipboard")
-  (prefix.map "[f" ":<c-u>set clipboard-=unnamed" "disable clipboard")
-  (prefix.map "]x" "<cmd>setlocal conceallevel=1" "hide conceal")
-  (prefix.map "[x" "<cmd>setlocal conceallevel=0" "show conceal")
+  (prefix.map "]f" ":<c-u>set clipboard+=unnamed<cr>" "enable clipboard")
+  (prefix.map "[f" ":<c-u>set clipboard-=unnamed<cr>" "disable clipboard")
+  (prefix.map "]x" ":<c-u>setlocal conceallevel=1<cr>" "hide conceal")
+  (prefix.map "[x" ":<c-u>setlocal conceallevel=0<cr>" "show conceal")
   (prefix.map-f :fn (λ [] (print (vim.fn.expand :%:t))) "show file name")
   (prefix.map-f :fp (λ [] (print (vim.fn.expand :%:p))) "show file path")
   (prefix.map-f :ft (λ [] (if (= vim.o.foldmethod :indent)
