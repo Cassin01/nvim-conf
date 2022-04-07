@@ -1,3 +1,4 @@
+(import-macros {: def} :util.src.macros)
 (local {: getline : col : line : indent : feedkeys} vim.fn)
 (local {: foldl : map : range} (require :util.src.list))
 (local {:keys-into-list keys :vals-into-list vals} (require :util.src.table1))
@@ -6,30 +7,30 @@
 (local {: nvim_set_keymap} vim.api)
 (local right-brackets {"{" "}" "(" ")" "[" "]"})
 
-(fn in-front-of-the-cursor [char]
+(def in-front-of-the-cursor [char] [:string :bool]
   "Whether word exist in front of the cursor"
   (let [line (getline :.)]
     (= (vim.fn.match line char (- (col :.) 1) 1) (- (col :.) 1))))
 
-(fn complete-decider []
+(def complete-decider [] [:bool]
   "Return true when ...
   - There is [right bracket | white space] in front of the cursor.
   - There is no another word in front of cursor."
   (foldl (λ [seed char] (or seed (in-front-of-the-cursor char)))
          (not (in-front-of-the-cursor :.)) [" " (unpack (vals right-brackets))]))
 
-(fn bracket-completion-default [left-bracket]
+(def bracket-completion-default [left-bracket] [:string :function]
   (λ []
     (if (complete-decider)
       (.. left-bracket (. right-brackets left-bracket) (rt :<left>))
       left-bracket)))
 
-(fn bracket-completion-cr [key]
+(def bracket-completion-cr [key] [:string :function]
   (λ []
     (let [tabs (table.concat (map (λ [_] " ") (range (+ (indent (line :.)) vim.o.tabstop))))]
       (.. key (. right-brackets key) (rt :<left><cr><cr><up>) tabs))))
 
-(fn setup []
+(def setup [] [:nil]
   (each [_ key (ipairs (keys right-brackets))]
     (tset (. _G.__kaza :f) (.. :bracket_completion_default_ (string.byte key)) (bracket-completion-default key) )
     (tset (. _G.__kaza :f) (.. :bracket_completion_cr_ (string.byte key)) (bracket-completion-cr key))
