@@ -1,21 +1,41 @@
 (import-macros {: req-f} :util.macros)
-(macro nmap-buf [key cmd desc]
-  `(vim.api.nvim_buf_set_keymap 0 :n ,key ,cmd {:noremap true :silent true :desc ,desc}) )
-(macro cmd [s] (string.format "<cmd>%s<cr>" s))
-(macro p+ [name opt]
-  (if (not (-?> opt (. :disable)))
-    (do
-      (tset opt 1 name)
-      `,opt)
-    :hoge))
 
-;; speed upped 5.6ms (with 9 disabled plugins)
+(macro au [group event body]
+  `(vim.api.nvim_create_autocmd ,event {:callback (λ [] ,body) :group (vim.api.nvim_create_augroup ,group {:clear true})}))
+
+
+( macro nmap-buf [key cmd desc]
+  `(vim.api.nvim_buf_set_keymap 0 :n ,key ,cmd {:noremap true :silent true :desc ,desc}))
+
+(macro nmap [key cmd desc]
+  `(vim.api.nvim_set_keymap :n ,key ,cmd {:noremap true :silent true :desc ,desc}))
+
+(macro nmaps [prefix desc tbl]
+  `(let [prefix# ((. (require :kaza.map) :prefix-o) :n ,prefix ,desc)]
+     (each [_# l# (ipairs ,tbl)]
+       (prefix#.map-f (unpack l#)))))
+
+(macro user-cmd [name cmd]
+  `(vim.api.nvim_add_user_command ,name ,cmd {}))
+
+
+(macro cmd [s] (string.format "<cmd>%s<cr>" s))
+
+(macro p+ [name opt]
+  (when (not (-?> opt (. :disable)))
+     `(let [opt# ,opt]
+       (tset opt# 1 ,name)
+       (table.insert plugs opt#))))
+
 (macro cleaner [tbl]
+  "speed upped 5.6ms (with 9 disabled plugins)"
   (icollect [_# k# (ipairs tbl)]
             (when (not (-?> k# (. :disable)))
               k#)))
 
-(cleaner [
+
+
+(let [plugs (cleaner [
  ;;; snippet
  :lewis6991/impatient.nvim
 
@@ -189,14 +209,6 @@
                ((. (require :gitsigns) :setup)
                 {:current_line_blame true}))}
 
-{1 :majutsushi/tagbar
- :setup (λ []
-          (tset vim.g :tagbar_type_fennel {:ctagstype :fennel
-                                           :sort 0
-                                           :kinds ["f:functions" "v:variables" "m:macros"]})
-          ((. ((. (require :kaza.map) :prefix-o) :n :<space>a :tagbar) :map)
-           :t :<cmd>TagbarToggle<cr> :toggle))}
-
 {1 :kana/vim-submode
  :config (λ []
            ((. vim.fn :submode#enter_with) :bufmove :n "" :<space>s> :<C-w>>)
@@ -329,6 +341,15 @@
           (tset vim.g :sexp_enable_insert_mode_mappings false))}
 
 ;; util
+
+{1 :majutsushi/tagbar
+ :setup (λ []
+          (tset vim.g :tagbar_type_fennel {:ctagstype :fennel
+                                           :sort 0
+                                           :kinds ["f:functions" "v:variables" "m:macros"]})
+          ((. ((. (require :kaza.map) :prefix-o) :n :<space>a :tagbar) :map)
+           :t :<cmd>TagbarToggle<cr> :toggle))}
+
 
 {1 :tyru/open-browser.vim
  :config (λ []
@@ -515,4 +536,25 @@
 ;:ulwlu/elly.vim                     ; elly
 ;:michaeldyrynda/carbon.vim
 ;:rafamadriz/neon
-])
+])]
+(p+ :stevearc/aerial.nvim
+    {:config (λ []
+               ((req-f :setup :aerial) {:on_attach (λ [bufnr]
+                                                   (let [prefix ((. (require :kaza.map) :prefix-o ) :n :<space>a :aerial)]
+                                                     (prefix.map-buf bufnr :n "t" (cmd :AerialToggle!) :JumpForward)
+                                                     (prefix.map-buf bufnr :n "{" (cmd :AerialPrev) :JumpForward)
+                                                     (prefix.map-buf bufnr :n "}" (cmd :AerialNext) :JumpBackward)
+                                                     (prefix.map-buf bufnr :n "[[" (cmd :AerialPrevUp) :JumpUpTheTree)
+                                                     (prefix.map-buf bufnr :n "]]" (cmd :AerialNextUp) :JumpUpTheTree)))}))})
+(p+ :notomo/cmdbuf.nvim
+    {:config (λ []
+              (vim.api.nvim_add_user_command :CmdbufNew
+                                             ;;; FIXME I don't know how to declare User autocmd.
+                                             (λ []
+                                               (vim.api.nvim_buf_set_keymap 0 :n :q (cmd :quit) {:noremap true :silent true :nowait true})
+                                               (nmap-buf :dd (cmd "lua require(\"cmdbuf\").delete()") :delete)) {})
+              (nmaps :q :cmdbuf [[:: (λ [] ((req-f :split_open :cmdbuf) vim.o.cmdwinheight)) "cmdbuf"]
+                                 [:l (λ [] ((. (require :cmdbuf) :split_open) vim.o.cmdwinheight {:type :lua/cmd})) "lua"]
+                                 [:/ (λ [] ((req-f :split_open :cmdbuf) vim.o.cmdwinheight {:type :vim/search/forward})) :search-forward]
+                                 ["?" (λ [] ((. (require :cmdbuf) :split_open) vim.o.cmdwinheight {:type :vim/search/backward})) :search-backward]]))})
+plugs)

@@ -14,6 +14,12 @@
                                    (.. prefix key)
                                    cmd
                                    {:noremap true :silent true :desc (.. sign desc)}))
+   :map-buf (λ [bufnr key cmd desc]
+              (vim.api.nvim_buf_set_keymap bufnr
+                                           mode
+                                           (.. prefix key)
+                                           cmd
+                                           {:noremap true :silent true :desc (.. sign desc)}))
    :map-f (λ [key callback desc]
             (vim.api.nvim_set_keymap mode
                                      (.. prefix key)

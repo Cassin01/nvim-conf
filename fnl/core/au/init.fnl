@@ -18,6 +18,7 @@
 (au :hi-default :BufWinEnter (each [_ k (ipairs (require :core.au.hi))]
                        (vim.api.nvim_set_hl 0 (unpack k))))
 
+;; anotations
 (au :match-hi :ColorScheme (each [_ k (ipairs [[:Tabs {:bg :#eeaecc}]
                                                [:TrailingSpaces {:bg :#FFa331}]
                                                [:DoubleSpace {:bg :#cff082}]
@@ -26,13 +27,9 @@
 (au :match [:BufWinEnter] (. (require :core.au.match) :add-matchs))
 
 ; terminal mode
-(create_autocmd
-  :TermOpen
-  {:callback (λ []
-               (win_set_option 0 :relativenumber false)
-               (win_set_option 0 :number false))
-   :group (create_augroup :term-conf {:clear true})})
-
+(au :term-conf :TermOpen (do
+                           (win_set_option 0 :relativenumber false)
+                           (win_set_option 0 :number false)))
 ; vim grep
 (create_autocmd
   :QuickFixCmdPost

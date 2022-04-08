@@ -38,6 +38,8 @@
 
 (fn M.req-f [f m]
        `(. (require ,m) ,f))
+(fn M.ref-f [f m ...]
+  `((. (require ,m) ,f) ,...))
 
 ;;; ref: https://notabug.org/dm9pZCAq/dotfiles/src/master/.config/nvim/fnl/macros.fnl
 
