@@ -17,8 +17,9 @@
 (fn M.def [name args types ...]
   "(def add [a b] [:number :number :number]
      (+ a b))
-   (def opt [a?] [:?number :number] ...)
-   (def len [obj] [[:list :string] :number] ...)"
+   (def 2str [obj] [:any :string] ...)
+   (def opt [?a] [:?number :number] ...)
+   (def len [obj] [[:table :string] :number] ...)"
   (assert-compile (not (= (type name) :string)) "name expects symbol, vector, or list as first arugument" name)
   (assert-compile (= (type types) :table) "types expects table as first arugment" types)
   `(fn ,name [,(unpack args)] ,(icollect [i# k# (ipairs args)]
@@ -35,7 +36,7 @@
                                                                    (type?# ?actual# expect#)
                                                                    (or (type?# ?actual# (string.match expect# "%w+"))
                                                                        (type?# ?actual# :nil)))
-                                                       :list (or (= (type ?actual#) (first# expect#)) (type-eq# actual# (rest# expect#)))
+                                                       :table (or (= (type ?actual#) (first# expect#)) (type-eq# actual# (rest# expect#)))
                                                        _# false))]
                                        (assert (type-eq# ,k# ,(. types i#)) 
                                                (.. "argument " (tostring ,k#) " must be " ,(. types i#)))))
