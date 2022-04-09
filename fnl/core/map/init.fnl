@@ -4,14 +4,14 @@
 (macro cmd [s] (string.format "<cmd>%s<cr>" s))
 
 (macro nmaps [prefix desc tbl]
-  `(let [prefix# (prefix-o :n ,prefix ,desc)]
+  `(let [prefix# ((. (require :kaza.map) :prefix-o) :n ,prefix ,desc)]
      (each [_# l# (ipairs ,tbl)]
        (prefix#.map (unpack l#)))))
 
-(nmaps :<space>c :packer [[:c (cmd :PackerCompile) :compile]
-                          [:i (cmd :PackerInstall) :install]
-                          [:sy (cmd :PackerSync) :sync]
-                          [:st (cmd :PackerStatus) :status]])
+; (nmaps :<space>c :packer [[:c (cmd :PackerCompile) :compile]
+;                           [:i (cmd :PackerInstall) :install]
+;                           [:sy (cmd :PackerSync) :sync]
+;                           [:st (cmd :PackerStatus) :status]])
 
 ;(map :n :<space> "<cmd>NormalWitch SPC<cr>" "wich")
 (let [prefix (prefix-o :n :<space>w :wich)]

@@ -1,31 +1,35 @@
 (local {: in?} (require :util.table1))
-(import-macros {: def} :util.macros)
+(import-macros {: def : ep} :util.macros)
 
 (def prefix [prefix plug-name] [:string :string :string]
   "add prefix with doc"
   (tset _G.__kaza.prefix prefix plug-name)
   prefix)
 
-(def prefix-o [mode prefix name] [:string :string :string :table]
-  ;(tset _G.__kaza.prefix prefix name)
+(def _overwrite [org-tbl tbl] [:table :table :table]
+  (ep k v tbl (tset org-tbl k v))
+  org-tbl)
+
+(fn prefix-o [mode prefix name ?opt]
+  ;(tset _G.__kaza.prefix prefix name) ;FUTURE
   (local sign (.. "[" name "] "))
   {:map (λ [key cmd desc]
           (vim.api.nvim_set_keymap mode
                                    (.. prefix key)
                                    cmd
-                                   {:noremap true :silent true :desc (.. sign desc)}))
+                                   (_overwrite {:noremap true :silent true :desc (.. sign desc)} (or ?opt {}))))
    :map-buf (λ [bufnr key cmd desc]
               (vim.api.nvim_buf_set_keymap bufnr
                                            mode
                                            (.. prefix key)
                                            cmd
-                                           {:noremap true :silent true :desc (.. sign desc)}))
+                                           (_overwrite {:noremap true :silent true :desc (.. sign desc)} (or ?opt {}))))
    :map-f (λ [key callback desc]
             (vim.api.nvim_set_keymap mode
                                      (.. prefix key)
                                      ""
-                                     {:callback callback
-                                      :noremap true :silent true :desc (.. sign desc)}))})
+                                     (_overwrite {:callback callback
+                                      :noremap true :silent true :desc (.. sign desc)} (or ?opt {}))))})
 
 (def rt [str] [:string :string]
   "replace termcode"

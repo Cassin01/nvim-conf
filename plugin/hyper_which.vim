@@ -808,7 +808,6 @@ endfunction
 
 let BookmarkWich = {
             \ '__name': 'BookmarkWich',
-            \ 'column_size': 55,
             \ 'OnMatched': function("s:bookmark_On_Matched"),
             \ 'AfterQuit': function("s:bookmark_After_Quit"),
             \ 'LoadIndex': function("s:bookmark_Load_Index"),

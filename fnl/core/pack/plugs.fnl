@@ -1,3 +1,6 @@
+(macro ui-ignore-filetype []
+  ["" :prompt :dashboard :help :nerdtree :TelescopePrompt])
+
 (import-macros {: req-f} :util.macros)
 
 (macro au [group event body]
@@ -32,10 +35,9 @@
             (when (not (-?> k# (. :disable)))
               k#)))
 
-(let [plugs (cleaner [
- ;;; snippet
- :lewis6991/impatient.nvim
+(cleaner [
 
+ ;;; snippet
  :SirVer/ultisnips
  :honza/vim-snippets
 
@@ -129,11 +131,11 @@
   :config (λ []
             (vim.cmd "let g:minimap#window#width = 10")
             (vim.cmd "let g:minimap#window#height = 35"))}
- {1 :dstein64/nvim-scrollview
-  :setup (λ [] ((req-f :setup :scrollview) {:excluded_filetypes [:nerdtree]
-                               :current_only true
-                               :winblend 20
-                               }))}
+ ;; scrollbar
+ {1 :petertriho/nvim-scrollbar
+  :config (λ [] ((req-f :setup :scrollbar) {:excluded_buftypes [:terminal]
+                                            :excluded_filetypes (ui-ignore-filetype)}))}
+
  {1 :nvim-telescope/telescope.nvim
   :requires [:nvim-lua/plenary.nvim ]
   :setup (λ []
@@ -230,7 +232,6 @@
  :ft :qf}
 
 {1 :weilbith/nvim-code-action-menu
- :disable true
  :cmd :CodeActionMenu
  :setup (λ []
           (let [prefix ((. (require :kaza.map) :prefix-o) :n :<space>f :code-action-menu)]
@@ -259,7 +260,6 @@
 {1 :folke/trouble.nvim
  :requires :yazdani42/nvim-web-devicons
  :config (λ [] ((-> (require :trouble) (. :setup)) {}))}
-
 
 ;; cmp plugins
 {1 :hrsh7th/nvim-cmp
@@ -299,7 +299,6 @@
  :config (λ [] ((. (require :lsp_signature) :setup) {}))}
 
 ;; tagbar alternative
-
 :simrat39/symbols-outline.nvim
 {1 :stevearc/aerial.nvim
  :config (λ []
@@ -310,8 +309,6 @@
                                                    (prefix.map-buf bufnr :n "}" (cmd :AerialNext) :JumpBackward)
                                                    (prefix.map-buf bufnr :n "[[" (cmd :AerialPrevUp) :JumpUpTheTree)
                                                    (prefix.map-buf bufnr :n "]]" (cmd :AerialNextUp) :JumpUpTheTree)))}))}
-
-
 
 {1 :hrsh7th/vim-vsnip
  :disable true
@@ -361,8 +358,6 @@
                                            :kinds ["f:functions" "v:variables" "m:macros"]})
           ((. ((. (require :kaza.map) :prefix-o) :n :<space>a :tagbar) :map)
            :t :<cmd>TagbarToggle<cr> :toggle))}
-
-
 {1 :tyru/open-browser.vim
  :config (λ []
            (local prefix ((. (require :kaza.map) :prefix-o) :n :<leader>s :open-browser))
@@ -386,7 +381,6 @@
  :setup (λ []
           (vim.cmd "vmap v <Plug>(expand_region_expand)")
           (vim.cmd "vmap <C-v> <Plug>(expand_region_shrink)"))}
-
 :ggandor/lightspeed.nvim
 
 ;; move dir to dir
@@ -432,6 +426,16 @@
 :kshenoy/vim-signature
 :mhinz/neovim-remote
 
+
+{1 :notomo/cmdbuf.nvim
+ :config (λ []
+           ;;; FIXME I don't know how to declare User autocmd.
+           (nmaps :q :cmdbuf [[:: (λ [] ((req-f :split_open :cmdbuf) vim.o.cmdwinheight)) "cmdbuf"]
+                              [:l (λ [] ((. (require :cmdbuf) :split_open) vim.o.cmdwinheight {:type :lua/cmd})) "lua"]
+                              [:/ (λ [] ((req-f :split_open :cmdbuf) vim.o.cmdwinheight {:type :vim/search/forward})) :search-forward]
+                              ["?" (λ [] ((. (require :cmdbuf) :split_open) vim.o.cmdwinheight {:type :vim/search/backward})) :search-backward]]))}
+
+;; zen
 :junegunn/limelight.vim
 :junegunn/goyo.vim
 :amix/vim-zenroom2
@@ -546,16 +550,4 @@
 ;:ulwlu/elly.vim                     ; elly
 ;:michaeldyrynda/carbon.vim
 ;:rafamadriz/neon
-])]
-(p+ :notomo/cmdbuf.nvim
-    {:config (λ []
-              (vim.api.nvim_add_user_command :CmdbufNew
-                                             ;;; FIXME I don't know how to declare User autocmd.
-                                             (λ []
-                                               (vim.api.nvim_buf_set_keymap 0 :n :q (cmd :quit) {:noremap true :silent true :nowait true})
-                                               (nmap-buf :dd (cmd "lua require(\"cmdbuf\").delete()") :delete)) {})
-              (nmaps :q :cmdbuf [[:: (λ [] ((req-f :split_open :cmdbuf) vim.o.cmdwinheight)) "cmdbuf"]
-                                 [:l (λ [] ((. (require :cmdbuf) :split_open) vim.o.cmdwinheight {:type :lua/cmd})) "lua"]
-                                 [:/ (λ [] ((req-f :split_open :cmdbuf) vim.o.cmdwinheight {:type :vim/search/forward})) :search-forward]
-                                 ["?" (λ [] ((. (require :cmdbuf) :split_open) vim.o.cmdwinheight {:type :vim/search/backward})) :search-backward]]))})
-plugs)
+])
