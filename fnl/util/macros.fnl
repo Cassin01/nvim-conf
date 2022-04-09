@@ -16,12 +16,29 @@
 
 (fn M.def [name args types ...]
   "(def add [a b] [:number :number :number]
-     (+ a b))"
+     (+ a b))
+   (def opt [a?] [:?number :number] ...)
+   (def len [obj] [[:list :string] :number] ...)"
   (assert-compile (not (= (type name) :string)) "name expects symbol, vector, or list as first arugument" name)
   (assert-compile (= (type types) :table) "types expects table as first arugment" types)
   `(fn ,name [,(unpack args)] ,(icollect [i# k# (ipairs args)]
-                                    `(assert (= (type ,k#) ,(. types i#)) (.. "argument " (tostring ,k#) " must be " ,(. types i#))))
-                                ;,...
+                                    `(let [car# (λ [x# ...] x#)
+                                           cdr# (λ [x# ...] [...])
+                                           first# (λ [lst#] (car# (unpack lst#)))
+                                           rest# (λ [lst#] (cdr# (unpack lst#)))
+                                           empty?# (λ [str#] (or (= str# nil) (= str# "")))
+                                           type?# (λ [?obj# type#] (if (= type# :any) true (= (type ?obj#) type#)))
+                                           type-eq# (λ  [?actual# expect#]
+                                                     (match (type expect#)
+                                                       :string (if (let [res# (string.match expect# "^?")]
+                                                                     (or (= res# nil) (= res# "")))
+                                                                   (type?# ?actual# expect#)
+                                                                   (or (type?# ?actual# (string.match expect# "%w+"))
+                                                                       (type?# ?actual# :nil)))
+                                                       :list (or (= (type ?actual#) (first# expect#)) (type-eq# actual# (rest# expect#)))
+                                                       _# false))]
+                                       (assert (type-eq# ,k# ,(. types i#)) 
+                                               (.. "argument " (tostring ,k#) " must be " ,(. types i#)))))
                                 (let [ret# (do ,...)]
                                   (assert (= (type ret#) ,(. types (length types))) (.. "return value must be " ,(. types (length types)) " but " (type ret#)))
                                   ret#)))

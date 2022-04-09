@@ -10,7 +10,7 @@
   (ep k v tbl (tset org-tbl k v))
   org-tbl)
 
-(fn prefix-o [mode prefix name ?opt]
+(def prefix-o [mode prefix name ?opt] [:string :string :string :?table :table]
   ;(tset _G.__kaza.prefix prefix name) ;FUTURE
   (local sign (.. "[" name "] "))
   {:map (λ [key cmd desc]
