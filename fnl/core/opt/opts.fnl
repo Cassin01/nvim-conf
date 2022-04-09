@@ -21,4 +21,5 @@
  :spell true
  :startofline true
  :spelllang "en,cjk"
- :guifont "HackGen Console"}
+ :guifont "HackGen Console"
+ :inccommand :split}

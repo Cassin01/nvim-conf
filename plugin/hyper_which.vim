@@ -325,6 +325,7 @@ function! s:Witch(self, ...) dict
     let k = {'height': buf_row, 'row': &lines-buf_row-row_offset-1, 'width': &columns-self.window.config.col}
     call self.window.start(self.window, k)
     setlocal filetype=evil_witch
+    setlocal foldmethod=syntax
 
     call s:hyper_wich_syntax()
 
@@ -746,7 +747,7 @@ let s:bookmark = {
             \ "snip":     "~/.config/nvim/UltiSnips",
             \ "which":    "~/.config/nvim/plugin/hyper_which.vim",
             \ "dotfile":  "~/dotfiles",
-            \ "memo":     "~/技術系備忘録",
+            \ "memo":     "~/tech-memo",
             \ "lua": "~/.cache/nvim/hotpot/Users/cassin/.config/nvim/fnl",
             \ "org": "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/"
             \ }

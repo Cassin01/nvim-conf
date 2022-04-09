@@ -3,7 +3,6 @@
 (macro au [group event body]
   `(vim.api.nvim_create_autocmd ,event {:callback (λ [] ,body) :group (vim.api.nvim_create_augroup ,group {:clear true})}))
 
-
 ( macro nmap-buf [key cmd desc]
   `(vim.api.nvim_buf_set_keymap 0 :n ,key ,cmd {:noremap true :silent true :desc ,desc}))
 
@@ -32,8 +31,6 @@
   (icollect [_# k# (ipairs tbl)]
             (when (not (-?> k# (. :disable)))
               k#)))
-
-
 
 (let [plugs (cleaner [
  ;;; snippet
@@ -132,6 +129,11 @@
   :config (λ []
             (vim.cmd "let g:minimap#window#width = 10")
             (vim.cmd "let g:minimap#window#height = 35"))}
+ {1 :dstein64/nvim-scrollview
+  :setup (λ [] ((req-f :setup :scrollview) {:excluded_filetypes [:nerdtree]
+                               :current_only true
+                               :winblend 20
+                               }))}
  {1 :nvim-telescope/telescope.nvim
   :requires [:nvim-lua/plenary.nvim ]
   :setup (λ []
@@ -196,13 +198,7 @@
           (ctrlp.map :s :<cmd>CtrlPMixed<cr> "file and buffer")
           (ctrlp.map :t :<cmd>CtrlPTag<cr> "tag"))}
 
-;; Show git status on left of a code.
-; {1 :lewis6991/gitsigns.nvim
-;  :requires :nvim-lua/plenary.nvim
-;  :config (λ []
-;            ((. (require :gitsigns) :setup)
-;             {:current_line_blame true}))}
-
+; Show git status on left of a code.
 {1 :lewis6991/gitsigns.nvim
     :requires :nvim-lua/plenary.nvim
      :config (λ []
@@ -234,6 +230,7 @@
  :ft :qf}
 
 {1 :weilbith/nvim-code-action-menu
+ :disable true
  :cmd :CodeActionMenu
  :setup (λ []
           (let [prefix ((. (require :kaza.map) :prefix-o) :n :<space>f :code-action-menu)]
@@ -300,6 +297,21 @@
 ;; show type of argument
 {1 :ray-x/lsp_signature.nvim
  :config (λ [] ((. (require :lsp_signature) :setup) {}))}
+
+;; tagbar alternative
+
+:simrat39/symbols-outline.nvim
+{1 :stevearc/aerial.nvim
+ :config (λ []
+           ((req-f :setup :aerial) {:on_attach (λ [bufnr]
+                                                 (let [prefix ((. (require :kaza.map) :prefix-o ) :n :<space>a :aerial)]
+                                                   (prefix.map-buf bufnr :n "t" (cmd :AerialToggle!) :JumpForward)
+                                                   (prefix.map-buf bufnr :n "{" (cmd :AerialPrev) :JumpForward)
+                                                   (prefix.map-buf bufnr :n "}" (cmd :AerialNext) :JumpBackward)
+                                                   (prefix.map-buf bufnr :n "[[" (cmd :AerialPrevUp) :JumpUpTheTree)
+                                                   (prefix.map-buf bufnr :n "]]" (cmd :AerialNextUp) :JumpUpTheTree)))}))}
+
+
 
 {1 :hrsh7th/vim-vsnip
  :disable true
@@ -418,8 +430,6 @@
             (prefix.map "" "<Plug>LineLetters" "jump to line"))) }
 
 :kshenoy/vim-signature
-
-
 :mhinz/neovim-remote
 
 :junegunn/limelight.vim
@@ -537,15 +547,6 @@
 ;:michaeldyrynda/carbon.vim
 ;:rafamadriz/neon
 ])]
-(p+ :stevearc/aerial.nvim
-    {:config (λ []
-               ((req-f :setup :aerial) {:on_attach (λ [bufnr]
-                                                   (let [prefix ((. (require :kaza.map) :prefix-o ) :n :<space>a :aerial)]
-                                                     (prefix.map-buf bufnr :n "t" (cmd :AerialToggle!) :JumpForward)
-                                                     (prefix.map-buf bufnr :n "{" (cmd :AerialPrev) :JumpForward)
-                                                     (prefix.map-buf bufnr :n "}" (cmd :AerialNext) :JumpBackward)
-                                                     (prefix.map-buf bufnr :n "[[" (cmd :AerialPrevUp) :JumpUpTheTree)
-                                                     (prefix.map-buf bufnr :n "]]" (cmd :AerialNextUp) :JumpUpTheTree)))}))})
 (p+ :notomo/cmdbuf.nvim
     {:config (λ []
               (vim.api.nvim_add_user_command :CmdbufNew
