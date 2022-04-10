@@ -34,6 +34,7 @@
   (prefix.map :s (cmd :sp) "split-horizontally")
   (prefix.map :v (cmd :vs) "split-vertically")
   (prefix.map :q (cmd :q) "quit")
+  (prefix.map :qq (cmd :q!) "quit!")
   (prefix.map :d (cmd :bd) "delete tab")
   (prefix.map ";" ":<c-u>sp<cr><c-w>J:<c-u>res 10<cr>:<C-u>terminal<cr>:<c-u>setlocal noequalalways<cr>i" "vscode like terminal"))
 

@@ -23,10 +23,8 @@
   (assert-compile (not (= (type name) :string)) "name expects symbol, vector, or list as first arugument" name)
   (assert-compile (= (type types) :table) "types expects table as first arugment" types)
   `(fn ,name [,(unpack args)] ,(icollect [i# k# (ipairs args)]
-                                    `(let [car# (λ [x# ...] x#)
-                                           cdr# (λ [x# ...] [...])
-                                           first# (λ [lst#] (car# (unpack lst#)))
-                                           rest# (λ [lst#] (cdr# (unpack lst#)))
+                                    `(let [first# (λ [lst#] (. lst# 1))
+                                           rest# (λ [lst#] (. lst# (length lst#)))
                                            empty?# (λ [str#] (or (= str# nil) (= str# "")))
                                            type?# (λ [?obj# type#] (if (= type# :any) true (= (type ?obj#) type#)))
                                            type-eq# (λ  [?actual# expect#]
@@ -38,7 +36,7 @@
                                                                        (type?# ?actual# :nil)))
                                                        :table (or (= (type ?actual#) (first# expect#)) (type-eq# actual# (rest# expect#)))
                                                        _# false))]
-                                       (assert (type-eq# ,k# ,(. types i#)) 
+                                       (assert (type-eq# ,k# ,(. types i#))
                                                (.. "argument " (tostring ,k#) " must be " ,(. types i#)))))
                                 (let [ret# (do ,...)]
                                   (assert (= (type ret#) ,(. types (length types))) (.. "return value must be " ,(. types (length types)) " but " (type ret#)))
