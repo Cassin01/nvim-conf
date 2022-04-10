@@ -14,7 +14,6 @@
     (when (foldl (λ [x y] (and x (not= (y :group) :TodoEX)))
                  true
                  (vim.fn.getmatches))
-      (print "hoge")
       (vim.fn.matchadd :TrailingSpaces :\s\+$)
       (vim.fn.matchadd :Tabs :\t)
       (vim.fn.matchadd :DoubleSpace "　")
