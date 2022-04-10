@@ -15,11 +15,14 @@
 (local M {})
 
 (fn M.def [name args types ...]
-  "(def add [a b] [:number :number :number]
-     (+ a b))
-   (def 2str [obj] [:any :string] ...)
-   (def opt [?a] [:?number :number] ...)
-   (def len [obj] [[:table :string] :number] ...)"
+  "examples:
+  ```fennel
+  (def add [a b] [:number :number :number] (+ a b))
+  (def 2str [obj] [:any :string] ...)
+  (def opt [?a] [:?number :number] ...)
+  (def len [obj] [[:table :string] :number] ...)
+  (def add [x ...] [:number :... :number])
+  ```"
   (assert-compile (not (= (type name) :string)) "name expects symbol, vector, or list as first arugument" name)
   (assert-compile (= (type types) :table) "types expects table as first arugment" types)
   `(fn ,name [,(unpack args)] 
@@ -37,9 +40,12 @@
                         :table (or (= (type ?actual#) (first# expect#)) (type-eq# actual# (rest# expect#)))
                         _# false))]
        ,(icollect [i# k# (ipairs args)]
-                  (when (< i# (length types))
-                    `(assert (type-eq# ,k# ,(. types i#))
-                             (.. "argument " (tostring ,k#) " must be " ,(. types i#)))))
+                  (if (< i# (length types))
+                    (if (varg? k#)
+                      `(assert (= :... ,(. types i#)) "[type mismatch] ... expects :...")
+                      `(assert (type-eq# ,k# ,(. types i#))
+                               (.. "argument " (tostring ,k#) "[type mismatch] must be " ,(. types i#))))
+                    (assert false "too many arguments")))
        (let [ret# (do ,...)]
          (assert (type-eq# ret# ,(. types (length types))) (.. "return value must be " ,(. types (length types)) " but " (type ret#)))
          ret#))))
