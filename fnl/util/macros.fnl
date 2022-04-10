@@ -42,7 +42,7 @@
        ,(icollect [i# k# (ipairs args)]
                   (if (< i# (length types))
                     (if (varg? k#)
-                      `(assert (= :... ,(. types i#)) "[type mismatch] ... expects :...")
+                      (assert-compile (= :... (. types i#)) "[type mismatch] ... expects :..." types)
                       `(assert (type-eq# ,k# ,(. types i#))
                                (.. "argument " (tostring ,k#) "[type mismatch] must be " ,(. types i#))))
                     (assert false "too many arguments")))
