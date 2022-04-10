@@ -14,6 +14,18 @@
 
 (local M {})
 
+; (fn rest [lst] [(unpack lst 2)])
+; (fn first [lst] (. lst 1) )
+; (fn pull [x xs] [x (unpack xs)])
+; (fn empty? [lst] (= (length lst) 0))
+; (fn map-till [f lst cond]
+;   (if (empty? lst)
+;     []
+;     (let [x (first lst)]
+;       (if (cond x)
+;         []
+;         (pull (f x) (map-till f (rest lst)))))))
+
 (fn M.def [name args types ...]
   "(def add [a b] [:number :number :number]
      (+ a b))
@@ -24,7 +36,7 @@
   (assert-compile (= (type types) :table) "types expects table as first arugment" types)
   `(fn ,name [,(unpack args)] ,(icollect [i# k# (ipairs args)]
                                     `(let [first# (λ [lst#] (. lst# 1))
-                                           rest# (λ [lst#] (. lst# (length lst#)))
+                                           rest# (λ [lst#] [(unpack lst# 2)])
                                            empty?# (λ [str#] (or (= str# nil) (= str# "")))
                                            type?# (λ [?obj# type#] (if (= type# :any) true (= (type ?obj#) type#)))
                                            type-eq# (λ  [?actual# expect#]
