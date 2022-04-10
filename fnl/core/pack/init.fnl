@@ -1,10 +1,5 @@
-(macro cmd [s] (string.format "<cmd>%s<cr>" s))
-(macro nmaps [prefix desc tbl]
-  `(let [prefix# ((. (require :kaza.map) :prefix-o) :n ,prefix ,desc)]
-     (each [_# l# (ipairs ,tbl)]
-       (if (= (type (. l# 2)) :string)
-         (prefix#.map (unpack l#))
-         (prefix#.map-f (unpack l#))))))
+(import-macros {: cmd : nmaps} :kaza.macros)
+(import-macros {: req-f} :util.macros)
 
 ;; TEMP
 ; For osx bigsur bug
@@ -33,7 +28,9 @@
                                    lua-file (cache_path_fn fnl-file)]
                                (if lua-file
                                  (vim.cmd (.. ":new " lua-file))
-                                 (print "No matching cache file for current file")))) "open cached lua file" {:silent false}]]))}
+                                 (print "No matching cache file for current file")))) "open cached lua file" {:silent false}]])
+                    ((req-f :setup :hotpot) {:compiler {:modules {:correlate false}}})
+                    )}
          :lewis6991/impatient.nvim])
    (use (require :core.pack.plugs))
    (use_rocks :luasocket)))

@@ -1,7 +1,5 @@
-(macro ui-ignore-filetype []
-  ["" :prompt :dashboard :help :nerdtree :TelescopePrompt])
-
 (import-macros {: req-f} :util.macros)
+(import-macros {: nmaps : cmd : ui-ignore-filetype} :kaza.macros)
 
 (macro au [group event body]
   `(vim.api.nvim_create_autocmd ,event {:callback (λ [] ,body) :group (vim.api.nvim_create_augroup ,group {:clear true})}))
@@ -11,17 +9,6 @@
 
 (macro nmap [key cmd desc]
   `(vim.api.nvim_set_keymap :n ,key ,cmd {:noremap true :silent true :desc ,desc}))
-
-(macro nmaps [prefix desc tbl]
-  `(let [prefix# ((. (require :kaza.map) :prefix-o) :n ,prefix ,desc)]
-     (each [_# l# (ipairs ,tbl)]
-       (prefix#.map-f (unpack l#)))))
-
-(macro user-cmd [name cmd]
-  `(vim.api.nvim_add_user_command ,name ,cmd {}))
-
-
-(macro cmd [s] (string.format "<cmd>%s<cr>" s))
 
 (macro p+ [name opt]
   (when (not (-?> opt (. :disable)))

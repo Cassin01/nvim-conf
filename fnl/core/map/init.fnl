@@ -1,17 +1,8 @@
+(import-macros {: epi} :util.macros)
+(import-macros {: la : cmd : br : nmaps} :kaza.macros)
+
 (local {: map : prefix-o} (require :kaza.map))
 (local {:string s} (require :util))
-
-(macro cmd [s] (string.format "<cmd>%s<cr>" s))
-
-(macro nmaps [prefix desc tbl]
-  `(let [prefix# ((. (require :kaza.map) :prefix-o) :n ,prefix ,desc)]
-     (each [_# l# (ipairs ,tbl)]
-       (prefix#.map (unpack l#)))))
-
-; (nmaps :<space>c :packer [[:c (cmd :PackerCompile) :compile]
-;                           [:i (cmd :PackerInstall) :install]
-;                           [:sy (cmd :PackerSync) :sync]
-;                           [:st (cmd :PackerStatus) :status]])
 
 ;(map :n :<space> "<cmd>NormalWitch SPC<cr>" "wich")
 (let [prefix (prefix-o :n :<space>w :wich)]
@@ -46,39 +37,36 @@
   (prefix.map :d (cmd :bd) "delete tab")
   (prefix.map ";" ":<c-u>sp<cr><c-w>J:<c-u>res 10<cr>:<C-u>terminal<cr>:<c-u>setlocal noequalalways<cr>i" "vscode like terminal"))
 
-(let [prefix (prefix-o :n :<space>m :me)]
-  (prefix.map :nh :<cmd>noh<cr> "turn off search highlighting until the next search")
-  (prefix.map :sd "<cmd>sp<cr><cmd>edit %:h<tab><cr>" "show current directory")
-  (prefix.map :sf "<cmd>source %<cr>" "source a current file")
-  (prefix.map :pc "<cmd>Unite colorscheme -auto-preview<cr>" "preview colorschemes")
-  (prefix.map :rs ::%s/\s\+$//ge<cr> "remove trailing spaces")
-  (prefix.map :a ":vim TODO ~/org/*.org<cr>" "agenda")
-  (prefix.map :ts ":%s/\t/ /g<cr>" "replace tab with space")
-  (prefix.map :cd ":<c-u>lcd %:p:h<cr>" "move current directory to here")
-  (prefix.map "]f" ":<c-u>set clipboard+=unnamed<cr>" "enable clipboard")
-  (prefix.map "[f" ":<c-u>set clipboard-=unnamed<cr>" "disable clipboard")
-  (prefix.map "]x" ":<c-u>setlocal conceallevel=1<cr>" "hide conceal")
-  (prefix.map "[x" ":<c-u>setlocal conceallevel=0<cr>" "show conceal")
-  (prefix.map-f :fn (λ [] (print (vim.fn.expand :%:t))) "show file name")
-  (prefix.map-f :fp (λ [] (print (vim.fn.expand :%:p))) "show file path")
-  (prefix.map-f :ft (λ [] (if (= vim.o.foldmethod :indent)
-                               (tset vim.o :foldmethod :marker)
-                               (tset vim.o :foldmethod :indent))
-                              (print (.. "foldmethod is now " vim.o.foldmethod))) "toggle foldmethod")
-  (prefix.map-f :lm (λ [] (local {: cursor : strlen : getline} vim.fn)
-                         (cursor 0 (/ (strlen (getline :.)) 2))) "go middle of a line")
-  (prefix.map-f :m (λ [] (let  [buf (vim.api.nvim_create_buf false true)]
-                              (vim.api.nvim_buf_set_lines buf 0 100 false (s.split (vim.api.nvim_exec "messages" true ) "\n"))
-                              (local height (vim.api.nvim_buf_line_count buf))
-                              (vim.api.nvim_open_win buf true {:relative :editor :style :minimal :row 3 :col 3 :height 40 :width 150})))
-                "show message")
-  (when (vim.fn.has :mac)
-    (prefix.map :? "<cmd>!open dict://<cword><cr>" "mac dictionary")
-    (each [_ k (ipairs (require :core.map.mac))]
-      (map (unpack k)))))
+(nmaps :<space>m :me [[:nh :<cmd>noh<cr> "turn off search highlighting until the next search"]
+                      [:sd "<cmd>sp<cr><cmd>edit %:h<tab><cr>" "show current directory"]
+                      [:sf "<cmd>source %<cr>" "source a current file"]
+                      [:pc "<cmd>Unite colorscheme -auto-preview<cr>" "preview colorschemes"]
+                      [:u (cmd :update) :update]
+                      [:rs ::%s/\s\+$//ge<cr> "remove trailing spaces"]
+                      [:a ":vim TODO ~/org/*.org<cr>" "agenda"]
+                      [:ts ":%s/\t/ /g<cr>" "replace tab with space"]
+                      [:cd ":<c-u>lcd %:p:h<cr>" "move current directory to here"]
+                      [(br :l :f) ":<c-u>set clipboard+=unnamed<cr>" "enable clipboard"]
+                      [(br :r :f) ":<c-u>set clipboard-=unnamed<cr>" "disable clipboard"]
+                      [(br :l :x) ":<c-u>setlocal conceallevel=1<cr>" "hide conceal"]
+                      [(br :r :x) ":<c-u>setlocal conceallevel=0<cr>" "show conceal"]
+                      [:fn (la (print (vim.fn.expand :%:t))) "show file name"]
+                      [:fp (la (print (vim.fn.expand :%:p))) "show file path"]
+                      [:ft (la (if (= vim.o.foldmethod :indent)
+                                   (tset vim.o :foldmethod :marker)
+                                   (tset vim.o :foldmethod :indent))
+                             (print (.. "foldmethod is now " vim.o.foldmethod))) "toggle foldmethod"]
+                      [:lm (la (let [{: cursor : strlen : getline} vim.fn]
+                                   (cursor 0 (/ (strlen (getline :.)) 2)))) "go middle of a line"]
+                      [:m (la (let [buf (vim.api.nvim_create_buf false true)]
+                                  (vim.api.nvim_buf_set_lines buf 0 100 false (s.split (vim.api.nvim_exec "messages" true ) "\n"))
+                                  (local height (vim.api.nvim_buf_line_count buf))
+                                  (vim.api.nvim_open_win buf true {:relative :editor :style :minimal :row 3 :col 3 :height 40 :width 150}))) "show message"]])
 
-(each [_ k (ipairs (require :core.map.map))]
-  (map (unpack k)))
+(when (vim.fn.has :mac)
+  (epi _ k (require :core.map.mac) (map (unpack k))))
+
+(epi _ k (require :core.map.map) (map (unpack k)))
 
 ((-> :core.map.bracket require (. :setup)))
 

@@ -24,7 +24,7 @@
                                                [:DoubleSpace {:bg :#cff082}]
                                                [:TodoEx {:bg :#44a005 :fg :#F0FFF0}]])]
                              (vim.api.nvim_set_hl 0 (unpack k))))
-(au :match [:BufWinEnter] (. (require :core.au.match) :add-matchs))
+(au :match [:BufWinEnter] ((. (require :core.au.match) :add-matchs)))
 
 ; terminal mode
 (au :term-conf :TermOpen (do

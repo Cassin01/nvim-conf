@@ -1,4 +1,6 @@
 [
+ [:n "<space>m?" "<cmd>!open dict://<cword><cr>" "[me] mac dictionary"]
+
  ;; move
  [:i "π" "<up>" "<opt-p>: up"]
  [:i "˜" "<down>" "<opt-n>: down"]
