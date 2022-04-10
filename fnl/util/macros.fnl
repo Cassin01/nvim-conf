@@ -45,7 +45,7 @@
                       (assert-compile (= :... (. types i#)) "[type mismatch] ... expects :..." types)
                       `(assert (type-eq# ,k# ,(. types i#))
                                (.. "argument " (tostring ,k#) "[type mismatch] must be " ,(. types i#))))
-                    (assert false "too many arguments")))
+                    (assert-compile false "too many arguments" args)))
        (let [ret# (do ,...)]
          (assert (type-eq# ret# ,(. types (length types))) (.. "return value must be " ,(. types (length types)) " but " (type ret#)))
          ret#))))
