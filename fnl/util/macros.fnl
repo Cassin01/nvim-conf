@@ -14,18 +14,6 @@
 
 (local M {})
 
-; (fn rest [lst] [(unpack lst 2)])
-; (fn first [lst] (. lst 1) )
-; (fn pull [x xs] [x (unpack xs)])
-; (fn empty? [lst] (= (length lst) 0))
-; (fn map-till [f lst cond]
-;   (if (empty? lst)
-;     []
-;     (let [x (first lst)]
-;       (if (cond x)
-;         []
-;         (pull (f x) (map-till f (rest lst)))))))
-
 (fn M.def [name args types ...]
   "(def add [a b] [:number :number :number]
      (+ a b))
@@ -34,25 +22,27 @@
    (def len [obj] [[:table :string] :number] ...)"
   (assert-compile (not (= (type name) :string)) "name expects symbol, vector, or list as first arugument" name)
   (assert-compile (= (type types) :table) "types expects table as first arugment" types)
-  `(fn ,name [,(unpack args)] ,(icollect [i# k# (ipairs args)]
-                                    `(let [first# (λ [lst#] (. lst# 1))
-                                           rest# (λ [lst#] [(unpack lst# 2)])
-                                           empty?# (λ [str#] (or (= str# nil) (= str# "")))
-                                           type?# (λ [?obj# type#] (if (= type# :any) true (= (type ?obj#) type#)))
-                                           type-eq# (λ  [?actual# expect#]
-                                                     (match (type expect#)
-                                                       :string (if (let [res# (string.match expect# "^?")]
-                                                                     (or (= res# nil) (= res# "")))
-                                                                   (type?# ?actual# expect#)
-                                                                   (or (type?# ?actual# (string.match expect# "%w+"))
-                                                                       (type?# ?actual# :nil)))
-                                                       :table (or (= (type ?actual#) (first# expect#)) (type-eq# actual# (rest# expect#)))
-                                                       _# false))]
-                                       (assert (type-eq# ,k# ,(. types i#))
-                                               (.. "argument " (tostring ,k#) " must be " ,(. types i#)))))
-                                (let [ret# (do ,...)]
-                                  (assert (= (type ret#) ,(. types (length types))) (.. "return value must be " ,(. types (length types)) " but " (type ret#)))
-                                  ret#)))
+  `(fn ,name [,(unpack args)] 
+     (let [first# (λ [lst#] (. lst# 1))
+           rest# (λ [lst#] [(unpack lst# 2)])
+           empty?# (λ [str#] (or (= str# nil) (= str# "")))
+           type?# (λ [?obj# type#] (if (= type# :any) true (= (type ?obj#) type#)))
+           type-eq# (λ  [?actual# expect#]
+                      (match (type expect#)
+                        :string (if (let [res# (string.match expect# "^?")]
+                                      (or (= res# nil) (= res# "")))
+                                  (type?# ?actual# expect#)
+                                  (or (type?# ?actual# (string.match expect# "%w+"))
+                                      (type?# ?actual# :nil)))
+                        :table (or (= (type ?actual#) (first# expect#)) (type-eq# actual# (rest# expect#)))
+                        _# false))]
+       ,(icollect [i# k# (ipairs args)]
+                  (when (< i# (length types))
+                    `(assert (type-eq# ,k# ,(. types i#))
+                             (.. "argument " (tostring ,k#) " must be " ,(. types i#)))))
+       (let [ret# (do ,...)]
+         (assert (type-eq# ret# ,(. types (length types))) (.. "return value must be " ,(. types (length types)) " but " (type ret#)))
+         ret#))))
 
 (fn M.ep [k v source body]
   "each pairs"
