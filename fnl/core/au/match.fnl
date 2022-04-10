@@ -11,7 +11,7 @@
 (fn add-matchs []
   (if (in? vim.bo.filetype (ui-ignore-filetype))
     (vim.fn.clearmatches)
-    (when (foldl (λ [x y] (and x (not= (y :group) :TodoEX)))
+    (when (foldl (λ [x y] (and x (not= (. y :group) :TodoEX)))
                  true
                  (vim.fn.getmatches))
       (vim.fn.matchadd :TrailingSpaces :\s\+$)
