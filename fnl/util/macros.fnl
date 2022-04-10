@@ -21,7 +21,7 @@
   (def 2str [obj] [:any :string] ...)
   (def opt [?a] [:?number :number] ...)
   (def len [obj] [[:table :string] :number] ...)
-  (def add [x ...] [:number :... :number])
+  (def add [x ...] [:number :varg :number])
   ```"
   (assert-compile (not (= (type name) :string)) "name expects symbol, vector, or list as first arugument" name)
   (assert-compile (= (type types) :table) "types expects table as first arugment" types)
@@ -42,7 +42,7 @@
        ,(icollect [i# k# (ipairs args)]
                   (if (< i# (length types))
                     (if (varg? k#)
-                      (assert-compile (= :... (. types i#)) "[type mismatch] ... expects :..." types)
+                      (assert-compile (= :varg (. types i#)) "[type mismatch] ... expects :varg" types)
                       `(assert (type-eq# ,k# ,(. types i#))
                                (.. "argument " (tostring ,k#) "[type mismatch] must be " ,(. types i#))))
                     (assert-compile false "too many arguments" args)))
