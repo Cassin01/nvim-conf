@@ -13,7 +13,7 @@
   `(table.insert hl-info (gen-hl ,name ,tbl)))
 
 (let [hl-info [[:SpellBad {:fg nil :bg nil :underline true}]]]
-  (add-hl :NonText {:bg nil :underline true})
+  (add-hl :NonText {:fg :#111111 :bg nil :underline true})
   (add-hl :SpecialKey {:bg nil :italic true})
   hl-info)
 

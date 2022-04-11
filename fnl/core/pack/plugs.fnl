@@ -1,5 +1,5 @@
-(import-macros {: req-f} :util.macros)
-(import-macros {: nmaps : cmd : ui-ignore-filetype} :kaza.macros)
+(import-macros {: req-f : epi} :util.macros)
+(import-macros {: nmaps : cmd : plug : ui-ignore-filetype} :kaza.macros)
 
 (macro au [group event body]
   `(vim.api.nvim_create_autocmd ,event {:callback (λ [] ,body) :group (vim.api.nvim_create_augroup ,group {:clear true})}))
@@ -10,19 +10,31 @@
 (macro nmap [key cmd desc]
   `(vim.api.nvim_set_keymap :n ,key ,cmd {:noremap true :silent true :desc ,desc}))
 
+(macro map! [mode key cmd] 
+  "map without description.
+  this map! aims to be used when extend builtin mapping (so no need to write document). "
+  ; (if (= ?cmd nil)
+  ;   `(vim.api.nvim_del_keymap ,mode ,key)
+  ;   `(vim.api.nvim_set_keymap ,mode ,key ,?cmd {:noremap true :silent true}))
+  )
+
 (macro p+ [name opt]
   (when (not (-?> opt (. :disable)))
      `(let [opt# ,opt]
        (tset opt# 1 ,name)
        (table.insert plugs opt#))))
 
-(macro cleaner [tbl]
-  "speed upped 5.6ms (with 9 disabled plugins)"
-  (icollect [_# k# (ipairs tbl)]
-            (when (not (-?> k# (. :disable)))
-              k#)))
+;; WARN: This is a hack. This code causes an error when a plugin disabled at first.
+(macro trimmer [tbl]
+  ; tbl)
+  (icollect [_# k (ipairs tbl)]
+            (if (not (-?> k (. :disable)))
+              k
+              (do (tset k :setup nil)
+                  (tset k :config nil)
+                  k))))
 
-(cleaner [
+[
 
  ;;; snippet
  :SirVer/ultisnips
@@ -104,13 +116,26 @@
             )}
 
  {1 :preservim/nerdtree
+  :disable true
   :requires :ryanoasis/vim-devicons
   :setup (λ []
            (local nerdtree ((req-f :prefix-o :kaza.map) :n :<space>n :nerdtree))
-           ;(local nerdtree ((. (require :kaza.map) :prefix-o) :n :<space>n :nerdtree))
            (nerdtree.map :c :<cmd>NERDTreeCWD<CR> "cwd")
            (nerdtree.map :t :<cmd>NERDTreeToggle<CR> "toggle")
            (nerdtree.map :f :<cmd>NERDTreeFind<CR> "find"))}
+ {1 :kyazdani42/nvim-web-devicons
+  :config (λ [] ((req-f :set_icon :nvim-web-devicons) {:fnl {:icon "🌱" :color "#428850" :name :fnl}}))}
+ {1 :kyazdani42/nvim-tree.lua
+  :requires :kyazdani42/nvim-web-devicons
+  :disabe true
+  :config (λ []
+            ((req-f :setup :nvim-tree) {})
+            (nmaps
+              :<space>n
+              :nvim-tree
+              [[:t (cmd :NvimTreeToggle) :toggle]
+               [:r (cmd :NvimTreeRefresh) :refresh]
+               [:f (cmd :NvimTreeFindFile) :find]]))}
  {1 :glepnir/dashboard-nvim
   :disable true
   :config (λ [] (tset vim.g :dashboard_default_executive :telescope))}
@@ -134,7 +159,6 @@
            (prefix.map :t "<cmd>Telescope<cr>" "telescope")
            (prefix.map :o "<cmd>Telescope oldfiles<cr>" "old files"))}
 {1 :xiyaowong/nvim-transparent
- :disable true
  :config (λ []
            ((-> (require :transparent) (. :setup))
             {:enable false}))}
@@ -328,6 +352,7 @@
 :tpope/vim-commentary
 :tpope/vim-unimpaired
 :tpope/vim-surround
+:tpope/vim-abolish
 :tpope/vim-repeat
 :github/copilot.vim
 :tpope/vim-sexp-mappings-for-regular-people
@@ -337,6 +362,23 @@
           (tset vim.g :sexp_enable_insert_mode_mappings false))}
 
 ;; util
+
+          ; (map! :n :w (plug :CamelCaseMotion_w))
+          ; (map! :n :b (plug :CamelCaseMotion_b))
+          ; (map! :n :e (plug :CamelCaseMotion_e))
+          ; (map! :n :ge (plug :CamelCaseMotion_ge))
+          ; (map! :s :w nil)
+          ; (map! :s :b nil)
+          ; (map! :s :e nil)
+          ; (map! :s :gb nil)
+          ; (map! :o :iw (plug :CamelCaseMotion_iw))
+          ; (map! :o :ib (plug :CamelCaseMotion_ib))
+          ; (map! :o :ie (plug :CamelCaseMotion_ie))
+          ; (map! :x :iw (plug :CamelCaseMotion_iw))
+          ; (map! :x :ib (plug :CamelCaseMotion_ib))
+          ; (map! :x :ie (plug :CamelCaseMotion_ie))
+          ; (map! :i :<S-left> :<c-o><Plug>CAmelCaseMotion_b)
+          ; (map! :i :<S-right> :<c-o><Plug>CAmelCaseMotion_w)
 
 {1 :majutsushi/tagbar
  :setup (λ []
@@ -375,7 +417,7 @@
  :requires :rbgrouleff/bclose.vim
  :setup (λ []
           (let [prefix ((. (require :kaza.map) :prefix-o) :n :<space>r :ranger)]
-            (prefix.map :r :<cmd>Ranger<cr> "default")
+            (prefix.map :r :<cmd>Ranger<cr> "start at here")
             (prefix.map :t :<cmd>RangerNewTab<cr> "new tab")))}
 
 ;; easymotion
@@ -479,6 +521,10 @@
 :Olical/conjure       ; interactive environment
 :Olical/nvim-local-fennel
 
+; tex
+{1 :Cassin01/texrun.vim
+ :setup (λ [] (tset vim.g :texrun#file_name :l02.tex))}
+
 ;; markdown
 :godlygeek/tabular
 :preservim/vim-markdown
@@ -537,4 +583,4 @@
 ;:ulwlu/elly.vim                     ; elly
 ;:michaeldyrynda/carbon.vim
 ;:rafamadriz/neon
-])
+]

@@ -20,6 +20,14 @@
 
 (fn M.cmd [s] (string.format "<cmd>%s<cr>" s))
 
+(fn M.plug [s]
+  (string.format "<Plug>%s" s))
+
+(fn M.space [?s]
+  (if (= ?s nil)
+    :<space>
+    (string.format "<space>%s" ?s)))
+
 (fn M.br [c rest] (let [br ["[" "]"]]
                      (if (= c :l)
                        (.. (. br 1) rest)
