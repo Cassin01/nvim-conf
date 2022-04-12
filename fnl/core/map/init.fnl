@@ -1,8 +1,7 @@
-(import-macros {: epi} :util.macros)
+(import-macros {: epi : req-f} :util.macros)
 (import-macros {: la : cmd : plug : space : br : nmaps} :kaza.macros)
 
 (local {: map} (require :kaza.map))
-(local {:string str} (require :util))
 
 ;(map :n :<space> "<cmd>NormalWitch SPC<cr>" "wich")
 (nmaps
@@ -67,7 +66,7 @@
    [:lm (la (let [{: cursor : strlen : getline} vim.fn]
               (cursor 0 (/ (strlen (getline :.)) 2)))) "go middle of a line"]
    [:m (la (let [buf (vim.api.nvim_create_buf false true)]
-             (vim.api.nvim_buf_set_lines buf 0 100 false (str.split (vim.api.nvim_exec "messages" true ) "\n"))
+             (vim.api.nvim_buf_set_lines buf 0 100 false ((req-f :split :util.string) (vim.api.nvim_exec "messages" true ) "\n"))
              (local height (vim.api.nvim_buf_line_count buf))
              (vim.api.nvim_open_win buf true {:relative :editor :style :minimal :row 3 :col 3 :height 40 :width 150}))) "show message"]])
 
