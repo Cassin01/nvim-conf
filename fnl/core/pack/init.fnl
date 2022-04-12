@@ -10,12 +10,12 @@
 (vim.cmd "packadd packer.nvim")
 ((-> (require :packer) (. :startup))
  (λ []
-   (use [:wbthomason/packer.nvim 
+   (use [:wbthomason/packer.nvim
          {1 :rktjmp/hotpot.nvim
           :config (λ []
-                    (nmaps 
-                      :<space>c 
-                      :packer 
+                    (nmaps
+                      :<space>c
+                      :packer
                       [[:cc (cmd :PackerCompile) :compile {:silent false}]
                        [:i (cmd :PackerInstall) :install {:silent false}]
                        [:sy (cmd :PackerSync) :sync {:silent false}]
@@ -24,7 +24,7 @@
                        [:eb (cmd "lua print(require('hotpot.api.eval')['eval-buffer'](0))") "evaluate and print buffer" {:silent false}]
                        [:r (λ []
                              (let [cache_path_fn (. (require :hotpot.api.cache) :cache-path-for-fnl-file)
-                                   fnl-file (vim.fn.expand :%:p) 
+                                   fnl-file (vim.fn.expand :%:p)
                                    lua-file (cache_path_fn fnl-file)]
                                (if lua-file
                                  (vim.cmd (.. ":new " lua-file))
