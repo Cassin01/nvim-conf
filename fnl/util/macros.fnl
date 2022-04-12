@@ -14,6 +14,13 @@
 
 (local M {})
 
+(fn _2str [obj]
+  "obj: string or table"
+  (if
+    (= (type obj) :table) (table.concat obj " or ")
+    (= (type obj) :string) obj
+    (assert false "expected string or table")))
+
 (fn M.def [name args types ...]
   "examples:
   ```fennel
@@ -25,7 +32,7 @@
   ```"
   (assert-compile (not (= (type name) :string)) "name expects symbol, vector, or list as first arugument" name)
   (assert-compile (= (type types) :table) "types expects table as first arugment" types)
-  `(fn ,name [,(unpack args)] 
+  `(fn ,name [,(unpack args)]
      (let [first# (λ [lst#] (. lst# 1))
            rest# (λ [lst#] [(unpack lst# 2)])
            empty?# (λ [str#] (or (= str# nil) (= str# "")))
@@ -44,10 +51,10 @@
                     (if (varg? k#)
                       (assert-compile (= :varg (. types i#)) "[type mismatch] ... expects :varg" types)
                       `(assert (type-eq# ,k# ,(. types i#))
-                               (.. "argument " (tostring ,k#) "[type mismatch] must be " ,(. types i#))))
+                               (.. "argument " (tostring ,k#) "[type mismatch] must be " ,(_2str (. types i#)))))
                     (assert-compile false "too many arguments" args)))
        (let [ret# (do ,...)]
-         (assert (type-eq# ret# ,(. types (length types))) (.. "return value must be " ,(. types (length types)) " but " (type ret#)))
+         (assert (type-eq# ret# ,(. types (length types))) (.. "return value must be " ,(_2str (. types (length types))) " but " (type ret#)))
          ret#))))
 
 (fn M.ep [k v source body]
@@ -64,6 +71,7 @@
        `(. (require ,m) ,f))
 (fn M.ref-f [f m ...]
   `((. (require ,m) ,f) ,...))
+
 
 ;;; ref: https://notabug.org/dm9pZCAq/dotfiles/src/master/.config/nvim/fnl/macros.fnl
 

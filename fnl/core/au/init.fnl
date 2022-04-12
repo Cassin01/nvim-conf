@@ -14,6 +14,7 @@
                                      (vim.cmd "normal! g'\"")))
 
 ;;; highlight
+;;; WARN Should be read before color scheme is loaded.
 
 (au :hi-default :BufWinEnter (each [_ k (ipairs (require :core.au.hi))]
                        (vim.api.nvim_set_hl 0 (unpack k))))
