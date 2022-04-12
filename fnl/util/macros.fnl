@@ -73,6 +73,9 @@
 (fn M.ref-f [f m ...]
   `((. (require ,m) ,f) ,...))
 
+(fn M.unless [cond body]
+  `(if (not ,cond) ,body))
+
 (fn M.require* [relative absolute]
   "(local type* (require (if (empty? ...)
   :type
