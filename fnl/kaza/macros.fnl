@@ -13,10 +13,17 @@
      (tset ,opt 1 name)
      (use ,opt)))
 
-;---
+;;; common stuff
+
+(fn M.ui-ignore-filetype []
+  ["" :prompt :dashboard :help :nerdtree :TelescopePrompt])
+
+;;; syntax sugar
 
 (fn M.la [body]
   `(λ [] ,body))
+
+;;; mapping
 
 (fn M.cmd [s] (string.format "<cmd>%s<cr>" s))
 
@@ -40,7 +47,13 @@
          (prefix#.map (unpack l#))
          (prefix#.map-f (unpack l#))))))
 
-(fn M.ui-ignore-filetype []
-  ["" :prompt :dashboard :help :nerdtree :TelescopePrompt])
+;;; autocmd
+
+(fn M.au [group event body ?opt]
+  `(let [opt# {:callback (λ [] ,body)
+               :group (vim.api.nvim_create_augroup ,group {:clear true})}]
+     (each [k# v# (pairs (or ,?opt {}))]
+       (tset opt# k# v#))
+     (vim.api.nvim_create_autocmd ,event opt#)))
 
 M

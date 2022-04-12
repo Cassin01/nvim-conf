@@ -1,5 +1,5 @@
-(import-macros {: req-f : epi} :util.macros)
-(import-macros {: nmaps : cmd : plug : ui-ignore-filetype} :kaza.macros)
+(import-macros {: req-f : ref-f : epi} :util.macros)
+(import-macros {: nmaps : cmd : plug : ui-ignore-filetype : la} :kaza.macros)
 
 (macro au [group event body]
   `(vim.api.nvim_create_autocmd ,event {:callback (λ [] ,body) :group (vim.api.nvim_create_augroup ,group {:clear true})}))
@@ -10,7 +10,7 @@
 (macro nmap [key cmd desc]
   `(vim.api.nvim_set_keymap :n ,key ,cmd {:noremap true :silent true :desc ,desc}))
 
-(macro map! [mode key cmd] 
+(macro map! [mode key cmd]
   "map without description.
   this map! aims to be used when extend builtin mapping (so no need to write document). "
   ; (if (= ?cmd nil)
@@ -35,101 +35,18 @@
                   k))))
 
 [
-
  ;;; snippet
  :SirVer/ultisnips
  :honza/vim-snippets
 
  ;;; UI
-
- {1 :Shougo/ddu.vim
-  :disable true
-  :requires [:vim-denops/denops.vim
-             ; filter
-             :Shougo/ddu-filter-matcher_substring
-             ; ui
-             :Shougo/ddu-ui-ff
-             :Shougo/ddu-ui-filer
-             ; kind
-             :Shougo/ddu-kind-file
-             ; source
-             :Shougo/ddu-commands.vim
-             :Shougo/ddu-source-file
-             :Shougo/ddu-source-file_rec
-             :Shougo/ddu-source-register
-             :kuuote/ddu-source-mr
-             :lambdalisue/mr.vim
-             :shun/ddu-source-buffer
-             :4513ECHO/ddu-source-colorscheme
-             ]
-  :config (λ []
-            ((. vim.fn :ddu#custom#patch_global)
-             {:ui :ff
-              :sources [{:name :file_rec :params {}}
-                        {:name :mr}
-                        {:name :file}
-                        {:name :register}
-                        {:name :buffer}]
-              :sourceOptions [:_ {:matchers [:matcher_substring]}]
-              :kindOptions {:file {:defaultAction :open}
-                            :colorscheme {:defaultAction :set}}
-              :uiParams {:ff { :startFilter false }}
-              :filterParams {:matcher_substring {:highlightMatched :Search}}})
-            (vim.api.nvim_create_autocmd
-              :FileType
-              {:pattern :ddu-ff
-               :group (vim.api.nvim_create_augroup :ddu-ff {:clear true})
-               :callback (λ []
-                           (nmap-buf :<cr> (cmd "ddu#ui#ff#do_action('itemAction')")  "item action")
-                           (vim.api.nvim_buf_set_keymap 0
-                                                        :n
-                                                        :<space>
-                                                        "<Cmd>call ddu#ui#ff#do_action('toggleSelectItem')<CR>" {:noremap true :silent true :desc "toggle select item"})
-                           (vim.api.nvim_buf_set_keymap 0
-                                                        :n
-                                                        :i
-                                                        "<Cmd>call ddu#ui#ff#do_action('openFilterWindow')<CR>" {:noremap true :silent true :desc "open filter window" })
-                           (vim.api.nvim_buf_set_keymap 0
-                                                        :n
-                                                        :q
-                                                        "<Cmd>call ddu#ui#ff#do_action('quit')<CR>" {:noremap true :silent true :desc "quit" })
-                           )})
-            (vim.api.nvim_create_autocmd
-              :FileType
-              {:pattern :ddu-ff-filter
-               :group (vim.api.nvim_create_augroup :ddu-ff-filter {:clear true})
-               :callback (λ []
-                           (vim.api.nvim_buf_set_keymap 0
-                                                        :i
-                                                        :<cr>
-                                                        "ddu#ui#filer#is_directory() ? <cmd>call ddu#ui#filer#do_action('itemAction', {'name': 'narrow'})<cr> : <cmd>call ddu#ui#filer#do_action('itemAction', {'name': 'open'})<cr>"
-                                                        {:noremap true :silent true :desc :action: :expr true})
-                           (vim.api.nvim_buf_set_keymap 0 :n :<cr> :<cmd>close<cr> {:noremap true :silent true :desc :close})
-                           (vim.api.nvim_buf_set_keymap 0 :n :q :<cmd>close<cr> {:noremap true :silent true :desc :close}))})
-            (let [prefix ((. (require :kaza.map) :prefix-o) :n :<space>d :ddu)]
-              (prefix.map :m "<cmd>Ddu mr<cr>" :history)
-              (prefix.map :b "<cmd>Ddu buffer<cr>" :buffer)
-              (prefix.map :r "<cmd>Ddu register<cr>" :register)
-              (prefix.map :n "<cmd>Ddu file -source-param-new -volatile<cr>" "new file")
-              (prefix.map :f "<cmd>Ddu file<cr>" :file)
-              (prefix.map :c "<cmd>Ddu colorscheme<cr>" :colorscheme))
-            )}
-
- {1 :preservim/nerdtree
-  :disable true
-  :requires :ryanoasis/vim-devicons
-  :setup (λ []
-           (local nerdtree ((req-f :prefix-o :kaza.map) :n :<space>n :nerdtree))
-           (nerdtree.map :c :<cmd>NERDTreeCWD<CR> "cwd")
-           (nerdtree.map :t :<cmd>NERDTreeToggle<CR> "toggle")
-           (nerdtree.map :f :<cmd>NERDTreeFind<CR> "find"))}
- {1 :kyazdani42/nvim-web-devicons
+{1 :kyazdani42/nvim-web-devicons
   :config (λ [] ((req-f :set_icon :nvim-web-devicons) {:fnl {:icon "🌱" :color "#428850" :name :fnl}}))}
  {1 :kyazdani42/nvim-tree.lua
   :requires :kyazdani42/nvim-web-devicons
   :disabe true
   :config (λ []
-            ((req-f :setup :nvim-tree) {})
+            ((req-f :setup :nvim-tree) {:actions {:open_file {:quit_on_open true}}})
             (nmaps
               :<space>n
               :nvim-tree
@@ -149,7 +66,7 @@
                                             :excluded_filetypes (ui-ignore-filetype)}))}
 
  {1 :nvim-telescope/telescope.nvim
-  :requires [:nvim-lua/plenary.nvim ]
+  :requires [:nvim-lua/plenary.nvim]
   :setup (λ []
            (local prefix ((. (require :kaza.map) :prefix-o) :n :<space>t :telescope))
            (prefix.map :f "<cmd>Telescope find_files<cr>" "find files")
@@ -158,18 +75,21 @@
            (prefix.map :h "<cmd>Telescope help_tags<cr>" "help tags")
            (prefix.map :t "<cmd>Telescope<cr>" "telescope")
            (prefix.map :o "<cmd>Telescope oldfiles<cr>" "old files"))}
+
+ {1 :nvim-telescope/telescope-packer.nvim
+    :config (la ((req-f :load_extension :telescope) :packer))
+    :requires [:nvim-telescope/telescope.nvim]}
+
+ {1 :nvim-telescope/telescope-frecency.nvim
+  :config (la ((req-f :load_extension :telescope) :frecency))
+  :requires [:tami5/sqlite.lua :nvim-telescope/telescope.nvim]}
+
 {1 :xiyaowong/nvim-transparent
  :config (λ []
            ((-> (require :transparent) (. :setup))
             {:enable false}))}
 {1 :akinsho/bufferline.nvim
  :requires :kyazdani42/nvim-web-devicons}
-{1 :windwp/windline.nvim
- :disable true
- :config (λ [] (require "wlsample.vscode")
-           ((. (require "wlfloatline") :setup)
-            {:always_active false
-             :show_last_status false}))}
 
 :sheerun/vim-polyglot
 {1 :nvim-treesitter/nvim-treesitter
@@ -230,6 +150,7 @@
            ((. vim.fn :submode#map) :bufmove :n "" :- :<C-w>-))}
 
 ;;; lsp
+
 {1 :williamboman/nvim-lsp-installer
  :config (λ []
            ((. (require :nvim-lsp-installer) :on_server_ready)
@@ -248,25 +169,6 @@
           (let [prefix ((. (require :kaza.map) :prefix-o) :n :<space>f :code-action-menu)]
             (prefix.map "" "<cmd>CodeActionMenu<cr>" :action)))}
 
-{1 :kosayoda/nvim-lightbulb
- :disable true
- :config (λ []
-           ((. (require :nvim-lightbulb) :setup)
-            {:ignore {}
-             :sign {:enabled true
-                    :priority 10 }
-             :float {:enabled false
-                     :text :💡
-                     :win_opts {}}
-             :virtual_text {:enabled false
-                            :text :💡
-                            :hl_mode :replace}
-             :status_text {:enabled false
-                           :text :💡
-                           :text_unavilable ""}}))
- :setup (λ []
-          (vim.cmd "autocmd CursorHold,CursorHoldI * lua require'nvim-lightbulb'.update_lightbulb()"))}
-
 ;; error list
 {1 :folke/trouble.nvim
  :requires :yazdani42/nvim-web-devicons
@@ -280,6 +182,7 @@
             :hrsh7th/cmp-nvim-lua
             :hrsh7th/cmp-cmdline      ; cmdline completions
             :hrsh7th/cmp-calc
+            :hrsh7th/cmp-nvim-lsp-document-symbol
             :nvim-orgmode/orgmode
             :quangnguyen30192/cmp-nvim-ultisnips
             :neovim/nvim-lspconfig]
@@ -287,7 +190,10 @@
            (local cmp (require :cmp))
            (cmp.setup {:snippet {:expand (λ [args]
                                            (vim.fn.UltiSnips#Anon args.body))}
-                       :sources (cmp.config.sources [{:name :ultisnips} {:name :nvim_lsp} {:name :orgmode}]
+                       :sources (cmp.config.sources [{:name :ultisnips}
+                                                     {:name :nvim_lsp}
+                                                     {:name :orgmode}
+                                                     {:name :lsp_document_symbol}]
                                                     [{:name :buffer
                                                       :option {:get_bufnrs (λ []
                                                                              (vim.api.nvim_list_bufs))}}])})
@@ -326,14 +232,6 @@
  :requires [:hrsh7th/vim-vsnip-integ
             :rafamadriz/friendly-snippets]}
 
-{1 :folke/which-key.nvim
- :disable true
- :config (λ []
-           ((-> (require :which-key) (. :setup)) {})
-           (local presets (require :which-key.plugins.presets))
-           (tset presets.operators :i nil)
-           (tset presets.operators :v nil))}
-
 ;;; vim
 
 {1 :Shougo/echodoc.vim
@@ -362,23 +260,6 @@
           (tset vim.g :sexp_enable_insert_mode_mappings false))}
 
 ;; util
-
-          ; (map! :n :w (plug :CamelCaseMotion_w))
-          ; (map! :n :b (plug :CamelCaseMotion_b))
-          ; (map! :n :e (plug :CamelCaseMotion_e))
-          ; (map! :n :ge (plug :CamelCaseMotion_ge))
-          ; (map! :s :w nil)
-          ; (map! :s :b nil)
-          ; (map! :s :e nil)
-          ; (map! :s :gb nil)
-          ; (map! :o :iw (plug :CamelCaseMotion_iw))
-          ; (map! :o :ib (plug :CamelCaseMotion_ib))
-          ; (map! :o :ie (plug :CamelCaseMotion_ie))
-          ; (map! :x :iw (plug :CamelCaseMotion_iw))
-          ; (map! :x :ib (plug :CamelCaseMotion_ib))
-          ; (map! :x :ie (plug :CamelCaseMotion_ie))
-          ; (map! :i :<S-left> :<c-o><Plug>CAmelCaseMotion_b)
-          ; (map! :i :<S-right> :<c-o><Plug>CAmelCaseMotion_w)
 
 {1 :majutsushi/tagbar
  :setup (λ []
@@ -419,6 +300,8 @@
           (let [prefix ((. (require :kaza.map) :prefix-o) :n :<space>r :ranger)]
             (prefix.map :r :<cmd>Ranger<cr> "start at here")
             (prefix.map :t :<cmd>RangerNewTab<cr> "new tab")))}
+
+;;; move
 
 ;; easymotion
 {1 :easymotion/vim-easymotion
@@ -469,6 +352,10 @@
 :junegunn/goyo.vim
 :amix/vim-zenroom2
 
+;; web browser
+{1 :thinca/vim-ref
+ :setup (la (vim.cmd "source ~/.config/nvim/fnl/core/pack/conf/vim-ref.vim"))}
+
 ;;; language
 
 ;; text
@@ -478,36 +365,9 @@
             (prefix.map "e" "<cmd>EnableAutocorrect<cr>" "enable auto correct")))}
 
 ;; org
-{1 :jceb/vim-orgmode
- :disable true
- :setup (λ []
-          (tset vim.g :org_agenda_files ["~/org/*.org"]))}
-
 {1 :nvim-orgmode/orgmode
  :config (λ []
            ((. (require :orgmode) :setup) {:org_agenda_files ["~/org/*"]}))}
-
-
-{1 :nvim-neorg/neorg
- :disable true
- :ft :norg
- :after :nvim-treesitter
- :config (λ []
-           ((. (require :neorg) :setup)
-            {:load {:core.defaults {}
-                    :core.keybinds {:config {:default_keybinds true
-                                             :neorg_leader :<Leader>n}}
-                    :core.norg.completion {:config {:engine :nvim-cmp}}
-                    :core.norg.concealer {:config {:icons {:todo {:enabled true
-                                                                  :done {:enabled true
-                                                                         :icon ""}
-                                                                  :pending {:enabled true
-                                                                            :icon ""}
-                                                                  :undone {:enabled true
-                                                                           :icon "×"}}}}}
-                    :core.norg.dirman {:config {:workspaces {:nodo "~/notes/todo"}}}
-                    ;:core.integrations.telescope {}
-                    }}))}
 
 ;; lua
 :bfredl/nvim-luadev

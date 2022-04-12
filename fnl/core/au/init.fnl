@@ -1,12 +1,11 @@
+(import-macros {: epi} :util.macros)
+(import-macros {: au : la : plug} :kaza.macros)
 (local {: hi-clear} (require :kaza.hi))
 (local create_autocmd vim.api.nvim_create_autocmd)
 (local create_augroup vim.api.nvim_create_augroup)
 (local buf_set_option vim.api.nvim_buf_set_option)
 (local win_set_option vim.api.nvim_win_set_option)
 (local buf_set_keymap vim.api.nvim_buf_set_keymap)
-
-(macro au [group event body]
-  `(vim.api.nvim_create_autocmd ,event {:callback (λ [] ,body) :group (vim.api.nvim_create_augroup ,group {:clear true})}))
 
 ;; remind cursor position
 (au :restore-position :BufReadPost (when (and (> (vim.fn.line "'\"") 1)
@@ -110,3 +109,13 @@
   {:command :PackerCompile
    :pattern :plugs.fnl
    :group (create_augroup :packer-compile {:clear true})})
+
+;; ref-view
+(au :ref-view
+    :FileType
+    (let [{: bmap} (require :kaza.map)]
+      (epi _ k [[:n :b (plug "(ref-back)") :back]
+                [:n :f (plug "(ref-forward)") :forward]
+                [:n :q :<c-w>c :quit]]
+           (bmap 0 (unpack k))))
+    {:pattern :ref})

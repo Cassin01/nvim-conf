@@ -36,10 +36,16 @@
    [:o (cmd :only) "only (close all windows(splits) except the current one)"]
    [:s (cmd :sp) "split-horizontally"]
    [:v (cmd :vs) "split-vertically"]
-   [:q (cmd :q) "quit"]
-   [:qq (cmd :q!) "quit!"]
+   ; [:q (cmd :q) "quit"]
+   ; [:q (cmd :q!) "quit!"]
    [:d (cmd :bd) "delete tab"]
    [";" ":<c-u>sp<cr><c-w>J:<c-u>res 10<cr>:<C-u>terminal<cr>:<c-u>setlocal noequalalways<cr>i" "vscode like terminal"] ])
+
+(nmaps
+  (space :q)
+  :quit
+  [[:q (cmd :q) :quit]
+   [:a (cmd :q!):quit!]])
 
 (nmaps
   :<space>m

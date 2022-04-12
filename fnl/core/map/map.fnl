@@ -1,4 +1,5 @@
 (local {: prefix} (require :kaza.map))
+(import-macros {: la} :kaza.macros)
 
 [
  [:n :# :*:%s/<C-r>///g<Left><Left> "replace current word"]

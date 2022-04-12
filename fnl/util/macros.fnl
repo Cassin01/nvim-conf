@@ -69,27 +69,9 @@
 
 (fn M.req-f [f m]
        `(. (require ,m) ,f))
+
 (fn M.ref-f [f m ...]
   `((. (require ,m) ,f) ,...))
-
-
-;;; ref: https://notabug.org/dm9pZCAq/dotfiles/src/master/.config/nvim/fnl/macros.fnl
-
-(fn M.for-n! [n tbl ...]
-  "For i in range, do something."
-  `(let [tbl# ,tbl]
-     (for [,n 1 (length tbl#)]
-       ,...)))
-
-(fn M.for-n-i! [n-var i-var tbl ...]
-  "Do same thing with for-n! but, also get table value when n=i"
-  `(let [tbl# ,tbl]
-     ,(M.for-n! n-var `tbl#)
-     `(let [,i-var (. tbl# ,n-var)] ,...)))
-
-(fn M.for! [i tbl ...] (M.for-n-i! `i# i tbl ...))
-
-(fn M.push! [t i] `(test ,t (+ 1 (length ,t)) ,i))
 
 (fn M.require* [relative absolute]
   "(local type* (require (if (empty? ...)
