@@ -26,8 +26,7 @@
 (macro c-s [c]
   (string.format "<C-S-%s>" c))
 
-(local evil-maps
-[
+(local evil-maps [
  ;; move
  [:i (c :p) "<up>" "up"]
  [:i (c :n) "<down>" "down"]
