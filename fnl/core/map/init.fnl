@@ -61,6 +61,8 @@
    [(br :r :f) ":<c-u>set clipboard-=unnamed<cr>" "disable clipboard"]
    [(br :l :x) ":<c-u>setlocal conceallevel=1<cr>" "hide conceal"]
    [(br :r :x) ":<c-u>setlocal conceallevel=0<cr>" "show conceal"]
+   [(br :l :e) (cmd :EvilStart) "Enable EvilMode"]
+   [(br :r :e) (cmd :EvilEnd) "Disable EvilMode"]
    [:fn (la (print (vim.fn.expand :%:t))) "show file name"]
    [:fp (la (print (vim.fn.expand :%:p))) "show file path"]
    [:ft (la (if (= vim.o.foldmethod :indent)
@@ -72,7 +74,8 @@
    [:m (la (let [buf (vim.api.nvim_create_buf false true)]
              (vim.api.nvim_buf_set_lines buf 0 100 false ((req-f :split :util.string) (vim.api.nvim_exec "messages" true ) "\n"))
              (local height (vim.api.nvim_buf_line_count buf))
-             (vim.api.nvim_open_win buf true {:relative :editor :style :minimal :row 3 :col 3 :height 40 :width 150}))) "show message"]])
+             (vim.api.nvim_open_win buf true {:relative :editor :style :minimal :row 3 :col 3 :height 40 :width 150}))) "show message"]
+   ])
 
 (when (vim.fn.has :mac)
   (epi _ k (require :core.map.mac) (map (unpack k))))

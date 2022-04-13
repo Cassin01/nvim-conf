@@ -49,11 +49,25 @@
 
 ;;; autocmd
 
-(fn M.au [group event body ?opt]
+(fn _callback [group event body ?opt]
   `(let [opt# {:callback (λ [] ,body)
                :group (vim.api.nvim_create_augroup ,group {:clear true})}]
      (each [k# v# (pairs (or ,?opt {}))]
        (tset opt# k# v#))
      (vim.api.nvim_create_autocmd ,event opt#)))
+
+
+(fn _command [group event command ?opt]
+  `(let [opt# {:command ,command
+               :group (vim.api.nvim_create_augroup ,group {:clear true})}]
+     (each [k# v# (pairs (or ,?opt {}))]
+       (tset opt# k# v#))
+     (vim.api.nvim_create_autocmd ,event opt#)))
+
+(fn M.au [group event body ?opt]
+  (if
+    (= (type body) :table) (_callback group event body ?opt)
+    (= (type body) :string) (_command group event body ?opt)
+    (assert-compile false "au: body must be a sequence or string" body)))
 
 M

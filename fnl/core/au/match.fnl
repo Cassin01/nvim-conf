@@ -8,6 +8,10 @@
   (let [keywords# [:IDEA :INFO :REFACTOR :DEPRECATED :TASK :UPDATE :EXAMPLE :ERROR :WARN :BROKEN]]
     (.. :\<\ "(" (table.concat keywords# :\|) :\ ")")))
 
+(macro typo []
+   (let [keywords# [:codt :codts]]
+    (.. :\ "(" (table.concat keywords# :\|) :\ ")")))
+
 (fn add-matchs []
   (if (in? vim.bo.filetype (ui-ignore-filetype))
     (vim.fn.clearmatches)
@@ -17,6 +21,7 @@
       (vim.fn.matchadd :TrailingSpaces :\s\+$)
       (vim.fn.matchadd :Tabs :\t)
       (vim.fn.matchadd :DoubleSpace "　")
-      (vim.fn.matchadd :TodoEx (todo_regex)))))
+      (vim.fn.matchadd :TodoEx (todo_regex))
+      (vim.fn.matchadd :Error (typo)))))
 
 {: add-matchs}

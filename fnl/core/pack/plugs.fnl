@@ -347,6 +347,12 @@
                               [:/ (λ [] ((req-f :split_open :cmdbuf) vim.o.cmdwinheight {:type :vim/search/forward})) :search-forward]
                               ["?" (λ [] ((. (require :cmdbuf) :split_open) vim.o.cmdwinheight {:type :vim/search/backward})) :search-backward]]))}
 
+;; translation
+{1 :skanehira/translate.vim
+ :setup (λ []
+          (vim.cmd "nnoremap gr <Plug>(Translate)")
+          (vim.cmd "vnoremap <c-t> :Translate<cr>"))}
+
 ;; zen
 :junegunn/limelight.vim
 :junegunn/goyo.vim

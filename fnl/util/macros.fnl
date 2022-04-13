@@ -14,6 +14,23 @@
 
 (local M {})
 
+
+;;; utility functions
+
+(fn M.nil? [o]
+  (= o nil))
+
+(fn M.table? [o]
+  (= (type o) :table))
+
+(fn M.number? [o]
+  (= (type o) :number))
+
+(fn M.string? [o]
+  (= (type o) :string))
+
+;;; def
+
 (fn _2str [obj]
   "obj: string or table"
   (if

@@ -7,9 +7,9 @@
           text_before (if (> col 1) (string.sub line_text 1 (- col 1)) "")]
       (values text_before text_after)))
 
-(tset 
-  _G.__kaza.f 
-  :retrive_till_tail 
+(tset
+  _G.__kaza.f
+  :retrive_till_tail
   (λ []
     (let [(text_before text_after) (split-line-at-point)]
       (if (= (string.len text_after) 0)
