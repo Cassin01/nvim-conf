@@ -61,8 +61,8 @@
    [(br :r :f) ":<c-u>set clipboard-=unnamed<cr>" "disable clipboard"]
    [(br :l :x) ":<c-u>setlocal conceallevel=1<cr>" "hide conceal"]
    [(br :r :x) ":<c-u>setlocal conceallevel=0<cr>" "show conceal"]
-   [(br :l :e) (cmd :EvilStart) "Enable EvilMode"]
-   [(br :r :e) (cmd :EvilEnd) "Disable EvilMode"]
+   [(br :l :e) (cmd :EvilEnable) "Enable EvilMode"]
+   [(br :r :e) (cmd :EvilDisable) "Disable EvilMode"]
    [:fn (la (print (vim.fn.expand :%:t))) "show file name"]
    [:fp (la (print (vim.fn.expand :%:p))) "show file path"]
    [:ft (la (if (= vim.o.foldmethod :indent)
