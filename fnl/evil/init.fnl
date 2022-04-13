@@ -29,46 +29,47 @@
 (local evil-maps
 [
  ;; move
- [:i (c :p) "<up>" "<C-p>: up"]
- [:i (c :n) "<down>" "<C-n>: down"]
- [:i (c :f) "<right>" "<C-f>: right"]
- [:i (c :b) "<left>" "<C-b>: left"]
- [:i (c :e) "<end>" "<C-e>: jump to EOL"]
- [:i (c :a) "<c-o>^" "<C-a>: jump to BOL"]
+ [:i (c :p) "<up>" "up"]
+ [:i (c :n) "<down>" "down"]
+ [:i (c :f) "<right>" "right"]
+ [:i (c :b) "<left>" "left"]
+ [:i (c :e) "<end>" "jump to EOL"]
+ [:i (c :a) "<c-o>^" "jump to BOL"]
  [:i (c-s :f) "<esc>ea" "<C-S-f> move forward one word"]
  [:i (c-s :b) "<esc>bi" "<C-S-b> move to one word later"]
  [:i (c :j) "<esc>o" "<C-j> insert new line bellow and jump"]
  [:i (c :o) "<esc>O" "<C-o> insert new line above and jump" ]
 
  ;; copy & paste
- [:i (c :d) "<Del>" "<C-d>: Delete"]
- [:i (c :h) "<c-h>" "<C-h>: backspace "]
- [:i (c "@") "<c-o>v" "<C-@>: mark the start point of yank"]
- [:i (c :k) "<C-r>=v:lua.__kaza.f.retrive_till_tail()<CR>" "<C-k>: delete from cursor to EOL"]
+ [:i (c :d) "<Del>" "Delete"]
+ [:i (c :h) "<c-h>" "backspace "]
+ [:i (c "@") "<c-o>v" "mark the start point of yank"]
+ [:i (c :k) "<C-r>=v:lua.__kaza.f.retrive_till_tail()<CR>" "delete from cursor to EOL"]
 
  ;; undo & redo
- [:v (c :w) "y`]i" "<C-w>: yank"]
- [:v (c-s :w) "x`]i" "<C-S-w>: delete and yank"]
- [:i (c :y) "<esc>pa" "<C-y>: paste"]
- [:i (c :-) "<esc>ua" "<C ->: undo"]
- [:i (c :+) "<esc><c-r>a" "<C +>: redo"]
- [:i (.. (c :x) :0) "<c-o><c-w>q" "<C-x>0: close a window"]
- [:i (.. (c :x) :2) "<c-o>:<c-u>vs<cr>" "<C-x>2; split-vertically"]
- [:i (.. (c :x) :3) "<c-o>:<c-u>sp<cr>" "<C-x>3: split-horizontally"]
- [:i (.. (c :x) :o) "<c-o><c-w>w" "<C-x>o: move to other windows"]
+ [:v (c :w) "y`]i" " yank"]
+ [:v (c-s :w) "x`]i" "delete and yank"]
+ [:i (c :y) "<esc>pa" "paste"]
+ [:i (c :-) "<esc>ua" "undo"]
+ [:i (c :+) "<esc><c-r>a" "redo"]
+ [:i (.. (c :x) :0) "<c-o><c-w>q" "close a window"]
+ [:i (.. (c :x) :2) "<c-o>:<c-u>vs<cr>" "split-vertically"]
+ [:i (.. (c :x) :3) "<c-o>:<c-u>sp<cr>" "split-horizontally"]
+ [:i (.. (c :x) :o) "<c-o><c-w>w" "move to other windows"]
 
  ;; file
- [:i (.. (c :x) (c :s)) "<c-o>:w<cr>" "<C-x><C-s>: save-file"]
+ [:i (.. (c :x) (c :s)) "<c-o>:w<cr>" "save-file"]
  ])
 
-(fn bmap [bufnr mode key cmd desc]
+(fn bmap [bufnr mode key cmd ?desc]
   "[:number :string :string [:string :function] :string :nil]"
-  (if
-    (= (type cmd) :string)
+  (let [desc (.. "[Evil] " (or ?desc ""))]
+    (if
+      (= (type cmd) :string)
       (vim.api.nvim_buf_set_keymap bufnr mode key cmd {:noremap true :silent true :desc desc})
-    (= (type cmd) :function)
+      (= (type cmd) :function)
       (vim.api.nvim_buf_set_keymap bufnr mode key "" {:callback cmd :noremap true :silent true :desc desc})
-    (assert false "invalid cmd type")))
+      (assert false "invalid cmd type"))))
 
 (fn set-maps []
   (epi _ k evil-maps (bmap 0 (unpack k))))
@@ -84,9 +85,8 @@
 
 (u-cmd
   :EvilEnable
-  (la
-    (set-maps)
-    (print "EvilMode Enabled")))
+  (la (set-maps)
+      (print "EvilMode Enabled")))
 
 (u-cmd
   :EvilDisable
