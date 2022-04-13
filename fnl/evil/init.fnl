@@ -1,6 +1,5 @@
 (import-macros {: la} :kaza.macros)
 (import-macros {: epi} :util.macros)
-(local {: bmap} (require :kaza.map))
 
 (local vf vim.fn)
 
@@ -62,6 +61,15 @@
  [:i (.. (c :x) (c :s)) "<c-o>:w<cr>" "<C-x><C-s>: save-file"]
  ])
 
+(fn bmap [bufnr mode key cmd desc]
+  "[:number :string :string [:string :function] :string :nil]"
+  (if
+    (= (type cmd) :string)
+      (vim.api.nvim_buf_set_keymap bufnr mode key cmd {:noremap true :silent true :desc desc})
+    (= (type cmd) :function)
+      (vim.api.nvim_buf_set_keymap bufnr mode key "" {:callback cmd :noremap true :silent true :desc desc})
+    (assert false "invalid cmd type")))
+
 (fn set-maps []
   (epi _ k evil-maps (bmap 0 (unpack k))))
 
@@ -77,12 +85,12 @@
 (u-cmd
   :EvilStart
   (la
-    (print "EvilMode Enabled")
-    (set-maps)))
+    (set-maps)
+    (print "EvilMode Enabled")))
 
 (u-cmd
   :EvilEnd
-  (print "EvilMode Disabled")
-  (la (del-maps)))
+  (la (del-maps)
+      (print "EvilMode Disabled")))
 
 {}
