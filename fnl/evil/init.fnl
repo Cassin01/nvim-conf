@@ -83,13 +83,13 @@
          (vim.api.nvim_add_user_command name f opt)))
 
 (u-cmd
-  :EvilStart
+  :EvilEnable
   (la
     (set-maps)
     (print "EvilMode Enabled")))
 
 (u-cmd
-  :EvilEnd
+  :EvilDisable
   (la (del-maps)
       (print "EvilMode Disabled")))
 
