@@ -77,7 +77,6 @@
 (fn del-maps []
   (epi _ k evil-maps (vim.api.nvim_buf_del_keymap 0 (. k 1) (. k 2))))
 
-
 (fn u-cmd [name f ?opt]
        (let [opt (or ?opt {})]
          (tset opt :force true)
