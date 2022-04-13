@@ -17,7 +17,7 @@
    [:e (cmd "KeyWindow") :evil]])
 
 (nmaps
-  :<space>s
+  (space :s)
   :win
   [[:j :<C-w>j "j"]
    [:k :<C-w>k "k"]
@@ -46,7 +46,7 @@
    [:a (cmd :q!):quit!]])
 
 (nmaps
-  :<space>m
+  (space :m)
   :me
   [[:nh :<cmd>noh<cr> "turn off search highlighting until the next search"]
    [:sd (cmd "e %:h") "show current directory"]
