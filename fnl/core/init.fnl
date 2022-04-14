@@ -5,7 +5,7 @@
          (error (string.format "Can't loading module: %s. ERR: %s" key err)))))
 
 ;;; plugins
-(epi _ key [:evil]
-     (let [(ok err) (pcall require key)]
+(epi _ key []
+     (let [(ok err) (pcall require (.. :plug. key))]
        (unless ok
          (error (string.format "Can't loading module: %s. ERR: %s" key err)))))
