@@ -3,7 +3,7 @@
 (fn u-cmd [name f ?opt]
        (let [opt (or ?opt {})]
          (tset opt :force true)
-         (vim.api.nvim_add_user_command name f opt)))
+         (vim.api.nvim_create_user_command name f opt)))
 
 ;;; info
 ;;; require: goyo, limelight

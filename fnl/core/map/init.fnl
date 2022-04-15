@@ -1,4 +1,4 @@
-(import-macros {: epi : req-f} :util.macros)
+(import-macros {: epi : req-f : unless} :util.macros)
 (import-macros {: la : cmd : plug : space : br : nmaps} :kaza.macros)
 
 (local {: map} (require :kaza.map))
@@ -61,8 +61,6 @@
    [(br :r :f) ":<c-u>set clipboard-=unnamed<cr>" "disable clipboard"]
    [(br :l :x) ":<c-u>setlocal conceallevel=1<cr>" "hide conceal"]
    [(br :r :x) ":<c-u>setlocal conceallevel=0<cr>" "show conceal"]
-   [(br :l :e) (cmd :EvilEnable) "Enable EvilMode"]
-   [(br :r :e) (cmd :EvilDisable) "Disable EvilMode"]
    [:fn (la (print (vim.fn.expand :%:t))) "show file name"]
    [:fp (la (print (vim.fn.expand :%:p))) "show file path"]
    [:ft (la (if (= vim.o.foldmethod :indent)
@@ -78,10 +76,13 @@
    ])
 
 (when (vim.fn.has :mac)
-  (epi _ k (require :core.map.mac) (map (unpack k))))
+  (map :n "<space>m?" "<cmd>!open dict://<cword><cr>" "[me] mac dictionary"))
 
 (epi _ k (require :core.map.map) (map (unpack k)))
 
-((-> :core.map.bracket require (. :setup)))
+;;; plugins
+(epi _ name [:bracket :veil]
+     ((-> (.. :core.map. name) require (. :setup))))
+
 
 {}

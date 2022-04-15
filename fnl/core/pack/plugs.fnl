@@ -251,6 +251,9 @@
 :tpope/vim-unimpaired
 :tpope/vim-surround
 :tpope/vim-abolish
+; {1 :tpope/vim-rsi ; insert mode extension
+;  :config (la (tset vim.g :rsi_non_meta true))}
+:vim-utils/vim-husk
 :tpope/vim-repeat
 :github/copilot.vim
 :tpope/vim-sexp-mappings-for-regular-people

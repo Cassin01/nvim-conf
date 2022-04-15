@@ -40,7 +40,9 @@
 (def map [mode key cmd desc] [:string :string [:string :function] :string :nil]
   (if (= (type cmd) :string)
     (vim.api.nvim_set_keymap mode key cmd {:noremap true :silent true :desc desc})
-    (vim.api.nvim_set_keymap mode key "" {:callback cmd :noremap true :silent true :desc desc})))
+    (= (type cmd) :function)
+    (vim.api.nvim_set_keymap mode key "" {:callback cmd :noremap true :silent true :desc desc})
+    (error "invalid type for cmd")))
 
 (def bmap [bufnr mode key cmd desc] [:number :string :string [:string :function] :string :nil]
   (if (= (type cmd) :string)

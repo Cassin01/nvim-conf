@@ -31,9 +31,6 @@
                            (win_set_option 0 :relativenumber false)
                            (win_set_option 0 :number false)))
 
-; evil
-(au :evil :BufWinEnter :EvilEnable)
-
 ; vim grep
 (create_autocmd
   :QuickFixCmdPost
