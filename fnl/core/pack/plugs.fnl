@@ -10,14 +10,6 @@
 (macro nmap [key cmd desc]
   `(vim.api.nvim_set_keymap :n ,key ,cmd {:noremap true :silent true :desc ,desc}))
 
-(macro map! [mode key cmd]
-  "map without description.
-  this map! aims to be used when extend builtin mapping (so no need to write document). "
-  ; (if (= ?cmd nil)
-  ;   `(vim.api.nvim_del_keymap ,mode ,key)
-  ;   `(vim.api.nvim_set_keymap ,mode ,key ,?cmd {:noremap true :silent true}))
-  )
-
 (macro p+ [name opt]
   (when (not (-?> opt (. :disable)))
      `(let [opt# ,opt]
@@ -89,7 +81,9 @@
            ((-> (require :transparent) (. :setup))
             {:enable false}))}
 {1 :akinsho/bufferline.nvim
- :requires :kyazdani42/nvim-web-devicons}
+ :tag :*
+ :requires :kyazdani42/nvim-web-devicons
+ :config (λ [] (ref-f :setup :bufferline))}
 
 :sheerun/vim-polyglot
 {1 :nvim-treesitter/nvim-treesitter
@@ -188,17 +182,40 @@
             :neovim/nvim-lspconfig]
  :config (λ []
            (local cmp (require :cmp))
-           (cmp.setup {:snippet {:expand (λ [args]
-                                           (vim.fn.UltiSnips#Anon args.body))}
-                       :sources (cmp.config.sources [{:name :ultisnips}
-                                                     {:name :nvim_lsp}
-                                                     {:name :orgmode}
-                                                     {:name :lsp_document_symbol}]
-                                                    [{:name :buffer
-                                                      :option {:get_bufnrs (λ []
-                                                                             (vim.api.nvim_list_bufs))}}])})
-           (cmp.setup.cmdline :/ {:sources [{:name :buffer}]})
-           (cmp.setup.cmdline :: {:sources (cmp.config.sources [{:name :path}] [{:name :cmdline}])}))}
+           (cmp.setup
+             {:snippet {:expand (λ [args]
+                                  (vim.fn.UltiSnips#Anon args.body))}
+              :sources (cmp.config.sources [{:name :ultisnips}
+                                            {:name :nvim_lsp}
+                                            {:name :orgmode}
+                                            {:name :lsp_document_symbol}]
+                                           [{:name :buffer
+                                             :option {:get_bufnrs (λ []
+                                                                    (vim.api.nvim_list_bufs))}}])
+              :mapping (cmp.mapping.preset.insert
+                         {:<c-b> (cmp.mapping.scroll_docs -4)
+                          :<c-f> (cmp.mapping.scroll_docs 4)
+                          :<tab> (cmp.mapping (lambda [fallback]
+                                                (if
+                                                  (cmp.visible)
+                                                  (cmp.select_next_item)
+                                                  (let [(line col) (unpack (vim.api.nvim_win_get_cursor 0))]
+                                                    (print line col)
+                                                    (and (not= col 0)
+                                                         (= (-> (vim.api.nvim_buf_get_lines 0 (- line 1) line true)
+                                                                      (. 1)
+                                                                      (: :sub col col)
+                                                                      (: :match :%s))
+                                                                  nil)))
+                                                  (cmp.mapping.complete)
+                                                  (fallback))))
+                          :<c-e> (cmp.mapping.abort)
+                          :<cr> (cmp.mapping.confirm {:select false})
+                          })})
+           (cmp.setup.cmdline :/ {:mapping (cmp.mapping.preset.cmdline)
+                                  :sources [{:name :buffer}]})
+           (cmp.setup.cmdline :: {:mapping (cmp.mapping.preset.cmdline)
+                                  :sources (cmp.config.sources [{:name :path}] [{:name :cmdline}])}))}
 
 {1 :neovim/nvim-lspconfig
  :config (λ []

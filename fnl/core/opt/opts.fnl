@@ -23,4 +23,5 @@
  :spelllang "en,cjk"
  :guifont "HackGen Console"
  :inccommand :split
+ :laststatus 2
  :history 1000}
