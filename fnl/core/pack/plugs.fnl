@@ -195,12 +195,11 @@
               :mapping (cmp.mapping.preset.insert
                          {:<c-b> (cmp.mapping.scroll_docs -4)
                           :<c-f> (cmp.mapping.scroll_docs 4)
-                          :<tab> (cmp.mapping (lambda [fallback]
+                          :<tab> (cmp.mapping (λ [fallback]
                                                 (if
                                                   (cmp.visible)
                                                   (cmp.select_next_item)
                                                   (let [(line col) (unpack (vim.api.nvim_win_get_cursor 0))]
-                                                    (print line col)
                                                     (and (not= col 0)
                                                          (= (-> (vim.api.nvim_buf_get_lines 0 (- line 1) line true)
                                                                       (. 1)
