@@ -50,8 +50,6 @@
 [:i (c-s :a) :<c-a> "i_CTRL-A"]
 [:i (c :e) "<end>" "jump to EOL"]
 [:i (c :d) "<Del>" "delete"]
-[:i (m-s :f) "<esc>ea" "move forward one word"]
-[:i (m-s :b) "<esc>bi" "move to one word later"]
 [:i (c :j) "<esc>o" "<C-j> insert new line bellow and jump"]
 [:i (c :o) "<esc>O" "<C-o> insert new line above and jump"] ; *
 [:i  (c-s :o) "<c-o>" "i_CTRL-O"]
@@ -70,12 +68,14 @@
 [:i (c :+) "<esc><c-r>a" "redo"]
 
 ;; move
-[:i (m :p) "<up>" "up"]
-[:i (m :n) "<down>" "down"]
+[:i (c :p) "<up>" "up"]
+[:i (c :n) "<down>" "down"]
 [:i (m :f) "<s-right>" "right"]
 [:i (m :b) "<s-left>" "left"]
 [:i (m :j) "<esc>o" "<C-j> insert new line bellow and jump"]
 [:i (m :o) "<esc>O" "<C-o> insert new line above and jump" ]
+[:i (m :<) "<esc>ggi" "beginning of buffer"]
+[:i (m :>) "<esc>Gi" "end of buffer"]
 
 ;; window
 [:i (.. (c :x) :0) "<c-o><c-w>q" "close a window"]
@@ -83,7 +83,7 @@
 [:i (.. (c :x) :2) "<c-o>:<c-u>vs<cr>" "split-vertically"]
 [:i (.. (c :x) :3) "<c-o>:<c-u>sp<cr>" "split-horizontally"]
 [:i (.. (c :x) :o) "<c-o><c-w>w" "move to other windows"]
-
+[:i (.. (c :x) :k) "<c-o>:bdelete<cr>" "kill buffer"]
 
 ;; file
 [:i (.. (c :x) (c :s)) "<c-o>:update<cr>" "save-file"]

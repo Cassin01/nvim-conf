@@ -1,5 +1,5 @@
 (import-macros {: epi} :util.macros)
-(import-macros {: au : la : plug} :kaza.macros)
+(import-macros {: au! : la : plug} :kaza.macros)
 (local {: hi-clear} (require :kaza.hi))
 (local create_autocmd vim.api.nvim_create_autocmd)
 (local create_augroup vim.api.nvim_create_augroup)
@@ -8,26 +8,26 @@
 (local buf_set_keymap vim.api.nvim_buf_set_keymap)
 
 ;; remind cursor position
-(au :restore-position :BufReadPost (when (and (> (vim.fn.line "'\"") 1)
+(au! :restore-position :BufReadPost (when (and (> (vim.fn.line "'\"") 1)
                                               (<= (vim.fn.line "'\"") (vim.fn.line "$")))
                                      (vim.cmd "normal! g'\"")))
 
 ;;; highlight
 ;;; WARN Should be read before color scheme is loaded.
 
-(au :hi-default :BufWinEnter (each [_ k (ipairs (require :core.au.hi))]
+(au! :hi-default :BufWinEnter (each [_ k (ipairs (require :core.au.hi))]
                        (vim.api.nvim_set_hl 0 (unpack k))))
 
 ;; anotations
-(au :match-hi :ColorScheme (each [_ k (ipairs [[:Tabs {:bg :#eeaecc}]
+(au! :match-hi :ColorScheme (each [_ k (ipairs [[:Tabs {:bg :#eeaecc}]
                                                [:TrailingSpaces {:bg :#FFa331}]
                                                [:DoubleSpace {:bg :#cff082}]
                                                [:TodoEx {:bg :#44a005 :fg :#F0FFF0}]])]
                              (vim.api.nvim_set_hl 0 (unpack k))))
-(au :match [:BufWinEnter] ((. (require :core.au.match) :add-matchs)))
+(au! :match [:BufWinEnter] ((. (require :core.au.match) :add-matchs)))
 
 ; terminal mode
-(au :term-conf :TermOpen (do
+(au! :term-conf :TermOpen (do
                            (win_set_option 0 :relativenumber false)
                            (win_set_option 0 :number false)))
 
@@ -112,7 +112,7 @@
    :group (create_augroup :packer-compile {:clear true})})
 
 ;; ref-view
-(au :ref-view
+(au! :ref-view
     :FileType
     (let [{: bmap} (require :kaza.map)]
       (epi _ k [[:n :b (plug "(ref-back)") :back]

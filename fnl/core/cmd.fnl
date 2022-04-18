@@ -5,7 +5,7 @@
          (tset opt :force true)
          (vim.api.nvim_create_user_command name f opt)))
 
-;;; info
+;;; INFO
 ;;; require: goyo, limelight
 (u-cmd
   :ConcentrateText
@@ -23,7 +23,7 @@
         (set vim.o.scrolloff 99)
         (set _G.__kaza.v.concentrate true)))))
 
-;;; info
+;;; INFO
 ;;; require: limeligh, undotree
 (u-cmd
   :ConcentrateCode

@@ -8,6 +8,7 @@
  :softtabstop indent
  :expandtab true
  :number true
+ :relativenumber true
  :scrolloff 10
  :cursorline true
  :incsearch true
@@ -23,5 +24,6 @@
  :spelllang "en,cjk"
  :guifont "HackGen Console"
  :inccommand :split
+ :equalalways false
  :laststatus 2
  :history 1000}

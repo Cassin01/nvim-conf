@@ -74,15 +74,15 @@
          (assert (type-eq# ret# ,(. types (length types))) (.. "return value must be " ,(_2str (. types (length types))) " but " (type ret#)))
          ret#))))
 
-(fn M.ep [k v source body]
+(fn M.ep [k v source ...]
   "each pairs"
   `(each [,k ,v (pairs ,source)]
-    ,body))
+    ,...))
 
-(fn M.epi [i v source body]
+(fn M.epi [i v source ...]
   "each ipairs"
   `(each [,i ,v (ipairs ,source)]
-    ,body))
+    ,...))
 
 (fn M.req-f [f m]
        `(. (require ,m) ,f))

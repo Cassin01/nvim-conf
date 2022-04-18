@@ -43,7 +43,8 @@
   (space :q)
   :quit
   [[:q (cmd :q) :quit]
-   [:a (cmd :q!):quit!]])
+   [:a (cmd :q!):quit!]
+   [:b (cmd :bd) "delete buffer"]])
 
 (nmaps
   (space :m)

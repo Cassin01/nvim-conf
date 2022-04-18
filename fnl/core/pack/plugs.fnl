@@ -1,80 +1,61 @@
-(import-macros {: req-f : ref-f : epi} :util.macros)
-(import-macros {: nmaps : cmd : plug : ui-ignore-filetype : la} :kaza.macros)
+(import-macros {: req-f : ref-f : epi : ep} :util.macros)
+(import-macros {: nmaps : cmd : plug : space : ui-ignore-filetype : la : br : let-g} :kaza.macros)
 
 (macro au [group event body]
   `(vim.api.nvim_create_autocmd ,event {:callback (λ [] ,body) :group (vim.api.nvim_create_augroup ,group {:clear true})}))
 
-( macro nmap-buf [key cmd desc]
-  `(vim.api.nvim_buf_set_keymap 0 :n ,key ,cmd {:noremap true :silent true :desc ,desc}))
-
-(macro nmap [key cmd desc]
-  `(vim.api.nvim_set_keymap :n ,key ,cmd {:noremap true :silent true :desc ,desc}))
-
-(macro p+ [name opt]
-  (when (not (-?> opt (. :disable)))
-     `(let [opt# ,opt]
-       (tset opt# 1 ,name)
-       (table.insert plugs opt#))))
-
-;; WARN: This is a hack. This code causes an error when a plugin disabled at first.
-(macro trimmer [tbl]
-  ; tbl)
-  (icollect [_# k (ipairs tbl)]
-            (if (not (-?> k (. :disable)))
-              k
-              (do (tset k :setup nil)
-                  (tset k :config nil)
-                  k))))
-
 [
- ;;; snippet
- :SirVer/ultisnips
- :honza/vim-snippets
+;;; snippet
 
- ;;; UI
+:SirVer/ultisnips
+:honza/vim-snippets
+
+;;; UI
+
 {1 :kyazdani42/nvim-web-devicons
-  :config (λ [] ((req-f :set_icon :nvim-web-devicons) {:fnl {:icon "🌱" :color "#428850" :name :fnl}}))}
- {1 :kyazdani42/nvim-tree.lua
-  :requires :kyazdani42/nvim-web-devicons
-  :disabe true
-  :config (λ []
-            ((req-f :setup :nvim-tree) {:actions {:open_file {:quit_on_open true}}})
-            (nmaps
-              :<space>n
-              :nvim-tree
-              [[:t (cmd :NvimTreeToggle) :toggle]
-               [:r (cmd :NvimTreeRefresh) :refresh]
-               [:f (cmd :NvimTreeFindFile) :find]]))}
- {1 :glepnir/dashboard-nvim
-  :disable true
-  :config (λ [] (tset vim.g :dashboard_default_executive :telescope))}
- {1 :rinx/nvim-minimap
-  :config (λ []
-            (vim.cmd "let g:minimap#window#width = 10")
-            (vim.cmd "let g:minimap#window#height = 35"))}
- ;; scrollbar
- {1 :petertriho/nvim-scrollbar
-  :config (λ [] ((req-f :setup :scrollbar) {:excluded_buftypes [:terminal]
-                                            :excluded_filetypes (ui-ignore-filetype)}))}
+ :config (λ [] ((req-f :set_icon :nvim-web-devicons) {:fnl {:icon "🌱" :color "#428850" :name :fnl}}))}
+{1 :kyazdani42/nvim-tree.lua
+ :requires :kyazdani42/nvim-web-devicons
+ :disabe true
+ :config (λ []
+           ((req-f :setup :nvim-tree) {:actions {:open_file {:quit_on_open true}}})
+           (nmaps
+             :<space>n
+             :nvim-tree
+             [[:t (cmd :NvimTreeToggle) :toggle]
+              [:r (cmd :NvimTreeRefresh) :refresh]
+              [:f (cmd :NvimTreeFindFile) :find]]))}
+{1 :glepnir/dashboard-nvim
+ :disable true
+ :config (λ [] (tset vim.g :dashboard_default_executive :telescope))}
+{1 :rinx/nvim-minimap
+ :config (λ []
+           (vim.cmd "let g:minimap#window#width = 10")
+           (vim.cmd "let g:minimap#window#height = 35"))}
 
- {1 :nvim-telescope/telescope.nvim
-  :requires [:nvim-lua/plenary.nvim]
-  :setup (λ []
-           (local prefix ((. (require :kaza.map) :prefix-o) :n :<space>t :telescope))
-           (prefix.map :f "<cmd>Telescope find_files<cr>" "find files")
-           (prefix.map :g "<cmd>Telescope live_grep<cr>" "live grep")
-           (prefix.map :b "<cmd>Telescope buffers<cr>" "buffers")
-           (prefix.map :h "<cmd>Telescope help_tags<cr>" "help tags")
-           (prefix.map :t "<cmd>Telescope<cr>" "telescope")
-           (prefix.map :o "<cmd>Telescope oldfiles<cr>" "old files"))}
+;; scrollbar
+{1 :petertriho/nvim-scrollbar
+ :config (λ [] ((req-f :setup :scrollbar) {:excluded_buftypes [:terminal]
+                                           :excluded_filetypes (ui-ignore-filetype)}))}
 
- {1 :nvim-telescope/telescope-packer.nvim
-    :config (la ((req-f :load_extension :telescope) :packer))
-    :requires [:nvim-telescope/telescope.nvim]}
+{1 :nvim-telescope/telescope.nvim
+ :requires [:nvim-lua/plenary.nvim]
+ :setup (λ []
+          (local prefix ((. (require :kaza.map) :prefix-o) :n :<space>t :telescope))
+          (prefix.map :f "<cmd>Telescope find_files<cr>" "find files")
+          (prefix.map :g "<cmd>Telescope live_grep<cr>" "live grep")
+          (prefix.map :b "<cmd>Telescope buffers<cr>" "buffers")
+          (prefix.map :h "<cmd>Telescope help_tags<cr>" "help tags")
+          (prefix.map :t "<cmd>Telescope<cr>" "telescope")
+          (prefix.map :o "<cmd>Telescope oldfiles<cr>" "old files"))}
 
- {1 :nvim-telescope/telescope-frecency.nvim
-  :config (la ((req-f :load_extension :telescope) :frecency))
-  :requires [:tami5/sqlite.lua :nvim-telescope/telescope.nvim]}
+{1 :nvim-telescope/telescope-packer.nvim
+ :config (la ((req-f :load_extension :telescope) :packer))
+ :requires [:nvim-telescope/telescope.nvim]}
+
+{1 :nvim-telescope/telescope-frecency.nvim
+ :config (la ((req-f :load_extension :telescope) :frecency))
+ :requires [:tami5/sqlite.lua :nvim-telescope/telescope.nvim]}
 
 {1 :xiyaowong/nvim-transparent
  :config (λ []
@@ -83,8 +64,15 @@
 {1 :akinsho/bufferline.nvim
  :tag :*
  :requires :kyazdani42/nvim-web-devicons
- :config (λ [] (ref-f :setup :bufferline))}
-
+ :config (λ [] (ref-f :setup :bufferline))
+ :setup (la (nmaps
+              :<space>b
+              :bufferline
+              [[(br :r) (cmd :BufferLineCycleNext) "next"]
+               [(br :l) (cmd :BufferLineCyclePrev) "prev"]
+               [:e (cmd :BufferLineSortByExtension) "sort by extension"]
+               [:d (cmd :BufferLineSortByDirectory) "sort by directory"]
+               ]))}
 :sheerun/vim-polyglot
 {1 :nvim-treesitter/nvim-treesitter
  :run ":TSUpdate"
@@ -127,10 +115,10 @@
 
 ; Show git status on left of a code.
 {1 :lewis6991/gitsigns.nvim
-    :requires :nvim-lua/plenary.nvim
-     :config (λ []
-               ((. (require :gitsigns) :setup)
-                {:current_line_blame true}))}
+ :requires :nvim-lua/plenary.nvim
+ :config (λ []
+           ((. (require :gitsigns) :setup)
+            {:current_line_blame true}))}
 
 {1 :kana/vim-submode
  :config (λ []
@@ -193,19 +181,17 @@
                                              :option {:get_bufnrs (λ []
                                                                     (vim.api.nvim_list_bufs))}}])
               :mapping (cmp.mapping.preset.insert
-                         {:<c-b> (cmp.mapping.scroll_docs -4)
-                          :<c-f> (cmp.mapping.scroll_docs 4)
-                          :<tab> (cmp.mapping (λ [fallback]
+                         {:<tab> (cmp.mapping (λ [fallback]
                                                 (if
                                                   (cmp.visible)
                                                   (cmp.select_next_item)
                                                   (let [(line col) (unpack (vim.api.nvim_win_get_cursor 0))]
                                                     (and (not= col 0)
                                                          (= (-> (vim.api.nvim_buf_get_lines 0 (- line 1) line true)
-                                                                      (. 1)
-                                                                      (: :sub col col)
-                                                                      (: :match :%s))
-                                                                  nil)))
+                                                                (. 1)
+                                                                (: :sub col col)
+                                                                (: :match :%s))
+                                                            nil)))
                                                   (cmp.mapping.complete)
                                                   (fallback))))
                           :<c-e> (cmp.mapping.abort)
@@ -218,7 +204,7 @@
 
 {1 :neovim/nvim-lspconfig
  :config (λ []
-           (local capabilities ((. (require :cmp_nvim_lsp) :update_capabilities) (vim.lsp.protocol.make_client_capabilities)))
+           (local ˜capabilities ((. (require :cmp_nvim_lsp) :update_capabilities) (vim.lsp.protocol.make_client_capabilities)))
            (each [_ key (ipairs [:rust_analyzer])]
              ((-> (require :lspconfig) (. key) (. :setup))
               {:capabilities capabilities})))}
@@ -239,9 +225,9 @@
                                                  (let [prefix ((. (require :kaza.map) :prefix-o ) :n :<space>a :aerial)]
                                                    (prefix.map-buf bufnr :n "t" (cmd :AerialToggle!) :JumpForward)
                                                    (prefix.map-buf bufnr :n "{" (cmd :AerialPrev) :JumpForward)
-                                                   (prefix.map-buf bufnr :n "}" (cmd :AerialNext) :JumpBackward)
+                                                                              (prefix.map-buf bufnr :n "}" (cmd :AerialNext) :JumpBackward)
                                                    (prefix.map-buf bufnr :n "[[" (cmd :AerialPrevUp) :JumpUpTheTree)
-                                                   (prefix.map-buf bufnr :n "]]" (cmd :AerialNextUp) :JumpUpTheTree)))}))}
+                                                                               (prefix.map-buf bufnr :n "]]" (cmd :AerialNextUp) :JumpUpTheTree)))}))}
 
 {1 :hrsh7th/vim-vsnip
  :disable true
@@ -268,7 +254,7 @@
 :tpope/vim-surround
 :tpope/vim-abolish
 ; {1 :tpope/vim-rsi ; insert mode extension
-;  :config (la (tset vim.g :rsi_non_meta true))}
+   ;  :config (la (tset vim.g :rsi_non_meta true))}
 :vim-utils/vim-husk
 :tpope/vim-repeat
 :github/copilot.vim
@@ -284,7 +270,7 @@
  :setup (λ []
           (tset vim.g :tagbar_type_fennel {:ctagstype :fennel
                                            :sort 0
-                                           :kinds ["f:functions" "v:variables" "m:macros"]})
+                                           :kinds ["f:functions" "v:variables" "m:macros" "c:comments"]})
           ((. ((. (require :kaza.map) :prefix-o) :n :<space>a :tagbar) :map)
            :t :<cmd>TagbarToggle<cr> :toggle))}
 {1 :tyru/open-browser.vim
@@ -356,6 +342,12 @@
 
 :kshenoy/vim-signature
 :mhinz/neovim-remote
+
+;; Plugin to help me stop repeating the basic movement key.
+{1 :takac/vim-hardtime
+ :config (la (let-g hardtime_showmsg false)
+             (let-g hardtime_default_on false))}
+
 
 
 {1 :notomo/cmdbuf.nvim

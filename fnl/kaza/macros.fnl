@@ -1,9 +1,9 @@
 (local M {})
 
-(fn M.set-option [k v]
+(fn M.set-o [k v]
   `(set ,(sym (.. "vim.o." (tostring k))) ,v))
 
-(fn M.let-global [k v]
+(fn M.let-g [k v]
   "set 'k' to 'v' on vim.g table"
   `(tset vim.g ,(tostring k) ,v))
 
@@ -20,8 +20,8 @@
 
 ;;; syntax sugar
 
-(fn M.la [body]
-  `(λ [] ,body))
+(fn M.la [...]
+  `(λ [] ,...))
 
 ;;; mapping
 
@@ -35,7 +35,8 @@
     :<space>
     (string.format "<space>%s" ?s)))
 
-(fn M.br [c rest] (let [br ["[" "]"]]
+(fn M.br [c ?rest] (let [br ["[" "]"]
+                        rest (or ?rest "")]
                      (if (= c :l)
                        (.. (. br 1) rest)
                        (.. (. br 2) rest))))
@@ -64,7 +65,7 @@
        (tset opt# k# v#))
      (vim.api.nvim_create_autocmd ,event opt#)))
 
-(fn M.au [group event body ?opt]
+(fn M.au! [group event body ?opt]
   (if
     (= (type body) :table) (_callback group event body ?opt)
     (= (type body) :string) (_command group event body ?opt)
