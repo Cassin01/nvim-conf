@@ -1,4 +1,4 @@
-(import-macros {nmaps : cmd : space : la} :kaza.macros)
+(import-macros {: nmaps : cmd : space : la} :kaza.macros)
 (local {: aus} (require :kaza.au))
 
 (nmaps
