@@ -4,11 +4,11 @@ Powered by [hotpot.nvim](https://github.com/rktjmp/hotpot.nvim).
 
 ## Features
 
-- **[Fennel based]** enjoying lisp's powerful expression
+- Fennel based
 
-- **[Muscled editing]** using more than 100 plugins.
+- Using 90+ plugins
 
-- **[Simple key-binding]** systematized prefix.
+- Systematized prefix
 
 ### Requires
 
@@ -23,6 +23,10 @@ NVIM v0.8.0-dev+1458-ga8d5a9e81
 Build type: Release
 
 LuaJIT 2.1.0-beta3
+
+### Startup time
+
+200~300ms on my environment.
 
 ### Screenshots
 
