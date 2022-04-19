@@ -2,7 +2,7 @@
 
 Powered by [hotpot.nvim](https://github.com/rktjmp/hotpot.nvim).
 
-## Features
+### Features
 
 - Fennel based
 
@@ -14,7 +14,6 @@ Powered by [hotpot.nvim](https://github.com/rktjmp/hotpot.nvim).
 
 1. ``pip3 install pynvim``
 2. [packer](https://github.com/wbthomason/packer.nvim)
-
 
 ### Version
 
