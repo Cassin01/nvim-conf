@@ -10,6 +10,7 @@
 
 (aus :my_lsp [[:CursorHold (la (vim.diagnostic.setloclist {:open false})) {:pattern :*.rs}]
               [:FileType (la (let [line_num (vim.fn.line :$)]
+                               (tset _G.__kaza.v :diagnostic_master_buf (vim.api.nvim_get_current_buf))
                                (tset vim.wo :wrap true)
                                (vim.cmd (.. "resize " line_num)))) {:pattern :qf}]])
 

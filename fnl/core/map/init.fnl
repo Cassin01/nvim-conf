@@ -44,7 +44,8 @@
   :quit
   [[:q (cmd :q) :quit]
    [:a (cmd :q!):quit!]
-   [:b (cmd :bd) "delete buffer"]])
+   [:b (cmd :bd) "delete buffer"]
+   [:c (cmd :close) "window close"]])
 
 (nmaps
   (space :m)
@@ -72,8 +73,19 @@
               (cursor 0 (/ (strlen (getline :.)) 2)))) "go middle of a line"]
    [:m (la (let [buf (vim.api.nvim_create_buf false true)]
              (vim.api.nvim_buf_set_lines buf 0 100 false ((req-f :split :util.string) (vim.api.nvim_exec "messages" true ) "\n"))
-             (local height (vim.api.nvim_buf_line_count buf))
              (vim.api.nvim_open_win buf true {:relative :editor :style :minimal :row 3 :col 3 :height 40 :width 150}))) "show message"]
+   [:no (la (let [width 27
+                  height 30
+                  buf (vim.api.nvim_create_buf false true)]
+              (vim.api.nvim_buf_set_option buf :filetype :org)
+              (vim.api.nvim_buf_set_lines buf 0 height false ["Note"])
+              (vim.api.nvim_open_win buf true {:relative :editor
+                                               :style :minimal
+                                               :border :rounded
+                                               :row 3
+                                               :col (- vim.o.columns width)
+                                               :height height
+                                               :width width}))) "memo"]
    ])
 
 (when (vim.fn.has :mac)

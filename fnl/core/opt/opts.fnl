@@ -7,6 +7,7 @@
  :shiftwidth indent
  :softtabstop indent
  :expandtab true
+ :autoindent true ; Chek if this work.
  :number true
  :relativenumber true
  :scrolloff 10
@@ -20,10 +21,11 @@
  :list true
  :listchars "tab:»-,trail:□"
  :spell true
+ :smartcase true
  :startofline true
  :spelllang "en,cjk"
  :guifont "HackGen Console"
  :inccommand :split
  :equalalways false
- :laststatus 2
+ :laststatus 3
  :history 1000}

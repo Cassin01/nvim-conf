@@ -749,8 +749,10 @@ let s:bookmark = {
             \ "dotfile":  "~/dotfiles",
             \ "memo":     "~/tech-memo",
             \ "lua": "~/.cache/nvim/hotpot/Users/cassin/.config/nvim/fnl",
-            \ "org": "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/"
+            \ "org": "~/org/",
+            \ "projects": "~/all_year",
             \ }
+" \ "org": "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/",
 
 " function! s:bookmark_On_Matched(key) dict
 "     let command = "e " . s:bookmark[a:key]

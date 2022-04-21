@@ -173,13 +173,15 @@
            (cmp.setup
              {:snippet {:expand (λ [args]
                                   (vim.fn.UltiSnips#Anon args.body))}
-              :sources (cmp.config.sources [{:name :ultisnips}
-                                            {:name :nvim_lsp}
-                                            {:name :orgmode}
-                                            {:name :lsp_document_symbol}]
-                                           [{:name :buffer
-                                             :option {:get_bufnrs (λ []
-                                                                    (vim.api.nvim_list_bufs))}}])
+              :sources (cmp.config.sources
+                         [{:name :ultisnips}
+                          {:name :copilot :group_index 2}
+                          {:name :nvim_lsp}
+                          {:name :orgmode}
+                          {:name :lsp_document_symbol}]
+                         [{:name :buffer
+                           :option {:get_bufnrs (λ []
+                                                  (vim.api.nvim_list_bufs))}}])
               :mapping (cmp.mapping.preset.insert
                          {:<tab> (cmp.mapping (λ [fallback]
                                                 (if
@@ -207,7 +209,11 @@
            (local ˜capabilities ((. (require :cmp_nvim_lsp) :update_capabilities) (vim.lsp.protocol.make_client_capabilities)))
            (each [_ key (ipairs [:rust_analyzer])]
              ((-> (require :lspconfig) (. key) (. :setup))
-              {:capabilities capabilities})))}
+              {:capabilities capabilities
+               :diagnostics {:enable true
+                             :disabled [:unresolved-proc-macro]
+                             :enableExperimental true}})))}
+
 
 {1 :tami5/lspsaga.nvim
  :config (λ [] ((. (require :lspsaga) :setup)
@@ -234,6 +240,20 @@
  :requires [:hrsh7th/vim-vsnip-integ
             :rafamadriz/friendly-snippets]}
 
+;;; runner
+{1 :michaelb/sniprun
+ :run "bash install.sh"}
+
+;;; copilot
+:github/copilot.vim
+{1 :zbirenbaum/copilot.lua
+ :event [:VimEnter]
+ :config (la (vim.defer_fn
+               (la (ref-f :setup :copilot))
+               100))}
+{1 :zbirenbaum/copilot-cmp
+ :after ["copilot.lua" "nvim-cmp"]}
+
 ;;; vim
 
 {1 :Shougo/echodoc.vim
@@ -257,14 +277,13 @@
    ;  :config (la (tset vim.g :rsi_non_meta true))}
 :vim-utils/vim-husk
 :tpope/vim-repeat
-:github/copilot.vim
 :tpope/vim-sexp-mappings-for-regular-people
 {1 :guns/vim-sexp
  :setup (λ []
           (tset vim.g :sexp_filetypes "clojure,scheme,lisp,timl,fennel")
           (tset vim.g :sexp_enable_insert_mode_mappings false))}
 
-;; util
+;;; util
 
 {1 :majutsushi/tagbar
  :setup (λ []

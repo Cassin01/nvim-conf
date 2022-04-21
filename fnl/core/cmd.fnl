@@ -1,9 +1,5 @@
 (import-macros {: la} :kaza.macros)
-
-(fn u-cmd [name f ?opt]
-       (let [opt (or ?opt {})]
-         (tset opt :force true)
-         (vim.api.nvim_create_user_command name f opt)))
+(local {: u-cmd} (require :kaza))
 
 ;;; INFO
 ;;; require: goyo, limelight
