@@ -120,6 +120,8 @@ let Window = Object.override("Window", function("s:window_new"))
 "       - 入力
 "           - 9 が入力されて, かつ残りの文字が^<tab>であれば6文字進める.
 " [x]: 入力が一方が短いとき決定できないバグ -> <cr>を押したら即時評価する
+" [x]: manage inputted keys by number
+" [ ]: add parser
 
 " global valuables {{{
 " length mast be 1
@@ -127,20 +129,20 @@ let g:hwhich_char_tab = '⇥'
 let g:hwhich_char_space = '⎵'
 " }}}
 
-" 先頭から比較して含まれてたらtureを返す
-function! s:incremental_search(str, txt)
-    if strlen(a:str) > strlen(a:txt)
-        return v:false
-    endif
+" " 先頭から比較して含まれてたらtureを返す
+" function! s:incremental_search(str, txt)
+"     if strlen(a:str) > strlen(a:txt)
+"         return v:false
+"     endif
 
-    for l:i in range(0, strlen(a:str)-1)
-        if a:str[l:i] !=# a:txt[l:i]
-            return v:false
-        endif
-    endfor
+"     for l:i in range(0, strlen(a:str)-1)
+"         if a:str[l:i] !=# a:txt[l:i]
+"             return v:false
+"         endif
+"     endfor
 
-    return v:true
-endfunction
+"     return v:true
+" endfunction
 
 function! s:add_spaces(str, num)
     let l:new_str = a:str
@@ -229,10 +231,60 @@ function! s:key_converter_for_input(key_dict)
     return new_dict
 endfunction
 
-function! s:listen_commands(self, ...) dict
+" OnDev {{{
+function! s:parser(str)
+    let str = a:str
+    let ret = []
+    for i in range(len(str))
+        let ret = add(ret, char2nr(str[i]))
+    endfor
+    return ret
+endfunction
+function! s:keys_num(keys_dict)
+    let keys_dict = a:keys_dict
+    let dict = {}
+    for key in keys(keys_dict)
+        let dict[key] = s:parser(key)
+    endfor
+    return dict
+endfunction
+function! s:chars_eq(x, y)
+    let x = a:x
+    let y = a:y
+    if len(x) != len(y)
+        return v:false
+    endif
+    for i in range(len(x))
+        if x[i] != y[i]
+            return v:false
+        endif
+    endfor
+    return v:true
+endfunction
+function! s:incremental_search2(input, expected)
+    let input = a:input
+    let expected = a:expected
+    if len(input) > len(expected)
+        return v:false
+    endif
+    for i in range(len(input))
+        if input[i] != expected[i]
+            return v:false
+        endif
+    endfor
+    " if input[len(input)-1] != expected[len(input)-1]
+    "     return v:false
+    " endif
+    return v:true
+endfunction
+function! s:listen_commands2(self, ...) dict
     redraw!
     let l:keys_dict = self.LoadIndex(self)
+    " TODO: ADD parser {{{
     let l:keys_dict = s:key_converter_for_input(l:keys_dict)
+    let key_nums = s:keys_num(keys_dict) " dict {key, keys number}
+    " }}}
+    let inputted_chars_num = []
     let l:inputted_st = ""
     let l:first = v:true
     while v:true
@@ -247,10 +299,11 @@ function! s:listen_commands(self, ...) dict
         endif
         if l:c == 13
             " when <cr> plessed evaluate input immediately.
-            let l:matched = deepcopy(filter(l:keys_dict, {key, _ -> l:inputted_st ==# key}))
+            let l:matched = deepcopy(filter(l:keys_dict, {key, _ -> s:chars_eq(inputted_chars_num, key_nums[key])}))
         else
             let l:inputted_st = l:inputted_st . nr2char(l:c)
-            let l:matched = deepcopy(filter(l:keys_dict, {key, _ -> s:incremental_search(l:inputted_st, key)}))
+            let inputted_chars_num = add(inputted_chars_num, c)
+            let l:matched = deepcopy(filter(l:keys_dict, {key, _ -> s:incremental_search2(inputted_chars_num, key_nums[key])}))
         endif
         call nvim_buf_set_lines(s:buf, 0, -1, v:true, s:formatter(l:matched, strchars(l:inputted_st), self.column_size))
 
@@ -271,6 +324,50 @@ function! s:listen_commands(self, ...) dict
         endif
     endwhile
 endfunction
+" }}}
+
+" function! s:listen_commands(self, ...) dict
+"     redraw!
+"     let l:keys_dict = self.LoadIndex(self)
+"     let l:keys_dict = s:key_converter_for_input(l:keys_dict)
+"     let l:inputted_st = ""
+"     let l:first = v:true
+"     while v:true
+"         let l:c = ""
+"         if l:first && a:0 == 1
+"             let l:c = a:1
+"             let l:first = v:false
+"         elseif getchar(1)
+"             let l:c = getchar()
+"         else
+"             continue
+"         endif
+"         if l:c == 13
+"             " when <cr> plessed evaluate input immediately.
+"             let l:matched = deepcopy(filter(l:keys_dict, {key, _ -> l:inputted_st ==# key}))
+"         else
+"             let l:inputted_st = l:inputted_st . nr2char(l:c)
+"             let l:matched = deepcopy(filter(l:keys_dict, {key, _ -> s:incremental_search(l:inputted_st, key)}))
+"         endif
+"         call nvim_buf_set_lines(s:buf, 0, -1, v:true, s:formatter(l:matched, strchars(l:inputted_st), self.column_size))
+
+"         let buf_row = nvim_buf_line_count(s:buf)
+"         let row_offset = &cmdheight + (&laststatus > 0 ? 1 : 0)
+"         let k = {'height': buf_row, 'row': &lines-buf_row-row_offset-1, 'width': &columns-self.window.config.col}
+"         call self.window.update(self.window, k)
+
+"         call s:hyper_wich_syntax()
+
+"         redraw!
+
+"         if len(l:matched) == 1
+"             return l:matched
+"         endif
+"         if len(l:matched) == 0
+"             return l:matched
+"         endif
+"     endwhile
+" endfunction
 
 function! s:On_Matched() dict
 endfunction
@@ -351,7 +448,7 @@ function! s:hyperwitch_new(...) dict
     let instance.win_config = {}
     let instance.window = instance.super().new()
     let instance.column_size = 0
-    let instance.Listen = function('s:listen_commands')
+    let instance.Listen = function('s:listen_commands2')
     let instance.OnMatched = function("s:On_Matched")
     let instance.AfterQuit = function("s:After_Quit")
     let instance.LoadIndex = function("s:Load_Index")
@@ -680,6 +777,7 @@ function! s:normal_load_g_index()
        endif
 
        if key['lhs'] !~ "^<Plug>.*" && desc != "" && key['lhs'] !~ "^<C-.*"
+
            let ret[key['lhs']] = substitute(key['lhs'], ' ', g:hwhich_char_space, 'g') . ' ' . desc
        endif
    endfor
