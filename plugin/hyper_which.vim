@@ -129,21 +129,6 @@ let g:hwhich_char_tab = '⇥'
 let g:hwhich_char_space = '⎵'
 " }}}
 
-" " 先頭から比較して含まれてたらtureを返す
-" function! s:incremental_search(str, txt)
-"     if strlen(a:str) > strlen(a:txt)
-"         return v:false
-"     endif
-
-"     for l:i in range(0, strlen(a:str)-1)
-"         if a:str[l:i] !=# a:txt[l:i]
-"             return v:false
-"         endif
-"     endfor
-
-"     return v:true
-" endfunction
-
 function! s:add_spaces(str, num)
     let l:new_str = a:str
     for l:i in range(0, a:num)
@@ -328,13 +313,9 @@ endfunction
 function! s:listen_commands2(self, ...) dict
     redraw!
     let l:keys_dict = self.LoadIndex(self)
-    " TODO: ADD parser {{{
-    " let l:keys_dict = s:key_converter_for_input(l:keys_dict)
-    " let key_nums = s:keys_num(keys_dict) " dict {key, keys number}
     let key_infos = s:gen_dicts(l:keys_dict)
     let l:keys_dict = key_infos[0]
     let key_nums = key_infos[1]
-    " }}}
     let inputted_chars_num = []
     let l:inputted_st = ""
     let l:first = v:true
@@ -376,49 +357,6 @@ function! s:listen_commands2(self, ...) dict
     endwhile
 endfunction
 " }}}
-
-" function! s:listen_commands(self, ...) dict
-"     redraw!
-"     let l:keys_dict = self.LoadIndex(self)
-"     let l:keys_dict = s:key_converter_for_input(l:keys_dict)
-"     let l:inputted_st = ""
-"     let l:first = v:true
-"     while v:true
-"         let l:c = ""
-"         if l:first && a:0 == 1
-"             let l:c = a:1
-"             let l:first = v:false
-"         elseif getchar(1)
-"             let l:c = getchar()
-"         else
-"             continue
-"         endif
-"         if l:c == 13
-"             " when <cr> plessed evaluate input immediately.
-"             let l:matched = deepcopy(filter(l:keys_dict, {key, _ -> l:inputted_st ==# key}))
-"         else
-"             let l:inputted_st = l:inputted_st . nr2char(l:c)
-"             let l:matched = deepcopy(filter(l:keys_dict, {key, _ -> s:incremental_search(l:inputted_st, key)}))
-"         endif
-"         call nvim_buf_set_lines(s:buf, 0, -1, v:true, s:formatter(l:matched, strchars(l:inputted_st), self.column_size))
-
-"         let buf_row = nvim_buf_line_count(s:buf)
-"         let row_offset = &cmdheight + (&laststatus > 0 ? 1 : 0)
-"         let k = {'height': buf_row, 'row': &lines-buf_row-row_offset-1, 'width': &columns-self.window.config.col}
-"         call self.window.update(self.window, k)
-
-"         call s:hyper_wich_syntax()
-
-"         redraw!
-
-"         if len(l:matched) == 1
-"             return l:matched
-"         endif
-"         if len(l:matched) == 0
-"             return l:matched
-"         endif
-"     endwhile
-" endfunction
 
 function! s:On_Matched() dict
 endfunction
