@@ -675,8 +675,8 @@ function! s:normal_load_g_index()
        let desc = ''
        if has_key(key, 'desc')
            let desc = key['desc']
-        else
-            let desc = key['rhs']
+       elseif has_key(key,'rhs')
+           let desc = key['rhs']
        endif
 
        if key['lhs'] !~ "^<Plug>.*" && desc != "" && key['lhs'] !~ "^<C-.*"
