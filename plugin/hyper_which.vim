@@ -120,7 +120,7 @@ let Window = Object.override("Window", function("s:window_new"))
 "       - 入力
 "           - 9 が入力されて, かつ残りの文字が^<tab>であれば6文字進める.
 " [x]: 入力が一方が短いとき決定できないバグ -> <cr>を押したら即時評価する
-" [x]: manage inputted keys by number
+" [x]: manage inputted keys as number
 " [ ]: add parser
 
 " global valuables {{{
@@ -231,8 +231,8 @@ function! s:key_converter_for_input(key_dict)
     return new_dict
 endfunction
 
-" OnDev {{{
-function! s:parser(str)
+" listen_commands {{{
+function! s:str2nrs(str)
     let str = a:str
     let ret = []
     for i in range(len(str))
@@ -244,7 +244,7 @@ function! s:keys_num(keys_dict)
     let keys_dict = a:keys_dict
     let dict = {}
     for key in keys(keys_dict)
-        let dict[key] = s:parser(key)
+        let dict[key] = s:str2nrs(key)
     endfor
     return dict
 endfunction
@@ -272,17 +272,68 @@ function! s:incremental_search2(input, expected)
             return v:false
         endif
     endfor
-    " if input[len(input)-1] != expected[len(input)-1]
-    "     return v:false
-    " endif
     return v:true
+endfunction
+
+" parser {{{
+function s:p_space(str)
+    "<space>
+    let str = a:str
+    if len(str) < 7
+        return v:false
+    endif
+    if str[0] !=# '<'
+        return v:false
+    endif
+    if str[6] !=# '>'
+        return v:false
+    endif
+    if str[1:5] !=? 'space'
+        return v:false
+    endif
+    return v:true
+endfunction
+function! s:parser(str)
+    " return num
+    let str = a:str
+    if strlen(str) == 1
+        return [char2nr(str[0])]
+    endif
+    if s:p_space(str)
+        return [char2nr(' ')] + s:parser(str[7:])
+    endif
+    return [char2nr(str[0])] + s:parser(str[1:])
+endfunction
+" }}}
+function! s:nums2str(list)
+    let list = a:list
+    let str = ''
+    for n in list
+        let str = str . nr2char(n)
+    endfor
+    return str
+endfunction
+function! s:gen_dicts(dict)
+    let dict = a:dict
+    let keys_dict = {}
+    let key_nums = {}
+    for k in keys(dict)
+        let nums = s:parser(k)
+        let str = s:nums2str(nums)
+        let keys_dict[str] = dict[k]
+        let key_nums[str] = nums
+    endfor
+    return [keys_dict, key_nums]
 endfunction
 function! s:listen_commands2(self, ...) dict
     redraw!
     let l:keys_dict = self.LoadIndex(self)
     " TODO: ADD parser {{{
-    let l:keys_dict = s:key_converter_for_input(l:keys_dict)
-    let key_nums = s:keys_num(keys_dict) " dict {key, keys number}
+    " let l:keys_dict = s:key_converter_for_input(l:keys_dict)
+    " let key_nums = s:keys_num(keys_dict) " dict {key, keys number}
+    let key_infos = s:gen_dicts(l:keys_dict)
+    let l:keys_dict = key_infos[0]
+    let key_nums = key_infos[1]
     " }}}
     let inputted_chars_num = []
     let l:inputted_st = ""
