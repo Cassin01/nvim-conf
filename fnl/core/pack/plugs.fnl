@@ -1,5 +1,5 @@
 (import-macros {: req-f : ref-f : epi : ep} :util.macros)
-(import-macros {: nmaps : cmd : plug : space : ui-ignore-filetype : la : br : let-g} :kaza.macros)
+(import-macros {: nmaps : map : cmd : plug : space : ui-ignore-filetype : la : br : let-g} :kaza.macros)
 
 (macro au [group event body]
   `(vim.api.nvim_create_autocmd ,event {:callback (λ [] ,body) :group (vim.api.nvim_create_augroup ,group {:clear true})}))
@@ -37,6 +37,11 @@
 {1 :petertriho/nvim-scrollbar
  :config (λ [] ((req-f :setup :scrollbar) {:excluded_buftypes [:terminal]
                                            :excluded_filetypes (ui-ignore-filetype)}))}
+
+;; status line
+; {1 :b0o/incline.nvim
+;  :config (la (ref-f :setup :incline))}
+
 
 {1 :nvim-telescope/telescope.nvim
  :requires [:nvim-lua/plenary.nvim]
@@ -84,7 +89,7 @@
              :sync_install false
              :ignore_install [ "javascript" ]
              :highlight {:enable true
-                         :disable [ "c" "rust" "org"]
+                         :disable [ "c" "rust" "org" "vim"]
                          :additional_vim_regex_highlighting ["org"]}
              :ensure_installed ["org"]
              :rainbow {:enable true
@@ -234,6 +239,34 @@
                                                                               (prefix.map-buf bufnr :n "}" (cmd :AerialNext) :JumpBackward)
                                                    (prefix.map-buf bufnr :n "[[" (cmd :AerialPrevUp) :JumpUpTheTree)
                                                                                (prefix.map-buf bufnr :n "]]" (cmd :AerialNextUp) :JumpUpTheTree)))}))}
+{1 :sidebar-nvim/sidebar.nvim
+ :requires [:jremmen/vim-ripgrep]
+ :config (la
+           (local section {:title :Environment
+                           :icon :
+                           :setup (lambda [ctx]
+                                    nil)
+                           :update (lambda [ctx]
+                                     nil)
+                           :draw (lambda [ctx]
+                                   "> string here\n> multiline")
+                           :heights {:groups {:MyHighlightGroup {:gui :#C792EA :fg :#ff0000 :bg :#00ff00}}
+                                     :links {:MyHighlightLink :Keyword}}})
+           (ref-f
+               :setup
+               :sidebar-nvim
+               {:initial_width 21
+                :sections [:datetime section :git :todos :buffers :files :symbols :diagnostics ]
+                :todos {:icon :
+                        :ignored_paths ["~"]
+                        :initially_closed true}}))
+ :setup (la
+           (nmaps
+             :<space>i
+             :sidebar
+             [[:t (cmd :SidebarNvimToggle) :toggle]
+              [:f (cmd :SidebarNvimFocus) :focus]]))
+ :rocks [:luatz]}
 
 {1 :hrsh7th/vim-vsnip
  :disable true
@@ -243,6 +276,10 @@
 ;;; runner
 {1 :michaelb/sniprun
  :run "bash install.sh"}
+{1 :thinca/vim-quickrun
+ :setup (λ []
+          (map :n :<space>or (cmd :QuickRun) "[others] quickrun")) }
+
 
 ;;; copilot
 :github/copilot.vim
@@ -296,7 +333,6 @@
  :config (λ []
            (local prefix ((. (require :kaza.map) :prefix-o) :n :<leader>s :open-browser))
            (prefix.map "" "<Plug>(openbrowser-smart-search)" "search")
-           (local {: map} (require :kaza.map))
            (map :v "<leader>s" "<Plug>(openbrowser-smart-search)" "search"))}
 {1 :mbbill/undotree
  :setup (λ []
@@ -306,7 +342,6 @@
  :setup (λ []
           (let [prefix ((. (require :kaza.map) :prefix-o) :n :<space>ea :easy-align)]
             (prefix.map "" "<Plug>(EasyAlign)" :align))
-          (local {: map} (require :kaza.map))
           (map :x "<space>ea" "<Plug>(EasyAlign)" :align)) }
 :terryma/vim-multiple-cursors
 :rhysd/clever-f.vim
@@ -315,7 +350,9 @@
  :setup (λ []
           (vim.cmd "vmap v <Plug>(expand_region_expand)")
           (vim.cmd "vmap <C-v> <Plug>(expand_region_shrink)"))}
-:ggandor/lightspeed.nvim
+; :ggandor/lightspeed.nvim
+:ggandor/leap.nvim
+
 
 ;; move dir to dir
 {1 :francoiscabrol/ranger.vim
@@ -327,31 +364,8 @@
 
 ;;; move
 
-;; easymotion
-{1 :easymotion/vim-easymotion
- :setup (λ []
-          (tset vim.g :EasyMotion_use_migemo true)
-          (let [prefix ((. (require :kaza.map) :prefix-o) :n :<space>e :easy-motion)]
-            (prefix.map "l" "<Plug>(easymotion-lineforward)" :l)
-            (prefix.map "j" "<Plug>(easymotion-j)" :j)
-            (prefix.map "k" "<Plug>(easymotion-k)" :k)
-            (prefix.map "h" "<Plug>(easymotion-linebackward)" :h)))}
-{1 :haya14busa/incsearch.vim
- :requires :haya14busa/incsearch-easymotion.vim
- :setup (λ []
-          (vim.cmd "source ~/.config/nvim/fnl/core/pack/conf/incsearch-easymotion.vim"))}
 {1 :Shougo/vimproc.vim
  :run "make"}
-{1 :haya14busa/incsearch-migemo.vim
- :requires :Shougo/vimproc.vim
- :setup (λ []
-          (let [prefix ((. (require :kaza.map) :prefix-o) :n :<space>i :migemo)]
-            (prefix.map "/" "<Plug>(incsearch-migemo-/)" :/)
-            (prefix.map "?" "<Plug>(incsearch-migemo-?)" :?)
-            (prefix.map "g/" "<Plug>(incsearch-migemo-stay)" :stay)))}
-{1 :haya14busa/incsearch-fuzzy.vim
- :setup (λ []
-          (vim.cmd "source ~/.config/nvim/fnl/core/pack/conf/incsearch-fuzzy.vim"))}
 
 ;; Jump to any visible line in the buffer by using letters instead of numbers.
 {1 :skamsie/vim-lineletters
@@ -359,15 +373,15 @@
           (let [prefix ((. (require :kaza.map) :prefix-o) :n :<space>l :lineletters)]
             (prefix.map "" "<Plug>LineLetters" "jump to line"))) }
 
+;; mark
 :kshenoy/vim-signature
+
 :mhinz/neovim-remote
 
 ;; Plugin to help me stop repeating the basic movement key.
 {1 :takac/vim-hardtime
  :config (la (let-g hardtime_showmsg false)
              (let-g hardtime_default_on false))}
-
-
 
 {1 :notomo/cmdbuf.nvim
  :config (λ []
@@ -394,6 +408,11 @@
 
 ;;; language
 
+;; deno
+:vim-denops/denops.vim
+:Cassin01/fetch-info.nvim
+
+
 ;; text
 {1 :sedm0784/vim-you-autocorrect
  :setup (λ []
@@ -408,14 +427,14 @@
 ;; lua
 :bfredl/nvim-luadev
 
-;; rust
-:rust-lang/rust.vim
-
 ;; fennel
 :bakpakin/fennel.vim  ; syntax
 :jaawerth/fennel-nvim ; native fennel support
 :Olical/conjure       ; interactive environment
 :Olical/nvim-local-fennel
+
+;; rust
+:rust-lang/rust.vim
 
 ; tex
 {1 :Cassin01/texrun.vim
