@@ -278,14 +278,63 @@ function s:p_space(str)
     endif
     return v:true
 endfunction
+function s:p_ctrl(str)
+    "<c-_>
+    let str = a:str
+    if len(str) < 5
+        return v:false
+    endif
+    if str[0] !=# '<'
+        return v:false
+    endif
+    if str[1] !=? 'c'
+        return v:false
+    endif
+    if str[2] !=# '-'
+        return v:false
+    endif
+    if match("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", str[3]) <= 0
+        return v:false
+    endif
+    if str[4] !=# '>'
+        return v:false
+    endif
+    return v:true
+endfunction
+function! s:ctrl_num(n)
+    let n = a:n
+    " capital alphabet
+    if 65 <= n && n <= 90
+        return n - 64
+    endif
+    " alphabet
+    if 97 <= n && n <= 122
+        return n - 96
+    endif
+    echom n
+    echom "error"
+    1
+endfunction
 function! s:parser(str)
-    " return num
+    " return list<num>
     let str = a:str
     if strlen(str) == 1
         return [char2nr(str[0])]
     endif
     if s:p_space(str)
-        return [char2nr(' ')] + s:parser(str[7:])
+        if strlen(str) > 7
+            return [char2nr(' ')] + s:parser(str[7:])
+        else
+            return [char2nr(' ')]
+        endif
+    endif
+    if s:p_ctrl(str)
+        " <c-_>
+        if strlen(str) > 5
+            return [s:ctrl_num(char2nr(str[3]))] + s:parser(str[5:])
+        else
+            return [s:ctrl_num(char2nr(str[3]))]
+        endif
     endif
     return [char2nr(str[0])] + s:parser(str[1:])
 endfunction
@@ -766,7 +815,6 @@ function! s:normal_load_g_index()
        endif
 
        if key['lhs'] !~ "^<Plug>.*" && desc != "" && key['lhs'] !~ "^<C-.*"
-
            let ret[key['lhs']] = substitute(key['lhs'], ' ', g:hwhich_char_space, 'g') . ' ' . desc
        endif
    endfor
