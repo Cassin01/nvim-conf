@@ -129,16 +129,140 @@ let Window = Object.override("Window", function("s:window_new"))
 " length mast be 1
 let g:hwhich_char_tab = '⇥'
 let g:hwhich_char_space = '⎵'
-let g:view_dict = #{
+" let g:expandable = ''
+let g:expandable = '*'
+let g:hwitch#view_dict = #{
             \ 32: '⎵',
             \ 9: '⇥',
             \ }
+let g:hwitch#prefixes = {}
 " }}}
+" TEST: User's settings {{{
+let g:hwitch#prefixes = luaeval('_G.__kaza.prefix')
+" }}}
+" bigger order
+function! s:_compare_sort_by_strlen(f, s)
+    let f = strlen(a:f)
+    let s = strlen(a:s)
+    return f == s ? 0 : f > s ? 1 : -1
+endfunction
+function! s:sort_by_strlen(strs)
+    return sort(copy(a:strs), function('s:_compare_sort_by_strlen'))
+endfunction
+function! s:_trim_shorter_str(strs, inputlen)
+    let strs = a:strs
+    let inputlen = a:inputlen
+    let ret = []
+    for k in strs
+        if strlen(k) > inputlen
+            let ret = add(ret, k)
+        endif
+    endfor
+    return ret
+endfunction
+function! s:submatchs(strs, pat)
+    for k in a:strs
+        if match(k, a:pat)
+            return v:true
+        endif
+    endfor
+    v:false
+endfunction
+function! s:_keys2dict(keys)
+    let ret = {}
+    for k in a:keys
+        let ret[k] = 'non'
+    endfor
+    return ret
+endfunction
+function! s:_trim_submatch(strs)
+    let ret = s:_keys2dict(a:strs)
+    for k in a:strs
+        for l in a:strs
+            if l =~ '^' . k . '.\+'
+                if has_key(ret, l)
+                    call remove(ret, l)
+                endif
+            endif
+        endfor
+    endfor
+    return keys(ret)
+endfunction
+function! s:_remove_ignored_prefix(keys, matched)
+    let ret = []
+    for k in a:keys
+        if !has_key(a:matched, k)
+            let ret = add(ret, k)
+        endif
+    endfor
+    return ret
+endfunction
+function! s:_select_prefixes(keys, prefixes)
+    let ret = {}
+    for k in a:keys
+        let ret[k] = a:prefixes[k]
+    endfor
+    return ret
+endfunction
+function! s:submatched_key(prefix, key)
+    for k in keys(a:prefix)
+        if a:key =~ '^' . k . '.\+'
+            return [v:true, k]
+        endif
+    endfor
+    return [v:false, '']
+endfunction
+function! s:replace_keys_with_prefixes(prefix, matched)
+    let ret_matched = {}
+    let ret_prefix = {}
+    for k in keys(a:matched)
+        let res = s:submatched_key(a:prefix, k)
+        if res[0]
+            let ret_prefix[res[1]] = a:prefix[res[1]] . ' ' . g:expandable
+            " let ret[k] = a:prefix[res[1]]
+        else
+            let ret_matched[k] = a:matched[k]
+        endif
+    endfor
+    return extend(ret_matched, ret_prefix)
+endfunction
+function! s:parse_prefixes(prefixes)
+    let ret = {}
+    for k in keys(a:prefixes)
+        let ret[s:nums2str(s:parser(k))] = a:prefixes[k]
+    endfor
+    return ret
+endfunction
+function! s:prefix_integrator(input, matched)
+    let parsed_prefixes = s:parse_prefixes(g:hwitch#prefixes)
+    let prefix = s:_select_prefixes(s:prefix_trimer(a:input, a:matched, keys(parsed_prefixes)), parsed_prefixes)
+    let ret =  s:replace_keys_with_prefixes(prefix, a:matched)
+    return ret
+endfunction
+function! s:prefix_trimer(input, matched, parsed_prefixes)
+    " args:
+    " - input: string
+    " - matched: string (must be parsed)
+    " - parsed_prefixes: array of string
+    " return keys of prefixes
+    " WARN: This function must check if there is a same keys as a prefix.
+    " When the keys is find, we must ignore prefix or write redundantly.
+    " * Ignore prefix or write redundantly?
+    " ** Write redundantly
+    " This case we can't eliminate duplicate keys after replaced prefixes with
+    " keys.
+    " ** Conclusion
+    " I prefer the ignorer-prefix-way, because easy to implement.
+    let input = a:input
+    let inputlen = strlen(input)
+    let prefixes = s:_trim_submatch(s:sort_by_strlen(s:_trim_shorter_str(a:parsed_prefixes, inputlen)))
+    return s:_remove_ignored_prefix(prefixes, a:matched)
+endfunction
 function! s:subustitute(str)
     let str = a:str
     let ret = ""
     for c in str
-        let ret = ret . get(g:view_dict, char2nr(c), c)
+        let ret = ret . get(g:hwitch#view_dict, char2nr(c), c)
     endfor
     return ret
 endfunction
@@ -167,11 +291,13 @@ endfunction
 "   - inputted_length: the length of inputted characters
 function! s:formatter(matched, inputted_length, column_size)
     let l:formatted_lines = []
+    let cell_width = 44
     for l:k in sort(keys(a:matched))
-        " let l:k_tmp = substitute(l:k,' ' ,g:hwhich_char_space, 'g') " COMBAK
         let l:k_tmp = s:subustitute(l:k)
-        let discription = strpart(s:add_spaces(a:matched[l:k], 45)  , 0, 45)
-        call add(l:formatted_lines, '      ' . strcharpart(l:k_tmp,  a:inputted_length, 1) . ' → ' .  discription )
+        let discription = strcharpart(s:add_spaces(a:matched[l:k], cell_width)  , 0, cell_width)
+        let next_key = strcharpart(l:k_tmp,  a:inputted_length, 1)
+        let view_next_key = strdisplaywidth(next_key) == 1 ? ' ' . next_key : next_key
+        call add(l:formatted_lines, '      ' . view_next_key . ' → ' .  discription )
     endfor
 
     " 列の数
@@ -205,6 +331,7 @@ function! s:hyper_wich_syntax()
     let b:current_syntax = 'evil_witch'
     let s:sep = '→'
     call matchadd('WitchPrefix', '\[[a-z\-]*\]')
+    call matchadd('WitchExpandable', g:expandable)
     execute 'syntax match WitchKeySeperator' '/'.s:sep.'/' 'contained'
     execute 'syntax match WitchKey' '/\(^\s*\|\s\{2,}\)\S.\{-}'.s:sep.'/' 'contains=WitchKeySeperator'
     syntax match WhichKeyGroup / +[0-9A-Za-z_/-]*/
@@ -215,6 +342,7 @@ function! s:hyper_wich_syntax()
     highlight default link WitchKeyGroup     Keyword
     highlight default link WitchKeyDesc      Identifier
     highlight default link WitchPrefix       Type
+    highlight default link WitchExpandable   Constant
 endfunction
 " }}}
 
@@ -357,7 +485,7 @@ endfunction
 function! s:send_char(n)
     let n = a:n
     let str_n = string(n)
-    return get(g:view_dict, str_n, nr2char(n))
+    return get(g:hwitch#view_dict, str_n, nr2char(n))
 endfunction
 function! s:nums2str(list)
     let list = a:list
@@ -407,7 +535,15 @@ function! s:listen_commands2(self, ...) dict
             let inputted_chars_num = add(inputted_chars_num, c)
             let l:matched = deepcopy(filter(l:keys_dict, {key, _ -> s:incremental_search2(inputted_chars_num, key_nums[key])}))
         endif
-        call nvim_buf_set_lines(s:buf, 0, -1, v:true, s:formatter(l:matched, strchars(l:inputted_st), self.column_size))
+
+        " call nvim_buf_set_lines(s:buf, 0, -1, v:true, s:formatter(l:matched, strchars(l:inputted_st), self.column_size))
+        " echo 'Input: ' . l:inputted_st
+        echohl WitchPrefix
+        echo 'Input: '
+        echohl WitchExpandable
+        echon l:inputted_st
+        echohl None
+        call nvim_buf_set_lines(s:buf, 0, -1, v:true, s:formatter(s:prefix_integrator(l:inputted_st, l:matched), strchars(l:inputted_st), self.column_size))
 
         let buf_row = nvim_buf_line_count(s:buf)
         let row_offset = &cmdheight + (&laststatus > 0 ? 1 : 0)
@@ -837,7 +973,8 @@ function! s:normal_load_g_index()
 
        " if key['lhs'] !~ "^<Plug>.*" && desc != "" && key['lhs'] !~ "^<C-.*"
        if key['lhs'] !~ "^<Plug>.*" && desc != ""
-           let ret[key['lhs']] = substitute(key['lhs'], ' ', g:hwhich_char_space, 'g') . ' ' . desc
+           " let ret[key['lhs']] = substitute(key['lhs'], ' ', g:hwhich_char_space, 'g') . ' ' . desc
+           let ret[key['lhs']] = desc
        endif
    endfor
    return ret
@@ -855,7 +992,8 @@ function! s:normal_load_b_index(parent)
             let desc = desc . key['rhs']
        endif
        if key['lhs'] !~ "^<Plug>.*" && desc != "" && key['lhs'] !~ "^<C-.*"
-           let ret[key['lhs']] = key['lhs'] . ' ' . desc
+           " let ret[key['lhs']] = key['lhs'] . ' ' . desc
+           let ret[key['lhs']] = desc
        endif
    endfor
    return ret
