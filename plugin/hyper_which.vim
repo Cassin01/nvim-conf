@@ -108,10 +108,10 @@ let Window = Object.override("Window", function("s:window_new"))
 " ---------------------------------------------------------
 " {{{
 " TODO:
-" [x]: スペースキーの表示と入力
+" [x]: showing and inputting for space-key
 "   - 表示: ⎵
 "   - 入力: スペース
-" [ ]: タブキーの表示と入力
+" [ ]: showing and inputing for tab-key
 "   - 表示: ⇥
 "   - 入力: タブ文字
 "   INFO: どう実現するか
@@ -119,15 +119,29 @@ let Window = Object.override("Window", function("s:window_new"))
 "           - 入力されていない文字を^<tab> -> ⇥ する．
 "       - 入力
 "           - 9 が入力されて, かつ残りの文字が^<tab>であれば6文字進める.
+" [ ]: showing ctrl-key
 " [x]: 入力が一方が短いとき決定できないバグ -> <cr>を押したら即時評価する
 " [x]: manage inputted keys as number
-" [ ]: add parser
+" [x]: add parser
+"
 
 " global valuables {{{
 " length mast be 1
 let g:hwhich_char_tab = '⇥'
 let g:hwhich_char_space = '⎵'
+let g:view_dict = #{
+            \ 32: '⎵',
+            \ 9: '⇥',
+            \ }
 " }}}
+function! s:subustitute(str)
+    let str = a:str
+    let ret = ""
+    for c in str
+        let ret = ret . get(g:view_dict, char2nr(c), c)
+    endfor
+    return ret
+endfunction
 
 function! s:add_spaces(str, num)
     let l:new_str = a:str
@@ -154,9 +168,10 @@ endfunction
 function! s:formatter(matched, inputted_length, column_size)
     let l:formatted_lines = []
     for l:k in sort(keys(a:matched))
-        let l:k_tmp = substitute(l:k,' ' ,g:hwhich_char_space, 'g') " COMBAK
+        " let l:k_tmp = substitute(l:k,' ' ,g:hwhich_char_space, 'g') " COMBAK
+        let l:k_tmp = s:subustitute(l:k)
         let discription = strpart(s:add_spaces(a:matched[l:k], 45)  , 0, 45)
-        call add(l:formatted_lines, '      ' . strcharpart(k_tmp,  a:inputted_length, 1) . ' → ' .  discription )
+        call add(l:formatted_lines, '      ' . strcharpart(l:k_tmp,  a:inputted_length, 1) . ' → ' .  discription )
     endfor
 
     " 列の数
@@ -339,11 +354,17 @@ function! s:parser(str)
     return [char2nr(str[0])] + s:parser(str[1:])
 endfunction
 " }}}
+function! s:send_char(n)
+    let n = a:n
+    let str_n = string(n)
+    return get(g:view_dict, str_n, nr2char(n))
+endfunction
 function! s:nums2str(list)
     let list = a:list
     let str = ''
     for n in list
         let str = str . nr2char(n)
+        " let str = str . s:send_char(n)
     endfor
     return str
 endfunction
@@ -814,7 +835,8 @@ function! s:normal_load_g_index()
            let desc = key['rhs']
        endif
 
-       if key['lhs'] !~ "^<Plug>.*" && desc != "" && key['lhs'] !~ "^<C-.*"
+       " if key['lhs'] !~ "^<Plug>.*" && desc != "" && key['lhs'] !~ "^<C-.*"
+       if key['lhs'] !~ "^<Plug>.*" && desc != ""
            let ret[key['lhs']] = substitute(key['lhs'], ' ', g:hwhich_char_space, 'g') . ' ' . desc
        endif
    endfor
@@ -902,8 +924,11 @@ let s:bookmark = {
 function! s:bookmark_On_Matched(key) dict
     let path = s:bookmark[a:key]
     if isdirectory(expand(path))
-        echom "is directory"
-        let command = "CtrlP " . path
+        if exists(':CtrlP')
+            let command = "CtrlP " . path
+        else
+            let command = "e " . path
+        endif
     else
         let command = "vi " . path
     endif
@@ -929,10 +954,15 @@ function! s:max_length(index)
 endfunction
 
 function! s:bookmark_Load_Index(self) dict
+    if exists('g:hwitch_bookmarks')
+        let bookmark = g:hwitch_bookmarks
+    else
+        let bookmark = s:bookmark
+    endif
     let bookmark_view = {}
-    let max_key_length = s:max_length(s:bookmark)
-    for k in keys(s:bookmark)
-        let bookmark_view[k] = strpart(s:add_spaces('[' . k . ']',max_key_length+3),0,max_key_length+3) . s:bookmark[k]
+    let max_key_length = s:max_length(bookmark)
+    for k in keys(bookmark)
+        let bookmark_view[k] = strpart(s:add_spaces('[' . k . ']',max_key_length+3),0,max_key_length+3) . bookmark[k]
     endfor
     return bookmark_view
 endfunction
