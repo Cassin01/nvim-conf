@@ -125,7 +125,7 @@
     (values (+ (. pos 1) 1) (. pos 2))
     (values (. pos 1) (. pos 2))))
 
-(fn cond-move-cursor [nr]
+(fn keys-ignored [nr]
   "c-m 13" ; <cr>
   (or (= nr 18)
       (= nr 19)
@@ -133,13 +133,14 @@
 
 (fn gen-res [target line]
   (if (= target "")
-    [0]
+    []
     (kmp target line)))
 
 (local inc-search
   (λ []
     (local lines (va.nvim_buf_get_lines 0 0 (vf.line :$) true))
     (local c-win (va.nvim_get_current_win))
+    (local c-pos (va.nvim_win_get_cursor c-win))
     (local (buf win) (_win-open))
     (tset vim.wo :scrolloff 999)
     (var pos [0 0])
@@ -155,8 +156,9 @@
           (va.nvim_win_set_cursor win pos)
           (vf.matchaddpos :PmenuSel [[(. pos 1) 0]])
 
-          (set target (if (cond-move-cursor nr)
-                        target
+          (set target (if
+                        (keys-ignored nr) target
+                        (= nr 8) (string.sub target 1 -2)
                         (.. target (vf.nr2char nr))))
           (var view-lines [])
           (var find-pos [])
@@ -165,26 +167,38 @@
             (let [kmp-res (gen-res target line)]
               (when (not= (length kmp-res) 0)
                 (set line-num (+ 1 line-num))
-                (local lnums (fill-spaces (tostring i) (vf.strdisplaywidth (tostring (vf.line :$ c-win)))))
-                (add-matches line-num kmp-res (vf.strdisplaywidth target) (+ (vf.strdisplaywidth lnums) 1))
+                (local lnums (fill-spaces
+                               (tostring i)
+                               (vf.strdisplaywidth
+                                 (tostring (vf.line :$ c-win)))))
+                (add-matches line-num kmp-res
+                             (vf.strdisplaywidth target)
+                             (+ (vf.strdisplaywidth lnums) 1))
                 (table.insert find-pos [i kmp-res])
                 (table.insert view-lines (.. lnums " " line)))))
           (va.nvim_buf_set_lines buf 0 -1 true view-lines)
           (vim.cmd "redraw!")
           (when (= nr 13)
             (set done? true)
-            (va.nvim_win_set_cursor c-win [(. (. find-pos (. pos 1)) 1) (- (. (. (. find-pos 1) 2) 1) 1)])
+            (va.nvim_win_close win true)
             (va.nvim_buf_delete buf {:force true}))
+          (unless (= (length find-pos) 0)
+            (va.nvim_win_set_cursor
+              c-win [(. (. find-pos (. pos 1)) 1)
+                     (- (. (. (. find-pos (. pos 1)) 2) 1) 1)]))
           (when (= (length find-pos) 0)
             (set done? true)
             (va.nvim_win_close win true)
-            (va.nvim_buf_delete buf {:force true}))
+            (va.nvim_buf_delete buf {:force true})
+            (va.nvim_win_set_cursor c-win c-pos))
           (when (= (length find-pos) 1)
             (when (= (length (. (. find-pos 1) 2)) 1)
               (set done? true)
               (va.nvim_win_close win true)
               (va.nvim_buf_delete buf {:force true})
-              (vim.api.nvim_win_set_cursor c-win [(. (. find-pos 1) 1) (- (. (. (. find-pos 1) 2) 1) 1)]))))))))
+              (vim.api.nvim_win_set_cursor
+                c-win [(. (. find-pos 1) 1)
+                       (- (. (. (. find-pos 1) 2) 1) 1)]))))))))
 ;;; }}}
 
 
