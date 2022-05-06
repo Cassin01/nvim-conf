@@ -2,29 +2,30 @@
 (import-macros {: au! : nmaps : cmd : la : space} :kaza.macros)
 (local {: u-cmd} (require :kaza))
 (local {: bmap} (require :kaza.map))
-(local evil-maps (require :core.map.veil.data))
+(local veil-maps (require :core.map.veil.data))
 
 (fn setup []
   (if vim.g.veil-global
-    (epi _ k evil-maps (ref-f :map :kaza.map (unpack k)))))
+    (epi _ k veil-maps (ref-f :map :kaza.map (unpack k)))))
 
 (fn set-maps []
-  (epi _ k evil-maps (bmap 0 (unpack k))))
+  ; (print (.. (length veil-maps) "key binds integrated"))
+  (epi _ k veil-maps (bmap 0 (unpack k))))
 
 (fn del-maps []
-  (epi _ k evil-maps (vim.api.nvim_buf_del_keymap 0 (. k 1) (. k 2))))
+  (epi _ k veil-maps (vim.api.nvim_buf_del_keymap 0 (. k 1) (. k 2))))
 
 (u-cmd
-  :EvilEnable
+  :VeilEnable
   (λ [] (set-maps)
-    (print "EvilMode Enabled")))
+    (print "VeilMode Enabled")))
 
 (u-cmd
-  :EvilDisable
+  :VeilDisable
   (λ [] (del-maps)
-    (print "EvilMode Disabled")))
+    (print "VeilMode Disabled")))
 
-(au! :evil :BufWinEnter (set-maps))
+(au! :veil :BufWinEnter (set-maps))
 
 (nmaps (space :v)
        :veil

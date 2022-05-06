@@ -219,10 +219,10 @@
  [:i (c :n) :<down> "Down"]
  [:i (m :f) :<s-right> "Right"]
  [:i (m :b) :<s-left> "Left"]
- [:i (c :v) :<esc><c-b>i "Page down"]
- [:i (m :c) :<esc><c-f>i "Page up"]
+ [:i (c :v) :<c-o><c-b> "Page down"]
+ [:i (m :v) :<c-o><c-f> "Page up"]
  [:i (m :<) :<esc>ggi "Beginning of buffer"]
- [:i (m :>) :<esc>Gi "End of buffer"]
+ [:i (m :>) :<c-o>G "End of buffer"]
  [:i (c :s) inc-search "Search"]
 
  ;; edit
