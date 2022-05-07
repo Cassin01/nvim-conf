@@ -7,7 +7,7 @@
  :shiftwidth indent
  :softtabstop indent
  :expandtab true
- :autoindent true ; Chek if this work.
+ :autoindent true ; default on
  :number true
  :relativenumber true
  :scrolloff 10
@@ -21,6 +21,7 @@
  :list true
  :listchars "tab:»-,trail:□"
  :spell true
+ :ignorecase true
  :smartcase true
  :startofline true
  :spelllang "en,cjk"
@@ -28,4 +29,7 @@
  :inccommand :split
  :equalalways false
  :laststatus 3
- :history 1000}
+ :history 1000
+ :ttimeout true ; default on
+ :ttimeoutlen 100
+ }

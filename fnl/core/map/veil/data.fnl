@@ -23,6 +23,15 @@
 (macro unless [cond body]
   `(if (not ,cond) ,body))
 
+;;; util {{{
+(fn concat-with [d ...]
+  (table.concat [...] d))
+(fn rt [str]
+  "replace termcode"
+  (vim.api.nvim_replace_termcodes str true true true))
+
+;;; }}}
+
 (local vf vim.fn)
 (local va vim.api)
 
@@ -86,10 +95,10 @@
                     times (tonumber number?)
                     g guard_cursor_position]
                 (if
-                  (= operator "n") (va.nvim_win_set_cursor 0 [(g (+ (vf.line :.) times) (vf.col :.))])
-                  (= operator "p") (va.nvim_win_set_cursor 0 [(g (- (vf.line :.) times) (vf.col :.))])
-                  (= operator "f") (va.nvim_win_set_cursor 0 [(g (vf.line :.) (+ (vf.col :.) times))])
-                  (= operator "b") (va.nvim_win_set_cursor 0 [(g (vf.line :.) (- (vf.col :.) times))])
+                  (= nr 14) (va.nvim_win_set_cursor 0 [(g (+ (vf.line :.) times) (vf.col :.))])
+                  (= nr 16) (va.nvim_win_set_cursor 0 [(g (- (vf.line :.) times) (vf.col :.))])
+                  (= nr 6) (va.nvim_win_set_cursor 0 [(g (vf.line :.) (+ (vf.col :.) times))])
+                  (= nr 2) (va.nvim_win_set_cursor 0 [(g (vf.line :.) (- (vf.col :.) times))])
                   (print "operator not matched"))))))))))
 
 ;;; Ctrl-S {{{
@@ -119,9 +128,9 @@
 (fn update-pos [nr pos]
   "return pos"
   (if
-    (= nr 18) ; c-s
+    (= nr (rt :<c-s>)) ; c-s
     (values (- (. pos 1) 1) (. pos 2))
-    (= nr 19) ; c-r
+    (= nr (rt :<c-r>)) ; c-r
     (values (+ (. pos 1) 1) (. pos 2))
     (values (. pos 1) (. pos 2))))
 
@@ -129,7 +138,8 @@
   "c-m 13" ; <cr>
   (or (= nr 18)
       (= nr 19)
-      (= nr 13)))
+      (= nr 13)
+      (= nr (rt :<m-%>))))
 
 (fn gen-res [target line]
   (if (= target "")
@@ -178,10 +188,16 @@
                 (table.insert view-lines (.. lnums " " line)))))
           (va.nvim_buf_set_lines buf 0 -1 true view-lines)
           (vim.cmd "redraw!")
-          (when (= nr 13)
+          (when (= nr (rt :<cr>))
             (set done? true)
             (va.nvim_win_close win true)
             (va.nvim_buf_delete buf {:force true}))
+          (when (= nr (rt "<M-%>")) ; <M-%>
+            (set done? true)
+            (let [alt (vim.fn.input (.. "Query replace " target " with: "))]
+              (va.nvim_win_close win true)
+              (va.nvim_buf_delete buf {:force true})
+              (vim.cmd (.. "%s/" target "/" alt "/g"))))
           (unless (= (length find-pos) 0)
             (va.nvim_win_set_cursor
               c-win [(. (. find-pos (. pos 1)) 1)
@@ -233,6 +249,20 @@
  [:i (c :k) retrive_till_tail "delete from cursor to EOL"] ; *
  [:i (c :\ :k) (c :k) "i_CTRl-K"]
  [:i (c-s :k) retrive_first_half "delete from cursor to BOL"]
+ [:i (c :t) :<esc>xphli :transpose-chars] ; *
+ [:i (c :\ :t) (c :t) "i_CTRl-T"]
+ [:i (m :t) :<esc>dwea<space><esc>pa<bs> :transpose-words]
+ [:i (.. (c :x) (c :t)) :<esc>ddpi :transpose-lines] ; *
+ [:i (.. (c :\ :x) (c :t)) (c :x) "i_CTRl-X_CTRL-T"]
+
+ ;; case
+ [:i (m :u) "<esc>llbgUwi" :uppercase-word]
+ [:i (m :l) "<esc>llbguwi" :lowercase-word]
+ [:i (m :c) "<esc>llbvui" :capitalcase-word]
+
+ ;; comment
+ [:i (m ";") "<esc>:execute \"normal \\<plug>CommentaryLine\"<cr>i"
+  "Comment line"]
 
  ;; copy & paste
  [:i (c "@") "<c-o>v" "mark the start point of yank"]
@@ -240,8 +270,9 @@
  [:i (c :\ :y) (c :y) "i_CTRl-Y"]
 
  ;; undo & redo
- [:i (c :-) "<esc>ua" "undo"]
- [:i (c :+) "<esc><c-r>a" "redo"]
+ [:i (c :z) "<esc>ua" "undo"] ; *
+ [:i (c :\ :z) (c :z) "i_CTRl-Z"]
+ [:i (c-s :z) "<esc><c-r>a" "redo"]
 
  ;; window
  [:i (c :x :0) "<c-o><c-w>q" "Close a window"]
@@ -249,7 +280,7 @@
  [:i (c :x :2) "<c-o>:<c-u>vs<cr>" "Split-vertically"]
  [:i (c :x :3) "<c-o>:<c-u>sp<cr>" "Split-horizontally"]
  [:i (c :x :o) "<c-o><c-w>w" "Move to other windows"]
- [:i (c :x :k) "<c-o>:bdelete<cr>" "Kill buffer"]
+ [:i (c :x :k) "<c-o>:bdelete<cr>" "Kill buffer"] ; *
 
 ;; file
 [:i (.. (c :x) (c :s)) "<c-o>:update<cr>" "save-file"]
