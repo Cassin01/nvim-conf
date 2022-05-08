@@ -39,8 +39,7 @@
       (set j (+ j 1)))
     (if
       (= j (+ m 1))
-      (do
-        ; (print "found pattern at index " (- i m))
+      (do ; found pattern at index (- i m)
         (table.insert res (- i m))
         (set j (. lps (- j 1))))
       (and (<= i n) (not= (. pat j) (. txt i)))

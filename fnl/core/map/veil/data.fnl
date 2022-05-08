@@ -1,7 +1,5 @@
 (local {: kmp} (require :core.map.veil.kmp))
 
-(local lst (require :util.list))
-
 (macro m [c ?s]
   (let [s (or ?s "")]
     (.. (string.format :<M-%s> c) s)))
@@ -29,7 +27,6 @@
 (fn rt [str]
   "replace termcode"
   (vim.api.nvim_replace_termcodes str true true true))
-
 ;;; }}}
 
 (local vf vim.fn)
@@ -188,7 +185,7 @@
                 (table.insert view-lines (.. lnums " " line)))))
           (va.nvim_buf_set_lines buf 0 -1 true view-lines)
           (vim.cmd "redraw!")
-          (when (= nr (rt :<cr>))
+          (when (= nr 13)
             (set done? true)
             (va.nvim_win_close win true)
             (va.nvim_buf_delete buf {:force true}))
@@ -217,71 +214,70 @@
                        (- (. (. (. find-pos 1) 2) 1) 1)]))))))))
 ;;; }}}
 
+(fn _translate-arg [key cmd desc]
+  (if (= (type cmd) :string)
+    [0 :i key cmd {:noremap true :silent true :desc desc}]
+    [0 :i key "" {:callback cmd :noremap true :silent true :desc desc}]))
 
-[
- ;; move
- [:i (c :b) :<left> "Left"]
- [:i (c :f) :<right> "Right"]
- [:i (c :a) :<c-o>^ "Jump to BOL"] ; *
- [:i (c :\ :a) (c :a) "i_CTRL-A"]
- [:i (c :e) :<end> "Jump to EOL"]
- [:i (c :j) :<esc>o "<C-j> insert new line bellow and jump"]
- [:i (c :o) :<esc>O "<C-o> insert new line above and jump"] ; *
- [:i (c :\ :o) (c :o) "i_CTRL-O"]
- [:i (m :g :g) goto-line "Goto line"]
- [:i (c :u) universal-argument :universal-argument] ; *
- [:i (c :\ :u) (c :u) "i_CTRL-U"]
- [:i (c :p) :<up> "Up"]
- [:i (c :n) :<down> "Down"]
- [:i (m :f) :<s-right> "Right"]
- [:i (m :b) :<s-left> "Left"]
- [:i (c :v) :<c-o><c-b> "Page down"]
- [:i (m :v) :<c-o><c-f> "Page up"]
- [:i (m :<) :<esc>ggi "Beginning of buffer"]
- [:i (m :>) :<c-o>G "End of buffer"]
- [:i (c :s) inc-search "Search"]
+(let
+  [map-data
+   [
+    ;; move
+    [(c :b) :<left> "Left"]
+    [(c :f) :<right> "Right"]
+    [(c :a) :<c-o>^ "Jump to BOL"] ; *
+    [(c :e) :<end> "Jump to EOL"]
+    [(c :j) :<esc>o "<C-j> insert new line bellow and jump"]
+    [(c :o) :<esc>O "<C-o> insert new line above and jump"] ; *
+    [(m :g :g) goto-line "Goto line"]
+    [(c :u) universal-argument :universal-argument] ; *
+    [(c :p) :<up> "Up"]
+    [(c :n) :<down> "Down"]
+    [(m :f) :<s-right> "Right"]
+    [(m :b) :<s-left> "Left"]
+    [(c :v) :<c-o><c-b> "Page down"]
+    [(m :v) :<c-o><c-f> "Page up"]
+    [(m :<) :<esc>ggi "Beginning of buffer"]
+    [(m :>) :<c-o>G "End of buffer"]
+    [(c :s) inc-search "Search"]
 
- ;; edit
- [:i (c :d) :<Del> "Delete"] ; * ; <- I actually use default i_CTRl-D.
- [:i (c :\ :d) (c :d) "i_CTRl-D"]
- [:i (m :h) :<esc>vbc "Delete previous word"]
- [:i (m :d) :<esc>wvec "Delete next word"]
- [:i (c :k) retrive_till_tail "delete from cursor to EOL"] ; *
- [:i (c :\ :k) (c :k) "i_CTRl-K"]
- [:i (c-s :k) retrive_first_half "delete from cursor to BOL"]
- [:i (c :t) :<esc>xphli :transpose-chars] ; *
- [:i (c :\ :t) (c :t) "i_CTRl-T"]
- [:i (m :t) :<esc>dwea<space><esc>pa<bs> :transpose-words]
- [:i (.. (c :x) (c :t)) :<esc>ddpi :transpose-lines] ; *
- [:i (.. (c :\ :x) (c :t)) (c :x) "i_CTRl-X_CTRL-T"]
+    ;; edit
+    [(c :d) :<Del> "Delete"] ; * ; <- I actually use default i_CTRl-D.
+    [(m :h) :<esc>vbc "Delete previous word"]
+    [(m :d) :<esc>wvec "Delete next word"]
+    [(c :k) retrive_till_tail "delete from cursor to EOL"] ; *
+    [(c-s :k) retrive_first_half "delete from cursor to BOL"]
+    [(c :t) :<esc>xphli :transpose-chars] ; *
+    [(m :t) :<esc>dwea<space><esc>pa<bs> :transpose-words]
+    [(.. (c :x) (c :t)) :<esc>ddpi :transpose-lines] ; *
 
- ;; case
- [:i (m :u) "<esc>llbgUwi" :uppercase-word]
- [:i (m :l) "<esc>llbguwi" :lowercase-word]
- [:i (m :c) "<esc>llbvui" :capitalcase-word]
+    ;; case
+    [(m :u) "<esc>llbgUwi" :uppercase-word]
+    [(m :l) "<esc>llbguwi" :lowercase-word]
+    [(m :c) "<esc>llbvui" :capitalcase-word]
 
- ;; comment
- [:i (m ";") "<esc>:execute \"normal \\<plug>CommentaryLine\"<cr>i"
-  "Comment line"]
+    ;; comment
+    [(m ";") "<esc>:execute \"normal \\<plug>CommentaryLine\"<cr>i"
+     "Comment line"]
 
- ;; copy & paste
- [:i (c "@") "<c-o>v" "mark the start point of yank"]
- [:i (c :y) "<esc>pa" "paste"] ; *
- [:i (c :\ :y) (c :y) "i_CTRl-Y"]
+    ;; copy & paste
+    [(c :c) "<c-o>v" "mark the start point of yank"] ; *
+    [(c :y) "<esc>pa" "paste"] ; *
 
- ;; undo & redo
- [:i (c :z) "<esc>ua" "undo"] ; *
- [:i (c :\ :z) (c :z) "i_CTRl-Z"]
- [:i (c-s :z) "<esc><c-r>a" "redo"]
+    ;; undo & redo
+    [(c :z) "<esc>ua" "undo"] ; *
+    [(c-s :z) "<esc><c-r>a" "redo"]
 
- ;; window
- [:i (c :x :0) "<c-o><c-w>q" "Close a window"]
- [:i (c :x :1) "<c-o>:<c-u>only<cr>" "Delete-other-windows"]
- [:i (c :x :2) "<c-o>:<c-u>vs<cr>" "Split-vertically"]
- [:i (c :x :3) "<c-o>:<c-u>sp<cr>" "Split-horizontally"]
- [:i (c :x :o) "<c-o><c-w>w" "Move to other windows"]
- [:i (c :x :k) "<c-o>:bdelete<cr>" "Kill buffer"] ; *
+    ;; window
+    [(c :x :0) "<c-o><c-w>q" "Close a window"]
+    [(c :x :1) "<c-o>:<c-u>only<cr>" :delete-other-windows]
+    [(c :x :2) "<c-o>:<c-u>vs<cr>" :split-vertically]
+    [(c :x :3) "<c-o>:<c-u>sp<cr>" :split-horizontally]
+    [(c :x :o) "<c-o><c-w>w" "Move to other windows"]
+    [(c :x :k) "<c-o>:bdelete<cr>" "Kill buffer"] ; *
 
-;; file
-[:i (.. (c :x) (c :s)) "<c-o>:update<cr>" "save-file"]
-]
+    ;; file
+    [(.. (c :x) (c :s)) "<c-o>:update<cr>" :save-file]
+    ]]
+  (icollect [_ k (ipairs map-data)]
+            (_translate-arg (unpack k))))
