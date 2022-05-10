@@ -14,15 +14,21 @@
 
 ;;; highlight
 ;;; WARN Should be read before color scheme is loaded.
-
 (au! :hi-default :BufWinEnter (each [_ k (ipairs (require :core.au.hi))]
                        (vim.api.nvim_set_hl 0 (unpack k))))
 
-;; anotations
+;; annotations
+(fn link [name opt]
+  (let [data (vim.api.nvim_get_hl_by_name name 0)]
+    (each [k v (pairs opt)]
+      (tset data k v))
+    data))
 (au! :match-hi :ColorScheme (each [_ k (ipairs [[:Tabs {:bg :#eeaecc}]
-                                               [:TrailingSpaces {:bg :#FFa331}]
-                                               [:DoubleSpace {:bg :#cff082}]
-                                               [:TodoEx {:bg :#44a005 :fg :#F0FFF0}]])]
+                                                [:TrailingSpaces {:bg :#FFa331}]
+                                                [:DoubleSpace {:bg :#cff082}]
+                                                [:TodoEx {:bg :#44a005 :fg :#F0FFF0}]
+                                                [:FoldMark (link :Comment {:bg :#95A5A6})]
+                                                [:CommentHead (link :Comment {:bg :#95A000})]])]
                              (vim.api.nvim_set_hl 0 (unpack k))))
 (au! :match [:BufWinEnter] ((. (require :core.au.match) :add-matchs)))
 
@@ -35,8 +41,8 @@
 (create_autocmd
   :QuickFixCmdPost
   {:pattern :*grep*
-  :command :cwindow
-  :group (create_augroup :grep-cmd {:clear true})})
+   :command :cwindow
+   :group (create_augroup :grep-cmd {:clear true})})
 
 ;; settings for global status
 
@@ -83,6 +89,7 @@
   {:callback (λ []
                (tset vim.g :tex_conceal "")
                (tex_math)
+               (vim.cmd "setlocal iskeyword+=\\")
                (if (. vim.g :vim-auto-save)
                  (tset vim.g :auto_save 1)))
    :pattern [:*.tex]

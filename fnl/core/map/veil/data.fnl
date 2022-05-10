@@ -1,4 +1,5 @@
 (local {: kmp} (require :core.map.veil.kmp))
+(local {: vela : vela0} (require :core.map.veil.vela))
 
 (macro m [c ?s]
   (let [s (or ?s "")]
@@ -18,26 +19,31 @@
   (string.format :<C-S-%s> c))
 
 
-(macro unless [cond body]
-  `(if (not ,cond) ,body))
+(macro unless [cond ...]
+  `(if (not ,cond) ,...))
+
+(macro until [cond ...]
+  `(while (not ,cond) ,...))
+
+(local vf vim.fn)
+(local va vim.api)
 
 ;;; util {{{
 (fn concat-with [d ...]
   (table.concat [...] d))
 (fn rt [str]
   "replace termcode"
-  (vim.api.nvim_replace_termcodes str true true true))
+  (va.nvim_replace_termcodes str true true true))
+(fn echo [str]
+  (va.nvim_echo [[str]] false {}))
 ;;; }}}
 
-(local vf vim.fn)
-(local va vim.api)
-
 (fn split-line-at-point []
-    (let [line_text (vf.getline (vf.line :.))
-          col (vf.col :.)
-          text_after (string.sub line_text col)
-          text_before (if (> col 1) (string.sub line_text 1 (- col 1)) "")]
-      (values text_before text_after)))
+  (let [line_text (vf.getline (vf.line :.))
+        col (vf.col :.)
+        text_after (string.sub line_text col)
+        text_before (if (> col 1) (string.sub line_text 1 (- col 1)) "")]
+    (values text_before text_after)))
 
 (local retrive_till_tail
   (λ []
@@ -63,7 +69,7 @@
                             (error (.. "Could not cast '" (tostring n) "' to number.'"))))
           n (if (> n (vim.fn.line :$)) (vim.fn.line :$) n)
           n (if (< n 1) 1 n)]
-      (print (vim.fn.line :$))
+      (echo (tostring (vim.fn.line $)))
       (vim.api.nvim_win_set_cursor cu [n y]))))
 
 (fn guard_cursor_position [line col]
@@ -96,7 +102,7 @@
                   (= nr 16) (va.nvim_win_set_cursor 0 [(g (- (vf.line :.) times) (vf.col :.))])
                   (= nr 6) (va.nvim_win_set_cursor 0 [(g (vf.line :.) (+ (vf.col :.) times))])
                   (= nr 2) (va.nvim_win_set_cursor 0 [(g (vf.line :.) (- (vf.col :.) times))])
-                  (print "operator not matched"))))))))))
+                  (echo "operator not matched"))))))))))
 
 ;;; Ctrl-S {{{
 (fn _win-open []
@@ -115,33 +121,38 @@
 (fn add-matches [line-num kmp-res width shift]
   (each [_ col (ipairs kmp-res)]
     (when (> width 0)
-    (vf.matchaddpos :IncSearch [[line-num (+ shift col) width]]))))
+      (vf.matchaddpos :IncSearch [[line-num (+ shift col) width]]))))
 
 (fn fill-spaces [str width]
   (let [len (vf.strdisplaywidth str)]
     (if (< len width) (.. (string.rep " " (-> width (- len))) str) str)))
 
-; (fn set-virtual-curosr [nr pos]
 (fn update-pos [nr pos]
   "return pos"
   (if
-    (= nr (rt :<c-s>)) ; c-s
+    (= nr 18) ; c-s
     (values (- (. pos 1) 1) (. pos 2))
-    (= nr (rt :<c-r>)) ; c-r
+    (= nr 19) ; c-r
     (values (+ (. pos 1) 1) (. pos 2))
     (values (. pos 1) (. pos 2))))
 
 (fn keys-ignored [nr]
   "c-m 13" ; <cr>
-  (or (= nr 18)
-      (= nr 19)
-      (= nr 13)
+  (or (= nr 18) ; c-r
+      (= nr 19) ; c-s
+      (= nr 13) ; c-m <cr>
+      (= nr 6)  ; c-f
       (= nr (rt :<m-%>))))
 
 (fn gen-res [target line]
   (if (= target "")
     []
     (kmp target line)))
+
+(fn _ender [win buf showmode]
+  (va.nvim_win_close win true)
+  (va.nvim_buf_delete buf {:force true})
+  (tset vim.o :showmode showmode))
 
 (local inc-search
   (λ []
@@ -153,7 +164,10 @@
     (var pos [0 0])
     (var done? false)
     (var target "")
+    (local showmode (or (. vim.o :showmode) true))
+    (tset vim.o :showmode false)
     (while (not done?)
+      (echo (.. "line: " (. pos 1) "/" (vf.line :$ win)))
       (when (vf.getchar true)
         (let [nr (vf.getchar)]
 
@@ -185,34 +199,42 @@
                 (table.insert view-lines (.. lnums " " line)))))
           (va.nvim_buf_set_lines buf 0 -1 true view-lines)
           (vim.cmd "redraw!")
-          (when (= nr 13)
+          (when (= nr 13) ; cr
             (set done? true)
-            (va.nvim_win_close win true)
-            (va.nvim_buf_delete buf {:force true}))
+            (_ender win buf showmode)
+            (unless (= (length find-pos) 0)
+              (va.nvim_win_set_cursor
+                c-win [(. (. find-pos (. pos 1)) 1)
+                       (- (. (. (. find-pos (. pos 1)) 2) 1) 1)])))
+          (when (= nr 27) ; esc
+            (set done? true)
+            (_ender win buf showmode)
+            (va.nvim_win_set_cursor c-win c-pos))
+          (when (= nr 6) ; ctrl-f (focus)
+            (unless (= (length find-pos) 0)
+            (va.nvim_win_set_cursor
+              c-win [(. (. find-pos (. pos 1)) 1)
+                     (- (. (. (. find-pos (. pos 1)) 2) 1) 1)])))
           (when (= nr (rt "<M-%>")) ; <M-%>
             (set done? true)
             (let [alt (vim.fn.input (.. "Query replace " target " with: "))]
-              (va.nvim_win_close win true)
-              (va.nvim_buf_delete buf {:force true})
+              (_ender win buf showmode)
               (vim.cmd (.. "%s/" target "/" alt "/g"))))
-          (unless (= (length find-pos) 0)
-            (va.nvim_win_set_cursor
-              c-win [(. (. find-pos (. pos 1)) 1)
-                     (- (. (. (. find-pos (. pos 1)) 2) 1) 1)]))
-          (when (= (length find-pos) 0)
-            (set done? true)
-            (va.nvim_win_close win true)
-            (va.nvim_buf_delete buf {:force true})
-            (va.nvim_win_set_cursor c-win c-pos))
-          (when (= (length find-pos) 1)
-            (when (= (length (. (. find-pos 1) 2)) 1)
-              (set done? true)
-              (va.nvim_win_close win true)
-              (va.nvim_buf_delete buf {:force true})
-              (vim.api.nvim_win_set_cursor
-                c-win [(. (. find-pos 1) 1)
-                       (- (. (. (. find-pos 1) 2) 1) 1)]))))))))
+          ; (when (= (length find-pos) 0)
+          ;   (set done? true)
+          ;   (_ender win buf showmode)
+          ;   (va.nvim_win_set_cursor c-win c-pos))
+          ; (when (= (length find-pos) 1)
+          ;   (when (= (length (. (. find-pos 1) 2)) 1)
+          ;     (set done? true)
+          ;     (_ender win buf showmode)
+          ;     (vim.api.nvim_win_set_cursor
+          ;       c-win [(. (. find-pos 1) 1)
+          ;              (- (. (. (. find-pos 1) 2) 1) 1)])))
+          )))))
 ;;; }}}
+
+;;; ----------------------------------------------------------------------
 
 (fn _translate-arg [key cmd desc]
   (if (= (type cmd) :string)
@@ -239,7 +261,9 @@
     [(m :v) :<c-o><c-f> "Page up"]
     [(m :<) :<esc>ggi "Beginning of buffer"]
     [(m :>) :<c-o>G "End of buffer"]
-    [(c :s) inc-search "Search"]
+    [(m :s) inc-search "Search"]
+    [(c :s) vela0 "vela"]
+    [(c :l) vela "vela2"] ; @dev
 
     ;; edit
     [(c :d) :<Del> "Delete"] ; * ; <- I actually use default i_CTRl-D.

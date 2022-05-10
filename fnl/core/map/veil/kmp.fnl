@@ -2,9 +2,9 @@
   "dump the object"
   (if (= (type o) :table)
     (let [s ["{\n"]]
-               (each [k v (pairs o)]
-                 (table.insert s (.. depth "  [" (tostring k) "] = " (_dump v (.. depth "  ")) ",\n")))
-               (table.insert s (.. depth "} "))
+      (each [k v (pairs o)]
+        (table.insert s (.. depth "  [" (tostring k) "] = " (_dump v (.. depth "  ")) ",\n")))
+      (table.insert s (.. depth "} "))
       (table.concat s ""))
     (tostring o)))
 (fn dump [o]
