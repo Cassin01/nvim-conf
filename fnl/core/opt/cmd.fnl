@@ -3,4 +3,5 @@
 "filetype plugin indent on"
 "syntax on"
 "set clipboard+=unnamed"
+"set iskeyword-=_"
  ]

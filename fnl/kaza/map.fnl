@@ -3,7 +3,7 @@
 
 (def prefix [prefix plug-name] [:string :string :string]
   "add prefix with doc"
-  (tset _G.__kaza.prefix prefix plug-name)
+  (tset _G.__kaza.prefix prefix (.. "[" plug-name "]"))
   prefix)
 
 (def _overwrite [org-tbl tbl] [:table :table :table]
@@ -11,7 +11,7 @@
   org-tbl)
 
 (def prefix-o [mode prefix name ?opt] [:string :string :string :?table :table]
-  ;(tset _G.__kaza.prefix prefix name) ;FUTURE
+  (tset _G.__kaza.prefix prefix (.. "[" name "]")) ;FUTURE
   (local sign (.. "[" name "] "))
   {:map (λ [key cmd desc]
           (vim.api.nvim_set_keymap mode
@@ -37,11 +37,11 @@
 
 ;; map
 
-(def map [mode key cmd desc] [:string :string [:string :function] :string :nil]
+(def map [mode key cmd desc ?expr] [:string :string [:string :function] :string :?boolean :nil]
   (if (= (type cmd) :string)
     (vim.api.nvim_set_keymap mode key cmd {:noremap true :silent true :desc desc})
     (= (type cmd) :function)
-    (vim.api.nvim_set_keymap mode key "" {:callback cmd :noremap true :silent true :desc desc})
+    (vim.api.nvim_set_keymap mode key "" {:callback cmd :noremap true :silent true :desc desc :expr (or ?expr false)})
     (error "invalid type for cmd")))
 
 (def bmap [bufnr mode key cmd desc] [:number :string :string [:string :function] :string :nil]

@@ -48,6 +48,10 @@
          (prefix#.map (unpack l#))
          (prefix#.map-f (unpack l#))))))
 
+(fn M.map [mode key cmd desc]
+  `(let [map# (. (require :kaza.map) :map)]
+     (map# ,mode ,key ,cmd ,desc)))
+
 ;;; autocmd
 
 (fn _callback [group event body ?opt]

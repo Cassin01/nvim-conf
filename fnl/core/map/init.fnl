@@ -59,10 +59,16 @@
    [:a ":vim TODO ~/org/*.org<cr>" "agenda"]
    [:ts ":%s/\t/ /g<cr>" "replace tab with space"]
    [:cd ":<c-u>lcd %:p:h<cr>" "move current directory to here"]
-   [(br :l :f) ":<c-u>set clipboard+=unnamed<cr>" "enable clipboard"]
-   [(br :r :f) ":<c-u>set clipboard-=unnamed<cr>" "disable clipboard"]
-   [(br :l :x) ":<c-u>setlocal conceallevel=1<cr>" "hide conceal"]
-   [(br :r :x) ":<c-u>setlocal conceallevel=0<cr>" "show conceal"]
+   [(br :r :f) ":<c-u>set clipboard+=unnamed<cr>" "enable clipboard"]
+   [(br :l :f) ":<c-u>set clipboard-=unnamed<cr>" "disable clipboard"]
+   [(br :r :x) ":<c-u>setlocal conceallevel=1<cr>" "hide conceal"]
+   [(br :l :x) ":<c-u>setlocal conceallevel=0<cr>" "show conceal"]
+   [(br :l :c) (la (vim.cmd (.. "colo " vim.g.colors_name))) :recover-color]
+   [(br :r :c) (la (vim.cmd "hi Normal guibg=NONE ctermbg=NONE")
+                   (vim.cmd "hi CursorLine guibg=NONE")
+                   (vim.cmd "hi StatusLine guibg=NONE")
+                   (vim.cmd "hi LineNr guibg=NONE")
+                   (vim.cmd "hi SignColumn guibg=NONE")) :clear-color]
    [:fn (la (print (vim.fn.expand :%:t))) "show file name"]
    [:fp (la (print (vim.fn.expand :%:p))) "show file path"]
    [:ft (la (if (= vim.o.foldmethod :indent)
@@ -74,7 +80,7 @@
    [:m (la (let [buf (vim.api.nvim_create_buf false true)]
              (vim.api.nvim_buf_set_lines buf 0 100 false ((req-f :split :util.string) (vim.api.nvim_exec "messages" true ) "\n"))
              (vim.api.nvim_open_win buf true {:relative :editor :style :minimal :row 3 :col 3 :height 40 :width 150}))) "show message"]
-   [:no (la (let [width 27
+   [:e (la (let [width 27
                   height 30
                   buf (vim.api.nvim_create_buf false true)]
               (vim.api.nvim_buf_set_option buf :filetype :org)
