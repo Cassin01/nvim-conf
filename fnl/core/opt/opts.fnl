@@ -32,4 +32,5 @@
  :history 1000
  :ttimeout true ; default on
  :ttimeoutlen 100
+ :confirm true
  }
