@@ -10,6 +10,7 @@
  :autoindent true ; default on
  :number true
  :relativenumber true
+ :winbar :%f
  :scrolloff 10
  :cursorline true
  :incsearch true
