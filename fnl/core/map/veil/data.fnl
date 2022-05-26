@@ -81,7 +81,7 @@
     [(m :>) :<c-o>G "End of buffer"]
     [(c :s) inc-search "Search"]
     [(c :l) "<c-o><Plug>(leap-forward)" "leap-forward"]
-    [(c :i) "<c-o><Plug>(leap-backward)" "leap-backword"]
+    ; [(c :i) "<c-o><Plug>(leap-backward)" "leap-backword"]
 
     ;; edit
     [(c :d) :<Del> "Delete"] ; * ; <- I actually use default i_CTRl-D.

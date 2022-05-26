@@ -25,8 +25,7 @@
         (set len (. lps (- len  1)))
         (do
           (tset lps i 1)
-          (set i (+ i 1)))
-        )))
+          (set i (+ i 1))))))
   lps)
 
 (fn kmp-search [pat txt m n lps]
