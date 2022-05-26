@@ -120,7 +120,6 @@
     (values (. pos 1) (. pos 2))))
 
 (fn keys-ignored [nr]
-  "c-m 13" ; <cr>
   (or (= nr 18) ; c-r
       (= nr 19) ; c-s
       (= nr 15) ; c-o
@@ -173,7 +172,6 @@
       (echo (.. "line: " (. pos 1) "/" (vf.line :$ win) ", input: " target))
       (when (vf.getchar true)
         (let [nr (vf.getchar)]
-
           (vf.clearmatches win)
           (unless (= id-cpos nil)
             (when (match-exist c-win id-cpos)
@@ -186,7 +184,7 @@
 
           (set target (if
                         (keys-ignored nr) target
-                        (= nr 8) (string.sub target 1 -2)
+                        (or (= nr 8) (= nr (rt :<Del>))) (string.sub target 1 -2)
                         (.. target (vf.nr2char nr))))
           (var view-lines [])
           (var find-pos [])
