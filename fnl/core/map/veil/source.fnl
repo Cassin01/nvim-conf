@@ -106,14 +106,14 @@
         topline (. wininfo :topline)
         botline (. wininfo :botline)]
     ; We can enhance drawing time with restrict drawing regions.
-     (if (and (>= line-num topline) (<= line-num botline))
+    (if (and (>= line-num topline) (<= line-num botline))
       (do
         (var res [])
         (each [_ col (ipairs kmp-res)]
           (when (> width 0)
             (table.insert res (vf.matchaddpos group [[line-num (+ shift col) width]] 0 -1 {:window win}))))
         res)
-       [])))
+      [])))
 
 (fn fill-spaces [str width]
   (let [len (vf.strdisplaywidth str)]
@@ -134,6 +134,7 @@
       (= nr 15) ; c-o
       (= nr 13) ; c-m <cr>
       (= nr 6)  ; c-f
+      (= nr 7)  ; c-g
       (= nr (rt :<c-5>))))
 
 (fn gen-res [target line]
@@ -182,7 +183,7 @@
       (vf.matchaddpos :LineNr [[l 1 shift]] 1 -1 {:window win})
       (push! id-cpos (add-matches c-win :Search i res target-width 0)) ; WARN Critical
       ))
-   id-cpos)
+  id-cpos)
 
 (fn _ender [win buf showmode c-win c-ids]
   (va.nvim_win_close win true)
@@ -235,35 +236,18 @@
                         (or (= nr 8) (= nr (rt :<Del>))) (string.sub target 1 -2)
                         (.. target (vf.nr2char nr))))
           (local target-width (vf.strdisplaywidth target))
-          ; (var view-lines [])
-          ; (var find-pos [])
-          ; (var line-num 0)
-          ; (each [i line (ipairs lines)]
-          ;   (let [kmp-res (gen-res target line)]
-          ;     (when (not= (length kmp-res) 0)
-          ;       (set line-num (+ 1 line-num))
-          ;       (local lnums (fill-spaces
-          ;                      (tostring i)
-          ;                      (vf.strdisplaywidth
-          ;                        (tostring (vf.line :$ c-win)))))
-          ;       (add-matches win hi-w-summary line-num kmp-res target-width shift) ; WARN Critical
-          ;       (vf.matchaddpos :LineNr [[line-num 1 shift]] 1 -1 {:window win})
-          ;       (push! id-cpos (add-matches c-win :Search i kmp-res target-width 0)) ; WARN Critical
-          ;       (table.insert find-pos [i kmp-res])
-          ;       (table.insert view-lines (.. lnums " " line)))))
-          ; (va.nvim_buf_set_lines buf 0 -1 true view-lines)
 
           ;;; Search target on the current buffer.
           (local (find-pos view-lines) (do
-                            (var find-pos [])
-                            (var view-lines [])
-                            (each [i line (ipairs lines)]
-                              (let [kmp-res (gen-res target line)]
-                                (when (not= (length kmp-res) 0)
-                                  (table.insert find-pos [i kmp-res])
-                                  (let [lnums (fill-spaces (tostring i) (vf.strdisplaywidth (tostring (vf.line :$ c-win))))]
-                                    (table.insert view-lines (.. lnums " " line))))))
-                            (values find-pos view-lines)))
+                                         (var find-pos [])
+                                         (var view-lines [])
+                                         (each [i line (ipairs lines)]
+                                           (let [kmp-res (gen-res target line)]
+                                             (when (not= (length kmp-res) 0)
+                                               (table.insert find-pos [i kmp-res])
+                                               (let [lnums (fill-spaces (tostring i) (vf.strdisplaywidth (tostring (vf.line :$ c-win))))]
+                                                 (table.insert view-lines (.. lnums " " line))))))
+                                         (values find-pos view-lines)))
           (va.nvim_buf_set_lines buf 0 -1 true view-lines)
 
           ;;; view
@@ -294,12 +278,25 @@
             (va.nvim_win_set_cursor c-win c-pos)
             (vim.cmd "normal! zz")
             (push! id-cpos (draw-found find-pos c-win win target-width shift hi-w-summary)))
+          (when (= nr 7) ; ctrl-g
+            (unless (= (length find-pos) 0)
+            (let [len (length find-pos)
+                  num (tonumber (vim.fn.input (.. "1 ~ "  (tostring len) ": ")))]
+              (when (and (not= num nil) (<= num len))
+                (set pos [(guard_cursor_position num (. pos 2))])
+                (va.nvim_win_set_cursor win pos)
+                (vf.clearmatches win)
+                (vf.matchaddpos :CursorLineNr [[(. pos 1) 1 shift]] 2 -1 {:window win})
+                (vf.matchaddpos :PmenuSel [[(. pos 1) 0]] 0 -1 {:window win})
+                (push! id-cpos (draw-found find-pos c-win win target-width shift hi-w-summary))))))
           (when (= nr (rt "<c-5>")) ; <M-%>
             (set done? true)
             (let [alt (vim.fn.input (.. "Query replace " target " with: "))]
               (_ender win buf showmode c-win id-cpos)
-              (if (= (va.nvim_get_current_buf) c-buf)
-                (vim.cmd (.. "%s/" target "/" alt "/g")))
+              (if (and (not= (length alt) 0) (= (va.nvim_get_current_buf) c-buf))
+                (do
+                  (vim.cmd (.. "%s/" target "/" alt "/g"))
+                  (print "replaced " target " with " alt )))
               (va.nvim_win_set_cursor c-win c-pos)))
           (vim.cmd "redraw!"))))))
 ;;; }}}
