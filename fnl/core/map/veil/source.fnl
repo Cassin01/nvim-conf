@@ -50,16 +50,18 @@
 
 ;;; Ctrl-u {{{
 
-(fn guard_cursor_position [line col]
-  (values
-    (if
-      (< line 1) 1
-      (> line (vf.line :$)) (vf.line :$)
-      line)
-    (if
-      (< col 0) 0
-      (> col (vf.col :$)) (vf.col :$)
-      col)))
+(fn _guard_cursor_position [win]
+  "WARN: must be cursor is given"
+  (lambda [line col]
+    (values
+      (if
+        (< line 1) 1
+        (> line (vf.line :$ win)) (vf.line :$ win)
+        line)
+      (if
+        (< col 0) 0
+        (> col (vf.col :$)) (vf.col :$)
+        col))))
 
 (local universal-argument
   (λ []
@@ -74,7 +76,7 @@
               (set done? true)
               (let [operator (vf.nr2char nr)
                     times (tonumber number?)
-                    g guard_cursor_position]
+                    g (_guard_cursor_position (va.nvim_get_current_win))]
                 (if
                   (= nr 106) (va.nvim_win_set_cursor 0 [(g (+ (vf.line :.) times) (vf.col :.))])
                   (= nr 107) (va.nvim_win_set_cursor 0 [(g (- (vf.line :.) times) (vf.col :.))])
@@ -99,7 +101,7 @@
                                         :width vim.o.columns
                                         :focusable false
                                         :border :rounded})]
-    (va.nvim_win_set_option win :winblend 10)
+    (va.nvim_win_set_option win :winblend 20)
     (values buf win)))
 
 (fn add-matches [win group line-num kmp-res width shift]
@@ -199,6 +201,22 @@
      (- (. (. (. find-pos (. pos 1)) 2) 1) 1) ]
     nil))
 
+(fn guard_cursor_position [win]
+  "WARN: must be cursor is given"
+  (lambda [line col]
+    (local l
+      (if
+        (< line 1) 1
+        (> line (vf.line :$ win)) (vf.line :$ win)
+        line))
+    (va.nvim_win_set_cursor win [l 0])
+    (values
+      l
+      (if
+        (< col 0) 0
+        (> col (vf.col :$)) (vf.col :$)
+        col))))
+
 (local Preview {:new (fn [self c-buf c-win]
                        (let [(buf win) (_win-open (- vim.o.lines 15))]
                          (tset self :buf buf)
@@ -208,15 +226,22 @@
                                                (va.nvim_buf_get_option
                                                  c-buf
                                                  :filetype))
-
                        (va.nvim_buf_set_lines 
                          self.buf 
                          0 -1 true
                          (va.nvim_buf_get_lines c-buf 0 (vf.line :$ c-win) true))
                        (va.nvim_win_set_option self.win :scrolloff 999)
+                       (va.nvim_win_set_option self.win :foldenable false)
+                       (va.nvim_win_set_option self.win :number true)
                        self)
-                :update (fn [self pos]
-                          (va.nvim_win_set_cursor self.win pos))
+                :update (fn [self find-pos pos target-width hi]
+                          (vf.clearmatches self.win)
+                          (let [pos (get-first-pos find-pos pos)]
+                            (unless (= pos nil)
+                              (va.nvim_win_set_cursor self.win pos)
+                              (_hi-cpos hi self.win pos target-width)))
+                          (each [_ [i res] (ipairs find-pos)]
+                            (add-matches self.win :Search i res target-width 0)))
                 :del (fn [self]
                        (va.nvim_win_close self.win true)
                        (va.nvim_buf_delete self.buf {:force true}))
@@ -258,7 +283,7 @@
             (del-matches id-cpos c-win)
             (set id-cpos nil))
 
-          (set pos [(guard_cursor_position  (update-pos nr pos))])
+          (set pos [((guard_cursor_position win)  (update-pos nr pos))])
           (va.nvim_win_set_cursor win pos) ; FIXME
           (vf.matchaddpos :PmenuSel [[(. pos 1) 0]] 0 -1 {:window win})
 
@@ -287,21 +312,12 @@
           ;;; view
           (push! id-cpos (draw-found find-pos c-win win target-width shift hi-w-summary))
 
-          ; (unless (= (length find-pos) 0)
-          ;   (let [pos [(. (. find-pos (. pos 1)) 1)
-          ;              (- (. (. (. find-pos (. pos 1)) 2) 1) 1)]]
-          ;     (push! id-cpos (_hi-cpos hi-c-jump c-win pos target-width))))
+          (unless (= target-width 0)
+            (preview:update find-pos pos target-width hi-c-jump))
+
           (let [pos (get-first-pos find-pos pos)]
             (unless (= pos nil)
               (push! id-cpos (_hi-cpos hi-c-jump c-win pos target-width))))
-
-          ; (when (= nr 13) ; cr
-          ;   (set done? true)
-          ;   (_ender win buf showmode c-win id-cpos preview)
-          ;   (unless (= (length find-pos) 0)
-          ;     (va.nvim_win_set_cursor
-          ;       c-win [(. (. find-pos (. pos 1)) 1)
-          ;              (- (. (. (. find-pos (. pos 1)) 2) 1) 1)])))
 
           (when (= nr 13) ; cr
             (set done? true)
@@ -332,7 +348,7 @@
             (let [len (length find-pos)
                   num (tonumber (vim.fn.input (.. "1 ~ "  (tostring len) ": ")))]
               (when (and (not= num nil) (<= num len))
-                (set pos [(guard_cursor_position num (. pos 2))])
+                (set pos [((guard_cursor_position win) num (. pos 2))])
                 (va.nvim_win_set_cursor win pos) ; FIXME
                 (vf.clearmatches win)
                 (vf.matchaddpos :CursorLineNr [[(. pos 1) 1 shift]] 2 -1 {:window win})
