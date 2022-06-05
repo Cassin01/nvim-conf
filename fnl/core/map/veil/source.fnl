@@ -12,6 +12,8 @@
   (va.nvim_replace_termcodes str true true true))
 (fn echo [str]
   (va.nvim_echo [[str]] false {}))
+(fn concat-with [d ...]
+  (table.concat [...] d))
 ;;; }}}
 
 (fn split-line-at-point []
@@ -226,8 +228,8 @@
                                                (va.nvim_buf_get_option
                                                  c-buf
                                                  :filetype))
-                       (va.nvim_buf_set_lines 
-                         self.buf 
+                       (va.nvim_buf_set_lines
+                         self.buf
                          0 -1 true
                          (va.nvim_buf_get_lines c-buf 0 (vf.line :$ c-win) true))
                        (va.nvim_win_set_option self.win :scrolloff 999)
@@ -275,7 +277,17 @@
     (var id-cpos nil) ; list
     (while (not done?)
       ; (echo (.. "line: " (. pos 1) "/" (vf.line :$ win) ", input: " target))
-      (echo (.. "input: " target ", line: " (. pos 1) "/" (vf.line :$ win)))
+      (echo (concat-with 
+              ", "
+              (.. "input: " target )
+              (.. "line: " (. pos 1) "/" (vf.line :$ win))
+              "c-r: back"
+              "c-s: forward"
+              "c-o: first"
+              "c-m: jump"
+              "c-f: focus"
+              "c-g{number}: jump to line"
+              "c-5: substitute"))
       (when (vf.getchar true)
         (let [nr (vf.getchar)]
           (vf.clearmatches win)
@@ -312,8 +324,9 @@
           ;;; view
           (push! id-cpos (draw-found find-pos c-win win target-width shift hi-w-summary))
 
-          (unless (= target-width 0)
-            (preview:update find-pos pos target-width hi-c-jump))
+          ; (unless (= target-width 0)
+            (preview:update find-pos pos target-width hi-c-jump)
+            ; )
 
           (let [pos (get-first-pos find-pos pos)]
             (unless (= pos nil)
@@ -353,6 +366,7 @@
                 (vf.clearmatches win)
                 (vf.matchaddpos :CursorLineNr [[(. pos 1) 1 shift]] 2 -1 {:window win})
                 (vf.matchaddpos :PmenuSel [[(. pos 1) 0]] 0 -1 {:window win})
+                (preview:update find-pos pos target-width hi-c-jump)
                 (push! id-cpos (draw-found find-pos c-win win target-width shift hi-w-summary))))))
           (when (= nr (rt "<c-5>")) ; <M-%>
             (set done? true)

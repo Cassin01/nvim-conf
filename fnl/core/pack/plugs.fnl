@@ -25,6 +25,11 @@
              [[:t (cmd :NvimTreeToggle) :toggle]
               [:r (cmd :NvimTreeRefresh) :refresh]
               [:f (cmd :NvimTreeFindFile) :find]]))}
+; {1 :nvim-neo-tree/neo-tree.nvim
+;  :branch :v2.x
+;  :requires [:nvim-lua/plenary.nvim
+;             :kyazdani42/nvim-web-devicons
+;             :MunifTanjim/nui.nvim]}
 {1 :glepnir/dashboard-nvim
  :disable true
  :config (λ [] (tset vim.g :dashboard_default_executive :telescope))}
@@ -41,7 +46,30 @@
 ;; status line
 ; {1 :b0o/incline.nvim
 ;  :config (la (ref-f :setup :incline))}
+; {1 :feline-nvim/feline.nvim
+;  :setup (la (ref-f :setup :feline)
+;              ((-> (require :feline) (. :winbar) (. setup))))}
+; {1 :nvim-lualine/lualine.nvim
+;  :config (la (ref-f :setup :lualine {:options {:globalstatus true}}))
+;  :requires {1 :kyazdani42/nvim-web-devicons
+;             :opt true }}
 
+
+{1 :edluffy/specs.nvim
+ :config (la ((req-f :setup :specs) {:show_jumps true
+                                     :min_jump 10
+                                     :popup {:delay_ms 0
+                                             :inc_ms 10
+                                             :blend 10
+                                             :width 50
+                                             :winhl :Pmenu
+                                             :fader (let [specs (require :specs)]
+                                                      (. specs :linear_fader))
+                                             :resizer (let [specs (require :specs)]
+                                                        (. specs :shrink_resizer))}
+                                     :ignore_filetypes []
+                                     :ignore_buftypes {:nofile true}}))
+ }
 
 {1 :nvim-telescope/telescope.nvim
  :requires [:nvim-lua/plenary.nvim]
@@ -52,7 +80,12 @@
           (prefix.map :b "<cmd>Telescope buffers<cr>" "buffers")
           (prefix.map :h "<cmd>Telescope help_tags<cr>" "help tags")
           (prefix.map :t "<cmd>Telescope<cr>" "telescope")
-          (prefix.map :o "<cmd>Telescope oldfiles<cr>" "old files"))}
+          (prefix.map :o "<cmd>Telescope oldfiles<cr>" "old files")
+          (prefix.map :r "<cmd>Telescope file_browser<cr>" "file_browser"))}
+
+{1 :nvim-telescope/telescope-file-browser.nvim
+ :config (la ((req-f :load_extension :telescope) :file_browser))
+ :requires [:nvim-telescope/telescope.nvim]}
 
 {1 :nvim-telescope/telescope-packer.nvim
  :config (la ((req-f :load_extension :telescope) :packer))
@@ -88,8 +121,8 @@
             {:ensure_installed "maintained"
              :sync_install false
              :ignore_install [ "javascript" ]
-             :highlight {:enable true
-                         :disable [ "c" "rust" "org" "vim"]
+             :highlight {:enable false
+                         :disable [ "c" "rust" "org" "vim" "tex"]
                          :additional_vim_regex_highlighting ["org"]}
              :ensure_installed ["org"]
              :rainbow {:enable true
@@ -99,6 +132,9 @@
  :config (λ []
            ((. (require :colorizer) :setup)))}
 
+; {1 :mattn/ctrlp-matchfuzzy
+;  :setup (λ []
+;           (tset g :ctrlp_match_func {:match :ctrlp_matchfuzzy#matcher}))}
 {1 :ctrlpvim/ctrlp.vim
  :setup (λ []
           (local g vim.g)
@@ -107,16 +143,18 @@
           (tset g :ctrlp_open_new_file :r)
           (tset g :ctrlp_extensions [:tag :quickfix :dir :line :mixed])
           (tset g :ctrlp_match_window "bottom,order:btt,min:1,max:18")
-          (local ctrlp ((. (require :kaza.map) :prefix-o) :n :<space>p :ctrlp))
-          (ctrlp.map :a ::<c-u>CtrlP<Space> :default)
-          (ctrlp.map :b :<cmd>CtrlPBuffer<cr> :buffer)
-          (ctrlp.map :d :<cmd>CtrlPDir<cr> "directory")
-          (ctrlp.map :f :<cmd>CtrlP<cr> "all files")
-          (ctrlp.map :l :<cmd>CtrlPLine<cr> "grep in a current file")
-          (ctrlp.map :m :<cmd>CtrlPMRUFiles<cr> "file history")
-          (ctrlp.map :q :<cmd>CtrlPQuickfix<cr> "quickfix")
-          (ctrlp.map :s :<cmd>CtrlPMixed<cr> "file and buffer")
-          (ctrlp.map :t :<cmd>CtrlPTag<cr> "tag"))}
+          (nmaps
+            :<space>p
+            :ctrlp
+            [[:a ::<c-u>CtrlP<Space> :default]
+             [:b :<cmd>CtrlPBuffer<cr> :buffer]
+             [:d :<cmd>CtrlPDir<cr> "directory"]
+             [:f :<cmd>CtrlP<cr> "all files"]
+             [:l :<cmd>CtrlPLine<cr> "grep in a current file"]
+             [:m :<cmd>CtrlPMRUFiles<cr> "file history"]
+             [:q :<cmd>CtrlPQuickfix<cr> "quickfix"]
+             [:s :<cmd>CtrlPMixed<cr> "file and buffer"]
+             [:t :<cmd>CtrlPTag<cr> "tag"]]))}
 
 ; Show git status on left of a code.
 {1 :lewis6991/gitsigns.nvim
@@ -209,6 +247,10 @@
            (cmp.setup.cmdline :: {:mapping (cmp.mapping.preset.cmdline)
                                   :sources (cmp.config.sources [{:name :path}] [{:name :cmdline}])}))}
 
+;; highlighting other uses of the current word under the cursor
+{1 :RRethy/vim-illuminate}
+
+
 {1 :neovim/nvim-lspconfig
  :config (λ []
            (local ˜capabilities ((. (require :cmp_nvim_lsp) :update_capabilities) (vim.lsp.protocol.make_client_capabilities)))
@@ -217,8 +259,10 @@
               {:capabilities capabilities
                :diagnostics {:enable true
                              :disabled [:unresolved-proc-macro]
-                             :enableExperimental true}})))}
-
+                             :enableExperimental true}}))
+           ((-> (require :lspconfig) (. :gopls) (. :setup))
+            {:on_attach (lambda [client]
+                          (ref-f :on_attach :illuminate client))}))}
 
 {1 :tami5/lspsaga.nvim
  :config (λ [] ((. (require :lspsaga) :setup)
@@ -292,7 +336,6 @@
  :after ["copilot.lua" "nvim-cmp"]}
 
 ;;; vim
-
 {1 :Shougo/echodoc.vim
  :setup (λ []
           (tset vim.g :echodoc#enable_at_startup true)
@@ -321,6 +364,9 @@
           (tset vim.g :sexp_enable_insert_mode_mappings false))}
 
 ;;; util
+; {1 :Cassin01/hyper-witch.nvim
+;  :setup (λ []
+;           (tset vim.g :hwitch#prefixes _G.__kaza.prefix))}
 
 {1 :majutsushi/tagbar
  :setup (λ []
@@ -344,15 +390,15 @@
             (prefix.map "" "<Plug>(EasyAlign)" :align))
           (map :x "<space>ea" "<Plug>(EasyAlign)" :align)) }
 :terryma/vim-multiple-cursors
-:rhysd/clever-f.vim
+; :rhysd/clever-f.vim
 :Jorengarenar/vim-MvVis ; Move visually selected text. Ctrl-HLJK
 {1 :terryma/vim-expand-region
  :setup (λ []
           (vim.cmd "vmap v <Plug>(expand_region_expand)")
           (vim.cmd "vmap <C-v> <Plug>(expand_region_shrink)"))}
-; :ggandor/lightspeed.nvim
-:ggandor/leap.nvim
 
+{1 :ggandor/leap.nvim
+ :config (λ [] (ref-f :set_default_keymaps :leap))}
 
 ;; move dir to dir
 {1 :francoiscabrol/ranger.vim
@@ -363,7 +409,6 @@
             (prefix.map :t :<cmd>RangerNewTab<cr> "new tab")))}
 
 ;;; move
-
 {1 :Shougo/vimproc.vim
  :run "make"}
 
@@ -408,9 +453,18 @@
 
 ;;; language
 
-;; deno
-:vim-denops/denops.vim
-:Cassin01/fetch-info.nvim
+; ;; deno
+; :vim-denops/denops.vim
+; {1 :Cassin01/fetch-info.nvim
+;  :require :ms-jpq/lua-async-await
+;  :setup (λ []
+;           (local a (require :plug.async))
+;           (local {: u-cmd} (require :kaza))
+;           (u-cmd :MyGetInfo (la
+;                               (lambda []
+;                                 (a.sync
+;                                   (lambda []
+;                                     (vim.cmd :GInfoF)))))))}
 
 
 ;; text
@@ -436,9 +490,26 @@
 ;; rust
 :rust-lang/rust.vim
 
-; tex
+;; tex
 {1 :Cassin01/texrun.vim
- :setup (λ [] (tset vim.g :texrun#file_name :l02.tex))}
+ :setup (λ [] (tset vim.g :texrun#file_name [:l02.tex :sample.tex]))}
+
+;; vim
+{1 :LeafCage/vimhelpgenerator
+ :setup (λ []
+          (tset vim.g :vimhelpgenerator_defaultlanguage "en")
+          (tset vim.g :vimhelpgenerator_version :0.0.1)
+          (tset vim.g :vimhelpgenerator_contents {:contents true
+                                                  :introduction true
+                                                  :usage true
+                                                  :interface true
+                                                  :variables true
+                                                  :commands true
+                                                  :key-mappings true
+                                                  :functions true
+                                                  :setting true
+                                                  :todo true
+                                                  :changelog false}))} ; doc generator
 
 ;; markdown
 :godlygeek/tabular
@@ -460,42 +531,45 @@
           (local prefix ((. (require :kaza.map) :prefix-o) :n "<space>g" :glow))
           (prefix.map :mp "<cmd>Glow<cr>" "preview"))}
 
+;; japanese
+:deton/jasegment.vim
+
 ;; color
 :Shougo/unite.vim
 :ujihisa/unite-colorscheme
-;:altercation/vim-colors-solarized   ; solarized
-;:croaker/mustang-vim                ; mustang
-;:jeffreyiacono/vim-colors-wombat    ; wombat
-;:nanotech/jellybeans.vim            ; jellybeans
-;:vim-scripts/Lucius                 ; lucius
-;:vim-scripts/Zenburn                ; zenburn
-;:mrkn/mrkn256.vim                   ; mrkn256
-;:jpo/vim-railscasts-theme           ; railscasts
-;:therubymug/vim-pyte                ; pyte
-;:tomasr/molokai                     ; molokai
-;:chriskempson/vim-tomorrow-theme    ; tomorrow night
-;:vim-scripts/twilight               ; twilight
-;:w0ng/vim-hybrid                    ; hybrid
-;:freeo/vim-kalisi                   ; kalisi
-;:morhetz/gruvbox                    ; gruvbox
-;:toupeira/vim-desertink             ; desertink
-;:sjl/badwolf                        ; badwolf
-;:itchyny/landscape.vim              ; landscape
-;:joshdick/onedark.vim               ; onedark in atom
-;:gosukiwi/vim-atom-dark             ; atom-dark
-;:liuchengxu/space-vim-dark          ; space-vim-dark
-;:kristijanhusak/vim-hybrid-material ; hybrid_material
-;:drewtempelmeyer/palenight.vim      ; palenight
-;:haishanh/night-owl.vim             ; night owl
-;:arcticicestudio/nord-vim           ; nord
-;:cocopon/iceberg.vim                ; iceberg
-;:hzchirs/vim-material               ; vim-material
-;:relastle/bluewery.vim              ; bluewery
-;:mhartington/oceanic-next           ; OceanicNext
-;:nightsense/snow                    ; snow
+; :altercation/vim-colors-solarized   ; solarized
+; :croaker/mustang-vim                ; mustang
+; :jeffreyiacono/vim-colors-wombat    ; wombat
+; :nanotech/jellybeans.vim            ; jellybeans
+; :vim-scripts/Lucius                 ; lucius
+; :vim-scripts/Zenburn                ; zenburn
+; :mrkn/mrkn256.vim                   ; mrkn256
+; :jpo/vim-railscasts-theme           ; railscasts
+; :therubymug/vim-pyte                ; pyte
+; :tomasr/molokai                     ; molokai
+; :chriskempson/vim-tomorrow-theme    ; tomorrow night
+; :vim-scripts/twilight               ; twilight
+; :w0ng/vim-hybrid                    ; hybrid
+; :freeo/vim-kalisi                   ; kalisi
+; :morhetz/gruvbox                    ; gruvbox
+; :toupeira/vim-desertink             ; desertink
+; :sjl/badwolf                        ; badwolf
+; :itchyny/landscape.vim              ; landscape
+; :joshdick/onedark.vim               ; onedark in atom
+; :gosukiwi/vim-atom-dark             ; atom-dark
+; :liuchengxu/space-vim-dark          ; space-vim-dark
+; :kristijanhusak/vim-hybrid-material ; hybrid_material
+; :drewtempelmeyer/palenight.vim      ; palenight
+; :haishanh/night-owl.vim             ; night owl
+; :arcticicestudio/nord-vim           ; nord
+; :cocopon/iceberg.vim                ; iceberg
+; :hzchirs/vim-material               ; vim-material
+; :relastle/bluewery.vim              ; bluewery
+; :mhartington/oceanic-next           ; OceanicNext
+; :nightsense/snow                    ; snow
 :folke/tokyonight.nvim
-;:Mangeshrex/uwu.vim                 ; uwu
-;:ulwlu/elly.vim                     ; elly
-;:michaeldyrynda/carbon.vim
-;:rafamadriz/neon
+; :Mangeshrex/uwu.vim                 ; uwu
+; :ulwlu/elly.vim                     ; elly
+; :michaeldyrynda/carbon.vim
+; :rafamadriz/neon
 ]
