@@ -271,10 +271,6 @@
     (local c-pos (va.nvim_win_get_cursor c-win))
 
     (local summary (Summary:new c-buf c-win 5))
-    ; (local (buf win) (_win-open (- vim.o.lines 5) 5))
-    ; (va.nvim_win_set_option win :scrolloff 999)
-
-
     (local preview (Preview:new c-buf c-win 5 10))
 
     ;; prevent flicking on echo
@@ -351,7 +347,6 @@
 
           (when (= nr 13) ; cr
             (set done? true)
-            ; (_ender summary.win buf showmode c-win id-cpos preview)
             (summary:del showmode c-win id-cpos preview)
             (let [pos (get-first-pos find-pos pos)]
               (unless (= pos nil)
@@ -359,7 +354,6 @@
 
           (when (= nr 27) ; esc
             (set done? true)
-            ;(_ender summary.win buf showmode c-win id-cpos preview)
             (summary:del showmode c-win id-cpos preview)
             (va.nvim_win_set_cursor c-win c-pos))
           (when (= nr 6) ; ctrl-f (focus)
@@ -390,7 +384,6 @@
           (when (= nr (rt "<c-5>")) ; <M-%>
             (set done? true)
             (let [alt (vim.fn.input (.. "Query replace " target " with: "))]
-              ; (_ender win buf showmode c-win id-cpos preview)
               (summary:del showmode c-win id-cpos preview)
               (if (and (not= (length alt) 0) (= (va.nvim_get_current_buf) c-buf))
                 (do
