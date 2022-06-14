@@ -1,9 +1,11 @@
+" Ref: https://hackerslab.aktsk.jp/2020/12/receive-on-vim
+
 function s:handle(req) abort
   if a:req.method ==? 'POST'
     return {
     \   'status': 200,
     \   'status_text': 'OK',
-    \   'body': execute(a:req.body),
+    \   'body': execute(a:req.body, ""),
     \ }
   endif
   return {
@@ -24,14 +26,14 @@ function s:parse_request1(msg) abort
 endfunction
 
 function s:parse_body(msg) abort
-  let flag = v:false
+  let start2read = v:false
   let ret = []
   for m in a:msg
-    if flag
+    if start2read
       let ret = add(ret, m)
     endif
     if m =~ '^\r$'
-      let flag = v:true
+      let start2read = v:true
     endif
   endfor
   return join(ret, "\n")
@@ -74,4 +76,12 @@ function s:start(port) abort
   \ })
 endfunction
 
-call s:start(11111)
+if !exists("g:cassin_cmd_server_job")
+  let g:cassin_cmd_server_job = s:start(11111)
+  let g:cassin_cmd_server_port = 11111
+else
+  echom "Fail to start cmd server"
+endif
+
+" curl -d 'echo "Hello, Vim server!"' 'localhost:11111'
+" lsof -P -i:11111
