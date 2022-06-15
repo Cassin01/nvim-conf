@@ -78,7 +78,11 @@ endfunction
 
 " {{{
 function! s:port_scan_out_cb(job_id, data, event) abort
-  let g:cassin_cmd_server_portinfo = a:data
+  if exists('g:cassin_cmd_server_portinfo')
+    let g:cassin_cmd_server_portinfo = extend(g:cassin_cmd_server_portinfo, a:data)
+  else
+    let g:cassin_cmd_server_portinfo = a:data
+  endif
 endfunction
 
 function! s:port_scan_exit_cb11111(job_id, data, event) abort
