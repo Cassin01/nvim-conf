@@ -3,16 +3,16 @@
 function s:handle(req) abort
   if a:req.method ==? 'POST'
     return {
-    \   'status': 200,
-    \   'status_text': 'OK',
-    \   'body': execute(a:req.body, ""),
-    \ }
+          \   'status': 200,
+          \   'status_text': 'OK',
+          \   'body': execute(a:req.body, ""),
+          \ }
   endif
   return {
-  \   'status': 404,
-  \   'status_text': 'Not Found',
-  \   'body': json_encode(a:req),
-  \ }
+        \   'status': 404,
+        \   'status_text': 'Not Found',
+        \   'body': json_encode(a:req),
+        \ }
 endfunction
 
 function s:parse_request1(msg) abort
@@ -54,34 +54,62 @@ function s:out_cb(job_id, data, event) abort
     let res = s:handle(req)
   catch
     let res = {
-    \   'status': 400,
-    \   'status_text': 'Bad Request',
-    \   'body': v:exception,
-    \ }
+          \   'status': 400,
+          \   'status_text': 'Bad Request',
+          \   'body': v:exception,
+          \ }
   endtry
 
   let response = join([
-  \   printf('HTTP/1.1 %d %s', res.status, res.status_text),
-  \   'Content-Length: ' .. len(res.body),
-  \   '',
-  \   res.body,
-  \ ], "\r\n")
+        \   printf('HTTP/1.1 %d %s', res.status, res.status_text),
+        \   'Content-Length: ' .. len(res.body),
+        \   '',
+        \   res.body,
+        \ ], "\r\n")
 
   call luaeval('vim.api.nvim_chan_send(unpack(_A))', [a:job_id, response])
 endfunction
 
 function s:start(port) abort
   let job = jobstart(['ncat', '-lkp', a:port], {
-  \   'on_stdout': function('s:out_cb'),
-  \ })
+        \   'on_stdout': function('s:out_cb'),
+        \ })
 endfunction
 
-if !exists("g:cassin_cmd_server_job")
-  let g:cassin_cmd_server_job = s:start(11111)
-  let g:cassin_cmd_server_port = 11111
-else
-  echom "Fail to start cmd server"
-endif
+" {{{
+function! s:port_scan_out_cb(job_id, data, event) abort
+  let g:cassin_cmd_server_portinfo = a:data
+endfunction
+
+function! s:port_scan_exit_cb11111(job_id, data, event) abort
+  if len(g:cassin_cmd_server_portinfo) == 1
+    if !exists("g:cassin_cmd_server_job")
+      let g:cassin_cmd_server_job = s:start('11111')
+      let g:cassin_cmd_server_port = '11111'
+      colorscheme kanagawa
+    endif
+  endif
+endfunction
+function! s:port_scan_exit_cb11112(job_id, data, event) abort
+  if len(g:cassin_cmd_server_portinfo) == 1
+    if !exists("g:cassin_cmd_server_job")
+      let g:cassin_cmd_server_job = s:start('11111')
+      let g:cassin_cmd_server_port = '11111'
+    endif
+  endif
+endfunction
+
+function s:port_scan(port) abort
+  let job = jobstart(['lsof', '-P', '-i:' .. a:port], {
+        \   'on_stdout': function('s:port_scan_out_cb'),
+        \   'on_exit': function('s:port_scan_exit_cb'..a:port),
+        \ })
+  return job
+endfunction
+" }}}
+
+call s:port_scan('11111')
+" call s:port_scan('11112')
 
 " curl -d 'echo "Hello, Vim server!"' 'localhost:11111'
 " lsof -P -i:11111
