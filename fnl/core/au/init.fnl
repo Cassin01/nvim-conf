@@ -147,18 +147,10 @@
         `(if (string.match ,sentense (.. :^%s+ ,v :.*$))
            (let [kind# (string.match ,sentense (.. "^%s+(" ,v ").*$"))
                  desc# (string.match ,sentense (.. "^%s+" ,v "%s+(.*)%s*$"))]
-             ; (print (.. kind# desc#))
              {kind# desc#})
            ,(step (cdr (unpack l)))))
       sentense))
   (step lst))
-; (fn parse-sentense [sentense]
-;   (if (not= (string.match sentense "^%s+@.*$") nil)
-;     (do
-;       (local kind (string.match sentense "^%s+(@).*$"))
-;       (local desc (string.match sentense "^%s+@%s+(.*)%s*$"))
-;       {kind desc})
-;       sentense))
 (fn append [lst x]
   (tset lst (+ (length lst) 1) x)
   lst)
@@ -215,7 +207,6 @@
                (syntax :Special "'\\s\\+@'")
                (syntax :GCalendarBanana "'\\s\\++'")
                (syntax :Special "'\\s\\+-'")
-               ; (syntax :Special "'\\s\\+!'")
                (syntax :GCalendarLavender "'\\s\\+#'")
                (syntax :GCalendarBanana "'\\s\\+\\.'")
                (syntax :GCalendarFlamingo "'\\s\\+!'")
