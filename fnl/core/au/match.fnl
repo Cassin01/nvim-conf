@@ -1,8 +1,5 @@
-;; INFO
-;lua print(vim.fn.printf("#%06x", vim.api.nvim_get_hl_by_name("TrailingSpaces", 1).background))
-
-(local {: in? : foldl} (require :util.list))
 (import-macros {: ui-ignore-filetype} :kaza.macros)
+(local {: in? : foldl} (require :util.list))
 (local vf vim.fn)
 
 (macro todo []
@@ -29,7 +26,6 @@
 
 
 ;;; fold-maker {{{
-
 (fn str2list [str]
   (var list [])
   (var len 0)
@@ -69,7 +65,6 @@
       (vf.matchadd :TodoEx "@dev")
       (vf.matchadd :Todo (todo))
       (vf.matchadd :TSNote (todo-ts))
-      (vf.matchadd :TSNote "\\<[A-Z]\\+:")
       (vf.matchadd :Error (typo))
       (vf.matchadd :FoldMark (foldmarker))
       (each [ft matches (pairs fts)]

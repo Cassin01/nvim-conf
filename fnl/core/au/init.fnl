@@ -1,6 +1,9 @@
 (import-macros {: epi} :util.macros)
 (import-macros {: au! : la : plug} :kaza.macros)
+(local {: concat-with} (require :util.list))
 (local {: hi-clear} (require :kaza.hi))
+(local vf vim.fn)
+(local va vim.api)
 (local create_autocmd vim.api.nvim_create_autocmd)
 (local create_augroup vim.api.nvim_create_augroup)
 (local buf_set_option vim.api.nvim_buf_set_option)
@@ -13,7 +16,7 @@
                                      (vim.cmd "normal! g'\"")))
 
 ;;; highlight
-;;; WARN Should be read before color scheme is loaded.
+;; WARN Should be read before color scheme is loaded.
 (au! :hi-default :BufWinEnter (each [_ k (ipairs (require :core.au.hi))]
                        (vim.api.nvim_set_hl 0 (unpack k))))
 
@@ -23,12 +26,29 @@
     (each [k v (pairs opt)]
       (tset data k v))
     data))
-(au! :match-hi :ColorScheme (each [_ k (ipairs [[:Tabs {:bg :#eeaecc}]
+(fn blightness [color p]
+  (let
+    [r (string.sub (vf.printf :%0x (math.floor (* (tonumber (string.sub color 2 3) 16) p))) -2 -1)
+     g (string.sub (vf.printf :%0x (math.floor (* (tonumber  (string.sub color 4 5) 16) p))) -2 -1)
+     b (string.sub (vf.printf :%0x (math.floor (* (tonumber (string.sub color 6 7) 16) p))) -2 -1)]
+    (.. :# r g b)))
+(fn get-hl [name part]
+  "name: hlname
+  part: bg or fg"
+  (let [target (va.nvim_get_hl_by_name name 0)]
+    (if
+      (= part :fg)
+      (.. :# (vf.printf :%0x (. target :foreground)))
+      (= part :bg)
+      (.. :# (vf.printf :%0x (. target :background)))
+      (error "part: bg or fg"))))
+
+(au! :match-hi :ColorScheme (each [_ k (ipairs [;[:Tabs {:bg (blightness (get-hl :Normal :bg) 0.9)}]
                                                 [:TrailingSpaces {:bg :#FFa331}]
                                                 [:DoubleSpace {:bg :#cff082}]
                                                 [:TodoEx {:bg :#44a005 :fg :#F0FFF0}]
-                                                [:FoldMark (link :Comment {:bg :#95A5A6})]
-                                                [:CommentHead (link :Comment {:bg :#95A000})]])]
+                                                [:FoldMark (link :Comment {:fg (blightness (get-hl :Comment :fg) 0.9)})]
+                                                [:CommentHead (link :Comment {:fg :#727ca7})]])]
                              (vim.api.nvim_set_hl 0 (unpack k))))
 (au! :match [:BufWinEnter] ((. (require :core.au.match) :add-matchs)))
 
@@ -89,6 +109,10 @@
   {:callback (λ []
                (tset vim.g :tex_conceal "")
                (tex_math)
+               (local indent 2)
+               (tset vim.bo :tabstop indent)
+               (tset vim.bo :shiftwidth indent)
+               (tset vim.bo :softtabstop indent)
                (vim.cmd "setlocal iskeyword+=\\")
                (if (. vim.g :vim-auto-save)
                  (tset vim.g :auto_save 1)))
@@ -104,10 +128,105 @@
 (create_autocmd
   [:BufRead :BufNewFile]
   {:callback (λ []
-               (buf_set_option :shiftwidth 2))
-   :pattern [:*.lisp]
+               (buf_set_option 0 :shiftwidth 2)
+               (vim.cmd "setlocal iskeyword-=_")
+               (vim.cmd "setlocal iskeyword-=-"))
+   :pattern [:*.lisp :*.fnl]
    :group pattern})
+
+;;; sche {{{
+(local m-date "'^\\d\\d\\d\\d/\\d\\d/\\d\\d'")
+(local l-date "%d%d%d%d/%d%d/%d%d")
+(local {: u-cmd} (require :kaza))
+(macro thrice-if [sentense lst]
+  (fn car [x ...] x)
+  (fn cdr [x ...] [...])
+  (fn step [l]
+    (if (not= (length l) 0)
+      (let [v (car (unpack l))]
+        `(if (string.match ,sentense (.. :^%s+ ,v :.*$))
+           (let [kind# (string.match ,sentense (.. "^%s+(" ,v ").*$"))
+                 desc# (string.match ,sentense (.. "^%s+" ,v "%s+(.*)%s*$"))]
+             ; (print (.. kind# desc#))
+             {kind# desc#})
+           ,(step (cdr (unpack l)))))
+      sentense))
+  (step lst))
+; (fn parse-sentense [sentense]
+;   (if (not= (string.match sentense "^%s+@.*$") nil)
+;     (do
+;       (local kind (string.match sentense "^%s+(@).*$"))
+;       (local desc (string.match sentense "^%s+@%s+(.*)%s*$"))
+;       {kind desc})
+;       sentense))
+(fn append [lst x]
+  (tset lst (+ (length lst) 1) x)
+  lst)
+(fn pack [line list]
+  (local elm (thrice-if line ["@" "#" "%+" "%-" "!" "%."]))
+  (if (or (= list nil) (= (length list) 0) )
+    [elm]
+    (append list elm)))
+(fn parser [b-lines]
+  (var ret {})
+  (var date "")
+  (each [_ v (ipairs b-lines)]
+    (if (not= (string.match v (.. :^ l-date :.*$)) nil)
+      (do
+        (set date (string.match v (.. :^ l-date)))
+        (tset ret date []))
+      (tset ret date (pack v (. ret date)))))
+  ret)
+(u-cmd
+  :ParseSche
+  (λ []
+    (local lines (vim.api.nvim_buf_get_lines 0 0 -1 1))
+    (local ob (parser lines))
+    (print (vim.inspect ob))))
+(fn syntax [group pat]
+  (vim.cmd
+    (concat-with " "
+      :syntax :match group pat)))
+(macro weekday []
+  (let [keywords# [:Fri :Mon :Tue :Wed :Thu]]
+    (.. "'" :\<\ "(" (table.concat keywords# :\|) :\ ")'")))
+(au! :match-hi :ColorScheme 
+     (each [_ k (ipairs [[:GCalendarMikan {:fg :#F4511E}]
+                         [:GCalendarPeacock {:fg :#039BE5}]
+                         [:GCalendarGraphite {:fg :#616161}]
+                         [:GCalendarSage {:fg :#33B679}]
+                         [:GCalendarBanana {:fg :#f6bf26}]
+                         [:GCalendarLavender {:fg :#7986cb}]
+                         [:GCalendarTomato {:fg :#d50000}]
+                         [:GCalendarFlamingo {:fg :#e67c73}]
+                         ])]
+       (vim.api.nvim_set_hl 0 (unpack k))))
+(create_autocmd
+  [:BufReadPost :BufNewFile]
+  {:callback (λ []
+               (tset vim.bo :filetype :sche)
+               (local indent 2)
+               (tset vim.bo :tabstop indent)
+               (tset vim.bo :shiftwidth indent)
+               (tset vim.bo :softtabstop indent)
+               (syntax :Comment "'^;.*'" )
+               (syntax :Statement "'^\\(\\d\\|\\d\\d\\)月'")
+               (syntax :Function m-date)
+               (syntax :Special "'\\s\\+@'")
+               (syntax :GCalendarBanana "'\\s\\++'")
+               (syntax :Special "'\\s\\+-'")
+               ; (syntax :Special "'\\s\\+!'")
+               (syntax :GCalendarLavender "'\\s\\+#'")
+               (syntax :GCalendarBanana "'\\s\\+\\.'")
+               (syntax :GCalendarFlamingo "'\\s\\+!'")
+               (syntax :GCalendarGraphite (weekday))
+               (syntax :GCalendarMikan "'\\<Sun\\>'")
+               (syntax :GCalendarPeacock "'\\<Sat\\>'")
+               (syntax :GCalendarSage (vim.fn.strftime "'%Y/%m/%d'")))
+   :pattern [:*.sche]})
+;;; }}}
 ;; }}}
+
 
 ;;; plugin specific
 
@@ -127,3 +246,12 @@
                 [:n :q :<c-w>c :quit]]
            (bmap 0 (unpack k))))
     {:pattern :ref})
+
+;; copilot
+(au! :reload-copilot
+     :VimEnter
+     (vim.cmd "Copilot restart")
+     ; (do
+     ;   (local {: async-cmd} (require :kaza.cmd))
+     ;   (async-cmd "Copilot restart"))
+     )

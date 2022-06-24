@@ -12,7 +12,8 @@
 (macro add-hl [name tbl]
   `(table.insert hl-info (gen-hl ,name ,tbl)))
 
-(let [hl-info [[:SpellBad {:fg nil :bg nil :underline true}]]]
+(let [hl-info []]
+  (add-hl :SpellBad {:fg nil :bg nil :underline true})
   (add-hl :NonText {:underline true})
   (add-hl :SpecialKey {:bg nil :italic true})
   hl-info)
