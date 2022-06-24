@@ -142,14 +142,14 @@
   (fn car [x ...] x)
   (fn cdr [x ...] [...])
   (fn step [l]
-    (if (not= (length l) 0)
+    (if (= (length l) 0)
+      sentense
       (let [v (car (unpack l))]
         `(if (string.match ,sentense (.. :^%s+ ,v :.*$))
            (let [kind# (string.match ,sentense (.. "^%s+(" ,v ").*$"))
                  desc# (string.match ,sentense (.. "^%s+" ,v "%s+(.*)%s*$"))]
              {kind# desc#})
-           ,(step (cdr (unpack l)))))
-      sentense))
+           ,(step (cdr (unpack l)))))))
   (step lst))
 (fn append [lst x]
   (tset lst (+ (length lst) 1) x)
@@ -190,9 +190,48 @@
                          [:GCalendarBanana {:fg :#f6bf26}]
                          [:GCalendarLavender {:fg :#7986cb}]
                          [:GCalendarTomato {:fg :#d50000}]
-                         [:GCalendarFlamingo {:fg :#e67c73}]
-                         ])]
+                         [:GCalendarFlamingo {:fg :#e67c73}]])]
        (vim.api.nvim_set_hl 0 (unpack k))))
+(set _G.__kaza.v.sche_path (vim.fn.expand "~/.config/nvim/data/20.sche"))
+(fn read-data [data]
+  (var ret "")
+  (each [k v (pairs {"@" "の予定があります."
+                      "#" "のメモがあります."
+                      "+" "のtodoがあります."
+                      "-" "の備忘録があります."
+                      "!" "締め切りがあります．"
+                      "." "はやりました．"})]
+    (local annex (. data k))
+    (when (not= annex nil)
+      (set ret (.. annex v))))
+  ret)
+(fn get-data [sd]
+  (var ll [])
+  ; (local sd (. data (vim.fn.strftime "%Y/%m/%d")))
+  (when (not= sd nil)
+    (each [_ v (ipairs sd)]
+      (if (= (type v) :table)
+        (set ll (append ll (read-data v)))
+        (set ll (append ll v)))))
+  ll)
+(fn do-notify [date data title]
+  (local sd (. data date))
+  (when (not= sd nil)
+    (local ll (get-data sd))
+    (vim.notify ll nil {:title "Today's schedule"})))
+(au! :sche-parse [:BufWritePost :BufNewFile :BufReadPost]
+     (do
+       (when (not= _G.__kaza.v.sche_path nil)
+         (local {: read_lines} (require :kaza.file))
+         (local lines (read_lines _G.__kaza.v.sche_path))
+         (local data (parser lines))
+         (set _G.__kaza.v.sche_data data)
+         (local t (os.time))
+         (local today (os.date :%Y/%m/%d t))
+         (do-notify today data "Today's schedule")
+         (local tomorrow (os.date :%Y/%m/%d (+ t 86400)))
+         (do-notify tomorrow data "Tomorrow's schedule")))
+     {:pattern [:*.sche]})
 (create_autocmd
   [:BufReadPost :BufNewFile]
   {:callback (λ []
