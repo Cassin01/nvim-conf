@@ -1,9 +1,10 @@
 (import-macros {: epi} :util.macros)
-(import-macros {: au! : la : plug} :kaza.macros)
+(import-macros {: au! : la : plug : async-do!} :kaza.macros)
 (local {: concat-with} (require :util.list))
 (local {: hi-clear} (require :kaza.hi))
 (local vf vim.fn)
 (local va vim.api)
+(local uv vim.loop)
 (local create_autocmd vim.api.nvim_create_autocmd)
 (local create_augroup vim.api.nvim_create_augroup)
 (local buf_set_option vim.api.nvim_buf_set_option)
@@ -182,7 +183,7 @@
 (macro weekday []
   (let [keywords# [:Fri :Mon :Tue :Wed :Thu]]
     (.. "'" :\<\ "(" (table.concat keywords# :\|) :\ ")'")))
-(au! :match-hi :ColorScheme 
+(au! :match-hi :ColorScheme
      (each [_ k (ipairs [[:GCalendarMikan {:fg :#F4511E}]
                          [:GCalendarPeacock {:fg :#039BE5}]
                          [:GCalendarGraphite {:fg :#616161}]
@@ -192,22 +193,21 @@
                          [:GCalendarTomato {:fg :#d50000}]
                          [:GCalendarFlamingo {:fg :#e67c73}]])]
        (vim.api.nvim_set_hl 0 (unpack k))))
-(set _G.__kaza.v.sche_path (vim.fn.expand "~/.config/nvim/data/20.sche"))
+(set _G.__kaza.v.sche_path (vim.fn.expand "~/.config/nvim/data/10.sche"))
 (fn read-data [data]
   (var ret "")
   (each [k v (pairs {"@" "の予定があります."
-                      "#" "のメモがあります."
-                      "+" "のtodoがあります."
-                      "-" "の備忘録があります."
-                      "!" "締め切りがあります．"
-                      "." "はやりました．"})]
+                     "#" "のメモがあります."
+                     "+" "をしなければなりません."
+                     "-" "の備忘録があります."
+                     "!" "締め切りがあります．"
+                     "." "はやりました．"})]
     (local annex (. data k))
     (when (not= annex nil)
       (set ret (.. annex v))))
   ret)
 (fn get-data [sd]
   (var ll [])
-  ; (local sd (. data (vim.fn.strftime "%Y/%m/%d")))
   (when (not= sd nil)
     (each [_ v (ipairs sd)]
       (if (= (type v) :table)
@@ -218,20 +218,23 @@
   (local sd (. data date))
   (when (not= sd nil)
     (local ll (get-data sd))
-    (vim.notify ll nil {:title "Today's schedule"})))
+    (vim.notify ll nil {:title title})))
+(fn noitfy-main []
+  (when (not= _G.__kaza.v.sche_path nil)
+    (local {: read_lines} (require :kaza.file))
+    (local lines (read_lines _G.__kaza.v.sche_path))
+    (local data (parser lines))
+    (set _G.__kaza.v.sche_data data)
+    (local t (os.time))
+    (local today (os.date :%Y/%m/%d t))
+    (do-notify today data "Today's schedule")
+    (local tomorrow (os.date :%Y/%m/%d (+ t 86400)))
+    (do-notify tomorrow data "Tomorrow's schedule")))
 (au! :sche-parse [:BufWritePost :BufNewFile :BufReadPost]
-     (do
-       (when (not= _G.__kaza.v.sche_path nil)
-         (local {: read_lines} (require :kaza.file))
-         (local lines (read_lines _G.__kaza.v.sche_path))
-         (local data (parser lines))
-         (set _G.__kaza.v.sche_data data)
-         (local t (os.time))
-         (local today (os.date :%Y/%m/%d t))
-         (do-notify today data "Today's schedule")
-         (local tomorrow (os.date :%Y/%m/%d (+ t 86400)))
-         (do-notify tomorrow data "Tomorrow's schedule")))
+     (async-do! (notify-main))
      {:pattern [:*.sche]})
+(au! :sche-parse [:VimEnter]
+     (async-do! (noitfy-main)))
 (create_autocmd
   [:BufReadPost :BufNewFile]
   {:callback (λ []
@@ -280,8 +283,11 @@
 ;; copilot
 (au! :reload-copilot
      :VimEnter
-     (vim.cmd "Copilot restart")
-     ; (do
-     ;   (local {: async-cmd} (require :kaza.cmd))
-     ;   (async-cmd "Copilot restart"))
-     )
+     (do
+       (var async nil)
+       (set async (uv.new_async 
+                    (vim.schedule_wrap 
+                      (λ []
+                        (vim.cmd "Copilot restart")
+                        (async:close)))))
+       (async:send)))

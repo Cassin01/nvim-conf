@@ -75,4 +75,15 @@
     (= (type body) :string) (_command group event body ?opt)
     (assert-compile false "au: body must be a sequence or string" body)))
 
+(fn M.async-do! [body]
+  `(do
+     (var async# nil)
+     (set async#
+          (vim.loop.new_async
+            (vim.schedule_wrap
+                  (λ []
+                    ,body
+                    (async#:close)))))
+     (async#:send)))
+
 M
