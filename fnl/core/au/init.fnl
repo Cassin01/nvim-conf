@@ -216,7 +216,7 @@
   ll)
 (fn do-notify [date data title]
   (local sd (. data date))
-  (when (not= sd nil)
+  (when (and (not= sd nil) (not= (length sd) 0))
     (local ll (get-data sd))
     (vim.notify ll nil {:title title})))
 (fn noitfy-main []
