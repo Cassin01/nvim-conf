@@ -284,11 +284,4 @@
 ;; copilot
 (au! :reload-copilot
      :VimEnter
-     (do
-       (var async nil)
-       (set async (uv.new_async 
-                    (vim.schedule_wrap 
-                      (λ []
-                        (vim.cmd "Copilot restart")
-                        (async:close)))))
-       (async:send)))
+     (async-do! (vim.cmd "Copilot restart")))
