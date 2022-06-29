@@ -256,7 +256,8 @@
                (syntax :GCalendarMikan "'\\<Sun\\>'")
                (syntax :GCalendarPeacock "'\\<Sat\\>'")
                (syntax :GCalendarSage (vim.fn.strftime "'%Y/%m/%d'")))
-   :pattern [:*.sche]})
+   :pattern [:*.sche]
+   :group :pattern})
 ;;; }}}
 ;; }}}
 
