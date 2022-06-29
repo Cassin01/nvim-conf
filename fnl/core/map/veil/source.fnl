@@ -92,15 +92,15 @@
 ;;; }}}
 
 ;;; Ctrl-S {{{
-(fn _win-open [row height]
+(fn _win-open [row height col]
   (let [buf (va.nvim_create_buf false true)
-        win (va.nvim_open_win buf true {:col 0
+        win (va.nvim_open_win buf true {:col col
                                         :row row
                                         :relative :editor
                                         :anchor :NW
                                         :style :minimal
-                                        :height 5
-                                        :width vim.o.columns
+                                        :height height
+                                        :width (math.floor (-> vim.o.columns (/ 2) (- 2)))
                                         :focusable false
                                         :border :rounded})]
     (va.nvim_win_set_option win :winblend 20)
@@ -184,9 +184,11 @@
                      (tostring i)
                      (vf.strdisplaywidth
                        (tostring (vf.line :$ c-win)))))
-      (add-matches win hi-w-summary l res target-width shift) ; WARN Critical
+      ;; WARN Critical
+      (add-matches win hi-w-summary l res target-width shift)
       (vf.matchaddpos :LineNr [[l 1 shift]] 1 -1 {:window win})
-      (push! id-cpos (add-matches c-win :Search i res target-width 0)) ; WARN Critical))
+      ;; WARN Critical
+      (push! id-cpos (add-matches c-win :Search i res target-width 0))))
   id-cpos)
 
 (fn _ender [win buf showmode c-win c-ids preview]
@@ -218,10 +220,12 @@
         (> col (vf.col :$)) (vf.col :$)
         col))))
 
-(local Preview {:new (fn [self c-buf c-win win-height height]
-                       (let [(buf win) 
-                             (_win-open 
-                               (- vim.o.lines (+ win-height height)) height)]
+(local Preview {:new (fn [self c-buf c-win height]
+                       (let [(buf win)
+                             (_win-open
+                               (- vim.o.lines height) 
+                               height
+                               (math.floor (/ vim.o.columns  2)))]
                          (tset self :buf buf)
                          (tset self :win win))
                        (va.nvim_buf_set_option self.buf
@@ -251,10 +255,13 @@
                 :win nil})
 
 (local Summary {:new (fn [self c-buf c-win height]
-                       (let [(buf win) (_win_open (- vim.o.lines height) height)]
+                       (let [(buf win) (_win-open 
+                                         (- vim.o.lines height) 
+                                         height 0)]
                          (tset self :buf buf)
                          (tset self :win win)
                          (va.nvim_win_set_option win :scrolloff 999))
+                       (vf.win_execute win "set winhighlight=Normal:Comment")
                        self)
                 :del (fn [self showmode c-win c-ids preview]
                        (_ender self.win self.buf showmode c-win c-ids preview))
@@ -270,8 +277,8 @@
     (local lines (va.nvim_buf_get_lines c-buf 0 (vf.line :$ c-win) true))
     (local c-pos (va.nvim_win_get_cursor c-win))
 
-    (local summary (Summary:new c-buf c-win 5))
-    (local preview (Preview:new c-buf c-win 5 10))
+    (local summary (Summary:new c-buf c-win (- vim.o.lines 4)))
+    (local preview (Preview:new c-buf c-win (- vim.o.lines 4)))
 
     ;; prevent flicking on echo
     (local showmode (let [showmode (. vim.o :showmode)]
@@ -292,23 +299,25 @@
       (echo (concat-with
               ", "
               (.. "input: " target )
-              (.. "line: " (. pos 1) "/" (vf.line :$ win))
-              "c-r: back"
-              "c-s: forward"
-              "c-o: first"
-              "c-m: jump"
-              "c-f: focus"
-              "c-g{number}: jump to line"
-              "c-5: substitute"))
+              (.. "line: " (. pos 1) "/" (vf.line :$ summary.win))))
+              ; "c-r: back"
+              ; "c-s: forward"
+              ; "c-o: first"
+              ; "c-m: jump"
+              ; "c-f: focus"
+              ; "c-g{number}: jump to line"
+              ; "c-5: substitute"))
       (when (vf.getchar true)
         (let [nr (vf.getchar)]
           (vf.clearmatches win)
+          (vf.clearmatches summary.win)
           (unless (= id-cpos nil)
             (del-matches id-cpos c-win)
             (set id-cpos nil))
 
           (set pos [((guard_cursor_position summary.win)  (update-pos nr pos))])
-          (va.nvim_win_set_cursor summary.win pos) ; FIXME
+          ;; FIXME: Change buffer position
+          (va.nvim_win_set_cursor summary.win pos)
           (vf.matchaddpos :PmenuSel [[(. pos 1) 0]] 0 -1 {:window summary.win})
 
           (local shift (+ (vf.strdisplaywidth (vf.line :$ c-win)) 1))
@@ -350,8 +359,9 @@
             (summary:del showmode c-win id-cpos preview)
             (let [pos (get-first-pos find-pos pos)]
               (unless (= pos nil)
+                ;; FIXME: Could not jump to proper position when window was slitted.
+                ;; TODO: Use win_execute instead.
                 (va.nvim_win_set_cursor c-win pos))))
-
           (when (= nr 27) ; esc
             (set done? true)
             (summary:del showmode c-win id-cpos preview)
@@ -360,8 +370,8 @@
             (unless (= (length find-pos) 0)
               (let [pos [(. (. find-pos (. pos 1)) 1)
                          (- (. (. (. find-pos (. pos 1)) 2) 1) 1)]]
-                (va.nvim_win_set_cursor c-win pos)
                 (push! id-cpos (_hi-cpos hi-c-jump c-win pos target-width))
+                (va.nvim_win_set_cursor c-win pos)
                 (vim.cmd "normal! zz")
                 (push! id-cpos (draw-found find-pos c-win summary.win target-width shift hi-w-summary)))))
           (when (= nr 15) ; ctrl-o (go back to the first position)
@@ -375,7 +385,8 @@
                   num (tonumber (vim.fn.input (.. "1 ~ "  (tostring len) ": ")))]
               (when (and (not= num nil) (<= num len))
                 (set pos [((guard_cursor_position summary.win) num (. pos 2))])
-                (va.nvim_win_set_cursor summary.win pos) ; FIXME
+                ;; FIXME: Change buffer position
+                (va.nvim_win_set_cursor summary.win pos)
                 (vf.clearmatches summary.win)
                 (vf.matchaddpos :CursorLineNr [[(. pos 1) 1 shift]] 2 -1 {:window summary.win})
                 (vf.matchaddpos :PmenuSel [[(. pos 1) 0]] 0 -1 {:window summary.win})
@@ -390,7 +401,9 @@
                   (vim.cmd (.. "%s/" target "/" alt "/g"))
                   (print "replaced " target " with " alt )))
               (va.nvim_win_set_cursor c-win c-pos)))
-          (vim.cmd "redraw!"))))))
+          (vim.cmd "redraw!")
+          (vim.fn.win_execute summary.win "redraw!") ; TODO: Check weather if this work.
+          )))))
 ;;; }}}
 
 {: goto-line
