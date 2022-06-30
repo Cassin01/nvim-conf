@@ -83,7 +83,6 @@ function! s:window_start(self, config) dict
     let self.config = extend(self.config, a:config)
     let self.win = nvim_open_win(s:buf, 1, deepcopy(self.config))
     call nvim_win_set_option(self.win, 'winblend', 10)
-
 endfunction
 
 function! s:window_new() dict
@@ -111,7 +110,7 @@ let Window = Object.override("Window", function("s:window_new"))
 " [x]: showing and inputting for space-key
 "   - 表示: ⎵
 "   - 入力: スペース
-" [ ]: showing and inputing for tab-key
+" [x]: showing and inputing for tab-key
 "   - 表示: ⇥
 "   - 入力: タブ文字
 "   INFO: どう実現するか
@@ -119,7 +118,7 @@ let Window = Object.override("Window", function("s:window_new"))
 "           - 入力されていない文字を^<tab> -> ⇥ する．
 "       - 入力
 "           - 9 が入力されて, かつ残りの文字が^<tab>であれば6文字進める.
-" [ ]: showing ctrl-key
+" [x]: showing ctrl-key
 " [x]: 入力が一方が短いとき決定できないバグ -> <cr>を押したら即時評価する
 " [x]: manage inputted keys as number
 " [x]: add parser
@@ -131,6 +130,7 @@ let g:hwhich_char_tab = '⇥'
 let g:hwhich_char_space = '⎵'
 " let g:expandable = ''
 let g:expandable = '*'
+let g:hwitch_tail = '…'
 let g:hwitch#view_dict = #{
             \ 32: '⎵',
             \ 9: '⇥',
@@ -303,10 +303,17 @@ endfunction
 "   - inputted_length: the length of inputted characters
 function! s:trim_str(str, till)
     let ret = a:str
+    " let tail = "⋯"
+    " let tailwidth = strdisplaywidth(tail)
     while strdisplaywidth(ret) > a:till
         let ret = ret[:-2]
     endwhile
-    return ret
+    if ret[-1:] == ' '
+        return ret
+    else
+        let tailwidth = strdisplaywidth(g:hwitch_tail)
+        return ret[:-(tailwidth + 1)] . g:hwitch_tail
+    endif
 endfunction
 function! s:formatter(matched, inputted_length, column_size)
     let l:formatted_lines = []
@@ -319,6 +326,7 @@ function! s:formatter(matched, inputted_length, column_size)
         let next_key = strdisplaywidth(next_key) == 0 ? '↩' : next_key
         let view_next_key = s:fill_spaces(next_key, 2)
         let formatted_line = '      ' . view_next_key . ' → ' .  discription
+        " let formatted_line = '   ' . view_next_key . ' → ' .  discription
         call add(l:formatted_lines,  s:trim_str(formatted_line, 50))
     endfor
 
@@ -355,13 +363,16 @@ function! s:hyper_wich_syntax()
     " FIXME: Could not highlight a file path.
     " TODO: Set highlight with potion.
     " SOLUTION: Use matchaddpos()
-    call matchadd('WitchPrefix', '\[[a-z\-]*\]')
+    call matchadd('WitchPrefix', '\[[a-z\-\s,]*\]')
     call matchadd('WitchExpandable', g:expandable)
+    call matchadd('HWitchTail', g:hwitch_tail)
     execute 'syntax match WitchKeySeperator' '/'.s:sep.'/' 'contained'
-    execute 'syntax match WitchKey' '/\(^\s*\|\s\{2,}\)\S.\{-}'.s:sep.'/' 'contains=WitchKeySeperator'
-    syntax match WhichKeyGroup / +[0-9A-Za-z_/-]*/
+    " execute 'syntax match WitchKey' '/\(^\s*\|\s\{2,}\)\S.\{-}'.s:sep.'/' 'contains=WitchKeySeperator'
+    execute 'syntax match WitchKey' '/\(^\s*\|\s\{2,}\)\S\{-}\s'.s:sep.'/' 'contains=WitchKeySeperator'
+    " syntax match WhichKeyGroup / +[0-9A-Za-z_/-]*/ " WARNING: I forgot why I used this.
     syntax region WhichKeyDesc start="^" end="$" contains=WitchKey, WitchKeyGroup, WitchKeySeperator
 
+    highlight default link HWitchTail        Comment
     highlight default link WitchKey          Function
     highlight default link WitchKeySeperator DiffAdded
     highlight default link WitchKeyGroup     Keyword
