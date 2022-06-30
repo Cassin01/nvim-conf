@@ -135,10 +135,14 @@ let g:hwitch#view_dict = #{
             \ 32: '⎵',
             \ 9: '⇥',
             \ }
-let g:hwitch#prefixes = {}
+" let g:hwitch#prefixes = {}
 " }}}
 " TEST: User's settings {{{
-let g:hwitch#prefixes = luaeval('_G.__kaza.prefix')
+" let g:hwitch#prefixes = luaeval('_G.__kaza.prefix')
+function! s:get_prefixes() dict
+    return {}
+    " return luaeval('_G.__kaza.prefix')
+endfunction
 " }}}
 " bigger order
 function! s:_compare_sort_by_strlen(f, s)
@@ -166,7 +170,7 @@ function! s:submatchs(strs, pat)
             return v:true
         endif
     endfor
-    v:false
+    return v:false
 endfunction
 function! s:_keys2dict(keys)
     let ret = {}
@@ -233,8 +237,8 @@ function! s:parse_prefixes(prefixes)
     endfor
     return ret
 endfunction
-function! s:prefix_integrator(input, matched)
-    let parsed_prefixes = s:parse_prefixes(g:hwitch#prefixes)
+function! s:prefix_integrator(self, input, matched)
+    let parsed_prefixes = s:parse_prefixes(a:self.GetPrefixes())
     let prefix = s:_select_prefixes(s:prefix_trimer(a:input, a:matched, keys(parsed_prefixes)), parsed_prefixes)
     let ret =  s:replace_keys_with_prefixes(prefix, a:matched)
     return ret
@@ -275,6 +279,14 @@ function! s:add_spaces(str, num)
     return l:new_str
 endfunction
 
+function! s:fill_spaces(str, num)
+    let ret = a:str
+    for i in range(strdisplaywidth(a:str), a:num)
+        let ret = ' ' . ret
+    endfor
+    return ret
+endfunction
+
 function! s:trimer(str, till)
     let l:new_str = ""
     for l:i in range(0, len(a:str)-1)
@@ -289,22 +301,32 @@ endfunction
 " View
 " args
 "   - inputted_length: the length of inputted characters
+function! s:trim_str(str, till)
+    let ret = a:str
+    while strdisplaywidth(ret) > a:till
+        let ret = ret[:-2]
+    endwhile
+    return ret
+endfunction
 function! s:formatter(matched, inputted_length, column_size)
     let l:formatted_lines = []
-    let cell_width = 44
+    let cell_width = 42
+    let key_width = 2
     for l:k in sort(keys(a:matched))
         let l:k_tmp = s:subustitute(l:k)
         let discription = strcharpart(s:add_spaces(a:matched[l:k], cell_width)  , 0, cell_width)
         let next_key = strcharpart(l:k_tmp,  a:inputted_length, 1)
-        let view_next_key = strdisplaywidth(next_key) == 1 ? ' ' . next_key : next_key
-        call add(l:formatted_lines, '      ' . view_next_key . ' → ' .  discription )
+        let next_key = strdisplaywidth(next_key) == 0 ? '↩' : next_key
+        let view_next_key = s:fill_spaces(next_key, 2)
+        let formatted_line = '      ' . view_next_key . ' → ' .  discription
+        call add(l:formatted_lines,  s:trim_str(formatted_line, 50))
     endfor
 
     " 列の数
-    let s:split_num = a:column_size / 50
+    let split_num = a:column_size / 50
 
     " 行の数
-    let row_size = (len(l:formatted_lines) + s:split_num - 1) / s:split_num
+    let row_size = (len(l:formatted_lines) + split_num - 1) / split_num
 
     " View
     let row_counter = 0
@@ -330,6 +352,9 @@ function! s:hyper_wich_syntax()
     endif
     let b:current_syntax = 'evil_witch'
     let s:sep = '→'
+    " FIXME: Could not highlight a file path.
+    " TODO: Set highlight with potion.
+    " SOLUTION: Use matchaddpos()
     call matchadd('WitchPrefix', '\[[a-z\-]*\]')
     call matchadd('WitchExpandable', g:expandable)
     execute 'syntax match WitchKeySeperator' '/'.s:sep.'/' 'contained'
@@ -529,21 +554,28 @@ function! s:listen_commands2(self, ...) dict
         endif
         if l:c == 13
             " when <cr> plessed evaluate input immediately.
-            let l:matched = deepcopy(filter(l:keys_dict, {key, _ -> s:chars_eq(inputted_chars_num, key_nums[key])}))
+            let l:matched = deepcopy(filter(copy(l:keys_dict), {key, _ -> s:chars_eq(inputted_chars_num, key_nums[key])}))
+        elseif l:c == 8
+            " when <backspace> delete last inputted char.
+            if len(inputted_chars_num) > 0
+                let l:inputted_st = l:inputted_st[:-2]
+                let inputted_chars_num = inputted_chars_num[:-2]
+            endif
+            let l:matched = deepcopy(filter(copy(l:keys_dict), {key, _ -> s:incremental_search2(inputted_chars_num, key_nums[key])}))
         else
             let l:inputted_st = l:inputted_st . nr2char(l:c)
             let inputted_chars_num = add(inputted_chars_num, c)
-            let l:matched = deepcopy(filter(l:keys_dict, {key, _ -> s:incremental_search2(inputted_chars_num, key_nums[key])}))
+            let l:matched = deepcopy(filter(copy(l:keys_dict), {key, _ -> s:incremental_search2(inputted_chars_num, key_nums[key])}))
         endif
 
         " call nvim_buf_set_lines(s:buf, 0, -1, v:true, s:formatter(l:matched, strchars(l:inputted_st), self.column_size))
         " echo 'Input: ' . l:inputted_st
         echohl WitchPrefix
-        echo 'Input: '
+        echo 'Inputed: '
         echohl WitchExpandable
         echon l:inputted_st
         echohl None
-        call nvim_buf_set_lines(s:buf, 0, -1, v:true, s:formatter(s:prefix_integrator(l:inputted_st, l:matched), strchars(l:inputted_st), self.column_size))
+        call nvim_buf_set_lines(s:buf, 0, -1, v:true, s:formatter(s:prefix_integrator(self, l:inputted_st, l:matched), strchars(l:inputted_st), self.column_size < &columns ? self.column_size : &columns))
 
         let buf_row = nvim_buf_line_count(s:buf)
         let row_offset = &cmdheight + (&laststatus > 0 ? 1 : 0)
@@ -555,9 +587,11 @@ function! s:listen_commands2(self, ...) dict
         redraw!
 
         if len(l:matched) == 1
+            echo ''
             return l:matched
         endif
         if len(l:matched) == 0
+            echo ''
             return l:matched
         endif
     endwhile
@@ -609,7 +643,9 @@ function! s:Witch(self, ...) dict
     else
         let self.window.config.col = &columns - self.column_size
     endif
-    call nvim_buf_set_lines(s:buf, 0,-1, v:true, s:formatter(l:keys_dict, 0, self.column_size))
+
+    " call nvim_buf_set_lines(s:buf, 0,-1, v:true, s:formatter(l:keys_dict, 0, self.column_size))
+    call nvim_buf_set_lines(s:buf, 0,-1, v:true, s:formatter(l:keys_dict, 0, self.column_size < &columns ? self.column_size : &columns))
 
     let buf_row = nvim_buf_line_count(s:buf)
     let row_offset = &cmdheight + (&laststatus > 0 ? 1 : 0)
@@ -650,6 +686,7 @@ function! s:hyperwitch_new(...) dict
     let instance.Event = function("s:Event")
     let instance.CMDSelecter = function("s:key_selecter")
     let instance.Witch = function("s:Witch")
+    let instance.GetPrefixes = function("s:get_prefixes")
     return instance
 endfunction
 
@@ -718,7 +755,7 @@ function! s:reg_After_Quit(self) dict
 endfunction
 
 function! s:reg_Load_Index(self) dict
-     let regs=split('abcdefghijklmnopqrstuvwxyz0123456789/-"', '\zs')
+     let regs=split('abcdefghijklmnopqrstuvwxyz0123456789/-"%#', '\zs')
      let l:reg_index = {}
      for reg_key in regs
          let l:tmp_string = getreg(reg_key)
@@ -735,12 +772,12 @@ function! s:reg_Event() dict
     "nnoremap <silent> <space>wreg :REGWITCH<CR>
 endfunction
 
-let RegWitch = {
-    \ '__name':'RegWitch',
-    \ 'OnMatched': function("s:reg_On_Matched"),
-    \ 'AfterQuit': function("s:reg_After_Quit"),
-    \ 'LoadIndex': function("s:reg_Load_Index"),
-    \ 'Event': function("s:reg_Event")}
+let RegWitch = #{
+    \ __name: 'RegWitch',
+    \ OnMatched: function("s:reg_On_Matched"),
+    \ AfterQuit: function("s:reg_After_Quit"),
+    \ LoadIndex: function("s:reg_Load_Index"),
+    \ Event: function("s:reg_Event")}
 
 if exists("regwitch")|unlet regwitch|endif
 let regwitch = hyperwitch.extend(RegWitch)
@@ -801,6 +838,7 @@ function! s:hwichtex_Load_Index(self) dict
         \ "infty":         "∞",
         \ "forall":        "∀",
         \ "exists":        "∃",
+        \ "mapsto":        "↦",
         \ "leftarrow":     "←",
         \ "rightarrow":    "→",
         \ "Leftarrow":     "⇐",
@@ -808,6 +846,7 @@ function! s:hwichtex_Load_Index(self) dict
         \ "Leftrightarrow":"⇔",
         \ "theta":         "θ",
         \ "phi":           "ϕ",
+        \ "varphi":        "φ",
         \ "psi":           "ψ",
         \ "Omega":         "Ω",
         \ "partial":       "∂",
@@ -1014,13 +1053,18 @@ function! s:normal_Event() dict
     command! -nargs=? NormalWitch call normalwitch.Witch(normalwitch, <f-args>)
 endfunction
 
-let NormalWitch = {
-    \ '__name': 'NormalWitch',
-     \ 'OnMatched': function("s:normal_On_Matched"),
-     \ 'AfterQuit': function("s:normal_After_Quit"),
-     \ 'LoadIndex': function("s:normal_Load_Index"),
-     \ 'Event': function("s:normal_Event")
-     \ }
+function! s:normal_get_prefixes()
+    return luaeval('_G.__kaza.prefix')
+endfunction
+
+let NormalWitch = #{
+            \ __name: 'NormalWitch',
+            \ OnMatched: function("s:normal_On_Matched"),
+            \ AfterQuit: function("s:normal_After_Quit"),
+            \ LoadIndex: function("s:normal_Load_Index"),
+            \ Event: function("s:normal_Event"),
+            \ GetPrefixes: function("s:normal_get_prefixes")
+            \ }
 
 let normalwitch = hyperwitch.extend(NormalWitch)
 call normalwitch.Event()
@@ -1046,6 +1090,8 @@ let s:bookmark = {
             \ "lua": "~/.cache/nvim/hotpot/Users/cassin/.config/nvim/fnl",
             \ "org": "~/org/",
             \ "projects": "~/all_year",
+            \ "lab": "~/2022/lab",
+            \ "sche": "~/.config/nvim/data/10.sche",
             \ }
 " \ "org": "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/",
 
@@ -1092,8 +1138,8 @@ function! s:max_length(index)
 endfunction
 
 function! s:bookmark_Load_Index(self) dict
-    if exists('g:hwitch_bookmarks')
-        let bookmark = g:hwitch_bookmarks
+    if exists('g:hwitch#bookmarks')
+        let bookmark = g:hwitch#bookmarks
     else
         let bookmark = s:bookmark
     endif
@@ -1111,12 +1157,12 @@ function! s:bookmark_Event() dict
     " nmap <silent> <space>wbook <plug>(hwhich-bookmark)
 endfunction
 
-let BookmarkWich = {
-            \ '__name': 'BookmarkWich',
-            \ 'OnMatched': function("s:bookmark_On_Matched"),
-            \ 'AfterQuit': function("s:bookmark_After_Quit"),
-            \ 'LoadIndex': function("s:bookmark_Load_Index"),
-            \ 'Event': function("s:bookmark_Event")
+let BookmarkWich = #{
+            \ __name: 'BookmarkWich',
+            \ OnMatched: function("s:bookmark_On_Matched"),
+            \ AfterQuit: function("s:bookmark_After_Quit"),
+            \ LoadIndex: function("s:bookmark_Load_Index"),
+            \ Event: function("s:bookmark_Event")
             \ }
 
 let bookmark_wich = hyperwitch.extend(BookmarkWich)
