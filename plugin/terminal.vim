@@ -10,7 +10,6 @@ function! GetActivebuffers()
       continue
     endif
     call add(l:res, shellescape(l:item.name))
-    " call luaeval('print(vim.inspect(_A))', l:item)
   endfor
   return l:res
 endfunction
@@ -19,9 +18,6 @@ function! s:term_list()
   let l:blist = getbufinfo({'bufloaded': 1, 'buflisted': 1})
   let l:res = []
   for l:item in l:blist
-    " if empty(l:item.name) " || l:item.hidden
-    "   continue
-    " endif
     if empty(l:item.variables)
       continue
     endif
@@ -36,8 +32,6 @@ endfunction
 function! ToggleTerminal() abort
   let l:terms = s:term_list() " TODO add term_list()
   if empty(l:terms)
-    " TODO fix win size
-    " botright terminal
     split
     execute "normal! \<c-w>J"
     resize 10
@@ -49,7 +43,6 @@ function! ToggleTerminal() abort
       execute 'buffer' l:terms[0]
     else
       call nvim_win_hide(l:wins[0])
-      " call win_execute(l:wins[0], 'hide')
     endif
   endif
 endfunction
