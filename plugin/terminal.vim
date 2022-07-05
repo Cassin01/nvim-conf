@@ -10,7 +10,7 @@ function! GetActivebuffers()
       continue
     endif
     call add(l:res, shellescape(l:item.name))
-    call luaeval('print(vim.inspect(_A))', l:item)
+    " call luaeval('print(vim.inspect(_A))', l:item)
   endfor
   return l:res
 endfunction
