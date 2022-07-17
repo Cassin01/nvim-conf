@@ -16,21 +16,6 @@
   (va.nvim_echo [[str]] false {}))
 (fn concat-with [d ...]
   (table.concat [...] d))
-;;; async {{{
-; (local uv vim.loop)
-; (local a (require :async))
-(fn async-do [callback args ca]
-  (var async nil)
-  (set async
-       (uv.new_async
-         (vim.schedule_wrap
-           (λ []
-             (if (= args nil)
-               (callback)
-               (do (callback (unpack args))
-                 (ca)))
-             (async:close)))))
-  (async:send))
 (fn async-f [f]
   (λ [...]
     (local args [...])
@@ -46,36 +31,6 @@
                  (callback)
                  (async:close)))))
       (async:send))))
-
-(fn sleep [sec]
-  (print :sleep sec :sec :start)
-  (local t (.. "sleep " (tostring sec)))
-  (vim.cmd t)
-  (print :sleep sec :sec :end))
-
-(local task1 (λ []
-              (a.sync (λ []
-                        (async-do sleep [3] (lambda [] nil))
-                        (a.wait (a.sync (lambda [] (print :v-start))))
-                        (local d (a.wrap async-do))
-                        (a.wait (d sleep [8]))
-                        (a.wait (d sleep [6]))
-                        (a.wait_all [(d sleep [4]) (d sleep [2]) (d sleep [1])])
-                        (print :v-end)))))
-(local task2 (λ []
-               (a.sync (λ []
-                         (local async-sleep (async-f sleep))
-                         ((async-sleep 3) (lambda [] nil))
-                         (a.wait (a.sync (lambda [] (print :v-start))))
-                         (a.wait ((a.wrap (async-sleep 8))))
-                         (a.wait ((a.wrap (async-sleep 6))))
-                         (a.wait_all [((a.wrap (async-sleep 4))) ((a.wrap (async-sleep 9))) ((a.wrap (async-sleep 1)))])
-                         (print :v-end)))))
-
-; ((task1))
-; ((task2))
-(print :auter 1)
-;;; }}}
 ;;; }}}
 
 (fn split-line-at-point []
