@@ -3,6 +3,8 @@
   `(when (not ,cond) ,...))
 (local vf vim.fn)
 (local va vim.api)
+(local uv vim.loop)
+(local a (require :async))
 
 ;;; util {{{
 (fn concat-with [d ...]
@@ -14,6 +16,66 @@
   (va.nvim_echo [[str]] false {}))
 (fn concat-with [d ...]
   (table.concat [...] d))
+;;; async {{{
+; (local uv vim.loop)
+; (local a (require :async))
+(fn async-do [callback args ca]
+  (var async nil)
+  (set async
+       (uv.new_async
+         (vim.schedule_wrap
+           (λ []
+             (if (= args nil)
+               (callback)
+               (do (callback (unpack args))
+                 (ca)))
+             (async:close)))))
+  (async:send))
+(fn async-f [f]
+  (λ [...]
+    (local args [...])
+    (λ [callback]
+      (var async nil)
+      (set async
+           (uv.new_async
+             (vim.schedule_wrap
+               (λ []
+                 (if (= args nil)
+                   (f)
+                   (f (unpack args)))
+                 (callback)
+                 (async:close)))))
+      (async:send))))
+
+(fn sleep [sec]
+  (print :sleep sec :sec :start)
+  (local t (.. "sleep " (tostring sec)))
+  (vim.cmd t)
+  (print :sleep sec :sec :end))
+
+(local task1 (λ []
+              (a.sync (λ []
+                        (async-do sleep [3] (lambda [] nil))
+                        (a.wait (a.sync (lambda [] (print :v-start))))
+                        (local d (a.wrap async-do))
+                        (a.wait (d sleep [8]))
+                        (a.wait (d sleep [6]))
+                        (a.wait_all [(d sleep [4]) (d sleep [2]) (d sleep [1])])
+                        (print :v-end)))))
+(local task2 (λ []
+               (a.sync (λ []
+                         (local async-sleep (async-f sleep))
+                         ((async-sleep 3) (lambda [] nil))
+                         (a.wait (a.sync (lambda [] (print :v-start))))
+                         (a.wait ((a.wrap (async-sleep 8))))
+                         (a.wait ((a.wrap (async-sleep 6))))
+                         (a.wait_all [((a.wrap (async-sleep 4))) ((a.wrap (async-sleep 9))) ((a.wrap (async-sleep 1)))])
+                         (print :v-end)))))
+
+; ((task1))
+; ((task2))
+(print :auter 1)
+;;; }}}
 ;;; }}}
 
 (fn split-line-at-point []
@@ -107,6 +169,8 @@
     (values buf win)))
 
 (fn add-matches [win group line-num kmp-res width shift]
+  (local wininfo (vf.getwininfo win))
+  (when (not= (length wininfo) 0) 
   (let [wininfo (. (vf.getwininfo win) 1)
         topline (. wininfo :topline)
         botline (. wininfo :botline)]
@@ -118,7 +182,7 @@
           (when (> width 0)
             (table.insert res (vf.matchaddpos group [[line-num (+ shift col) width]] 0 -1 {:window win}))))
         res)
-      [])))
+      []))))
 
 (fn fill-spaces [str width]
   (let [len (vf.strdisplaywidth str)]
@@ -145,7 +209,8 @@
 (fn gen-res [target line]
   (if (= target "")
     []
-    (kmp target line)))
+    (kmp target line (if vim.o.smartcase (= target (target:lower)) true)
+         )))
 
 (fn match-exist [win id]
   (var ret false)
@@ -174,7 +239,9 @@
     (each [_ id (ipairs ids)]
       ; (when (match-exist win id)
       (vf.matchdelete id win))))
-
+(fn draw-summary [win hi-w-summary l res target-width shift]
+  (add-matches win hi-w-summary l res target-width shift)
+  (vf.matchaddpos :LineNr [[l 1 shift]] 1 -1 {:window win}))
 (fn draw-found [find-pos c-win win target-width shift hi-w-summary]
   (var id-cpos nil)
   (each [l ik (ipairs find-pos)]
@@ -185,11 +252,19 @@
                      (vf.strdisplaywidth
                        (tostring (vf.line :$ c-win)))))
       ;; WARN Critical
-      (add-matches win hi-w-summary l res target-width shift)
-      (vf.matchaddpos :LineNr [[l 1 shift]] 1 -1 {:window win})
+      (local (status result) (pcall draw-summary win hi-w-summary l res target-width shift))
+;       (add-matches win hi-w-summary l res target-width shift)
+;       (vf.matchaddpos :LineNr [[l 1 shift]] 1 -1 {:window win})
       ;; WARN Critical
-      (push! id-cpos (add-matches c-win :Search i res target-width 0))))
+      ; (push! id-cpos (add-matches c-win :Search i res target-width 0))
+      ))
   id-cpos)
+(local task-draw (λ [file-pos c-win win target-width shift hi-w-summary]
+             (local args [file-pos c-win win target-width shift hi-w-summary])
+             (a.sync (λ []
+                       (local async-draw (async-f draw-found))
+                       (a.wait ((a.wrap (async-draw (unpack args)))))
+                       (vim.cmd "redraw!")))))
 
 (fn _ender [win buf showmode c-win c-ids preview]
   (preview:del)
@@ -223,7 +298,7 @@
 (local Preview {:new (fn [self c-buf c-win height]
                        (let [(buf win)
                              (_win-open
-                               (- vim.o.lines height) 
+                               (- vim.o.lines height)
                                height
                                (math.floor (/ vim.o.columns  2)))]
                          (tset self :buf buf)
@@ -255,11 +330,14 @@
                 :win nil})
 
 (local Summary {:new (fn [self c-buf c-win height]
-                       (let [(buf win) (_win-open 
-                                         (- vim.o.lines height) 
+                       (let [(buf win) (_win-open
+                                         (- vim.o.lines height)
                                          height 0)]
+
                          (tset self :buf buf)
                          (tset self :win win)
+                         (va.nvim_win_set_option win :foldenable false)
+                         ; (va.nvim_win_set_option win :wrap false)
                          (va.nvim_win_set_option win :scrolloff 999))
                        (vf.win_execute win "set winhighlight=Normal:Comment")
                        self)
@@ -294,6 +372,8 @@
     (var done? false)
     (var target "")
     (var id-cpos nil) ; list
+    (var find-pos [])
+    (var view-lines [])
     (while (not done?)
       ; (echo (.. "line: " (. pos 1) "/" (vf.line :$ win) ", input: " target))
       (echo (concat-with
@@ -317,7 +397,7 @@
 
           (set pos [((guard_cursor_position summary.win)  (update-pos nr pos))])
           ;; FIXME: Change buffer position
-          (va.nvim_win_set_cursor summary.win pos)
+          ; (va.nvim_win_set_cursor summary.win pos) ; FIXME: I don't know why this is necessary. I actually forget about this.
           (vf.matchaddpos :PmenuSel [[(. pos 1) 0]] 0 -1 {:window summary.win})
 
           (local shift (+ (vf.strdisplaywidth (vf.line :$ c-win)) 1))
@@ -330,7 +410,8 @@
           (local target-width (vf.strdisplaywidth target))
 
           ;;; Search target on the current buffer.
-          (local (find-pos view-lines) (do
+          (when (not (keys-ignored nr))
+            (set (find-pos view-lines) (do
                                          (var find-pos [])
                                          (var view-lines [])
                                          (each [i line (ipairs lines)]
@@ -339,12 +420,14 @@
                                                (table.insert find-pos [i kmp-res])
                                                (let [lnums (fill-spaces (tostring i) (vf.strdisplaywidth (tostring (vf.line :$ c-win))))]
                                                  (table.insert view-lines (.. lnums " " line))))))
-                                         (values find-pos view-lines)))
+                                         (values find-pos view-lines))))
           ;(va.nvim_buf_set_lines buf 0 -1 true view-lines)
           (summary:update view-lines)
 
           ;;; view
-          (push! id-cpos (draw-found find-pos c-win summary.win target-width shift hi-w-summary))
+          ; (push! id-cpos (draw-found find-pos c-win summary.win target-width shift hi-w-summary))
+
+          ((task-draw find-pos c-win summary.win target-width shift hi-w-summary))
 
           ; (unless (= target-width 0)
           (preview:update find-pos pos target-width hi-c-jump)
@@ -361,11 +444,13 @@
               (unless (= pos nil)
                 ;; FIXME: Could not jump to proper position when window was slitted.
                 ;; TODO: Use win_execute instead.
-                (va.nvim_win_set_cursor c-win pos))))
+                (va.nvim_win_set_cursor c-win pos)
+                (va.nvim_set_current_win c-win))))
           (when (= nr 27) ; esc
             (set done? true)
             (summary:del showmode c-win id-cpos preview)
-            (va.nvim_win_set_cursor c-win c-pos))
+            (va.nvim_win_set_cursor c-win c-pos)
+            (va.nvim_set_current_win c-win))
           (when (= nr 6) ; ctrl-f (focus)
             (unless (= (length find-pos) 0)
               (let [pos [(. (. find-pos (. pos 1)) 1)
@@ -373,12 +458,14 @@
                 (push! id-cpos (_hi-cpos hi-c-jump c-win pos target-width))
                 (va.nvim_win_set_cursor c-win pos)
                 (vim.cmd "normal! zz")
-                (push! id-cpos (draw-found find-pos c-win summary.win target-width shift hi-w-summary)))))
+                ; (push! id-cpos (draw-found find-pos c-win summary.win target-width shift hi-w-summary)))))
+                ((task-draw find-pos c-win summary.win target-width shift hi-w-summary)))))
           (when (= nr 15) ; ctrl-o (go back to the first position)
             (push! id-cpos (_hi-cpos :Cursor c-win c-pos target-width))
             (va.nvim_win_set_cursor c-win c-pos)
             (vim.cmd "normal! zz")
-            (push! id-cpos (draw-found find-pos c-win summary.win target-width shift hi-w-summary)))
+            ; (push! id-cpos (draw-found find-pos c-win summary.win target-width shift hi-w-summary)))
+            ((task-draw find-pos c-win summary.win target-width shift hi-w-summary)))
           (when (= nr 7) ; ctrl-g
             (unless (= (length find-pos) 0)
             (let [len (length find-pos)
@@ -391,19 +478,30 @@
                 (vf.matchaddpos :CursorLineNr [[(. pos 1) 1 shift]] 2 -1 {:window summary.win})
                 (vf.matchaddpos :PmenuSel [[(. pos 1) 0]] 0 -1 {:window summary.win})
                 (preview:update find-pos pos target-width hi-c-jump)
-                (push! id-cpos (draw-found find-pos c-win summary.win target-width shift hi-w-summary))))))
+                ; (push! id-cpos (draw-found find-pos c-win summary.win target-width shift hi-w-summary))))))
+                ((task-draw find-pos c-win summary.win target-width shift hi-w-summary))))))
           (when (= nr (rt "<c-5>")) ; <M-%>
             (set done? true)
             (let [alt (vim.fn.input (.. "Query replace " target " with: "))]
               (summary:del showmode c-win id-cpos preview)
-              (if (and (not= (length alt) 0) (= (va.nvim_get_current_buf) c-buf))
+              (if (and (not= (length alt) 0)
+                       (= (va.nvim_get_current_buf) c-buf))
                 (do
-                  (vim.cmd (.. "%s/" target "/" alt "/g"))
-                  (print "replaced " target " with " alt )))
-              (va.nvim_win_set_cursor c-win c-pos)))
+                  (fn _replace-escape-char [str]
+                    (str:gsub :/ "\\/"))
+                  (vim.cmd (.. "%s/"
+                               (_replace-escape-char target)
+                               "/"
+                               (_replace-escape-char alt)
+                               "/g"))
+                  (print "replaced " target " with " alt ))
+                (print "Err: the replacement failed"))
+              (va.nvim_win_set_cursor c-win c-pos)
+              (va.nvim_set_current_win c-win)))
           (vim.cmd "redraw!")
-          (vim.fn.win_execute summary.win "redraw!") ; TODO: Check weather if this work.
-          )))))
+          (when (not done?)
+            ;; TODO: Check weather if this work.
+            (vim.fn.win_execute summary.win "redraw!")))))))
 ;;; }}}
 
 {: goto-line
