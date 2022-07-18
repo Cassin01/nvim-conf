@@ -50,25 +50,24 @@
   (assert-compile (not (= (type name) :string)) "name expects symbol, vector, or list as first arugument" name)
   (assert-compile (= (type types) :table) "types expects table as first arugment" types)
   `(fn ,name [,(unpack args)]
-     (let [first# (λ [lst#] (. lst# 1))
-           rest# (λ [lst#] [(unpack lst# 2)])
+     (let [rest# (λ [lst#] [(unpack lst# 2)])
            empty?# (λ [str#] (or (= str# nil) (= str# "")))
-           type?# (λ [?obj# type#] (if (= type# :any) true (= (type ?obj#) type#)))
-           type-eq# (λ  [?actual# expect#]
+           type?# (λ [?obj# type#] (if (= type# :any) true (= (type ?obj#) type#)))]
+           (fn type-eq# [?actual# expect#]
                       (match (type expect#)
                         :string (if (let [res# (string.match expect# "^?")]
                                       (or (= res# nil) (= res# "")))
                                   (type?# ?actual# expect#)
                                   (or (type?# ?actual# (string.match expect# "%w+"))
                                       (type?# ?actual# :nil)))
-                        :table (or (= (type ?actual#) (first# expect#)) (type-eq# actual# (rest# expect#)))
-                        _# false))]
+                        :table (or (= (type ?actual#) (. expect# 1)) (type-eq# ?actual# (rest# expect#)))
+                        _# false))
        ,(icollect [i# k# (ipairs args)]
                   (if (< i# (length types))
                     (if (varg? k#)
                       (assert-compile (= :varg (. types i#)) "[type mismatch] ... expects :varg" types)
                       `(assert (type-eq# ,k# ,(. types i#))
-                               (.. "argument " (tostring ,k#) "[type mismatch] must be " ,(_2str (. types i#)))))
+                               (.. "argument " (tostring ,k#) "[type mismatch] must be " ,(_2str (. types i#)) " but " (type ,k#))))
                     (assert-compile false "too many arguments" args)))
        (let [ret# (do ,...)]
          (assert (type-eq# ret# ,(. types (length types))) (.. "return value must be " ,(_2str (. types (length types))) " but " (type ret#)))
@@ -90,8 +89,14 @@
 (fn M.ref-f [f m ...]
   `((. (require ,m) ,f) ,...))
 
-(fn M.unless [cond body]
-  `(if (not ,cond) ,body))
+(fn M.unless [cond ...]
+  `(if (not ,cond) ,...))
+
+(fn M.until [cond ...]
+  `(while (not ,cond) ,...))
+
+(fn M.return [res]
+  `(lua ,(.. "return " (tostring res))))
 
 (fn M.require* [relative absolute]
   "(local type* (require (if (empty? ...)
