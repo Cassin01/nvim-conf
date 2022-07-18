@@ -72,15 +72,15 @@
   [map-data
    [
     ;; move
-    [(c :0) (λ []
-              (fn setup-buffer [enabled]
-                ((. (. (require :cmp) :setup) :buffer) {:enabled enabled}))
-              (if (= vim.b.cmp-disable nil)
-                (do (tset vim.b :cmp-disable true)
-                  (setup-buffer true))
-                (do (tset vim.b :cmp-disable nil)
-                  (setup-buffer false)))
-              ) "toggle cmp"]
+    ; [(c :0) (λ []
+    ;           (fn setup-buffer [enabled]
+    ;             ((. (. (require :cmp) :setup) :buffer) {:enabled enabled}))
+    ;           (if (= vim.b.cmp-disable nil)
+    ;             (do (tset vim.b :cmp-disable true)
+    ;               (setup-buffer true))
+    ;             (do (tset vim.b :cmp-disable nil)
+    ;               (setup-buffer false)))
+    ;           ) "toggle cmp"]
     [(c :b) :<left> "Left"]
     [(c :f) :<right> "Right"]
     [(c :a) :<c-o>^ "Jump to BOL"] ; *
