@@ -32,15 +32,15 @@
     [0 :i key "" {:callback cmd :noremap true :silent true :desc desc}]))
 
 ;;; WARN: I personally not prefer using reserved keys.
-;;; C-m, C-i, C-h, (C-t, C-d)
+;;; C-m, C-i, C-h, (C-t, C-d), C-o
 
 ;;; IDEA: I searching more vim like way.
 ;;; So we call `vela`
 ;;; Reserved:
-;;; C-m, C-i, C-h, (C-t, C-d)
-;;; C-t, C-d,
-;;; C-j, C-k, C-l, C-h
-;;; Acually
+;;; - C-m, C-i, C-h, (C-t, C-d)
+;;; - C-t, C-d,
+;;; - C-j, C-k, C-l, C-h
+;;; Acually:
 ;;; - m,i,h
 ;;; - Not Used
 ;;; - Move: c-f, c-b, c-k, c-l
@@ -57,19 +57,37 @@
 ;;; Page: c-p
 ;;; c-g+c-g, c-g+g, c-g+c-s
 
+;;; IDEA: Use c-{num} instead of c-u
+;;; IDEA: Cefine command insertion frame work
+
+;;; EXCEPTION: I'm not prefer to make short cut on Insert-mode for bellow commands.
+;;; - case Change
+;;;    - Because We can't expect any key efficiency. 
+
+;;; TODO: Key reloading (auto reloading would be great)
+;;; TODO: Key map not reloading well detector (Not necessary)
+;;; TODO: File type white list or black list
 
 (let
   [map-data
    [
     ;; move
+    [(c :0) (λ []
+              (fn setup-buffer [enabled]
+                ((. (. (require :cmp) :setup) :buffer) {:enabled enabled}))
+              (if (= vim.b.cmp-disable nil)
+                (do (tset vim.b :cmp-disable true)
+                  (setup-buffer true))
+                (do (tset vim.b :cmp-disable nil)
+                  (setup-buffer false)))
+              ) "toggle cmp"]
     [(c :b) :<left> "Left"]
     [(c :f) :<right> "Right"]
     [(c :a) :<c-o>^ "Jump to BOL"] ; *
     [(c :e) :<end> "Jump to EOL"]
     [(c :j) :<esc>o "<C-j> insert new line bellow and jump"]
     [(c :o) :<esc>O "<C-o> insert new line above and jump"] ; *
-    [(m :g :g) goto-line "Goto line"]
-    ; [(c :g) goto-line "Goto line"]
+    [(c :g :g) goto-line "Goto line"]
     [(c :u) universal-argument :universal-argument] ; *
     [(c :p) :<up> "Up"]
     [(c :n) :<down> "Down"]
@@ -77,11 +95,11 @@
     [(m :b) :<s-left> "Left"]
     [(c :v) :<c-o><c-b> "Page down"]
     [(m :v) :<c-o><c-f> "Page up"]
-    [(m :<) :<esc>ggi "Beginning of buffer"]
-    [(m :>) :<c-o>G "End of buffer"]
+    [(c :g :b) :<esc>ggi "Beginning of buffer"]
+    [(c :g :f) :<c-o>G "End of buffer"]
     [(c :s) inc-search "Search"]
-    [(c :l) "<c-o><Plug>(leap-forward)" "leap-forward"]
-    ; [(c :i) "<c-o><Plug>(leap-backward)" "leap-backword"]
+    [(c :l :b) "<c-o><Plug>(leap-backward)" "leap-backward"]
+    [(c :l :f) "<c-o><Plug>(leap-forward)" "leap-forward"]
 
     ;; edit
     [(c :d) :<Del> "Delete"] ; * ; <- I actually use default i_CTRl-D.
@@ -94,9 +112,10 @@
     [(.. (c :x) (c :t)) :<esc>ddpi :transpose-lines] ; *
 
     ;; case
-    [(m :u) "<esc>llbgUwi" :uppercase-word]
-    [(m :l) "<esc>llbguwi" :lowercase-word]
-    [(m :c) "<esc>llbvui" :capitalcase-word]
+    ;; INFO: Actually there is no efficiency difference between abolish.vim's default key map (+ <c-o>) and bellow commands.
+    ; [(m :u) "<esc>llbgUwi" :uppercase-word]
+    ; [(m :l) "<esc>llbguwi" :lowercase-word]
+    ; [(m :c) "<esc>llbvui" :capitalcase-word]
 
     ;; comment
     [(m ";") "<esc>:execute \"normal \\<plug>CommentaryLine\"<cr>i"
