@@ -1,5 +1,5 @@
 (import-macros {: req-f : ref-f : epi : ep} :util.macros)
-(import-macros {: nmaps : map : cmd : plug : space : ui-ignore-filetype : la : br : let-g} :kaza.macros)
+(import-macros {: nmaps : map : cmd : plug : space : ui-ignore-filetype : la : br : let-g } :kaza.macros)
 
 (macro au [group event body]
   `(vim.api.nvim_create_autocmd ,event {:callback (λ [] ,body) :group (vim.api.nvim_create_augroup ,group {:clear true})}))
@@ -54,6 +54,19 @@
 ;  :requires {1 :kyazdani42/nvim-web-devicons
 ;             :opt true }}
 
+; notify
+{1 :rcarriga/nvim-notify
+ :config (lambda []
+           ((. (require :notify) :setup) {:stages :fade_in_slide_out
+                                        :background_colour :FloatShadow
+                                        :timeout 3000 })
+           (set vim.notify (require :notify)))}
+
+{1 :lukas-reineke/indent-blankline.nvim
+ :config (la ((req-f :setup :indent_blankline)
+              {:show_current_context true
+               :show_current_context_start true
+               :space_char_blankline " "}))}
 
 {1 :edluffy/specs.nvim
  :config (la ((req-f :setup :specs) {:show_jumps true
@@ -102,7 +115,7 @@
 {1 :akinsho/bufferline.nvim
  :tag :*
  :requires :kyazdani42/nvim-web-devicons
- :config (λ [] (ref-f :setup :bufferline))
+ :config (λ [] (ref-f :setup :bufferline {:separator_style :padded_slant}))
  :setup (la (nmaps
               :<space>b
               :bufferline
@@ -131,6 +144,22 @@
 {1 :norcalli/nvim-colorizer.lua
  :config (λ []
            ((. (require :colorizer) :setup)))}
+
+{1 :haringsrob/nvim_context_vt}
+
+;; fold
+; {1 :kevinhwang91/nvim-ufo
+;  :requires :kevinhwang91/promise-async
+;  :setup (la (vim.cmd "UfoDetach"))
+;  ; :setup (la
+;  ;          ; (local capabilities (vim.lsp.protocol.make_client_capabilities))
+;  ;          ; (set capabilities.textDocument.foldingRange {:dynamicRegistration true
+;  ;          ;                                              :lineFoldingOnly false})
+;  ;          ; (local language_servers {})
+;  ;          ; (each [_ ls (ipairs language_servers)]
+;  ;          ;   ((-> (require :lspconfig) (. :ls) (. :setup)) {:capabilities capabilities}))
+;  ;          (ref-f :setup :ufo))
+;  }
 
 ; {1 :mattn/ctrlp-matchfuzzy
 ;  :setup (λ []
@@ -184,6 +213,9 @@
 {1 :onsails/lspkind-nvim
  :config (λ [] ((. (require :lspkind) :init) {}))}
 
+; {1 "https://git.sr.ht/~whynothugo/lsp_lines.nvim"
+;  :config (λ [] ((. (require :lsp_lines) :setup)))}
+
 ;; enhance quick fix
 {1 :kevinhwang91/nvim-bqf
  :ft :qf}
@@ -210,38 +242,49 @@
             :hrsh7th/cmp-nvim-lsp-document-symbol
             :nvim-orgmode/orgmode
             :quangnguyen30192/cmp-nvim-ultisnips
+            :zbirenbaum/copilot-cmp
             :neovim/nvim-lspconfig]
  :config (λ []
            (local cmp (require :cmp))
+           (local lspkind (require :lspkind))
            (cmp.setup
              {:snippet {:expand (λ [args]
                                   (vim.fn.UltiSnips#Anon args.body))}
               :sources (cmp.config.sources
-                         [{:name :ultisnips}
-                          {:name :copilot :group_index 2}
-                          {:name :nvim_lsp}
+                         [{:name :copilot :group_index 2}
+                          {:name :ultisnips :group_index 2}
+                          {:name :nvim_lsp :group_index 2}
                           {:name :orgmode}
                           {:name :lsp_document_symbol}]
                          [{:name :buffer
                            :option {:get_bufnrs (λ []
                                                   (vim.api.nvim_list_bufs))}}])
+              :formatting {:format (fn [entry vim_item]
+                                     ; (print (vim.inspect entry.source.name))
+                                     (if (= entry.source.name :copilot)
+                                       (do
+                                         (tset vim_item :kind " Copilot")
+                                         (tset vim_item :kind_hl_group :CmpItemKindCopilot)
+                                         vim_item)
+                                       ((lspkind.cmp_format {:with_text true :maxwidth 50}) entry vim_item)))}
               :mapping (cmp.mapping.preset.insert
-                         {:<tab> (cmp.mapping (λ [fallback]
-                                                (if
-                                                  (cmp.visible)
-                                                  (cmp.select_next_item)
-                                                  (let [(line col) (unpack (vim.api.nvim_win_get_cursor 0))]
-                                                    (and (not= col 0)
-                                                         (= (-> (vim.api.nvim_buf_get_lines 0 (- line 1) line true)
-                                                                (. 1)
-                                                                (: :sub col col)
-                                                                (: :match :%s))
-                                                            nil)))
-                                                  (cmp.mapping.complete)
-                                                  (fallback))))
+                         {
+                          ; :<tab> (cmp.mapping (λ [fallback]
+                          ;                       (if
+                          ;                         (cmp.visible)
+                          ;                         (cmp.select_next_item)
+                          ;                         (let [(line col) (unpack (vim.api.nvim_win_get_cursor 0))]
+                          ;                           (and (not= col 0)
+                          ;                                (= (-> (vim.api.nvim_buf_get_lines 0 (- line 1) line true)
+                          ;                                       (. 1)
+                          ;                                       (: :sub col col)
+                          ;                                       (: :match :%s))
+                          ;                                   nil)))
+                          ;                         (cmp.mapping.complete)
+                          ;                         (fallback))))
                           :<c-e> (cmp.mapping.abort)
-                          :<cr> (cmp.mapping.confirm {:select false})
-                          })})
+                          :<cr> (cmp.mapping.confirm {:select false}) })})
+           (vim.api.nvim_set_hl 0 :CmpItemKindCopilot {:fg :#6CC644})
            (cmp.setup.cmdline :/ {:mapping (cmp.mapping.preset.cmdline)
                                   :sources [{:name :buffer}]})
            (cmp.setup.cmdline :: {:mapping (cmp.mapping.preset.cmdline)
@@ -253,16 +296,25 @@
 
 {1 :neovim/nvim-lspconfig
  :config (λ []
-           (local ˜capabilities ((. (require :cmp_nvim_lsp) :update_capabilities) (vim.lsp.protocol.make_client_capabilities)))
+           (local capabilities ((. (require :cmp_nvim_lsp) :update_capabilities)
+                                (vim.lsp.protocol.make_client_capabilities)))
+           ; ;; This setting is for kevinhwang91/nvim-ufo {{{
+           ; (set capabilities.textDocument.foldingRange {:dynamicRegistration false
+           ;                                              :lineFoldingOnly true})
+           ; ;; }}}
            (each [_ key (ipairs [:rust_analyzer])]
              ((-> (require :lspconfig) (. key) (. :setup))
               {:capabilities capabilities
                :diagnostics {:enable true
+
                              :disabled [:unresolved-proc-macro]
                              :enableExperimental true}}))
            ((-> (require :lspconfig) (. :gopls) (. :setup))
             {:on_attach (lambda [client]
-                          (ref-f :on_attach :illuminate client))}))}
+                          (ref-f :on_attach :illuminate client))})
+           ; (ref-f :setup :ufo)
+           ; ((. vim.diagnostic :config) {:virtual_text false})
+           )}
 
 {1 :tami5/lspsaga.nvim
  :config (λ [] ((. (require :lspsaga) :setup)
@@ -326,14 +378,15 @@
 
 
 ;;; copilot
-:github/copilot.vim
 {1 :zbirenbaum/copilot.lua
- :event [:VimEnter]
- :config (la (vim.defer_fn
-               (la (ref-f :setup :copilot))
+ :event [:InsertEnter]
+ :config (lambda [] (vim.defer_fn
+               (lambda [] (ref-f :setup :copilot))
                100))}
 {1 :zbirenbaum/copilot-cmp
- :after ["copilot.lua" "nvim-cmp"]}
+ :module :copilot_cmp }
+{1 :github/copilot.vim
+ :config (λ [] (tset vim.g :copilot_no_tab_map true))} ;; requires command `:Copilot restart`
 
 ;;; vim
 {1 :Shougo/echodoc.vim
@@ -364,6 +417,8 @@
           (tset vim.g :sexp_enable_insert_mode_mappings false))}
 
 ;;; util
+{1 :kana/vim-textobj-user
+ :config (λ [] (vim.cmd "source ~/.config/nvim/fnl/core/pack/conf/textobj.vim"))}
 ; {1 :Cassin01/hyper-witch.nvim
 ;  :setup (λ []
 ;           (tset vim.g :hwitch#prefixes _G.__kaza.prefix))}
@@ -418,6 +473,8 @@
           (let [prefix ((. (require :kaza.map) :prefix-o) :n :<space>l :lineletters)]
             (prefix.map "" "<Plug>LineLetters" "jump to line"))) }
 
+:Cassin01/emacs-key-source.nvim
+
 ;; mark
 :kshenoy/vim-signature
 
@@ -428,13 +485,13 @@
  :config (la (let-g hardtime_showmsg false)
              (let-g hardtime_default_on false))}
 
-{1 :notomo/cmdbuf.nvim
- :config (λ []
-           ;;; FIXME I don't know how to declare User autocmd.
-           (nmaps :q :cmdbuf [[:: (λ [] ((req-f :split_open :cmdbuf) vim.o.cmdwinheight)) "cmdbuf"]
-                              [:l (λ [] ((. (require :cmdbuf) :split_open) vim.o.cmdwinheight {:type :lua/cmd})) "lua"]
-                              [:/ (λ [] ((req-f :split_open :cmdbuf) vim.o.cmdwinheight {:type :vim/search/forward})) :search-forward]
-                              ["?" (λ [] ((. (require :cmdbuf) :split_open) vim.o.cmdwinheight {:type :vim/search/backward})) :search-backward]]))}
+; {1 :notomo/cmdbuf.nvim
+;  :config (λ []
+;            ;;; FIXME I don't know how to declare User autocmd.
+;            (nmaps :q :cmdbuf [[:: (λ [] ((req-f :split_open :cmdbuf) vim.o.cmdwinheight)) "cmdbuf"]
+;                               [:l (λ [] ((. (require :cmdbuf) :split_open) vim.o.cmdwinheight {:type :lua/cmd})) "lua"]
+;                               [:/ (λ [] ((req-f :split_open :cmdbuf) vim.o.cmdwinheight {:type :vim/search/forward})) :search-forward]
+;                               ["?" (λ [] ((. (require :cmdbuf) :split_open) vim.o.cmdwinheight {:type :vim/search/backward})) :search-backward]]))}
 
 ;; translation
 {1 :skanehira/translate.vim
@@ -451,20 +508,28 @@
 {1 :thinca/vim-ref
  :setup (la (vim.cmd "source ~/.config/nvim/fnl/core/pack/conf/vim-ref.vim"))}
 
+;; log
+:wakatime/vim-wakatime
+
+:ThePrimeagen/vim-apm
+
 ;;; language
 
 ; ;; deno
-; :vim-denops/denops.vim
-; {1 :Cassin01/fetch-info.nvim
-;  :require :ms-jpq/lua-async-await
-;  :setup (λ []
-;           (local a (require :plug.async))
-;           (local {: u-cmd} (require :kaza))
-;           (u-cmd :MyGetInfo (la
-;                               (lambda []
-;                                 (a.sync
-;                                   (lambda []
-;                                     (vim.cmd :GInfoF)))))))}
+:vim-denops/denops.vim
+{1 :Cassin01/fetch-info.nvim
+ :require :ms-jpq/lua-async-await
+ :setup (λ []
+          (local a (require :plug.async))
+          (local {: u-cmd} (require :kaza))
+          (u-cmd :MyGetInfo (la
+                              ((. (require :kaza.client) :start) "echo nvim_exec(\'GInfoM\', v:true)"))))}
+{1 :ellisonleao/weather.nvim
+ :setup (λ [] (tset vim.g :weather_city :Tokyo))}
+
+;; Async
+{1 :ms-jpq/lua-async-await
+ :branch :neo}
 
 
 ;; text
@@ -480,6 +545,11 @@
 
 ;; lua
 :bfredl/nvim-luadev
+:mhartington/formatter.nvim
+
+;; binary
+:Shougo/vinarise
+
 
 ;; fennel
 :bakpakin/fennel.vim  ; syntax
@@ -492,7 +562,7 @@
 
 ;; tex
 {1 :Cassin01/texrun.vim
- :setup (λ [] (tset vim.g :texrun#file_name [:l02.tex :sample.tex]))}
+ :setup (λ [] (tset vim.g :texrun#file_name [:l02.tex :sample.tex :resume.tex]))}
 
 ;; vim
 {1 :LeafCage/vimhelpgenerator
@@ -537,6 +607,9 @@
 ;; color
 :Shougo/unite.vim
 :ujihisa/unite-colorscheme
+:folke/tokyonight.nvim
+:rebelot/kanagawa.nvim
+
 ; :altercation/vim-colors-solarized   ; solarized
 ; :croaker/mustang-vim                ; mustang
 ; :jeffreyiacono/vim-colors-wombat    ; wombat
@@ -567,7 +640,6 @@
 ; :relastle/bluewery.vim              ; bluewery
 ; :mhartington/oceanic-next           ; OceanicNext
 ; :nightsense/snow                    ; snow
-:folke/tokyonight.nvim
 ; :Mangeshrex/uwu.vim                 ; uwu
 ; :ulwlu/elly.vim                     ; elly
 ; :michaeldyrynda/carbon.vim
