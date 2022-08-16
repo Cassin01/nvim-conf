@@ -6,13 +6,6 @@
 
 (tset (. _G.__kaza :f) :dump (req-f :dump :util.list))
 
-; (vin.opt.listchars:append "space:⋅")
-; (vim.opt.listchars:append "eol:↴")
-;(tset vim.opt.listchars {:tab "▸▹┊"
-;                         :trail "▫"
-;                         :extends "❯"
-;                         :precedes "❮"
-; })
 (vim.opt.clipboard:append {:unnamedplus true
                            :unnamed true})
 (tset vim.opt :listchars {:tab "▸▹┊"

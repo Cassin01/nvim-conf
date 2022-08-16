@@ -30,7 +30,7 @@ function! s:term_list()
 endfunction
 
 function! ToggleTerminal() abort
-  let l:terms = s:term_list() " TODO add term_list()
+  let l:terms = s:term_list()
   if empty(l:terms)
     split
     execute "normal! \<c-w>J"
