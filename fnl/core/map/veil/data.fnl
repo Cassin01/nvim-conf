@@ -1,8 +1,8 @@
 (local {: goto-line
         : universal-argument
         : inc-search
-        : retrive_till_tail
-        : retrive_first_half} (require :core.map.veil.source))
+        : kill-line2end
+        : kill-line2begging} (require :emacs-key-source))
 
 (macro m [c ?s]
   (let [s (or ?s "")]
@@ -105,8 +105,8 @@
     [(c :d) :<Del> "Delete"] ; * ; <- I actually use default i_CTRl-D.
     [(m :h) :<esc>vbc "Delete previous word"]
     [(m :d) :<esc>wvec "Delete next word"]
-    [(c :k) retrive_till_tail "delete from cursor to EOL"] ; *
-    [(c-s :k) retrive_first_half "delete from cursor to BOL"]
+    [(c :k) kill-line2end "delete from cursor to EOL"] ; *
+    [(c-s :k) kill-line2begging "delete from cursor to BOL"]
     [(c :t) :<esc>xphli :transpose-chars] ; *
     [(m :t) :<esc>dwea<space><esc>pa<bs> :transpose-words]
     [(.. (c :x) (c :t)) :<esc>ddpi :transpose-lines] ; *
@@ -118,7 +118,7 @@
     ; [(m :c) "<esc>llbvui" :capitalcase-word]
 
     ;; comment
-    [(m ";") "<esc>:execute \"normal \\<plug>CommentaryLine\"<cr>i"
+    [(m ";") "<esc>:execute \"normal \\<plug>CommentaryLine\"<cr>a"
      "Comment line"]
 
     ;; copy & paste

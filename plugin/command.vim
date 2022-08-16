@@ -15,6 +15,10 @@ vnoremap * :<C-u>call <SID>VSetSearch()<CR>//<CR><C-o>
 " down direction
 vnoremap # :<C-u>call <SID>VSetSearch()<CR>??<CR><C-o>
 
+function! Meao()
+  echom "Meao"
+endfunction
+
 " lynx
 function! s:init_lynx()
   nnoremap <nowait><buffer> <C-F> i<PageDown><C-\><C-N>

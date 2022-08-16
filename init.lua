@@ -3,7 +3,7 @@ local fn = vim.fn
 local preinstall_list = {
   packer = {author = 'wbthomason', repo = 'packer.nvim'},
   hotpot = {author = 'rktjmp', repo = 'hotpot.nvim'},
-  --impatient = {author = 'lewis6991', repo = 'impatient.nvim'},
+  -- impatient = {author = 'lewis6991', repo = 'impatient.nvim'},
 }
 
 local preinstall_path = fn.stdpath 'data' .. '/site/pack/packer/start'
@@ -21,14 +21,14 @@ for _, info in pairs(preinstall_list) do
 end
 
 if init_install then
-  --require('impatient')
+  -- require('impatient')
   require 'hotpot'
   require('init')
   require('packer').sync()
   print("Rerun neovim")
 end
 
---require('impatient')
+-- require('impatient')
 require('hotpot')
 require('init')
 

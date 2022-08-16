@@ -1,5 +1,9 @@
 (import-macros {: la} :kaza.macros)
+(local {: concat-with} (require :util.list))
 (local {: u-cmd} (require :kaza))
+
+(fn cmd [...]
+  (vim.cmd (concat-with " " ...)))
 
 ;;; INFO
 ;;; require: goyo, limelight
@@ -36,3 +40,32 @@
         (vim.cmd :UndotreeShow)
         (vim.cmd :Limelight!!)
         (set _G.__kaza.v.concentrate-code true)))))
+
+;;; TODO: Add completion
+(u-cmd
+  :H
+  (λ [opts]
+    (cmd :verbose :help opts.args))
+  {:nargs 1})
+
+(u-cmd
+  :DoIt
+  (λ []
+    (local {: async-cmd} (require :kaza.cmd))
+    (async-cmd "echo 'hoge'")))
+
+;;; WANR: requires Cassin01/fetch-info
+(u-cmd
+  :MGInfo
+  (λ [opts]
+    (local {: async-cmd} (require :kaza.cmd))
+    (async-cmd (.. "echom nvim_exec(\'GInfo" opts.args "\', v:true)")))
+  {:nargs 1
+   :complete (λ [ArgLead CmdLine CursorPos]
+               [:F :C :M :W])})
+
+(u-cmd
+  :ATest
+  (λ []
+    (local {: async-test} (require :kaza.cmd))
+    (async-test)))

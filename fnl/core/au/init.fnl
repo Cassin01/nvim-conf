@@ -2,6 +2,7 @@
 (import-macros {: au! : la : plug : async-do!} :kaza.macros)
 (local {: concat-with} (require :util.list))
 (local {: hi-clear} (require :kaza.hi))
+(local {: syntax} (require :kaza.cmd))
 (local vf vim.fn)
 (local va vim.api)
 (local uv vim.loop)
@@ -44,21 +45,31 @@
       (.. :# (vf.printf :%0x (. target :background)))
       (error "part: bg or fg"))))
 
-(au! :match-hi :ColorScheme (each [_ k (ipairs [;[:Tabs {:bg (blightness (get-hl :Normal :bg) 0.9)}]
-                                                [:TrailingSpaces {:bg :#FFa331}]
-                                                [:DoubleSpace {:bg :#cff082}]
-                                                [:TodoEx {:bg :#44a005 :fg :#F0FFF0}]
-                                                [:FoldMark (link :Comment {:fg (blightness (get-hl :Comment :fg) 0.9)})]
-                                                [:CommentHead (link :Comment {:fg :#727ca7})]])]
-                             (vim.api.nvim_set_hl 0 (unpack k))))
-(au! :match [:BufWinEnter] ((. (require :core.au.match) :add-matchs)))
+(fn print-second [a b]
+  (print (vim.inspect b)))
+(au! :match-hi :ColorScheme 
+     (each [_ k (ipairs [;[:Tabs {:bg (blightness (get-hl :Normal :bg) 0.9)}]
+                         [:TrailingSpaces {:bg :#FFa331}]
+                         [:DoubleSpace {:bg :#cff082}]
+                         [:TodoEx {:bg :#44a005 :fg :#F0FFF0}]
+                         [:FoldMark (link :Comment {:fg (blightness (get-hl :Comment :fg) 0.8)})]
+                         [:CommentHead (link :Comment {:fg :#727ca7})]])]
+       (vim.api.nvim_set_hl 0 (unpack k))))
+(au! :mmatch [:BufWinEnter] ((. (require :core.au.match) :add-matches)))
 
-; terminal mode
-(au! :term-conf :TermOpen (do
-                           (win_set_option 0 :relativenumber false)
-                           (win_set_option 0 :number false)))
+;; terminal mode
+(au! :term-conf [:TermOpen]
+     (do
+       (win_set_option 0 :relativenumber false)
+       (win_set_option 0 :number false)
+       (win_set_option 0 :winfixwidth true)
+       ) {:pattern "term://*"})
+(au! :term-en [:BufEnter] 
+     (when (= (. (vim.api.nvim_get_mode) :mode) "nt")
+       (vim.cmd :startinsert))
+     {:pattern "term://*"})
 
-; vim grep
+;; vim grep
 (create_autocmd
   :QuickFixCmdPost
   {:pattern :*grep*
@@ -119,11 +130,35 @@
                  (tset vim.g :auto_save 1)))
    :pattern [:*.tex]
    :group pattern})
+(fn todo []
+  ;; https://gist.github.com/huytd/668fc018b019fbc49fa1c09101363397
+  (vf.matchadd :Conceal "\\[\\ \\]" 0 -1 {:conceal : })
+  (vf.matchadd :Conceal "\\[x\\]" 0 -1 {:conceal : })
+  ; (vf.matchadd :Conceal "^\\*" 0 -1 {:conceal :◉ })
+  ; (vf.matchadd :Conceal "^\\*\\*" 0 -1 {:conceal "○" })
+  ; (vf.matchadd :Conceal "^\\*\\*\\*" 0 -1 {:conceal "✹" })
+  ; (syntax "syntax match todoCheckbox \\\'\\v(\\s+)?(-|\\*)\\s\\[-\\]\\\'hs=e-4 conceal cchar=☒")
+  ; (syntax "syntax match todoCheckbox \'\\\[x\\\]\' conceal cchar=☒")
+  (vim.cmd "hi def link todoCheckbox Todo")
+  (vim.cmd "setlocal cole=1"))
+(create_autocmd
+  [:BufRead :BufNewFile]
+  {:callback (λ []
+               (todo))
+   :pattern [:*.txt]
+   :group pattern})
+(create_autocmd
+  [:BufRead :BufNewFile]
+  {:callback (λ []
+               (todo))
+   :pattern [:*.org]
+   :group pattern})
 (create_autocmd
   [:BufRead :BufNewFile]
   {:callback (λ []
                (win_set_option 0 :foldenable false)
-               (tex_math))
+               (tex_math)
+               (todo))
    :pattern [:*.md]
    :group pattern})
 (create_autocmd
@@ -176,14 +211,14 @@
     (local lines (vim.api.nvim_buf_get_lines 0 0 -1 1))
     (local ob (parser lines))
     (print (vim.inspect ob))))
-(fn syntax [group pat]
+(fn syntax [group pat ...]
   (vim.cmd
     (concat-with " "
-      :syntax :match group pat)))
+      :syntax :match group pat ...)))
 (macro weekday []
   (let [keywords# [:Fri :Mon :Tue :Wed :Thu]]
     (.. "'" :\<\ "(" (table.concat keywords# :\|) :\ ")'")))
-(au! :match-hi :ColorScheme
+(au! :match-hi-sche :ColorScheme
      (each [_ k (ipairs [[:GCalendarMikan {:fg :#F4511E}]
                          [:GCalendarPeacock {:fg :#039BE5}]
                          [:GCalendarGraphite {:fg :#616161}]
@@ -284,4 +319,4 @@
 ;; copilot
 (au! :reload-copilot
      :VimEnter
-     (async-do! (vim.cmd "Copilot restart")))
+     (vim.cmd "Copilot restart"))

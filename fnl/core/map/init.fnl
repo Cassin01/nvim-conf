@@ -2,17 +2,19 @@
 (import-macros {: la : cmd : plug : space : br : nmaps} :kaza.macros)
 
 (local {: map} (require :kaza.map))
+(local vf vim.fn)
+(local va vim.api)
 
-;(map :n :<space> "<cmd>NormalWitch SPC<cr>" "wich")
+(map :n :<space> "<cmd>NormalWitch SPC<cr>" "wich")
 (nmaps
   (space :w)
   :witch
   [[(space) (cmd "NormalWitch SPC") :space]
    [:\ (cmd "NormalWitch \\") :\]
-   [:b (plug "(hwhich-bookmark)") "book mark"]
-   [:n (plug "(hwhich-normal)") "normal wich"]
-   [:u (plug "(hwich-ultisnips)") "ultisnips"]
-   [:t (plug "(hwich-tex)") "tex"]
+   [:b (plug "(hwitch-bookmark)") "book mark"]
+   [:n (plug "(hwitch-normal)") "normal wich"]
+   [:u (plug "(hwitch-ultisnips)") "ultisnips"]
+   [:t (plug "(hwitch-tex)") "tex"]
    [:r (cmd "REGWITCH") :register]
    [:e (cmd "KeyWindow") :evil]])
 
@@ -37,7 +39,7 @@
    [:s (cmd :sp) "split-horizontally"]
    [:v (cmd :vs) "split-vertically"]
    [:d (cmd :bd) "delete tab"]
-   [";" ":<c-u>sp<cr><c-w>J:<c-u>res 10<cr>:<C-u>terminal<cr>:<c-u>setlocal noequalalways<cr>i" "vscode like terminal"] ])
+   [";" ":<c-u>sp<cr><c-w>J:<c-u>res 10<cr>:<C-u>terminal<cr>:<c-u>setlocal noequalalways<cr>i" "vscode like terminal"]])
 
 (nmaps
   (space :q)
@@ -47,61 +49,16 @@
    [:b (cmd :bd) "delete buffer"]
    [:c (cmd :close) "window close"]])
 
-(nmaps
-  (space :m)
-  :me
-  [[:nh :<cmd>noh<cr> "turn off search highlighting until the next search"]
-   [:sd (cmd "e %:h") "show current directory"]
-   [:sf "<cmd>source %<cr>" "source a current file"]
-   [:pc "<cmd>Unite colorscheme -auto-preview<cr>" "preview colorschemes"]
-   [:u (cmd :update) :update]
-   [:rs ::%s/\s\+$//ge<cr> "remove trailing spaces"]
-   [:a ":vim TODO ~/org/*.org<cr>" "agenda"]
-   [:ts ":%s/\t/ /g<cr>" "replace tab with space"]
-   [:cd ":<c-u>lcd %:p:h<cr>" "move current directory to here"]
-   [(br :r :f) ":<c-u>set clipboard+=unnamed<cr>" "enable clipboard"]
-   [(br :l :f) ":<c-u>set clipboard-=unnamed<cr>" "disable clipboard"]
-   [(br :r :x) ":<c-u>setlocal conceallevel=1<cr>" "hide conceal"]
-   [(br :l :x) ":<c-u>setlocal conceallevel=0<cr>" "show conceal"]
-   [(br :l :c) (la (vim.cmd (.. "colo " vim.g.colors_name))) :recover-color]
-   [(br :r :c) (la (vim.cmd "hi Normal guibg=NONE ctermbg=NONE")
-                   (vim.cmd "hi CursorLine guibg=NONE")
-                   (vim.cmd "hi StatusLine guibg=NONE")
-                   (vim.cmd "hi LineNr guibg=NONE")
-                   (vim.cmd "hi SignColumn guibg=NONE")) :clear-color]
-   [:fn (la (print (vim.fn.expand :%:t))) "show file name"]
-   [:fp (la (print (vim.fn.expand :%:p))) "show file path"]
-   [:ft (la (if (= vim.o.foldmethod :indent)
-              (tset vim.o :foldmethod :marker)
-              (tset vim.o :foldmethod :indent))
-            (print (.. "foldmethod is now " vim.o.foldmethod))) "toggle foldmethod"]
-   [:lm (la (let [{: cursor : strlen : getline} vim.fn]
-              (cursor 0 (/ (strlen (getline :.)) 2)))) "go middle of a line"]
-   [:m (la (let [buf (vim.api.nvim_create_buf false true)]
-             (vim.api.nvim_buf_set_lines buf 0 100 false ((req-f :split :util.string) (vim.api.nvim_exec "messages" true ) "\n"))
-             (vim.api.nvim_open_win buf true {:relative :editor :style :minimal :row 3 :col 3 :height 40 :width 150}))) "show message"]
-   [:e (la (let [width 27
-                  height 30
-                  buf (vim.api.nvim_create_buf false true)]
-              (vim.api.nvim_buf_set_option buf :filetype :org)
-              (vim.api.nvim_buf_set_lines buf 0 height false ["Note"])
-              (vim.api.nvim_open_win buf true {:relative :editor
-                                               :style :minimal
-                                               :border :rounded
-                                               :row 3
-                                               :col (- vim.o.columns width)
-                                               :height height
-                                               :width width}))) "memo"]
-   ])
-
 (when (vim.fn.has :mac)
   (map :n "<space>m?" "<cmd>!open dict://<cword><cr>" "[me] mac dictionary"))
 
 (epi _ k (require :core.map.map) (map (unpack k)))
 
-;;; plugins
-(epi _ name [:bracket :veil]
-     ((-> (.. :core.map. name) require (. :setup))))
+;;; caps lock
+(for [i 65 90]
+  (va.nvim_set_keymap :l (vf.nr2char (+ i 32)) (vf.nr2char i) {:noremap true :silent true :desc :caps}))
 
+;;; plugins
+(epi _ name [:bracket :veil :nmap] ((-> (.. :core.map. name) require (. :setup))))
 
 {}

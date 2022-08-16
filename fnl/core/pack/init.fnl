@@ -15,7 +15,7 @@
           :config (λ []
                     (nmaps
                       :<space>c
-                      :packer
+                      "packer hotpot"
                       [[:cc (cmd :PackerCompile) :compile {:silent false}]
                        [:i (cmd :PackerInstall) :install {:silent false}]
                        [:sy (cmd :PackerSync) :sync {:silent false}]
@@ -31,7 +31,7 @@
                                  (print "No matching cache file for current file")))) "open cached lua file" {:silent false}]])
                     ((req-f :setup :hotpot) {:compiler {:modules {:correlate false}}})
                     )}
-         ;:lewis6991/impatient.nvim
+         ; :lewis6991/impatient.nvim
          ])
    (use (require :core.pack.plugs))
    (use_rocks :luasocket)))

@@ -6,26 +6,42 @@
 (fn concat-with [d ...]
   (table.concat [...] d))
 ;;; }}}
-
 (fn setup []
 (nmaps
   (space :m)
   :me
   [[:d "<cmd>:delm! | delm A-Z0-9<cr>" "Delete all marks"]
    [:nh :<cmd>noh<cr> "turn off search highlighting until the next search"]
-   [:sd (la (let [mother-dir (vf.expand :%:h)
-                  tree-cmd (if (not= (. (. (require :telescope) :extensions) :file_browser) nil) "Telescope file_browser path="
-                             (vf.exists ::Neotree) "Neotree "
-                             "e ")]
-              (vim.cmd (.. tree-cmd (if (not= mother-dir "")
-                           mother-dir
-                           (vf.getcwd)))))) "show current directory"]
+   ; [:sd (la (let [mother-dir (vf.expand :%:h)
+   ;                tree-cmd (if
+   ;                           (not= (. (. (require :telescope) :extensions) :file_browser) nil)
+   ;                             "Telescope file_browser path="
+   ;                           (vf.exists ::Neotree)
+   ;                             "Neotree "
+   ;                           "e ")]
+   ;            (vim.cmd (.. tree-cmd (if (not= mother-dir "")
+   ;                         mother-dir
+   ;                         (vf.getcwd)))))) "show current directory"]
+   [:sd
+    (la (let [mother-dir (vf.expand :%:h)
+              path (if (= mother-dir "") (vf.getcwd) mother-dir)
+              file_browser (. (. (. (require :telescope) :extensions) :file_browser) :file_browser)]
+          (file_browser {:path path
+                         :depth 4}))) "show curent directory"]
    [:sf "<cmd>source %<cr>" "source a current file"]
    [:se (la (let [query (vf.input "query: ")]
-              (vim.cmd (concat-with " " :Websearch query)))) :web-search]
+              (vim.cmd (concat-with " " :Websearch query)))) :web-search] ; WARN: depend on the native command Websearch
    [:pc "<cmd>Unite colorscheme -auto-preview<cr>" "preview colorschemes"]
    [:u (cmd :update) :update]
    [:rs ::%s/\s\+$//ge<cr> "remove trailing spaces"]
+   ["r," (la 
+           (vim.cmd "%s/、/, /ge")
+           (vim.cmd "%s/，/, /ge"))
+           "replace `,`"]
+   ["r." (la 
+           (vim.cmd "%s/。/. /ge")
+           (vim.cmd "%s/．/. /ge"))
+           "replace `.`"]
    [:a ":vim TODO ~/org/*.org<cr>" "agenda"]
    [:ts ":%s/\t/ /g<cr>" "replace tab with space"]
    [:cd ":<c-u>lcd %:p:h<cr>" "move current directory to here"]
@@ -77,7 +93,6 @@
                                                :col (- vim.o.columns width)
                                                :height height
                                                :width width}))) "schedule"]
-   ])
-)
+   ]))
 
 {: setup}

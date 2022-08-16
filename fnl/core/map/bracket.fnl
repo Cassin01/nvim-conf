@@ -5,7 +5,7 @@
 (local {: concat-with} (require :util.string))
 (local {: rt} (require :kaza.map))
 (local {: nvim_set_keymap} vim.api)
-(local right-brackets {"{" "}" "(" ")" "[" "]"})
+(local right-brackets {"{" "}" "(" ")" "[" "]" "<" ">"})
 
 (def in-front-of-the-cursor [char] [:string :boolean]
   "Whether word exist in front of the cursor"
@@ -30,6 +30,10 @@
     (let [tabs (table.concat (map (λ [_] " ") (range (+ (indent (line :.)) vim.o.tabstop))))]
       (.. key (. right-brackets key) (rt :<left><cr><cr><up>) tabs))))
 
+(def bracket-completion-space [key] [:string :function]
+  (λ []
+    (.. key (. right-brackets key) (rt :<left><space><space><left>))))
+
 (def setup [] [:nil]
   (each [_ key (ipairs (keys right-brackets))]
     (tset (. _G.__kaza :f) (.. :bracket_completion_default_ (string.byte key)) (bracket-completion-default key) )
@@ -51,6 +55,14 @@
                      {:noremap true
                       :silent true
                       :expr true
-                      :desc "bracket completiion cr"})))
+                      :desc "bracket completion cr"})
+    (nvim_set_keymap :i
+                     (.. key "<space>")
+                     ""
+                     {:callback (bracket-completion-space key)
+                      :noremap true
+                      :silent true
+                      :expr true
+                      :desc "bracket completion space"})))
 
 {: setup}

@@ -346,7 +346,9 @@
                                      nil)
                            :draw (lambda [ctx]
                                    "> string here\n> multiline")
-                           :heights {:groups {:MyHighlightGroup {:gui :#C792EA :fg :#ff0000 :bg :#00ff00}}
+                           :heights {:groups {:MyHighlightGroup {:gui :#C792EA
+                                                                 :fg :#ff0000
+                                                                 :bg :#00ff00}}
                                      :links {:MyHighlightLink :Keyword}}})
            (ref-f
                :setup
@@ -495,7 +497,11 @@
 
 ;; translation
 {1 :skanehira/translate.vim
- :setup (λ []
+ :config (λ []
+          (tset vim.g :translate_source :en)
+          (tset vim.g :translate_target :ja)
+          (tset vim.g :translate_popup_window false)
+          (tset vim.g :translate_winsize 10)
           (vim.cmd "nnoremap gr <Plug>(Translate)")
           (vim.cmd "vnoremap <c-t> :Translate<cr>"))}
 

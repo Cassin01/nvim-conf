@@ -1,12 +1,11 @@
 (import-macros {: epi : ref-f : unless} :util.macros)
-(import-macros {: au! : nmaps : la : space} :kaza.macros)
+(import-macros {: au! : nmaps : la : space : async-do!} :kaza.macros)
 (local {: u-cmd} (require :kaza))
 (local veil-maps (require :core.map.veil.data))
 (local built-in-maps (require :core.map.veil.built-in))
 
 (fn _integrate-default-maps [m]
-  (var ret m)
-  (epi _ k m
+  (var ret m) (epi _ k m
        (let [alter-cmd (. built-in-maps (. k 3))]
          (unless (= alter-cmd nil)
            (table.insert ret [0 :i alter-cmd (. k 3) {:noremap true :silent true :desc (. k 3)}]))))
@@ -43,6 +42,6 @@
          [[:e (la (set-maps)) :enable]
           [:d (la (del-maps)) :disable]])
 
-  (au! :veil :BufWinEnter (set-maps)))
+  (au! :veil0 :BufWinEnter (set-maps)))
 
 {: setup}

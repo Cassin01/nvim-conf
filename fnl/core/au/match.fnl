@@ -52,7 +52,7 @@
   (string.gsub vim.wo.foldmarker "," :\|))
 ;;; }}}
 
-(fn add-matchs []
+(fn add-matches []
   (if (in? vim.bo.filetype (ui-ignore-filetype))
     (vim.fn.clearmatches)
     (when (foldl (λ [x y] (and x (not= (. y :group) :TodoEX)))
@@ -72,4 +72,4 @@
           (each [_ m (ipairs matches)]
             (vf.matchadd (unpack m))))))))
 
-{: add-matchs}
+{: add-matches}

@@ -62,6 +62,15 @@
   (local p (io.popen cmd))
   (list.unfold-iter (p.lines p) p (lambda [x] (io.close x))))
 
+(fn show [str]
+  (if (not= str nil)
+    (print str)))
+(fn out_cb [job_id data event]
+  (show (. data 2)))
+(fn M.a-exe-cmd [cmd]
+  (vf.jobstart ["curl" "-d" cmd "localhost:11111"]
+               {:on_stdout out_cb }))
+
 ;; ref: https://codereview.stackexchange.com/questions/90177/get-file-name-with-extension-and-get-only-extension
 (def M.get-file-name [url] [:string :string]
   (string.match url "^.+/(.+)$"))

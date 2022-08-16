@@ -10,6 +10,16 @@
 (fn dump [o]
   (print (_dump o "")))
 
+(fn _escaper [str]
+  (if (= str :\) :\\ str))
+(fn _vim_eq [pat txt ignorecase]
+  "a, b must be a char"
+  (= 1 (vim.api.nvim_eval (.. "\""
+                              (_escaper pat)
+                              (if ignorecase "\" == \"" "\" ==# \"")
+                              (_escaper txt)
+                              "\""))))
+
 (fn kmp-list [pat m]
   "m: pat length"
   (var lps [1])
@@ -28,12 +38,13 @@
           (set i (+ i 1))))))
   lps)
 
-(fn kmp-search [pat txt m n lps]
+(fn kmp-search [pat txt m n lps ignorecase]
   (var j 1)
   (var i 1)
   (var res [])
   (while (<= i n)
-    (when (= (. txt i) (. pat j))
+    ; (when (= (. txt i) (. pat j))
+    (when (_vim_eq (. pat j) (. txt i) ignorecase)
       (set i (+ i 1))
       (set j (+ j 1)))
     (if
@@ -41,7 +52,8 @@
       (do ; found pattern at index (- i m)
         (table.insert res (- i m))
         (set j (. lps (- j 1))))
-      (and (<= i n) (not= (. pat j) (. txt i)))
+      ; (and (<= i n) (not= (. pat j) (. txt i)))
+      (and (<= i n) (not (_vim_eq (. pat j) (. txt i) ignorecase)))
       (if (not= j 1)
         (set j (. lps (- j 1)))
         (set i (+ i 1)))
@@ -56,10 +68,10 @@
     (tset list i (string.sub str i i)))
   (values list len))
 
-(fn kmp [pattern text]
+(fn kmp [pattern text ignorecase]
   (let [(pat m) (str2list pattern)
         (txt n) (str2list text)]
-    (kmp-search pat txt m n (kmp-list pat m))))
+    (kmp-search pat txt m n (kmp-list pat m) ignorecase)))
 
 
 ; (dump (str2list "abcd"))
@@ -68,4 +80,6 @@
 ; (local pat (str2list "aaba"))
 ; (dump (kmp "aaba" "aabaacaadaabaaba"))
 ; (dump (kmp pat txt))
+; (print (_vim_eq "a" "A"))
+
 {: kmp}

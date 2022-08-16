@@ -125,7 +125,7 @@
 
 (fn add-matches [win group line-num kmp-res width shift]
   (local wininfo (vf.getwininfo win))
-  (when (not= (length wininfo) 0) 
+  (when (not= (length wininfo) 0)
   (let [wininfo (. (vf.getwininfo win) 1)
         topline (. wininfo :topline)
         botline (. wininfo :botline)]
@@ -464,4 +464,3 @@
  : inc-search
  : retrive_till_tail
  : retrive_first_half}
-

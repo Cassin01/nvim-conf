@@ -20,7 +20,7 @@
  :t_8f "^[[38;2;%lu;%lu;%lum"
  :t_8b "^[[48;2;%lu;%lu;%lum"
  :list true
- :listchars "tab:»-,trail:□"
+ ; :listchars "tab:»-,trail:□"
  :spell true
  :ignorecase true
  :smartcase true
@@ -34,4 +34,5 @@
  :ttimeout true ; default on
  :ttimeoutlen 100
  :confirm true
+ ; :lazyredraw true ; WARN: In trial
  }

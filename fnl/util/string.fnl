@@ -47,4 +47,12 @@
         (set spliting? false))))
   tbl-of-strings)
 
+(fn M.str2list [str]
+  (var list [])
+  (var len 0)
+  (for [i 1 (string.len str)]
+    (set len (+ len 1))
+    (tset list i (string.sub str i i)))
+  (values list len))
+
 M

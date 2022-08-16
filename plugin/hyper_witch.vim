@@ -126,8 +126,8 @@ let Window = Object.override("Window", function("s:window_new"))
 
 " global valuables {{{
 " length mast be 1
-let g:hwhich_char_tab = '⇥'
-let g:hwhich_char_space = '⎵'
+let g:hwitch_char_tab = '⇥'
+let g:hwitch_char_space = '⎵'
 " let g:expandable = ''
 let g:expandable = '*'
 let g:hwitch_tail = '…'
@@ -353,8 +353,8 @@ function! s:ceil(a, b)
     return  (a:a + a:b - 1) / a:b
 endfunction
 
-function! s:hyper_wich_syntax()
-    " https://github.com/liuchengxu/vim-which-key/tree/master/syntax
+function! s:hyper_witch_syntax()
+    " https://github.com/liuchengxu/vim-witch-key/tree/master/syntax
     if exists('b:current_syntax')
         return
     endif
@@ -369,8 +369,8 @@ function! s:hyper_wich_syntax()
     execute 'syntax match WitchKeySeperator' '/'.s:sep.'/' 'contained'
     " execute 'syntax match WitchKey' '/\(^\s*\|\s\{2,}\)\S.\{-}'.s:sep.'/' 'contains=WitchKeySeperator'
     execute 'syntax match WitchKey' '/\(^\s*\|\s\{2,}\)\S\{-}\s'.s:sep.'/' 'contains=WitchKeySeperator'
-    " syntax match WhichKeyGroup / +[0-9A-Za-z_/-]*/ " WARNING: I forgot why I used this.
-    syntax region WhichKeyDesc start="^" end="$" contains=WitchKey, WitchKeyGroup, WitchKeySeperator
+    " syntax match WitchKeyGroup / +[0-9A-Za-z_/-]*/ " WARNING: I forgot why I used this.
+    syntax region WitchKeyDesc start="^" end="$" contains=WitchKey, WitchKeyGroup, WitchKeySeperator
 
     highlight default link HWitchTail        Comment
     highlight default link WitchKey          Function
@@ -593,7 +593,7 @@ function! s:listen_commands2(self, ...) dict
         let k = {'height': buf_row, 'row': &lines-buf_row-row_offset-1, 'width': &columns-self.window.config.col}
         call self.window.update(self.window, k)
 
-        call s:hyper_wich_syntax()
+        call s:hyper_witch_syntax()
 
         redraw!
 
@@ -666,7 +666,7 @@ function! s:Witch(self, ...) dict
     setlocal filetype=evil_witch
     setlocal foldmethod=syntax
 
-    call s:hyper_wich_syntax()
+    call s:hyper_witch_syntax()
 
     nnoremap <silent> <buffer>
         \ <plug>(session-close)
@@ -706,7 +706,7 @@ let hyperwitch = HyperWitch.new()
 " }}}
 
 " ---------------------------------------------------------
-" HWich-Evil
+" HWitch-Evil
 " ---------------------------------------------------------
 " {{{
 " lua << EOF
@@ -749,7 +749,7 @@ call evilwitch.Event()
 " }}}
 
 " ---------------------------------------------------------
-" HWich-Register
+" HWitch-Register
 " ---------------------------------------------------------
 " {{{
 function! s:reg_On_Matched(key) dict
@@ -796,10 +796,10 @@ call regwitch.Event()
 " }}}
 
 " ---------------------------------------------------------
-" HWich-Tex
+" HWitch-Tex
 " ---------------------------------------------------------
 " {{{
-function! s:hwichtex_On_Matched(key) dict
+function! s:hwitchtex_On_Matched(key) dict
     let l:command = 'normal! a\' . a:key
     try
         execute l:command
@@ -809,15 +809,15 @@ function! s:hwichtex_On_Matched(key) dict
     endtry
 endfunction
 
-function! s:hwichtex_After_Quit(self) dict
+function! s:hwitchtex_After_Quit(self) dict
     startinsert!
 endfunction
 
-function! s:hwichtex_Load_Index(self) dict
+function! s:hwitchtex_Load_Index(self) dict
     let tex_index = {
         \ "mathbb{R}":     "ℝ",
-        \ "mathbb{z}":     "ℤ",
-        \ "mathbb{n}":     "ℕ",
+        \ "mathbb{Z}":     "ℤ",
+        \ "mathbb{N}":     "ℕ",
         \ "subset":        "⊂",
         \ "subseteq":      "⊆",
         \ "supset":        "⊃",
@@ -882,25 +882,26 @@ function! s:hwichtex_Load_Index(self) dict
     " return map(tex_index, {-> substitute(v:key, '[^\d0-\d177]', '', 'g') })
     return tex_index
 endfunction
-function! s:hwichtex_Event() dict
-    nnoremap <silent> <Plug>(hwich-tex) :<c-u>call hwichtex.Witch(hwichtex)<cr>
-    " nmap <space>wtex <Plug>(hwich-tex)
+function! s:hwitchtex_Event() dict
+    nnoremap <silent> <Plug>(hwitch-tex) :<c-u>call hwitchtex.Witch(hwitchtex)<cr>
+    inoremap <silent> <Plug>(hwitch-tex) <c-o>:<c-u>call hwitchtex.Witch(hwitchtex)<cr>
+    " nmap <space>wtex <Plug>(hwitch-tex)
 endfunction
 
-let Hwichtex = {
-    \ '__name':'Hwichtex',
-    \ 'OnMatched': function("s:hwichtex_On_Matched"),
-    \ 'AfterQuit': function("s:hwichtex_After_Quit"),
-    \ 'LoadIndex': function("s:hwichtex_Load_Index"),
-    \ 'Event': function("s:hwichtex_Event")}
+let Hwitchtex = {
+    \ '__name':'Hwitchtex',
+    \ 'OnMatched': function("s:hwitchtex_On_Matched"),
+    \ 'AfterQuit': function("s:hwitchtex_After_Quit"),
+    \ 'LoadIndex': function("s:hwitchtex_Load_Index"),
+    \ 'Event': function("s:hwitchtex_Event")}
 
-if exists("hwichtex")|unlet hwichtex|endif
-let hwichtex = hyperwitch.extend(Hwichtex)
-call hwichtex.Event()
+if exists("hwitchtex")|unlet hwitchtex|endif
+let hwitchtex = hyperwitch.extend(Hwitchtex)
+call hwitchtex.Event()
 " }}}
 
 " ---------------------------------------------------------
-" HWich-UltiSnips
+" HWitch-UltiSnips
 " ---------------------------------------------------------
 " {{{
 
@@ -971,12 +972,12 @@ function! s:ultisnips_Load_Index(self) dict
 endfunction
 
 function! s:ultisnips_Event() dict
-    nnoremap <silent> <plug>(hwich-ultisnips) :<c-u>call ultisnips_wich.Witch(ultisnips_wich)<cr>
-    " nmap <silent> <space>wult <plug>(hwich-ultisnips)
+    nnoremap <silent> <plug>(hwitch-ultisnips) :<c-u>call ultisnips_witch.Witch(ultisnips_witch)<cr>
+    " nmap <silent> <space>wult <plug>(hwitch-ultisnips)
 endfunction
 
-let UltiSnipsWich = {
-            \ '__name': 'UltiSnipsWich',
+let UltiSnipsWitch = {
+            \ '__name': 'UltiSnipsWitch',
             \ 'column_size': 55,
             \ 'OnMatched': function("s:ultisnips_On_Matched"),
             \ 'AfterQuit': function("s:ultisnips_After_Quit"),
@@ -984,12 +985,12 @@ let UltiSnipsWich = {
             \ 'Event': function("s:ultisnips_Event")
             \ }
 
-let ultisnips_wich = hyperwitch.extend(UltiSnipsWich)
-call ultisnips_wich.Event()
+let ultisnips_witch = hyperwitch.extend(UltiSnipsWitch)
+call ultisnips_witch.Event()
 " }}}
 
 " ---------------------------------------------------------
-" HWich-Normal
+" HWitch-Normal
 " ---------------------------------------------------------
 " {{{
 function! s:get_raw_map_info(key) abort
@@ -1023,7 +1024,7 @@ function! s:normal_load_g_index()
 
        " if key['lhs'] !~ "^<Plug>.*" && desc != "" && key['lhs'] !~ "^<C-.*"
        if key['lhs'] !~ "^<Plug>.*" && desc != ""
-           " let ret[key['lhs']] = substitute(key['lhs'], ' ', g:hwhich_char_space, 'g') . ' ' . desc
+           " let ret[key['lhs']] = substitute(key['lhs'], ' ', g:hwitch_char_space, 'g') . ' ' . desc
            let ret[key['lhs']] = desc
        endif
    endfor
@@ -1058,9 +1059,9 @@ endfunction
 
 function! s:normal_Event() dict
     nnoremap <silent>
-        \ <plug>(hwhich-normal)
+        \ <plug>(hwitch-normal)
         \ :<c-u>call normalwitch.Witch(normalwitch)<cr>
-    " nmap <silent> <space>wnor <plug>(hwhich-normal)
+    " nmap <silent> <space>wnor <plug>(hwitch-normal)
     command! -nargs=? NormalWitch call normalwitch.Witch(normalwitch, <f-args>)
 endfunction
 
@@ -1082,7 +1083,7 @@ call normalwitch.Event()
 " }}}
 
 " ---------------------------------------------------------
-" HWich-bookmark
+" HWitch-bookmark
 " ---------------------------------------------------------
 " {{{
 let s:bookmark = {
@@ -1095,7 +1096,7 @@ let s:bookmark = {
             \ "macros":   "~/.config/nvim/lua/macros",
             \ "packer":   "~/.config/nvim/fnl/core/pack/plugs.fnl",
             \ "snip":     "~/.config/nvim/UltiSnips",
-            \ "which":    "~/.config/nvim/plugin/hyper_which.vim",
+            \ "witch":    "~/.config/nvim/plugin/hyper_witch.vim",
             \ "dotfile":  "~/dotfiles",
             \ "memo":     "~/tech-memo",
             \ "lua": "~/.cache/nvim/hotpot/Users/cassin/.config/nvim/fnl",
@@ -1164,18 +1165,18 @@ endfunction
 " (s:add_spaces(a:matched[l:k], 45)  , 0, 45)
 
 function! s:bookmark_Event() dict
-    nnoremap <silent> <plug>(hwhich-bookmark) :<c-u>call bookmark_wich.Witch(bookmark_wich)<cr>
-    " nmap <silent> <space>wbook <plug>(hwhich-bookmark)
+    nnoremap <silent> <plug>(hwitch-bookmark) :<c-u>call bookmark_witch.Witch(bookmark_witch)<cr>
+    " nmap <silent> <space>wbook <plug>(hwitch-bookmark)
 endfunction
 
-let BookmarkWich = #{
-            \ __name: 'BookmarkWich',
+let BookmarkWitch = #{
+            \ __name: 'BookmarkWitch',
             \ OnMatched: function("s:bookmark_On_Matched"),
             \ AfterQuit: function("s:bookmark_After_Quit"),
             \ LoadIndex: function("s:bookmark_Load_Index"),
             \ Event: function("s:bookmark_Event")
             \ }
 
-let bookmark_wich = hyperwitch.extend(BookmarkWich)
-call bookmark_wich.Event()
+let bookmark_witch = hyperwitch.extend(BookmarkWitch)
+call bookmark_witch.Event()
 " }}}

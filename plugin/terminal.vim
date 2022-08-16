@@ -47,8 +47,8 @@ function! ToggleTerminal() abort
   endif
 endfunction
 
-inoremap <c-2> <cmd>:call ToggleTerminal()<cr>
-nnoremap <c-2> <cmd>:call ToggleTerminal()<cr>
-tnoremap <c-2> <cmd>:call ToggleTerminal()<cr>
+inoremap <c-@> <cmd>:call ToggleTerminal()<cr>
+nnoremap <c-@> <cmd>:call ToggleTerminal()<cr>
+tnoremap <c-@> <cmd>:call ToggleTerminal()<cr>
 
-autocmd! TermOpen * startinsert
+autocmd! TermEnter * startinsert

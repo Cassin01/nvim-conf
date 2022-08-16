@@ -2,7 +2,11 @@
 {
 :python3_host_prog (. (execute-cmd "which python") 1)
 :polyglot_disabled [:markdown :fennel]
-:colors_name :tokyonight
+:colors_name :kanagawa
+:markdown_fenced_languages [:python :ruby :javascript :js=javascript
+                            :json=javascript :vim :css :ocaml
+                            :rust
+                            :haskell]
 :terminal_color_0  :#2e3436
 :terminal_color_1  :#cc0000
 :terminal_color_2  :#4e9a06
