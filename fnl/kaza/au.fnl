@@ -27,5 +27,6 @@
   (let [group (vim.api.nvim_create_augroup group-name {:clear true})]
     (each [_ v (ipairs list)]
     (au-call group (unpack v)))))
+
 {: au
  : aus}
