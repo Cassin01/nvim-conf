@@ -50,5 +50,3 @@ endfunction
 inoremap <c-@> <cmd>:call ToggleTerminal()<cr>
 nnoremap <c-@> <cmd>:call ToggleTerminal()<cr>
 tnoremap <c-@> <cmd>:call ToggleTerminal()<cr>
-
-autocmd! TermEnter * startinsert
