@@ -81,33 +81,37 @@
     ;             (do (tset vim.b :cmp-disable nil)
     ;               (setup-buffer false)))
     ;           ) "toggle cmp"]
-    [(c :b) :<left> "Left"]
-    [(c :f) :<right> "Right"]
+    ; [(c :b) :<left> "Left"]
+    ; [(c :f) :<right> "Right"]
+    [(c :f) :<c-o>f "normal-f"]
+    [(c-s :f) :<c-o>F "normal-F"]
     [(c :a) :<c-o>^ "Jump to BOL"] ; *
     [(c :e) :<end> "Jump to EOL"]
-    [(c :j) :<esc>o "<C-j> insert new line bellow and jump"]
-    [(c :o) :<esc>O "<C-o> insert new line above and jump"] ; *
-    [(c :g :g) goto-line "Goto line"]
-    [(c :u) universal-argument :universal-argument] ; *
-    [(c :p) :<up> "Up"]
-    [(c :n) :<down> "Down"]
-    [(m :f) :<s-right> "Right"]
-    [(m :b) :<s-left> "Left"]
-    [(c :v) :<c-o><c-b> "Page down"]
-    [(m :v) :<c-o><c-f> "Page up"]
-    [(c :g :b) :<esc>ggi "Beginning of buffer"]
-    [(c :g :f) :<c-o>G "End of buffer"]
+    ; [(c :j) :<esc>o "<C-j> insert new line bellow and jump"]
+    [(c-s :o) :<esc>O "<C-S-o> insert new line above and jump"] ; *
+    [(c :o) :<esc>o "<C-o> insert new line above and jump"]
+    [(c :g ::) goto-line "Goto line"]
+    ; [(c :u) universal-argument :universal-argument] ; *
+    ; [(c :p) :<up> "Up"]
+    ; [(c :n) :<down> "Down"]
+    [(m :l) :<s-right> "Right"]
+    [(m :k) :<s-left> "Left"]
+    [(m :b) :<c-o><c-b> "Page down"]
+    [(m :f) :<c-o><c-f> "Page up"]
+    [(c :g :g) :<esc>ggi "Beginning of buffer"]
+    [(c :g :G) :<c-o>G "End of buffer"]
     [(c :s) inc-search "Search"]
-    [(c :l :b) "<c-o><Plug>(leap-backward)" "leap-backward"]
-    [(c :l :f) "<c-o><Plug>(leap-forward)" "leap-forward"]
+    [(c-s :l) "<c-o><Plug>(leap-backward)" "leap-backward"]
+    [(c :l) "<c-o><Plug>(leap-forward)" "leap-forward"]
 
     ;; edit
-    [(c :d) :<Del> "Delete"] ; * ; <- I actually use default i_CTRl-D.
+    ; [(c :d) :<Del> "Delete"] ; * ; <- I actually use default i_CTRl-D. ; TODO: Find a key that replace this
+    [(c-s :h) :<Del> "Delete"]
     [(m :h) :<esc>vbc "Delete previous word"]
     [(m :d) :<esc>wvec "Delete next word"]
-    [(c :k) kill-line2end "delete from cursor to EOL"] ; *
-    [(c-s :k) kill-line2begging "delete from cursor to BOL"]
-    [(c :t) :<esc>xphli :transpose-chars] ; *
+    [(c-s :u) kill-line2end "delete from cursor to EOL"] ; *
+    ; [(c-s :k) kill-line2begging "delete from cursor to BOL"]
+    ; [(c :t) :<esc>xphli :transpose-chars] ; * ; TODO: find a key that replace this
     [(m :t) :<esc>dwea<space><esc>pa<bs> :transpose-words]
     [(.. (c :x) (c :t)) :<esc>ddpi :transpose-lines] ; *
 
@@ -123,7 +127,7 @@
 
     ;; copy & paste
     [(c :c) "<c-o>v" "mark the start point of yank"] ; *
-    [(c :y) "<esc>pa" "paste"] ; *
+    ; [(c :y) "<esc>pa" "paste"] ; *
 
     ;; undo & redo
     [(c :z) "<esc>ua" "undo"] ; *

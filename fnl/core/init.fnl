@@ -7,7 +7,7 @@
 (fn p-req [name]
   (let [(ok err) (pcall require name)]
     (unless ok
-      (err (string.format "Can't loading module : %s. Err: %s" name err)))))
+      (print (string.format "Can't loading module : %s. Err: %s" name err)))))
 
 (local task-load (λ []
               (a.sync (λ []

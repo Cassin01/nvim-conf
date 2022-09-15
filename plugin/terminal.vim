@@ -35,11 +35,13 @@ function! ToggleTerminal() abort
     split
     execute "normal! \<c-w>J"
     resize 10
+    set wfh
     terminal
   else
     let l:wins = win_findbuf(l:terms[0])
     if empty(l:wins)
       botright 10split
+      set wfh
       execute 'buffer' l:terms[0]
     else
       call nvim_win_hide(l:wins[0])

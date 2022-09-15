@@ -1,8 +1,10 @@
 (import-macros {: req-f : ref-f : epi : ep} :util.macros)
-(import-macros {: nmaps : map : cmd : plug : space : ui-ignore-filetype : la : br : let-g } :kaza.macros)
+(import-macros {: nmaps : map : cmd : plug : space : ui-ignore-filetype : la : br : let-g : au!} :kaza.macros)
 
 (macro au [group event body]
   `(vim.api.nvim_create_autocmd ,event {:callback (λ [] ,body) :group (vim.api.nvim_create_augroup ,group {:clear true})}))
+
+(local va vim.api)
 
 [
 ;;; snippet
@@ -115,15 +117,17 @@
 {1 :akinsho/bufferline.nvim
  :tag :*
  :requires :kyazdani42/nvim-web-devicons
- :config (λ [] (ref-f :setup :bufferline {:separator_style :padded_slant}))
+ ; :config (λ []
+ ;           (ref-f :setup :bufferline {:options {:separator_style :slant}}))
+ :config (λ [] (ref-f :setup :bufferline {}))
  :setup (la (nmaps
               :<space>b
               :bufferline
               [[(br :r) (cmd :BufferLineCycleNext) "next"]
                [(br :l) (cmd :BufferLineCyclePrev) "prev"]
                [:e (cmd :BufferLineSortByExtension) "sort by extension"]
-               [:d (cmd :BufferLineSortByDirectory) "sort by directory"]
-               ]))}
+               [:d (cmd :BufferLineSortByDirectory) "sort by directory"]]))
+ }
 :sheerun/vim-polyglot
 {1 :nvim-treesitter/nvim-treesitter
  :run ":TSUpdate"
@@ -145,7 +149,7 @@
  :config (λ []
            ((. (require :colorizer) :setup)))}
 
-{1 :haringsrob/nvim_context_vt}
+; {1 :haringsrob/nvim_context_vt}
 
 ;; fold
 ; {1 :kevinhwang91/nvim-ufo
@@ -203,6 +207,12 @@
            ((. vim.fn :submode#map) :bufmove :n "" :+ :<C-w>+)
            ((. vim.fn :submode#map) :bufmove :n "" :- :<C-w>-))}
 
+
+{1 :ziontee113/icon-picker.nvim
+ :requires :stevearc/dressing.nvim
+ :config (λ []
+           (ref-f :setup :icon-picker {:disable_legacy_commands true}))}
+
 ;;; lsp
 
 {1 :williamboman/nvim-lsp-installer
@@ -241,22 +251,25 @@
             :hrsh7th/cmp-calc
             :hrsh7th/cmp-nvim-lsp-document-symbol
             :nvim-orgmode/orgmode
-            :quangnguyen30192/cmp-nvim-ultisnips
-            :zbirenbaum/copilot-cmp
-            :neovim/nvim-lspconfig]
+            {1 :quangnguyen30192/cmp-nvim-ultisnips
+             :config (λ [] (ref-f :setup :cmp_nvim_ultisnips {}))}
+            ; :zbirenbaum/copilot-cmp
+            :neovim/nvim-lspconfig
+            ]
  :config (λ []
            (local cmp (require :cmp))
            (local lspkind (require :lspkind))
            (cmp.setup
              {:snippet {:expand (λ [args]
-                                  (vim.fn.UltiSnips#Anon args.body))}
+                                  ((. vim.fn :UltiSnips#Anon) args.body))}
               :sources (cmp.config.sources
-                         [{:name :copilot :group_index 2}
+                         [;{:name :copilot :group_index 2}
                           {:name :ultisnips :group_index 2}
                           {:name :nvim_lsp :group_index 2}
                           {:name :orgmode}
-                          {:name :lsp_document_symbol}]
-                         [{:name :buffer
+                          {:name :lsp_document_symbol}
+                          {:name :skkeleton :group_index 5}
+                          {:name :buffer
                            :option {:get_bufnrs (λ []
                                                   (vim.api.nvim_list_bufs))}}])
               :formatting {:format (fn [entry vim_item]
@@ -266,9 +279,23 @@
                                          (tset vim_item :kind " Copilot")
                                          (tset vim_item :kind_hl_group :CmpItemKindCopilot)
                                          vim_item)
+                                       (= entry.source.name :skkeleton)
+                                          (do
+                                            ; (tset vim_item :kind " SKK")
+                                            (tset vim_item :kind " SKK")
+                                            (tset vim_item :kind_hl_group :CmpItemKindCopilot)
+                                            vim_item)
                                        ((lspkind.cmp_format {:with_text true :maxwidth 50}) entry vim_item)))}
               :mapping (cmp.mapping.preset.insert
                          {
+                          :<C-i> (cmp.mapping
+                                   (λ [fallback]
+                                     (req-f :expand_or_jump_forwards  :cmp_nvim_ultisnips.mappings fallback))
+                                   [:i :s])
+                          :<C-S-i> (cmp.mapping
+                                   (λ [fallback]
+                                     (req-f :expand_or_jump_forwards  :cmp_nvim_ultisnips.mappings fallback))
+                                   [:i  :s])
                           ; :<tab> (cmp.mapping (λ [fallback]
                           ;                       (if
                           ;                         (cmp.visible)
@@ -283,7 +310,7 @@
                           ;                         (cmp.mapping.complete)
                           ;                         (fallback))))
                           :<c-e> (cmp.mapping.abort)
-                          :<cr> (cmp.mapping.confirm {:select false}) })})
+                          :<cr> (cmp.mapping.confirm {:select false}) }) })
            (vim.api.nvim_set_hl 0 :CmpItemKindCopilot {:fg :#6CC644})
            (cmp.setup.cmdline :/ {:mapping (cmp.mapping.preset.cmdline)
                                   :sources [{:name :buffer}]})
@@ -291,7 +318,7 @@
                                   :sources (cmp.config.sources [{:name :path}] [{:name :cmdline}])}))}
 
 ;; highlighting other uses of the current word under the cursor
-{1 :RRethy/vim-illuminate}
+; {1 :RRethy/vim-illuminate}
 
 
 {1 :neovim/nvim-lspconfig
@@ -302,16 +329,27 @@
            ; (set capabilities.textDocument.foldingRange {:dynamicRegistration false
            ;                                              :lineFoldingOnly true})
            ; ;; }}}
+           (local nvim_lsp (require :lspconfig))
            (each [_ key (ipairs [:rust_analyzer])]
-             ((-> (require :lspconfig) (. key) (. :setup))
+             ((-> nvim_lsp (. key) (. :setup))
               {:capabilities capabilities
                :diagnostics {:enable true
 
                              :disabled [:unresolved-proc-macro]
                              :enableExperimental true}}))
-           ((-> (require :lspconfig) (. :gopls) (. :setup))
+           ((-> nvim_lsp (. :gopls) (. :setup))
             {:on_attach (lambda [client]
                           (ref-f :on_attach :illuminate client))})
+
+           ; ;; document-color
+           ; (set capabilities.textDocument.colorProvider true)
+           ; ((-> nvim_lsp (. :tailwindcss) (. :setup))
+           ;  {:on_attach (lambda [client]
+           ;                (if (client.server_capabilities.colorProvider) 
+           ;                  ;; Attach document color support
+           ;                  (. (require :document-color) :buf_attach bufnr)))}
+           ;  :capabilities capabilities)
+
            ; (ref-f :setup :ufo)
            ; ((. vim.diagnostic :config) {:virtual_text false})
            )}
@@ -325,16 +363,16 @@
  :config (λ [] ((. (require :lsp_signature) :setup) {}))}
 
 ;; tagbar alternative
-:simrat39/symbols-outline.nvim
-{1 :stevearc/aerial.nvim
- :config (λ []
-           ((req-f :setup :aerial) {:on_attach (λ [bufnr]
-                                                 (let [prefix ((. (require :kaza.map) :prefix-o ) :n :<space>a :aerial)]
-                                                   (prefix.map-buf bufnr :n "t" (cmd :AerialToggle!) :JumpForward)
-                                                   (prefix.map-buf bufnr :n "{" (cmd :AerialPrev) :JumpForward)
-                                                                              (prefix.map-buf bufnr :n "}" (cmd :AerialNext) :JumpBackward)
-                                                   (prefix.map-buf bufnr :n "[[" (cmd :AerialPrevUp) :JumpUpTheTree)
-                                                                               (prefix.map-buf bufnr :n "]]" (cmd :AerialNextUp) :JumpUpTheTree)))}))}
+; :simrat39/symbols-outline.nvim
+; {1 :stevearc/aerial.nvim
+;  :config (λ []
+;            ((req-f :setup :aerial) {:on_attach (λ [bufnr]
+;                                                  (let [prefix ((. (require :kaza.map) :prefix-o ) :n :<space>a :aerial)]
+;                                                    (prefix.map-buf bufnr :n "t" (cmd :AerialToggle!) :JumpForward)
+;                                                    (prefix.map-buf bufnr :n "{" (cmd :AerialPrev) :JumpForward)
+;                                                                               (prefix.map-buf bufnr :n "}" (cmd :AerialNext) :JumpBackward)
+;                                                    (prefix.map-buf bufnr :n "[[" (cmd :AerialPrevUp) :JumpUpTheTree)
+;                                                                                (prefix.map-buf bufnr :n "]]" (cmd :AerialNextUp) :JumpUpTheTree)))}))}
 {1 :sidebar-nvim/sidebar.nvim
  :requires [:jremmen/vim-ripgrep]
  :config (la
@@ -379,16 +417,17 @@
           (map :n :<space>or (cmd :QuickRun) "[others] quickrun")) }
 
 
-;;; copilot
-{1 :zbirenbaum/copilot.lua
- :event [:InsertEnter]
- :config (lambda [] (vim.defer_fn
-               (lambda [] (ref-f :setup :copilot))
-               100))}
-{1 :zbirenbaum/copilot-cmp
- :module :copilot_cmp }
-{1 :github/copilot.vim
- :config (λ [] (tset vim.g :copilot_no_tab_map true))} ;; requires command `:Copilot restart`
+; ;;; copilot
+; {1 :zbirenbaum/copilot.lua
+;  :requires [:github/copilot.vim]
+;  :event [:VimEnter]
+;  :config (lambda [] (vim.defer_fn
+;                (lambda [] ((. (require :copilot) :setup)))
+;                100))}
+; {1 :zbirenbaum/copilot-cmp
+;  :module :copilot_cmp }
+; {1 :github/copilot.vim
+;  :config (λ [] (tset vim.g :copilot_no_tab_map true))} ;; requires command `:Copilot restart`
 
 ;;; vim
 {1 :Shougo/echodoc.vim
@@ -421,6 +460,8 @@
 ;;; util
 {1 :kana/vim-textobj-user
  :config (λ [] (vim.cmd "source ~/.config/nvim/fnl/core/pack/conf/textobj.vim"))}
+
+{1 :michaeljsmith/vim-indent-object}
 ; {1 :Cassin01/hyper-witch.nvim
 ;  :setup (λ []
 ;           (tset vim.g :hwitch#prefixes _G.__kaza.prefix))}
@@ -521,7 +562,7 @@
 
 ;;; language
 
-; ;; deno
+;;; deno
 :vim-denops/denops.vim
 {1 :Cassin01/fetch-info.nvim
  :require :ms-jpq/lua-async-await
@@ -533,16 +574,53 @@
 {1 :ellisonleao/weather.nvim
  :setup (λ [] (tset vim.g :weather_city :Tokyo))}
 
+{1 :vim-skk/skkeleton :requires  [ :vim-denops/denops.vim ]
+:config (λ []
+          (let [g (vim.api.nvim_create_augroup :init-skkeleton {:clear true})]
+            (au! g :User
+                 (vim.fn.skkeleton#config
+                   {;:eggLikeNewline false
+                    :globalJisyoEncoding :euc-jp
+                    :immediatelyJisyoRW true
+                    :registerConvertResult false
+                    :keepState true
+                    :selectCandidateKeys :asdfjkl
+                    :setUndoPoint true
+                    :showCandidatesCount 4
+                    :usePopup true
+                    :globalJisyo "~/.config/nvim/data/skk/SKK-JISYO.L"
+                    :userJisyo "~/.skkeleton"})
+                 {:pattern :skkeleton-initialize-pre})
+            (au! g :User (let [cmp (require :cmp)]
+                           (cmp.setup.buffer {:view {:entries :native}}))
+                 {:pattern :skkeleton-enable-pre})
+            (au! g :User (let [cmp (require :cmp)]
+                           (cmp.setup.buffer {:view {:entries :custom}}))
+                 {:pattern :skkeleton-disable-pre})
+            (au! g :User :redrawstatus {:pattern :skkeleton-mode-changed}))
+          (map :i :<c-j> (plug "(skkeleton-toggle)") "[skkeleton] toggle")
+          (map :c :<c-j> (plug "(skkeleton-toggle)") "[skkeleton] toggle"))}
+{1 :Cassin01/cmp-skkeleton :after  [ "nvim-cmp" "skkeleton" ] }
+{1 :delphinus/skkeleton_indicator.nvim
+ :config (λ [] (ref-f :setup :skkeleton_indicator {}))}
+
+{1 :uki00a/denops-pomodoro.vim}
+{1 :skanehira/denops-docker.vim}
+
 ;; Async
 {1 :ms-jpq/lua-async-await
  :branch :neo}
-
 
 ;; text
 {1 :sedm0784/vim-you-autocorrect
  :setup (λ []
           (let [prefix ((. (require :kaza.map) :prefix-o) :n :<space>a :auto-collect)]
             (prefix.map "e" "<cmd>EnableAutocorrect<cr>" "enable auto correct")))}
+
+; ;; tailwind
+; {1 :mrshmllow/document-color.nvim
+;  :config (λ []
+;            ((. (require :document-color) :setup) {:mode :backkground})) }
 
 ;; org
 {1 :nvim-orgmode/orgmode
@@ -555,7 +633,6 @@
 
 ;; binary
 :Shougo/vinarise
-
 
 ;; fennel
 :bakpakin/fennel.vim  ; syntax
@@ -592,7 +669,7 @@
 :preservim/vim-markdown
 {1 :iamcco/markdown-preview.nvim
  :run "cd app & yarn install"
- :setup (λ []
+ :config (λ []
           (tset vim.g :mkdp_filetypes [:markdown])
           (tset vim.g :mkdp_auto_close false)
           (tset vim.g :mkdp_preview_options {:katex {}
@@ -615,39 +692,43 @@
 :ujihisa/unite-colorscheme
 :folke/tokyonight.nvim
 :rebelot/kanagawa.nvim
+:sam4llis/nvim-tundra
+:Mofiqul/dracula.nvim
+:zanglg/nova.nvim
 
-; :altercation/vim-colors-solarized   ; solarized
-; :croaker/mustang-vim                ; mustang
-; :jeffreyiacono/vim-colors-wombat    ; wombat
-; :nanotech/jellybeans.vim            ; jellybeans
-; :vim-scripts/Lucius                 ; lucius
-; :vim-scripts/Zenburn                ; zenburn
-; :mrkn/mrkn256.vim                   ; mrkn256
-; :jpo/vim-railscasts-theme           ; railscasts
-; :therubymug/vim-pyte                ; pyte
-; :tomasr/molokai                     ; molokai
-; :chriskempson/vim-tomorrow-theme    ; tomorrow night
-; :vim-scripts/twilight               ; twilight
-; :w0ng/vim-hybrid                    ; hybrid
-; :freeo/vim-kalisi                   ; kalisi
-; :morhetz/gruvbox                    ; gruvbox
-; :toupeira/vim-desertink             ; desertink
-; :sjl/badwolf                        ; badwolf
-; :itchyny/landscape.vim              ; landscape
-; :joshdick/onedark.vim               ; onedark in atom
-; :gosukiwi/vim-atom-dark             ; atom-dark
-; :liuchengxu/space-vim-dark          ; space-vim-dark
-; :kristijanhusak/vim-hybrid-material ; hybrid_material
-; :drewtempelmeyer/palenight.vim      ; palenight
-; :haishanh/night-owl.vim             ; night owl
-; :arcticicestudio/nord-vim           ; nord
-; :cocopon/iceberg.vim                ; iceberg
-; :hzchirs/vim-material               ; vim-material
-; :relastle/bluewery.vim              ; bluewery
-; :mhartington/oceanic-next           ; OceanicNext
-; :nightsense/snow                    ; snow
-; :Mangeshrex/uwu.vim                 ; uwu
-; :ulwlu/elly.vim                     ; elly
-; :michaeldyrynda/carbon.vim
-; :rafamadriz/neon
+
+:altercation/vim-colors-solarized   ; solarized
+:croaker/mustang-vim                ; mustang
+:jeffreyiacono/vim-colors-wombat    ; wombat
+:nanotech/jellybeans.vim            ; jellybeans
+:vim-scripts/Lucius                 ; lucius
+:vim-scripts/Zenburn                ; zenburn
+:mrkn/mrkn256.vim                   ; mrkn256
+:jpo/vim-railscasts-theme           ; railscasts
+:therubymug/vim-pyte                ; pyte
+:tomasr/molokai                     ; molokai
+:chriskempson/vim-tomorrow-theme    ; tomorrow night
+:vim-scripts/twilight               ; twilight
+:w0ng/vim-hybrid                    ; hybrid
+:freeo/vim-kalisi                   ; kalisi
+:morhetz/gruvbox                    ; gruvbox
+:toupeira/vim-desertink             ; desertink
+:sjl/badwolf                        ; badwolf
+:itchyny/landscape.vim              ; landscape
+:joshdick/onedark.vim               ; onedark in atom
+:gosukiwi/vim-atom-dark             ; atom-dark
+:liuchengxu/space-vim-dark          ; space-vim-dark
+:kristijanhusak/vim-hybrid-material ; hybrid_material
+:drewtempelmeyer/palenight.vim      ; palenight
+:haishanh/night-owl.vim             ; night owl
+:arcticicestudio/nord-vim           ; nord
+:cocopon/iceberg.vim                ; iceberg
+:hzchirs/vim-material               ; vim-material
+:relastle/bluewery.vim              ; bluewery
+:mhartington/oceanic-next           ; OceanicNext
+:nightsense/snow                    ; snow
+:Mangeshrex/uwu.vim                 ; uwu
+:ulwlu/elly.vim                     ; elly
+:michaeldyrynda/carbon.vim
+:rafamadriz/neon
 ]

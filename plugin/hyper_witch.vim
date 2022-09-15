@@ -581,11 +581,15 @@ function! s:listen_commands2(self, ...) dict
 
         " call nvim_buf_set_lines(s:buf, 0, -1, v:true, s:formatter(l:matched, strchars(l:inputted_st), self.column_size))
         " echo 'Input: ' . l:inputted_st
-        echohl WitchPrefix
-        echo 'Inputed: '
-        echohl WitchExpandable
-        echon l:inputted_st
-        echohl None
+
+        if nvim_get_option('cmdheight') != 0
+            echohl WitchPrefix
+            echo 'Inputed: '
+            echohl WitchExpandable
+            echon l:inputted_st
+            echohl None
+        endif
+
         call nvim_buf_set_lines(s:buf, 0, -1, v:true, s:formatter(s:prefix_integrator(self, l:inputted_st, l:matched), strchars(l:inputted_st), self.column_size < &columns ? self.column_size : &columns))
 
         let buf_row = nvim_buf_line_count(s:buf)
@@ -1120,7 +1124,10 @@ let s:bookmark = {
 function! s:bookmark_On_Matched(key) dict
     let path = s:bookmark[a:key]
     if isdirectory(expand(path))
-        if exists(':CtrlP')
+        if exists(':Telescope')
+            echo luaeval('require("telescope").extensions.file_browser.file_browser({path=_A, depth=4})', path)
+            return
+        elseif exists(':CtrlP')
             let command = "CtrlP " . path
         else
             let command = "e " . path

@@ -7,6 +7,7 @@
                             :json=javascript :vim :css :ocaml
                             :rust
                             :haskell]
+
 :terminal_color_0  :#2e3436
 :terminal_color_1  :#cc0000
 :terminal_color_2  :#4e9a06
@@ -23,5 +24,21 @@
 :terminal_color_13 :#ad7fa8
 :terminal_color_14 :#00f5e9
 :terminal_color_15 :#eeeeec
-}
 
+:loaded_gzip              1
+:loaded_tar               1
+:loaded_tarPlugin         1
+:loaded_zip               1
+:loaded_zipPlugin         1
+:loaded_rrhelper          1
+:loaded_2html_plugin      1
+:loaded_vimball           1
+:loaded_vimballPlugin     1
+:loaded_getscript         1
+:loaded_getscriptPlugin   1
+:loaded_netrw             1
+:loaded_netrwPlugin       1
+:loaded_netrwSettings     1
+:loaded_netrwFileHandlers 1
+:loaded_matchit           1
+}

@@ -26,7 +26,7 @@ if init_install then
   require 'hotpot'
   require('init')
   require('packer').sync()
-  print("Rerun neovim")
+  vim.notify("Rerun neovim")
 end
 
 -- require('impatient')

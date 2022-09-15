@@ -162,7 +162,7 @@
       []
       (M.pull v (M.unfold-iter2 condition func iterate-update (iterate-update seed))))))
 
-(fn M.unfold-iter [seed object finish]
+(fn M.unfold-iter [seed ?object ?finish]
   " unfold the iterator
   example:
   ```fennel
@@ -172,9 +172,10 @@
   (let [v (seed)]
     (if (= nil v)
     (do
-      (finish object)
+      (when (and (not= ?finish nil) (not= ?object nil))
+        (?finish ?object))
       [])
-    (M.pull v (M.unfold-iter seed object finish)))))
+    (M.pull v (M.unfold-iter seed ?object ?finish)))))
 
 (fn M.reverse [lst]
   (if (M.empty? lst)

@@ -54,11 +54,20 @@
 
 (epi _ k (require :core.map.map) (map (unpack k)))
 
+;; veil
+(fn cdr [a ...]
+  [...])
+(epi _ k (require :core.map.veil.data)
+     ; (print (vim.inspect (cdr (unpack k))))
+     (vim.api.nvim_set_keymap (unpack (cdr (unpack k)))))
+
 ;;; caps lock
 (for [i 65 90]
   (va.nvim_set_keymap :l (vf.nr2char (+ i 32)) (vf.nr2char i) {:noremap true :silent true :desc :caps}))
 
 ;;; plugins
-(epi _ name [:bracket :veil :nmap] ((-> (.. :core.map. name) require (. :setup))))
+(epi _ name [:bracket
+             ; :veil
+             :nmap] ((-> (.. :core.map. name) require (. :setup))))
 
 {}

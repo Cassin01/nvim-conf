@@ -14,9 +14,9 @@
 
 (fn au-call [group event body ?opt]
     (if
-      (= (type body) :function) (_callback gr event body ?opt)
-      (= (type body) :string) (_command gr event body ?opt)
-      (assert-compile false "au: body must be a function or string" body)))
+      (= (type body) :function) (_callback group event body ?opt)
+      (= (type body) :string) (_command group event body ?opt)
+      (print "au: body must be a function or string" body)))
 
 (fn au [group-name event obj ?opt]
   (let [group (vim.api.nvim_create_augroup group-name {:clear true})]

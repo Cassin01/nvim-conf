@@ -34,19 +34,19 @@
     (tset list i (string.sub str i i)))
   (values list len))
 
-(fn split [str delim]
-  (let [list (str2list str)]
-    (var ret [])
-    (var tmp "")
-    (for [_ c (ipairs list)]
-      (if (= c delim)
-        (do
-          (table.insert ret tmp)
-          (set tmp ""))
-        (set tmp (.. tmp c))))
-    (when (not= tmp nil)
-      (table.isnert ret tmp))
-    ret))
+; (fn split [str delim]
+;   (let [list (str2list str)]
+;     (var ret [])
+;     (var tmp "")
+;     (for [_ c (ipairs list)]
+;       (if (= c delim)
+;         (do
+;           (table.insert ret tmp)
+;           (set tmp ""))
+;         (set tmp (.. tmp c))))
+;     (when (not= tmp nil)
+;       (table.isnert ret tmp))
+;     ret))
 
 (fn foldmarker []
   (string.gsub vim.wo.foldmarker "," :\|))

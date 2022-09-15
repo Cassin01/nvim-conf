@@ -8,9 +8,10 @@
  :softtabstop indent
  :expandtab true
  :autoindent true ; default on
+ :cmdheight 0
  :number true
  :relativenumber true
- :winbar :%f
+ ; :winbar :%f
  :scrolloff 10
  :cursorline true
  :incsearch true
@@ -29,7 +30,8 @@
  :guifont "HackGen Console"
  :inccommand :split
  :equalalways false
- :laststatus 3
+ :laststatus 3 ;0 ; 3
+ :ruler false
  :history 1000
  :ttimeout true ; default on
  :ttimeoutlen 100

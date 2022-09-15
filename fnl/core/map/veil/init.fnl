@@ -42,6 +42,7 @@
          [[:e (la (set-maps)) :enable]
           [:d (la (del-maps)) :disable]])
 
-  (au! :veil0 :BufWinEnter (set-maps)))
+  ; (au! :veil0 :BufWinEnter (set-maps))
+  )
 
 {: setup}

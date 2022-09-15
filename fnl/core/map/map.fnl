@@ -1,7 +1,7 @@
 (local {: prefix : rt} (require :kaza.map))
 (import-macros {: la : cmd} :kaza.macros)
 
-(local {: inc-search} (require :core.map.veil.source))
+(local {: inc-search} (require :emacs-key-source))
 
 [
  [:n :# :*:%s/<C-r>///g<Left><Left> "replace current word"]

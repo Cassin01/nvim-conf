@@ -4,8 +4,8 @@
 ;; TEMP
 ; For osx bigsur bug
 ; Issue: [Luarocks fails to install on macOS BigSur #180](https://github.com/wbthomason/packer.nvim/issues/180)
-(if (vim.fn.has :mac)
-  (vim.fn.setenv "MACOSX_DEPLOYMENT_TARGET" "10.15"))
+; (if (vim.fn.has :mac)
+;   (vim.fn.setenv "MACOSX_DEPLOYMENT_TARGET" "10.15"))
 
 (vim.cmd "packadd packer.nvim")
 ((-> (require :packer) (. :startup))
@@ -34,4 +34,6 @@
          ; :lewis6991/impatient.nvim
          ])
    (use (require :core.pack.plugs))
-   (use_rocks :luasocket)))
+   (use_rocks :luasocket)
+   ; (use_rocks :Lua-cURL)
+   ))

@@ -17,6 +17,15 @@
                           :nbsp :+
                           })
 
+(tset vim.opt :fillchars {:vert " "
+                          :vertleft " "
+                          :vertright " "
+                          :verthoriz " "
+                          :horiz " "
+                          :horizup " "
+                          :horizdown " "
+                          :eob " "})
+
 ;; undo
 (if (vim.fn.has :persistent_undo)
   (let [target-path (vim.fn.expand "~/.local/share/nvim/undo")]

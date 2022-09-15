@@ -34,11 +34,11 @@
    [:pc "<cmd>Unite colorscheme -auto-preview<cr>" "preview colorschemes"]
    [:u (cmd :update) :update]
    [:rs ::%s/\s\+$//ge<cr> "remove trailing spaces"]
-   ["r," (la 
+   ["r," (la
            (vim.cmd "%s/、/, /ge")
            (vim.cmd "%s/，/, /ge"))
            "replace `,`"]
-   ["r." (la 
+   ["r." (la
            (vim.cmd "%s/。/. /ge")
            (vim.cmd "%s/．/. /ge"))
            "replace `.`"]
@@ -52,11 +52,24 @@
    [(br :l :c) (la (vim.cmd (.. "colo " vim.g.colors_name))) :recover-color]
    [(br :r :c) (la (vim.cmd "hi Normal guibg=NONE ctermbg=NONE")
                    (vim.cmd "hi CursorLine guibg=NONE")
-                   (vim.cmd "hi StatusLine guibg=NONE")
+                   (vim.cmd "hi StatusLine guibg=NONE guifg=#727169")
+                   (vim.cmd "hi StatusLineNC guibg=NONE guifg=#727169")
                    (vim.cmd "hi LineNr guibg=NONE")
                    (vim.cmd "hi SignColumn guibg=NONE")
                    (vim.cmd "hi Folded guibg=NONE")
-                   (vim.cmd "hi FoldColumn guibg=NONE")) :clear-color]
+                   (vim.cmd "hi FoldColumn guibg=NONE")
+
+                   (fn bufferline []
+                     (local {: unfold-iter} (require :util.list))
+                     (local res (vim.api.nvim_exec "highlight" true))
+                     (local lines (unfold-iter (res:gmatch "([^\r\n]+)")))
+                     (each [_ line (ipairs lines)]
+                       (local elements (unfold-iter (line:gmatch "%S+")))
+                       (local hi-name (. elements 1))
+                       (when (not= hi-name nil)
+                         (when (not= (hi-name:match "^BufferLine.*$") nil)
+                           (vim.cmd (.. "hi " hi-name " guibg=NONE"))))))
+                   (bufferline)) :clear-color]
    [:fn (la (print (vim.fn.expand :%:t))) "show file name"]
    [:fp (la (print (vim.fn.expand :%:p))) "show file path"]
    [:ft (la (if (= vim.o.foldmethod :indent)

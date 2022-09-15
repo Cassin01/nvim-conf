@@ -53,7 +53,11 @@
                          [:DoubleSpace {:bg :#cff082}]
                          [:TodoEx {:bg :#44a005 :fg :#F0FFF0}]
                          [:FoldMark (link :Comment {:fg (blightness (get-hl :Comment :fg) 0.8)})]
-                         [:CommentHead (link :Comment {:fg :#727ca7})]])]
+                         [:CommentHead (link :Comment {:fg :#727ca7})]
+                         [:VertSplit (link :NonText {})]
+                         [:StatusLine (link :NonText {:fg (get-hl :StatusLine :fg)})]
+                         ; [:BufferLineFill (link :NonText {:fg (get-hl :BufferLineFill :fg)})]
+                         ])]
        (vim.api.nvim_set_hl 0 (unpack k))))
 (au! :mmatch [:BufWinEnter] ((. (require :core.au.match) :add-matches)))
 
@@ -132,11 +136,12 @@
    :group pattern})
 (fn todo []
   ;; https://gist.github.com/huytd/668fc018b019fbc49fa1c09101363397
-  (vf.matchadd :Conceal "\\[\\ \\]" 0 -1 {:conceal : })
-  (vf.matchadd :Conceal "\\[x\\]" 0 -1 {:conceal : })
-  ; (vf.matchadd :Conceal "^\\*" 0 -1 {:conceal :◉ })
-  ; (vf.matchadd :Conceal "^\\*\\*" 0 -1 {:conceal "○" })
-  ; (vf.matchadd :Conceal "^\\*\\*\\*" 0 -1 {:conceal "✹" })
+  (vf.matchadd :Conceal "^\\s*- \\[\\s\\]" 1 -1 {:conceal :})
+  (vf.matchadd :Conceal "^\\s*- \\[x\\]" 1 -1 {:conceal :})
+  (vf.matchadd :Conceal "^\\s*-" 0 -1 {:conceal "• "})
+  (vf.matchadd :Conceal "^#" 0 -1 {:conceal "◉"})
+  (vf.matchadd :Conceal "^##" 0 -1 {:conceal "○" })
+  (vf.matchadd :Conceal "^###" 0 -1 {:conceal "✹" })
   ; (syntax "syntax match todoCheckbox \\\'\\v(\\s+)?(-|\\*)\\s\\[-\\]\\\'hs=e-4 conceal cchar=☒")
   ; (syntax "syntax match todoCheckbox \'\\\[x\\\]\' conceal cchar=☒")
   (vim.cmd "hi def link todoCheckbox Todo")
@@ -254,7 +259,7 @@
   (when (and (not= sd nil) (not= (length sd) 0))
     (local ll (get-data sd))
     (vim.notify ll nil {:title title})))
-(fn noitfy-main []
+(fn notify-main []
   (when (not= _G.__kaza.v.sche_path nil)
     (local {: read_lines} (require :kaza.file))
     (local lines (read_lines _G.__kaza.v.sche_path))
@@ -269,7 +274,7 @@
      (async-do! (notify-main))
      {:pattern [:*.sche]})
 (au! :sche-parse [:VimEnter]
-     (async-do! (noitfy-main)))
+     (async-do! (notify-main)))
 (create_autocmd
   [:BufReadPost :BufNewFile]
   {:callback (λ []
@@ -316,7 +321,7 @@
            (bmap 0 (unpack k))))
     {:pattern :ref})
 
-;; copilot
-(au! :reload-copilot
-     :VimEnter
-     (vim.cmd "Copilot restart"))
+; ;; copilot
+; (au! :reload-copilot
+;      :VimEnter
+;      (vim.cmd "Copilot restart"))
