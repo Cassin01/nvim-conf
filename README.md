@@ -17,11 +17,10 @@ Powered by [hotpot.nvim](https://github.com/rktjmp/hotpot.nvim).
 
 ### Version
 
-NVIM v0.8.0-dev+1458-ga8d5a9e81
-
-Build type: Release
-
-LuaJIT 2.1.0-beta3
+v0.8.0 stable
+- NVIM v0.8.0-v0.8.0
+- Build type: RelWithDebInfo
+- LuaJIT 2.1.0-beta3
 
 ### Startup time
 
