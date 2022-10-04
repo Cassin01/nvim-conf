@@ -196,6 +196,8 @@
            ((. (require :gitsigns) :setup)
             {:current_line_blame true}))}
 
+{1 :sindrets/diffview.nvim :requires :nvim-lua/plenary.nvim }
+
 {1 :kana/vim-submode
  :config (λ []
            ((. vim.fn :submode#enter_with) :bufmove :n "" :<space>s> :<C-w>>)
@@ -251,9 +253,49 @@
             :hrsh7th/cmp-calc
             :hrsh7th/cmp-nvim-lsp-document-symbol
             :nvim-orgmode/orgmode
+            {1 :Cassin01/cmp-gitcommit
+             ; :branch :fix-shell-command_#2
+             :config (λ []
+                       (ref-f :setup :cmp-gitcommit
+                              {:insertText (λ [val _] (.. val ": "));(λ [val emoji] (.. val ":" emoji " "))
+                               :typesDict {:build {:label :build
+                                                   :emoji "🏗️"
+                                                   :documentation "Changes that affect the build system or external dependencies"
+                                                   :scopes [:gulp :broccoli :npm]}
+                                           :chore {:label "chore"
+                                                   :emoji "🤖"
+                                                   :documentation "Other changes that dont modify src or test files"}
+                                           :ci {:label "ci"
+                                                :emoji "👷"
+                                                :documentation "Changes to our CI configuration files and scripts"
+                                                :scopes ["Travisi" "Circle" "BrowserStack" "SauceLabs" :Gitflow]}
+                                           :docs {:label "docs"
+                                                  :emoji "📚"
+                                                  :documentation "Documentation only changes"}
+                                           :feat {:label :feat
+                                                  :emoji"✨"
+                                                  :documentation "A new feature"}
+                                           :fix {:label "fix"
+                                                 :emoji "🐛"
+                                                 :documentation "A bug fix"}
+                                           :perf {:label "perf"
+                                                  :emoji "⚡️"
+                                                  :documentation "A code change that improves performance"}
+                                           :refactor {:label "refactor"
+                                                      :emoji "🧹"
+                                                      :documentation "A code change that neither fixes a bug nor adds a feature"}
+                                           :revert {:label "revert"
+                                                    :emoji "⏪"
+                                                    :documentation "Reverts a previous commit"}
+                                           :style {:label "style"
+                                                   :emoji "🎨"
+                                                   :documentation "Changes that do not affect the meaning of the code"}
+                                           :test {:label "test"
+                                                  :emoji "🚨"
+                                                  :documentation "Adding missing tests or correcting existing tests"}}}))}
             {1 :quangnguyen30192/cmp-nvim-ultisnips
              :config (λ [] (ref-f :setup :cmp_nvim_ultisnips {}))}
-            ; :zbirenbaum/copilot-cmp
+            :zbirenbaum/copilot-cmp
             :neovim/nvim-lspconfig
             ]
  :config (λ []
@@ -263,7 +305,8 @@
              {:snippet {:expand (λ [args]
                                   ((. vim.fn :UltiSnips#Anon) args.body))}
               :sources (cmp.config.sources
-                         [;{:name :copilot :group_index 2}
+                         [{:name :gitcommit :group_index 2}
+                          {:name :copilot :group_index 2}
                           {:name :ultisnips :group_index 2}
                           {:name :nvim_lsp :group_index 2}
                           {:name :orgmode}
@@ -283,6 +326,12 @@
                                           (do
                                             ; (tset vim_item :kind " SKK")
                                             (tset vim_item :kind " SKK")
+                                            (tset vim_item :kind_hl_group :CmpItemKindCopilot)
+                                            vim_item)
+                                       (= entry.source.name :gitcommit)
+                                          (do
+                                            ; (tset vim_item :kind " SKK")
+                                            (tset vim_item :kind " Git")
                                             (tset vim_item :kind_hl_group :CmpItemKindCopilot)
                                             vim_item)
                                        ((lspkind.cmp_format {:with_text true :maxwidth 50}) entry vim_item)))}
@@ -418,16 +467,19 @@
 
 
 ; ;;; copilot
-; {1 :zbirenbaum/copilot.lua
-;  :requires [:github/copilot.vim]
-;  :event [:VimEnter]
-;  :config (lambda [] (vim.defer_fn
-;                (lambda [] ((. (require :copilot) :setup)))
-;                100))}
-; {1 :zbirenbaum/copilot-cmp
-;  :module :copilot_cmp }
-; {1 :github/copilot.vim
-;  :config (λ [] (tset vim.g :copilot_no_tab_map true))} ;; requires command `:Copilot restart`
+{1 :zbirenbaum/copilot.lua
+ :requires [:github/copilot.vim]
+ :event [:VimEnter]
+ :config (lambda [] (vim.defer_fn
+               (lambda [] ((. (require :copilot) :setup)))
+               100))}
+{1 :zbirenbaum/copilot-cmp
+ :after :copilot.lua
+ :config (la (ref-f :setup :copilot_cmp))
+ }
+
+{1 :github/copilot.vim
+ :config (λ [] (tset vim.g :copilot_no_tab_map true))} ;; requires command `:Copilot restart`
 
 ;;; vim
 {1 :Shougo/echodoc.vim
@@ -666,7 +718,10 @@
 
 ;; markdown
 :godlygeek/tabular
-:preservim/vim-markdown
+{1 :preservim/vim-markdown
+ :config (λ []
+           (tset vim.g :vim_markdown_conceal_code_blocks false))}
+
 {1 :iamcco/markdown-preview.nvim
  :run "cd app & yarn install"
  :config (λ []
@@ -726,7 +781,6 @@
 :hzchirs/vim-material               ; vim-material
 :relastle/bluewery.vim              ; bluewery
 :mhartington/oceanic-next           ; OceanicNext
-:nightsense/snow                    ; snow
 :Mangeshrex/uwu.vim                 ; uwu
 :ulwlu/elly.vim                     ; elly
 :michaeldyrynda/carbon.vim

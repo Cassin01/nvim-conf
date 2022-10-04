@@ -76,6 +76,7 @@
               (tset vim.o :foldmethod :marker)
               (tset vim.o :foldmethod :indent))
             (print (.. "foldmethod is now " vim.o.foldmethod))) "toggle foldmethod"]
+   [:fo (la (vim.lsp.buf.format)) :format-buf]
    [:lm (la (let [{: cursor : strlen : getline} vim.fn]
               (cursor 0 (/ (strlen (getline :.)) 2)))) "go middle of a line"]
    [:m (la (let [buf (vim.api.nvim_create_buf false true)]

@@ -15,11 +15,13 @@
 (def complete-decider [] [:boolean]
   "Return true when ...
   - There is [right bracket | white space] in front of the cursor.
-  - There is no another word in front of the cursor.
+  - There is no another word in front of the cursor. <- WARN: I think this is not I aimed
   - There is '$' in front of the cursor."
   (foldl (λ [seed char] (or seed (in-front-of-the-cursor char)))
-         (or (not (in-front-of-the-cursor :.))
-             (in-front-of-the-cursor "\\$"))
+         true
+         ; (in-front-of-the-cursor "\\$")
+         ; (or (not (in-front-of-the-cursor :.))
+         ;     (in-front-of-the-cursor "\\$"))
          [" " (unpack (vals right-brackets))]))
 
 (def bracket-completion-default [left-bracket] [:string :function]
