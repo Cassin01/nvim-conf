@@ -107,6 +107,7 @@
                                      :ignore_buftypes {:nofile true}}))
  }
 
+;; telescope {{{
 {1 :nvim-telescope/telescope.nvim
  :event [:VimEnter]
  :requires [:nvim-lua/plenary.nvim]
@@ -121,6 +122,7 @@
           (prefix.map :r "<cmd>Telescope file_browser<cr>" "file_browser"))}
 
 {1 :nvim-telescope/telescope-file-browser.nvim
+ :after :telescope.nvim
  :config (la ((req-f :load_extension :telescope) :file_browser))
  :requires [:nvim-telescope/telescope.nvim]}
 
@@ -133,6 +135,7 @@
  :after :telescope.nvim
  :config (la ((req-f :load_extension :telescope) :frecency))
  :requires [:tami5/sqlite.lua :nvim-telescope/telescope.nvim]}
+;; }}}
 
 {1 :xiyaowong/nvim-transparent
  :cmd :TransparentEnable
@@ -254,7 +257,6 @@
 {1 :williamboman/mason.nvim
  :config (λ []
            (ref-f :setup :mason))
- :event [:VimEnter]
  }
 
 {1 :onsails/lspkind-nvim
@@ -280,25 +282,31 @@
 
 ;; cmp plugins
 {1 :hrsh7th/nvim-cmp
- :requires [:hrsh7th/cmp-buffer       ; buffer completions
-            :hrsh7th/cmp-path         ; path completions
-            :hrsh7th/cmp-nvim-lsp
-            :hrsh7th/cmp-nvim-lua
-            :hrsh7th/cmp-cmdline      ; cmdline completions
-            :hrsh7th/cmp-calc
-            :hrsh7th/cmp-nvim-lsp-document-symbol
+ :event [:InsertEnter]
+ :requires [{1 :hrsh7th/cmp-buffer :after :nvim-cmp}
+            {1 :hrsh7th/cmp-path :after :nvim-cmp}
+            {1 :hrsh7th/cmp-nvim-lsp :after :nvim-cmp}
+            {1 :hrsh7th/cmp-nvim-lua :after :nvim-cmp}
+            {1 :hrsh7th/cmp-cmdline :after :nvim-cmp}
+            {1 :hrsh7th/cmp-calc :after :nvim-cmp}
+            {1 :hrsh7th/cmp-nvim-lsp-document-symbol :after :nvim-cmp}
             ; :nvim-orgmode/orgmode
             {1 :uga-rosa/cmp-dictionary
-             :event [:InsertEnter]
+             :after :nvim-cmp
              :config (λ []
                        (local path (vim.fn.expand "~/.config/nvim/data/aspell/en.dict"))
                        (ref-f :setup :cmp_dictionary
-                              {:dic 
-                               {:* [:/usr/share/dict/words]
-                                :spelllang {:en path}
-                                }}))}
+                              {
+                               :dic {:* [:/usr/share/dict/words]
+                                     :spelllang {:en path}
+                                     }
+                               :first_case_insensitive true
+                               :document true
+                               :async true
+                               })
+                       (ref-f :update :cmp_dictionary))}
             {1 :Cassin01/cmp-gitcommit
-             ; :branch :fix-shell-command_#2
+             :after :nvim-cmp
              :config (λ []
                        (ref-f :setup :cmp-gitcommit
                               {:insertText (λ [val emoji] (.. val ":" emoji " "))
@@ -336,11 +344,14 @@
                                                    :documentation "Changes that do not affect the meaning of the code"}
                                            :test {:label "test"
                                                   :emoji "🚨"
-                                                  :documentation "Adding missing tests or correcting existing tests"}}}))}
+                                                  :documentation "Adding missing tests or correcting existing tests"}}}))
+            }
             {1 :quangnguyen30192/cmp-nvim-ultisnips
-             :config (λ [] (ref-f :setup :cmp_nvim_ultisnips {}))}
-            :zbirenbaum/copilot-cmp
-            :neovim/nvim-lspconfig
+             :after :nvim-cmp
+             ; :config (λ [] (ref-f :setup :cmp-nvim-ultisnips {}))
+             }
+            {1 :zbirenbaum/copilot-cmp :after :nvim-cmp}
+            ; :neovim/nvim-lspconfig
             ]
  :config (λ []
            (local cmp (require :cmp))
@@ -423,9 +434,13 @@
 
 
 {1 :neovim/nvim-lspconfig
+ :requires [:hrsh7th/cmp-nvim-lsp]
+ :after :cmp-nvim-lsp
  :config (λ []
            (local capabilities ((. (require :cmp_nvim_lsp) :update_capabilities)
                                 (vim.lsp.protocol.make_client_capabilities)))
+
+
            ; ;; This setting is for kevinhwang91/nvim-ufo {{{
            ; (set capabilities.textDocument.foldingRange {:dynamicRegistration false
            ;                                              :lineFoldingOnly true})
@@ -542,7 +557,7 @@
 
 ;; thank you tpope
 {1 :tpope/vim-fugitive
- :cmd [:G :Gdiff]
+ :cmd [:Git :Gdiff]
  :setup (λ []
           (let [ prefix ((. (require :kaza.map) :prefix-o) :n "<space>g" :git)]
             (prefix.map "g" "<cmd>Git<cr>" "add")
