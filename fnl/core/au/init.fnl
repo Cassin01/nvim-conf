@@ -138,6 +138,7 @@
   ;; https://gist.github.com/huytd/668fc018b019fbc49fa1c09101363397
   (vf.matchadd :Conceal "^\\s*- \\[\\s\\]" 1 -1 {:conceal :})
   (vf.matchadd :Conceal "^\\s*- \\[x\\]" 1 -1 {:conceal :})
+  (vf.matchadd :Comment "^---" 1 -1 {:conceal "• "})
   (vf.matchadd :Conceal "^\\s*-" 0 -1 {:conceal "• "})
   (vf.matchadd :Conceal "^#" 0 -1 {:conceal "◉"})
   (vf.matchadd :Conceal "^##" 0 -1 {:conceal "○" })
@@ -258,7 +259,7 @@
   (local sd (. data date))
   (when (and (not= sd nil) (not= (length sd) 0))
     (local ll (get-data sd))
-    (vim.notify ll nil {:title title})))
+    ((require :notify) ll nil {:title title})))
 (fn notify-main []
   (when (not= _G.__kaza.v.sche_path nil)
     (local {: read_lines} (require :kaza.file))
@@ -274,7 +275,9 @@
      (async-do! (notify-main))
      {:pattern [:*.sche]})
 (au! :sche-parse [:VimEnter]
-     (async-do! (notify-main)))
+     (when (= _G.__kaza.v.sche_entered nil)
+       (async-do! (notify-main))
+       (set _G.__kaza.v.sche_entered true)))
 (create_autocmd
   [:BufReadPost :BufNewFile]
   {:callback (λ []
@@ -300,7 +303,6 @@
    :group :pattern})
 ;;; }}}
 ;; }}}
-
 
 ;;; plugin specific
 

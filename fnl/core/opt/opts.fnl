@@ -8,7 +8,7 @@
  :softtabstop indent
  :expandtab true
  :autoindent true ; default on
- :cmdheight 1
+ :cmdheight 0
  :number true
  :relativenumber true
  ; :winbar :%f
@@ -16,6 +16,7 @@
  :cursorline true
  :incsearch true
  :termguicolors true
+:splitkeep :screen ; :topline
  :background :dark
  :mouse :a
  :t_8f "^[[38;2;%lu;%lu;%lum"

@@ -35,6 +35,14 @@
              (async:close)))))
   (async:send))
 
+(fn timeout [ms callback]
+                 (local timer (uv.new_timer))
+                 (local callback (vim.schedule_wrap (lambda []
+                                                      (uv.timer_stop timer)
+                                                      (uv.close timer)
+                                                      (callback))))
+                 (uv.timer_start timer ms 0 callback))
+
 (fn syntax [group pat ...]
   (vim.cmd (concat-with " " :syntax :match group pat ...)))
 
@@ -66,6 +74,7 @@
 
 {: async-cmd
  : async-fn
+ : timeout
  : syntax
  ; : async-test
  }

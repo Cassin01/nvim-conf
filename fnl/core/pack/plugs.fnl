@@ -16,17 +16,17 @@
 
 {1 :kyazdani42/nvim-web-devicons
  :config (λ [] ((req-f :set_icon :nvim-web-devicons) {:fnl {:icon "🌱" :color "#428850" :name :fnl}}))}
-{1 :kyazdani42/nvim-tree.lua
- :requires :kyazdani42/nvim-web-devicons
- :disabe true
- :config (λ []
-           ((req-f :setup :nvim-tree) {:actions {:open_file {:quit_on_open true}}})
-           (nmaps
-             :<space>n
-             :nvim-tree
-             [[:t (cmd :NvimTreeToggle) :toggle]
-              [:r (cmd :NvimTreeRefresh) :refresh]
-              [:f (cmd :NvimTreeFindFile) :find]]))}
+; {1 :kyazdani42/nvim-tree.lua ; INFO: startup time
+;  :requires :kyazdani42/nvim-web-devicons
+;  :disabe true
+;  :config (λ []
+;            ((req-f :setup :nvim-tree) {:actions {:open_file {:quit_on_open true}}})
+;            (nmaps
+;              :<space>n
+;              :nvim-tree
+;              [[:t (cmd :NvimTreeToggle) :toggle]
+;               [:r (cmd :NvimTreeRefresh) :refresh]
+;               [:f (cmd :NvimTreeFindFile) :find]]))}
 ; {1 :nvim-neo-tree/neo-tree.nvim
 ;  :branch :v2.x
 ;  :requires [:nvim-lua/plenary.nvim
@@ -35,13 +35,14 @@
 {1 :glepnir/dashboard-nvim
  :disable true
  :config (λ [] (tset vim.g :dashboard_default_executive :telescope))}
-{1 :rinx/nvim-minimap
+{1 :rinx/nvim-minimap ; WARN: startup time
  :config (λ []
            (vim.cmd "let g:minimap#window#width = 10")
            (vim.cmd "let g:minimap#window#height = 35"))}
 
 ;; scrollbar
 {1 :petertriho/nvim-scrollbar
+ ; :event [:VimEnter]
  :config (λ [] ((req-f :setup :scrollbar) {:excluded_buftypes [:terminal]
                                            :excluded_filetypes (ui-ignore-filetype)}))}
 
@@ -52,6 +53,7 @@
 ;  :setup (la (ref-f :setup :feline)
 ;              ((-> (require :feline) (. :winbar) (. setup))))}
 ; {1 :nvim-lualine/lualine.nvim
+;  :event [:VimEnter]
 ;  :config (la (ref-f :setup :lualine {:options {:globalstatus true}}))
 ;  :requires {1 :kyazdani42/nvim-web-devicons
 ;             :opt true }}
@@ -63,6 +65,25 @@
                                         :background_colour :FloatShadow
                                         :timeout 3000 })
            (set vim.notify (require :notify)))}
+{1 :folke/noice.nvim
+ :event [:VimEnter]
+ :config (lambda [] (ref-f :setup :noice))
+ :requires [:MunifTanjim/nui.nvim :rcarriga/nvim-notify]}
+
+{1 :anuvyklack/windows.nvim
+ :requires [
+            "anuvyklack/middleclass"
+            "anuvyklack/animation.nvim"
+            ]
+ :config (lambda []
+           (tset vim.o :winwidth 10)
+           (tset vim.o :winminwidth 10)
+           (tset vim.o :equalalways false)
+           (ref-f :setup :windows)
+           (vim.keymap.set :n :<C-w>z (cmd :WindowsMaximize))
+           (vim.keymap.set :n :<C-w>_ (cmd :WindowsMaximizeVertically))
+           (vim.keymap.set :n :<C-w>| (cmd :WindowsMaximizeHorizontally))
+           (vim.keymap.set :n :<C-w>= (cmd :WindowsEqualize)))}
 
 {1 :lukas-reineke/indent-blankline.nvim
  :config (la ((req-f :setup :indent_blankline)
@@ -87,6 +108,7 @@
  }
 
 {1 :nvim-telescope/telescope.nvim
+ :event [:VimEnter]
  :requires [:nvim-lua/plenary.nvim]
  :setup (λ []
           (local prefix ((. (require :kaza.map) :prefix-o) :n :<space>t :telescope))
@@ -103,14 +125,17 @@
  :requires [:nvim-telescope/telescope.nvim]}
 
 {1 :nvim-telescope/telescope-packer.nvim
+ :after :telescope.nvim
  :config (la ((req-f :load_extension :telescope) :packer))
  :requires [:nvim-telescope/telescope.nvim]}
 
 {1 :nvim-telescope/telescope-frecency.nvim
+ :after :telescope.nvim
  :config (la ((req-f :load_extension :telescope) :frecency))
  :requires [:tami5/sqlite.lua :nvim-telescope/telescope.nvim]}
 
 {1 :xiyaowong/nvim-transparent
+ :cmd :TransparentEnable
  :config (λ []
            ((-> (require :transparent) (. :setup))
             {:enable false}))}
@@ -128,12 +153,14 @@
                [:e (cmd :BufferLineSortByExtension) "sort by extension"]
                [:d (cmd :BufferLineSortByDirectory) "sort by directory"]]))
  }
-:sheerun/vim-polyglot
+
+{1 :sheerun/vim-polyglot :opt true}
 {1 :nvim-treesitter/nvim-treesitter
  :run ":TSUpdate"
- :requires :p00f/nvim-ts-rainbow
+ :event [:VimEnter]
+ :requires {1 :p00f/nvim-ts-rainbow :after :nvim-treesitter}
  :config (λ []
-           ((. (require :orgmode) :setup_ts_grammar))
+           ; ((. (require :orgmode) :setup_ts_grammar))
            ((. (require "nvim-treesitter.configs") :setup)
             {:ensure_installed "maintained"
              :sync_install false
@@ -145,9 +172,9 @@
              :rainbow {:enable true
                        :extended_mode true
                        :max_file_lines nil}}))}
-{1 :norcalli/nvim-colorizer.lua
- :config (λ []
-           ((. (require :colorizer) :setup)))}
+; {1 :norcalli/nvim-colorizer.lua
+;  :config (λ []
+;            ((. (require :colorizer) :setup)))}
 
 ; {1 :haringsrob/nvim_context_vt}
 
@@ -169,6 +196,8 @@
 ;  :setup (λ []
 ;           (tset g :ctrlp_match_func {:match :ctrlp_matchfuzzy#matcher}))}
 {1 :ctrlpvim/ctrlp.vim
+ :opt true
+ :cmd :CtrlP
  :setup (λ []
           (local g vim.g)
           (tset g :ctrlp_map :<Nop>)
@@ -190,13 +219,14 @@
              [:t :<cmd>CtrlPTag<cr> "tag"]]))}
 
 ; Show git status on left of a code.
-{1 :lewis6991/gitsigns.nvim
+{1 :lewis6991/gitsigns.nvim ; WARN startup
+ :event [:VimEnter]
  :requires :nvim-lua/plenary.nvim
  :config (λ []
            ((. (require :gitsigns) :setup)
             {:current_line_blame true}))}
 
-{1 :sindrets/diffview.nvim :requires :nvim-lua/plenary.nvim }
+; {1 :sindrets/diffview.nvim :requires :nvim-lua/plenary.nvim }
 
 {1 :kana/vim-submode
  :config (λ []
@@ -217,10 +247,15 @@
 
 ;;; lsp
 
-{1 :williamboman/nvim-lsp-installer
+; {1 :williamboman/nvim-lsp-installer
+;  :config (λ []
+;            ((. (require :nvim-lsp-installer) :on_server_ready)
+;             (λ [server] (server:setup {}))))}
+{1 :williamboman/mason.nvim
  :config (λ []
-           ((. (require :nvim-lsp-installer) :on_server_ready)
-            (λ [server] (server:setup {}))))}
+           (ref-f :setup :mason))
+ :event [:VimEnter]
+ }
 
 {1 :onsails/lspkind-nvim
  :config (λ [] ((. (require :lspkind) :init) {}))}
@@ -252,12 +287,21 @@
             :hrsh7th/cmp-cmdline      ; cmdline completions
             :hrsh7th/cmp-calc
             :hrsh7th/cmp-nvim-lsp-document-symbol
-            :nvim-orgmode/orgmode
+            ; :nvim-orgmode/orgmode
+            {1 :uga-rosa/cmp-dictionary
+             :event [:InsertEnter]
+             :config (λ []
+                       (local path (vim.fn.expand "~/.config/nvim/data/aspell/en.dict"))
+                       (ref-f :setup :cmp_dictionary
+                              {:dic 
+                               {:* [:/usr/share/dict/words]
+                                :spelllang {:en path}
+                                }}))}
             {1 :Cassin01/cmp-gitcommit
              ; :branch :fix-shell-command_#2
              :config (λ []
                        (ref-f :setup :cmp-gitcommit
-                              {:insertText (λ [val _] (.. val ": "));(λ [val emoji] (.. val ":" emoji " "))
+                              {:insertText (λ [val emoji] (.. val ":" emoji " "))
                                :typesDict {:build {:label :build
                                                    :emoji "🏗️"
                                                    :documentation "Changes that affect the build system or external dependencies"
@@ -309,12 +353,15 @@
                           {:name :copilot :group_index 2}
                           {:name :ultisnips :group_index 2}
                           {:name :nvim_lsp :group_index 2}
-                          {:name :orgmode}
+                          ; {:name :orgmode}
                           {:name :lsp_document_symbol}
                           {:name :skkeleton :group_index 5}
                           {:name :buffer
                            :option {:get_bufnrs (λ []
-                                                  (vim.api.nvim_list_bufs))}}])
+                                                  (vim.api.nvim_list_bufs))}}
+                          {:name :dictionary
+                           :group_index 5
+                           :keyword_length 2}])
               :formatting {:format (fn [entry vim_item]
                                      ; (print (vim.inspect entry.source.name))
                                      (if (= entry.source.name :copilot)
@@ -334,6 +381,11 @@
                                             (tset vim_item :kind " Git")
                                             (tset vim_item :kind_hl_group :CmpItemKindCopilot)
                                             vim_item)
+                                        (= entry.source.name :dictionary)
+                                        (do
+                                          (tset vim_item :kind "﬜ Dict")
+                                          (tset vim_item :kind_hl_group :DevIconFsscript)
+                                          vim_item)
                                        ((lspkind.cmp_format {:with_text true :maxwidth 50}) entry vim_item)))}
               :mapping (cmp.mapping.preset.insert
                          {
@@ -404,6 +456,7 @@
            )}
 
 {1 :tami5/lspsaga.nvim
+ :event [:VimEnter]
  :config (λ [] ((. (require :lspsaga) :setup)
                 {:code_action_prompt {:virtual_text false}}))}
 
@@ -489,6 +542,7 @@
 
 ;; thank you tpope
 {1 :tpope/vim-fugitive
+ :cmd [:G :Gdiff]
  :setup (λ []
           (let [ prefix ((. (require :kaza.map) :prefix-o) :n "<space>g" :git)]
             (prefix.map "g" "<cmd>Git<cr>" "add")
@@ -496,16 +550,18 @@
             (prefix.map "p" "<cmd>Git push<cr>" "push")))}
 :tpope/vim-rhubarb ; enable :Gbrowse
 :tpope/vim-commentary
-:tpope/vim-unimpaired
+{1 :tpope/vim-unimpaired :event :VimEnter}
 :tpope/vim-surround
 :tpope/vim-abolish
 ; {1 :tpope/vim-rsi ; insert mode extension
    ;  :config (la (tset vim.g :rsi_non_meta true))}
 :vim-utils/vim-husk
 :tpope/vim-repeat
-:tpope/vim-sexp-mappings-for-regular-people
+{1 :tpope/vim-sexp-mappings-for-regular-people :after :vim-sexp}
 {1 :guns/vim-sexp
- :setup (λ []
+ :ft [:fennel]
+ :opt true
+ :config (λ []
           (tset vim.g :sexp_filetypes "clojure,scheme,lisp,timl,fennel")
           (tset vim.g :sexp_enable_insert_mode_mappings false))}
 
@@ -543,6 +599,7 @@
 ; :rhysd/clever-f.vim
 :Jorengarenar/vim-MvVis ; Move visually selected text. Ctrl-HLJK
 {1 :terryma/vim-expand-region
+ :event [:VimEnter]
  :setup (λ []
           (vim.cmd "vmap v <Plug>(expand_region_expand)")
           (vim.cmd "vmap <C-v> <Plug>(expand_region_shrink)"))}
@@ -568,7 +625,8 @@
           (let [prefix ((. (require :kaza.map) :prefix-o) :n :<space>l :lineletters)]
             (prefix.map "" "<Plug>LineLetters" "jump to line"))) }
 
-:Cassin01/emacs-key-source.nvim
+{1 :Cassin01/emacs-key-source.nvim
+ :event [:VimEnter]}
 
 ;; mark
 :kshenoy/vim-signature
@@ -627,6 +685,7 @@
  :setup (λ [] (tset vim.g :weather_city :Tokyo))}
 
 {1 :vim-skk/skkeleton :requires  [ :vim-denops/denops.vim ]
+ :event [:InsertEnter]
 :config (λ []
           (let [g (vim.api.nvim_create_augroup :init-skkeleton {:clear true})]
             (au! g :User
@@ -675,13 +734,14 @@
 ;            ((. (require :document-color) :setup) {:mode :backkground})) }
 
 ;; org
-{1 :nvim-orgmode/orgmode
- :config (λ []
-           ((. (require :orgmode) :setup) {:org_agenda_files ["~/org/*"]}))}
+; {1 :nvim-orgmode/orgmode ; INFO startup
+;  :config (λ []
+;            ((. (require :orgmode) :setup) {:org_agenda_files ["~/org/*"]}))}
 
 ;; lua
 :bfredl/nvim-luadev
-:mhartington/formatter.nvim
+{1 :mhartington/formatter.nvim
+ :event [:BufWritePre]}
 
 ;; binary
 :Shougo/vinarise
@@ -689,7 +749,7 @@
 ;; fennel
 :bakpakin/fennel.vim  ; syntax
 :jaawerth/fennel-nvim ; native fennel support
-:Olical/conjure       ; interactive environment
+; :Olical/conjure       ; interactive environment
 :Olical/nvim-local-fennel
 
 ;; rust
@@ -717,7 +777,7 @@
                                                   :changelog false}))} ; doc generator
 
 ;; markdown
-:godlygeek/tabular
+{1 :godlygeek/tabular :opt true :cmd [:Tabularize]}
 {1 :preservim/vim-markdown
  :config (λ []
            (tset vim.g :vim_markdown_conceal_code_blocks false))}
@@ -743,8 +803,9 @@
 :deton/jasegment.vim
 
 ;; color
-:Shougo/unite.vim
-:ujihisa/unite-colorscheme
+; :Shougo/unite.vim
+; :ujihisa/unite-colorscheme
+
 :folke/tokyonight.nvim
 :rebelot/kanagawa.nvim
 :sam4llis/nvim-tundra
@@ -752,37 +813,37 @@
 :zanglg/nova.nvim
 
 
-:altercation/vim-colors-solarized   ; solarized
-:croaker/mustang-vim                ; mustang
-:jeffreyiacono/vim-colors-wombat    ; wombat
-:nanotech/jellybeans.vim            ; jellybeans
-:vim-scripts/Lucius                 ; lucius
-:vim-scripts/Zenburn                ; zenburn
-:mrkn/mrkn256.vim                   ; mrkn256
-:jpo/vim-railscasts-theme           ; railscasts
-:therubymug/vim-pyte                ; pyte
-:tomasr/molokai                     ; molokai
-:chriskempson/vim-tomorrow-theme    ; tomorrow night
-:vim-scripts/twilight               ; twilight
-:w0ng/vim-hybrid                    ; hybrid
-:freeo/vim-kalisi                   ; kalisi
-:morhetz/gruvbox                    ; gruvbox
-:toupeira/vim-desertink             ; desertink
-:sjl/badwolf                        ; badwolf
-:itchyny/landscape.vim              ; landscape
-:joshdick/onedark.vim               ; onedark in atom
-:gosukiwi/vim-atom-dark             ; atom-dark
-:liuchengxu/space-vim-dark          ; space-vim-dark
-:kristijanhusak/vim-hybrid-material ; hybrid_material
-:drewtempelmeyer/palenight.vim      ; palenight
-:haishanh/night-owl.vim             ; night owl
-:arcticicestudio/nord-vim           ; nord
-:cocopon/iceberg.vim                ; iceberg
-:hzchirs/vim-material               ; vim-material
-:relastle/bluewery.vim              ; bluewery
-:mhartington/oceanic-next           ; OceanicNext
-:Mangeshrex/uwu.vim                 ; uwu
-:ulwlu/elly.vim                     ; elly
-:michaeldyrynda/carbon.vim
-:rafamadriz/neon
+; :altercation/vim-colors-solarized   ; solarized
+; :croaker/mustang-vim                ; mustang
+; :jeffreyiacono/vim-colors-wombat    ; wombat
+; :nanotech/jellybeans.vim            ; jellybeans
+; :vim-scripts/Lucius                 ; lucius
+; :vim-scripts/Zenburn                ; zenburn
+; :mrkn/mrkn256.vim                   ; mrkn256
+; :jpo/vim-railscasts-theme           ; railscasts
+; :therubymug/vim-pyte                ; pyte
+; :tomasr/molokai                     ; molokai
+; :chriskempson/vim-tomorrow-theme    ; tomorrow night
+; :vim-scripts/twilight               ; twilight
+; :w0ng/vim-hybrid                    ; hybrid
+; :freeo/vim-kalisi                   ; kalisi
+; :morhetz/gruvbox                    ; gruvbox
+; :toupeira/vim-desertink             ; desertink
+; :sjl/badwolf                        ; badwolf
+; :itchyny/landscape.vim              ; landscape
+; :joshdick/onedark.vim               ; onedark in atom
+; :gosukiwi/vim-atom-dark             ; atom-dark
+; :liuchengxu/space-vim-dark          ; space-vim-dark
+; :kristijanhusak/vim-hybrid-material ; hybrid_material
+; :drewtempelmeyer/palenight.vim      ; palenight
+; :haishanh/night-owl.vim             ; night owl
+; :arcticicestudio/nord-vim           ; nord
+; :cocopon/iceberg.vim                ; iceberg
+; :hzchirs/vim-material               ; vim-material
+; :relastle/bluewery.vim              ; bluewery
+; :mhartington/oceanic-next           ; OceanicNext
+; :Mangeshrex/uwu.vim                 ; uwu
+; :ulwlu/elly.vim                     ; elly
+; :michaeldyrynda/carbon.vim
+; :rafamadriz/neon
 ]

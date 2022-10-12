@@ -44,6 +44,35 @@
            "replace `.`"]
    [:a ":vim TODO ~/org/*.org<cr>" "agenda"]
    [:ts ":%s/\t/ /g<cr>" "replace tab with space"]
+   [:tm (la
+          (local a (require :async))
+          (local co coroutine)
+          (local uv vim.loop)
+          (local {: async-fn : timeout} (require :kaza.cmd))
+          (local echo (lambda [ms msg  callback]
+                        (timeout ms (lambda [] (callback msg)))))
+          (local main_loop (lambda [f] vim.schedule f))
+          (local e1 (a.wrap echo))
+          (fn notify [msg]
+            (async-fn (lambda [] 
+                        (vim.notify msg)
+                        (local handle (io.popen (.. "say \"" msg "\"")))
+                        (handle:read "*all")
+                        (handle:close))))
+          (local s (lambda [x] (* x 1000)))
+          (local m (lambda [x] (* (s x) 60)))
+          (local task (lambda []
+                        (a.sync (lambda []
+                                  (var cnt 0)
+                                  (while (< cnt 20)
+                                    (print (.. "task start: " cnt))
+                                    (var cnt (+ cnt 1))
+                                    (local r (a.wait (e1 (m 25) "start to rest")))
+                                    (notify r)
+                                    (local r (a.wait (e1 (m 5) "start to work")))
+                                    (notify r))))))
+          ((task))
+         ) :pomodoro-timer]
    [:cd ":<c-u>lcd %:p:h<cr>" "move current directory to here"]
    [(br :r :f) ":<c-u>set clipboard+=unnamed<cr>" "enable clipboard"]
    [(br :l :f) ":<c-u>set clipboard-=unnamed<cr>" "disable clipboard"]
