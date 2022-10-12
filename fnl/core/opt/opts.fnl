@@ -31,7 +31,7 @@
  :guifont "HackGen Console"
  :inccommand :split
  :equalalways false
- :laststatus 3 ;0 ; 3
+ :laststatus 0 ; 3
  :ruler false
  :history 1000
  :ttimeout true ; default on
