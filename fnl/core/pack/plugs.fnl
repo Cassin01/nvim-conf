@@ -11,6 +11,28 @@
 
 :SirVer/ultisnips
 :honza/vim-snippets
+{1 :L3MON4D3/LuaSnip
+ :tag "v<CurrentMajor>.*"
+ :config (lambda []
+           (local ls (require :luasnip))
+           (local types (require :luasnip.util.types))
+           (ls.config.set_config
+            ;ls.config.set_config
+            {:history true
+             :updateevents "TextChanged, TextChangedI"
+             :delete_check_events "TextChanged"
+             :enable_autosnippets true
+             :ext_opts
+             {types.choiceNode
+              {:active
+               {:virt_text [{"● " "Error" }]}}}})
+           (require :core.pack.conf.luasnip)
+           (vim.cmd "imap <silent><expr> <C-k> luasnip#expand_or_jumpable() ? '<Plug>luasnip-expand-or-jump' : '<C-k>'")
+           (vim.cmd "smap <silent><expr> <C-k> luasnip#expand_or_jumpable() ? '<Plug>luasnip-expand-or-jump' : '<C-k>'")
+           (vim.cmd "imap <silent><expr> <C-q> luasnip#choice_active() ? '<Plug>luasnip-next-choice' : '<C-q>'")
+           (vim.cmd "smap <silent><expr> <C-q> luasnip#choice_active() ? '<Plug>luasnip-next-choice' : '<C-q>'")
+           (vim.keymap.set :n :<leader>k "<cmd>source ~/.config/nvim/after/plugin/luasnip.lua<cr>")
+           )}
 
 ;;; UI
 
@@ -59,12 +81,13 @@
 ;             :opt true }}
 
 ; notify
-{1 :rcarriga/nvim-notify
- :config (lambda []
-           ((. (require :notify) :setup) {:stages :fade_in_slide_out
-                                        :background_colour :FloatShadow
-                                        :timeout 3000 })
-           (set vim.notify (require :notify)))}
+; {1 :rcarriga/nvim-notify
+;  :config (lambda []
+;            ((. (require :notify) :setup) {:stages :fade_in_slide_out
+;                                         :background_colour :FloatShadow
+;                                         :timeout 3000 })
+;            (set vim.notify (require :notify)))
+;  }
 {1 :folke/noice.nvim
  :event [:VimEnter]
  :config (lambda [] (ref-f :setup :noice))
@@ -290,6 +313,7 @@
             {1 :hrsh7th/cmp-cmdline :after :nvim-cmp}
             {1 :hrsh7th/cmp-calc :after :nvim-cmp}
             {1 :hrsh7th/cmp-nvim-lsp-document-symbol :after :nvim-cmp}
+            {1 :saadparwaiz1/cmp_luasnip :after [:nvim-cmp :LuaSnip]}
             ; :nvim-orgmode/orgmode
             {1 :uga-rosa/cmp-dictionary
              :after :nvim-cmp
@@ -358,10 +382,16 @@
            (local lspkind (require :lspkind))
            (cmp.setup
              {:snippet {:expand (λ [args]
-                                  ((. vim.fn :UltiSnips#Anon) args.body))}
+                                  ; (print args)
+                                  (vim.notify (vim.inspect args))
+                                  ; ((. vim.fn :UltiSnips#Anon) args.body)
+                                  (ref-f :lsp_expand :luasnip args.body)
+                                  )}
               :sources (cmp.config.sources
-                         [{:name :gitcommit :group_index 2}
+                         [
+                          {:name :gitcommit :group_index 2}
                           {:name :copilot :group_index 2}
+                          {:name :luasnip :group_index 5}
                           {:name :ultisnips :group_index 2}
                           {:name :nvim_lsp :group_index 2}
                           ; {:name :orgmode}
@@ -378,6 +408,11 @@
                                      (if (= entry.source.name :copilot)
                                        (do
                                          (tset vim_item :kind " Copilot")
+                                         (tset vim_item :kind_hl_group :CmpItemKindCopilot)
+                                          vim_item)
+                                        (= entry.source.name :luasnip)
+                                       (do
+                                         (tset vim_item :kind " Luasnip")
                                          (tset vim_item :kind_hl_group :CmpItemKindCopilot)
                                          vim_item)
                                        (= entry.source.name :skkeleton)
@@ -422,7 +457,9 @@
                           ;                         (cmp.mapping.complete)
                           ;                         (fallback))))
                           :<c-e> (cmp.mapping.abort)
-                          :<cr> (cmp.mapping.confirm {:select false}) }) })
+                          :<c-p> (cmp.mapping.select_prev_item)
+                          :<c-n> (cmp.mapping.select_next_item)
+                          :<cr> (cmp.mapping.confirm {:select true}) }) })
            (vim.api.nvim_set_hl 0 :CmpItemKindCopilot {:fg :#6CC644})
            (cmp.setup.cmdline :/ {:mapping (cmp.mapping.preset.cmdline)
                                   :sources [{:name :buffer}]})
@@ -521,17 +558,17 @@
               [:f (cmd :SidebarNvimFocus) :focus]]))
  :rocks [:luatz]}
 
-{1 :hrsh7th/vim-vsnip
- :disable true
- :requires [:hrsh7th/vim-vsnip-integ
-            :rafamadriz/friendly-snippets]}
+; {1 :hrsh7th/vim-vsnip
+;  :disable true
+;  :requires [:hrsh7th/vim-vsnip-integ
+;             :rafamadriz/friendly-snippets]}
 
 ;;; runner
-{1 :michaelb/sniprun
- :run "bash install.sh"}
-{1 :thinca/vim-quickrun
- :setup (λ []
-          (map :n :<space>or (cmd :QuickRun) "[others] quickrun")) }
+; {1 :michaelb/sniprun
+;  :run "bash install.sh"}
+; {1 :thinca/vim-quickrun
+;  :setup (λ []
+;           (map :n :<space>or (cmd :QuickRun) "[others] quickrun")) }
 
 
 ; ;;; copilot
