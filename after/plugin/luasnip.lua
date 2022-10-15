@@ -16,6 +16,7 @@ local m = extras.m
 local l = extras.l
 local rep = extras.rep
 local postfix = require("luasnip.extras.postfix").postfix
+local dl = require'luasnip.extras'.dynamic_lambda
 
 ls.cleanup() -- remove all snippets
 
@@ -43,6 +44,20 @@ rec_arg = function()
         )
 end
 
+local arg_t = function (n)
+    return sn(n, fmt("{}: {}", { i(1), i(2) }))
+end
+
+local rec_arg_rs
+rec_arg_rs = function()
+        return sn(
+        nil,
+        c(1, {
+            t(""),
+            sn(nil, { t({ ", " }), arg_t(1), d(2, rec_arg_rs, {}) }),
+        })
+        )
+end
 
 local snippet = {
     all = {
@@ -50,22 +65,36 @@ local snippet = {
             i(1, "cond"), t(" ? "), i(2, "then"), t(" : "), i(3, "else")
         })
     },
+    rust = {
+        s("fn",
+        fmt([[
+        fn {}({}{}) {{
+            {}
+        }}
+        ]],
+        {
+            i(1, "name"),
+            arg_t(2),
+            -- sn(2, fmt("{}: {}", { i(1), i(2) })),
+            -- i(2, "args"),
+            d(3, rec_arg_rs, {}),
+            i(4, "body")
+        })),
+    },
     markdown = {
         s("header",
         fmt([[
         ```yaml
         layout: post
         title: {}
-        ]] ..
-        [[date: ]] .. os.date("%Y-%m-%d")
-        .. [[
-
+        date: {}
         categories: [{}{}]
         tags: [{}{}]
         ```
         ]],
         {
             i(1, "title"),
+            f(function() return os.date("%Y-%m-%d") end),
             i(2, "programming"),
             d(3, rec_arg, {}),
             i(4, "rust"),
@@ -80,9 +109,31 @@ local snippet = {
         })
         ),
     },
+    lua = {
+        s("fn",
+        fmt([[
+        function {}({}{})
+            {}
+        end
+        ]],
+        {
+            i(1, "name"),
+            i(2, "a"),
+            d(3, rec_arg, {}),
+            i(4, "return a"),
+        })),
+        s("req", fmt("local {} = require(\"{}\")", {
+            dl(2, l._1:match("%.([%w_]+)$"), {1}),
+            i(1)
+        })),
+        s("for", {
+            t"for ", c(1, {
+                sn(nil, {i(1, "k"), t", ", i(2, "v"), t" in ", c(3, {t"pairs", t"ipairs", i(nil)}), t"(", i(4), t")"}),
+                sn(nil, {i(1, "i"), t" = ", i(2), t", ", i(3), })
+            }), t{" do", "\t"}, i(0), t{"", "end"}
+        }),
+    },
     tex = {
-        -- rec_ls is self-referencing. That makes this snippet 'infinite' eg. have as many
-        -- \item as necessary by utilizing a choiceNode.
         s("ls", {
             t({ "\\begin{itemize}", "\t\\item " }),
             i(1),
@@ -91,6 +142,9 @@ local snippet = {
         }),
     }
 }
+
+--info
+-- https://github.com/L3MON4D3/Dotfiles/blob/master/.config/nvim/lua/plugins/luasnip/init.lua
 
 for k, v in pairs(snippet) do
     ls.add_snippets(k, v)

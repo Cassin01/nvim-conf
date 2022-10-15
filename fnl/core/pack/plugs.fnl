@@ -281,6 +281,7 @@
  :config (λ []
            (ref-f :setup :mason))
  }
+{1 :williamboman/mason-lspconfig.nvim}
 
 {1 :onsails/lspkind-nvim
  :config (λ [] ((. (require :lspkind) :init) {}))}
@@ -413,7 +414,7 @@
                                         (= entry.source.name :luasnip)
                                        (do
                                          (tset vim_item :kind " Luasnip")
-                                         (tset vim_item :kind_hl_group :CmpItemKindCopilot)
+                                         (tset vim_item :kind_hl_group :DevIconGraphQL)
                                          vim_item)
                                        (= entry.source.name :skkeleton)
                                           (do
@@ -471,41 +472,40 @@
 
 
 {1 :neovim/nvim-lspconfig
- :requires [:hrsh7th/cmp-nvim-lsp]
+ :requires [:hrsh7th/cmp-nvim-lsp 
+            :williamboman/mason.nvim 
+            :williamboman/mason-lspconfig.nvim]
  :after :cmp-nvim-lsp
- :config (λ []
-           (local capabilities ((. (require :cmp_nvim_lsp) :update_capabilities)
-                                (vim.lsp.protocol.make_client_capabilities)))
+ :config 
+ (lambda []
+   (local nvim_lsp (require :lspconfig))
+   (local mason_lspconfig (require :mason-lspconfig))
+   (mason_lspconfig.setup_handlers 
+     [(lambda [server_name]
+        (var opts {})
+        (if (= server_name "sumnekoo_lua")
+          (set opts.settings
+               {:Lua
+                {:diagnostics
+                 {:globals [:vim :lua]}}}))
+        ((-> nvim_lsp (. server_name) (. :setup)) opts)
+        )]))
+ ; :config (λ []
+ ;           (local capabilities ((. (require :cmp_nvim_lsp) :update_capabilities)
+ ;                                (vim.lsp.protocol.make_client_capabilities)))
+ ;           (local nvim_lsp (require :lspconfig))
+ ;           (each [_ key (ipairs [:rust_analyzer])]
+ ;             ((-> nvim_lsp (. key) (. :setup))
+ ;              {:capabilities capabilities
+ ;               :diagnostics {:enable true
 
-
-           ; ;; This setting is for kevinhwang91/nvim-ufo {{{
-           ; (set capabilities.textDocument.foldingRange {:dynamicRegistration false
-           ;                                              :lineFoldingOnly true})
-           ; ;; }}}
-           (local nvim_lsp (require :lspconfig))
-           (each [_ key (ipairs [:rust_analyzer])]
-             ((-> nvim_lsp (. key) (. :setup))
-              {:capabilities capabilities
-               :diagnostics {:enable true
-
-                             :disabled [:unresolved-proc-macro]
-                             :enableExperimental true}}))
-           ((-> nvim_lsp (. :gopls) (. :setup))
-            {:on_attach (lambda [client]
-                          (ref-f :on_attach :illuminate client))})
-
-           ; ;; document-color
-           ; (set capabilities.textDocument.colorProvider true)
-           ; ((-> nvim_lsp (. :tailwindcss) (. :setup))
-           ;  {:on_attach (lambda [client]
-           ;                (if (client.server_capabilities.colorProvider) 
-           ;                  ;; Attach document color support
-           ;                  (. (require :document-color) :buf_attach bufnr)))}
-           ;  :capabilities capabilities)
-
-           ; (ref-f :setup :ufo)
-           ; ((. vim.diagnostic :config) {:virtual_text false})
-           )}
+ ;                             :disabled [:unresolved-proc-macro]
+ ;                             :enableExperimental true}}))
+ ;           ((-> nvim_lsp (. :gopls) (. :setup))
+ ;            {:on_attach (lambda [client]
+ ;                          (ref-f :on_attach :illuminate client))})
+ ;           )
+ }
 
 {1 :tami5/lspsaga.nvim
  :event [:VimEnter]
