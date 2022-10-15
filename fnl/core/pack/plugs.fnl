@@ -472,39 +472,15 @@
 
 
 {1 :neovim/nvim-lspconfig
- :requires [:hrsh7th/cmp-nvim-lsp 
-            :williamboman/mason.nvim 
+ :requires [:hrsh7th/cmp-nvim-lsp
+            :williamboman/mason.nvim
             :williamboman/mason-lspconfig.nvim]
  :after :cmp-nvim-lsp
- :config 
- (lambda []
-   (local nvim_lsp (require :lspconfig))
-   (local mason_lspconfig (require :mason-lspconfig))
-   (mason_lspconfig.setup_handlers 
-     [(lambda [server_name]
-        (var opts {})
-        (if (= server_name "sumnekoo_lua")
-          (set opts.settings
-               {:Lua
-                {:diagnostics
-                 {:globals [:vim :lua]}}}))
-        ((-> nvim_lsp (. server_name) (. :setup)) opts)
-        )]))
- ; :config (λ []
- ;           (local capabilities ((. (require :cmp_nvim_lsp) :update_capabilities)
- ;                                (vim.lsp.protocol.make_client_capabilities)))
- ;           (local nvim_lsp (require :lspconfig))
- ;           (each [_ key (ipairs [:rust_analyzer])]
- ;             ((-> nvim_lsp (. key) (. :setup))
- ;              {:capabilities capabilities
- ;               :diagnostics {:enable true
-
- ;                             :disabled [:unresolved-proc-macro]
- ;                             :enableExperimental true}}))
- ;           ((-> nvim_lsp (. :gopls) (. :setup))
- ;            {:on_attach (lambda [client]
- ;                          (ref-f :on_attach :illuminate client))})
- ;           )
+ :config (lambda []
+           (vim.cmd "source ~/.config/nvim/lsp_conf/lsp_conf.lua"))
+ ; :config 
+ ; (lambda []
+ ;   (require :core.pack.lsp))
  }
 
 {1 :tami5/lspsaga.nvim

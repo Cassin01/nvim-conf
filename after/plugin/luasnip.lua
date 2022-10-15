@@ -47,6 +47,9 @@ end
 local arg_t = function (n)
     return sn(n, fmt("{}: {}", { i(1), i(2) }))
 end
+local ret_t = function (n)
+    return c(n , {t(""), sn(nil, fmt("-> {} ", {i(1, "Type")}))})
+end
 
 local rec_arg_rs
 rec_arg_rs = function()
@@ -68,17 +71,16 @@ local snippet = {
     rust = {
         s("fn",
         fmt([[
-        fn {}({}{}) {{
-            {}
+        fn {1}({2}{3}) {4}{{
+            {5}
         }}
         ]],
         {
             i(1, "name"),
             arg_t(2),
-            -- sn(2, fmt("{}: {}", { i(1), i(2) })),
-            -- i(2, "args"),
             d(3, rec_arg_rs, {}),
-            i(4, "body")
+            ret_t(4),
+            i(5, "body")
         })),
     },
     markdown = {
