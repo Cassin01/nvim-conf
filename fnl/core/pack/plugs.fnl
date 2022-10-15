@@ -393,8 +393,8 @@
                           {:name :gitcommit :group_index 2}
                           {:name :copilot :group_index 2}
                           {:name :luasnip :group_index 5}
-                          {:name :ultisnips :group_index 2}
                           {:name :nvim_lsp :group_index 2}
+                          {:name :ultisnips :group_index 2}
                           ; {:name :orgmode}
                           {:name :lsp_document_symbol}
                           {:name :skkeleton :group_index 5}
