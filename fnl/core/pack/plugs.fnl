@@ -6,6 +6,9 @@
 
 (local va vim.api)
 
+(macro lcnf [file_name]
+  `(vim.cmd (table.concat ["source ~/.config/nvim/after_conf/" ,file_name ] "")))
+
 [
 ;;; snippet
 
@@ -38,6 +41,22 @@
 
 {1 :kyazdani42/nvim-web-devicons
  :config (λ [] ((req-f :set_icon :nvim-web-devicons) {:fnl {:icon "🌱" :color "#428850" :name :fnl}}))}
+
+{1 :lambdalisue/fern.vim
+ :requires [:lambdalisue/fern-git-status.vim
+            {1 :lambdalisue/fern-renderer-devicons.vim
+             :requires [:ryanoasis/vim-devicons]}
+            :yuki-yano/fern-preview.vim]
+ :config (λ []
+           (tset vim.g :fern#renderer :devicons)
+           (tset vim.g :fern_renderer_devicons_disable_warning true)
+           (lcnf "fern.vim")
+           (nmaps
+             :<space>n
+             :fern
+             [[:p (cmd "Fern . -drawer -toggle") "open fern on a current working drectory"]
+              [:d (cmd "Fern %:h -drawer -toggle") "open fern on a parent directory of a current buffer"]])
+           )}
 ; {1 :kyazdani42/nvim-tree.lua ; INFO: startup time
 ;  :requires :kyazdani42/nvim-web-devicons
 ;  :disabe true
@@ -65,7 +84,9 @@
 {1 :gorbit99/codewindow.nvim
 :config (λ []
         (local codewindow (require :codewindow))
-        (codewindow.setup)
+        (codewindow.setup 
+          {:use_treesitter true
+           :use_lsp true})
         (codewindow.apply_default_keybinds))}
 
 ;; scrollbar
@@ -186,7 +207,9 @@
  :setup (la (nmaps
               :<space>b
               :bufferline
-              [[(br :r) (cmd :BufferLineCycleNext) "next"]
+              [[:p (cmd :BufferLinePick) :pick]
+               [:c (cmd :BufferlinePickkClose) :close]
+               [(br :r) (cmd :BufferLineCycleNext) "next"]
                [(br :l) (cmd :BufferLineCyclePrev) "prev"]
                [:e (cmd :BufferLineSortByExtension) "sort by extension"]
                [:d (cmd :BufferLineSortByDirectory) "sort by directory"]]))
@@ -510,7 +533,7 @@
             :lukas-reineke/lsp-format.nvim]
  :after :cmp-nvim-lsp
  :config (lambda []
-           (vim.cmd "source ~/.config/nvim/lsp_conf/lsp_conf.lua"))
+           (vim.cmd "source ~/.config/nvim/after_conf/lsp_conf.lua"))
  ; :config
  ; (lambda []
  ;   (require :core.pack.lsp))

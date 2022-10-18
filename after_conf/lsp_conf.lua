@@ -39,13 +39,13 @@ function setup_default()
                             enable = false,
                         },
                         format = {
-                             enable = true,
+                            enable = true,
                             -- Put format options here
                             -- NOTE: the value should be STRING!!
                             defaultConfig = {
                                 indent_style = "space",
                                 indent_size = "2",
-                            }
+                            },
                         },
                     },
                 },
@@ -67,7 +67,7 @@ function setup_default()
                         },
                         checkOnSave = {
                             command = "clippy",
-                        }
+                        },
                     },
                 },
             })
