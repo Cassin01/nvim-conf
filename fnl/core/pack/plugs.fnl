@@ -7,7 +7,7 @@
 (local va vim.api)
 
 (macro lcnf [file_name]
-  `(vim.cmd (table.concat ["source ~/.config/nvim/after_conf/" ,file_name ] "")))
+  `(vim.cmd (table.concat ["source ~/.config/nvim/after_opt/" ,file_name ] "")))
 
 [
 ;;; snippet
@@ -533,7 +533,8 @@
             :lukas-reineke/lsp-format.nvim]
  :after :cmp-nvim-lsp
  :config (lambda []
-           (vim.cmd "source ~/.config/nvim/after_conf/lsp_conf.lua"))
+           (lcnf :lsp_conf.lua)
+           )
  ; :config
  ; (lambda []
  ;   (require :core.pack.lsp))
