@@ -682,7 +682,7 @@
             (prefix.map "" "<Plug>LineLetters" "jump to line"))) }
 
 {1 :Cassin01/emacs-key-source.nvim
- :event [:InsertEnter]}
+ :event [:VimEnter]}
 
 ;; mark
 :kshenoy/vim-signature

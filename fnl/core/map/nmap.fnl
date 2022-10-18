@@ -54,7 +54,7 @@
           (local main_loop (lambda [f] vim.schedule f))
           (local e1 (a.wrap echo))
           (fn notify [msg]
-            (async-fn (lambda [] 
+            (async-fn (lambda []
                         (vim.notify msg)
                         (local handle (io.popen (.. "say \"" msg "\"")))
                         (handle:read "*all")
