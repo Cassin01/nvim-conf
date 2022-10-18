@@ -43,7 +43,9 @@
       (.. :# (vf.printf :%0x (. target :foreground)))
       (= part :bg)
       (.. :# (vf.printf :%0x (. target :background)))
-      (error "part: bg or fg"))))
+      ; (error "part: bg or fg")
+      nil
+      )))
 
 (fn print-second [a b]
   (print (vim.inspect b)))
@@ -52,10 +54,18 @@
                          [:TrailingSpaces {:bg :#FFa331}]
                          [:DoubleSpace {:bg :#cff082}]
                          [:TodoEx {:bg :#44a005 :fg :#F0FFF0}]
-                         [:FoldMark (link :Comment {:fg (blightness (get-hl :Comment :fg) 0.8)})]
+                         [:FoldMark (link :Comment {})
+                          ; (do
+                          ;   (local fg (get-hl :Comment :fg))
+                          ;   (if (= nil fg)
+                          ;     (link :Comment {})
+                          ;     (link :comment (blightness fg 0.8))))
+                          ; (link :Comment {:fg (blightness (get-hl :Comment :fg) 0.8)})
+                          ]
                          [:CommentHead (link :Comment {:fg :#727ca7})]
                          [:VertSplit (link :NonText {})]
-                         [:StatusLine (link :NonText {:fg (get-hl :StatusLine :fg)})]
+                         [:StatusLine (link :NonText {})]
+                         ; [:StatusLine (link :NonText {:fg (get-hl :StatusLine :fg)})]
                          ; [:BufferLineFill (link :NonText {:fg (get-hl :BufferLineFill :fg)})]
                          ])]
        (vim.api.nvim_set_hl 0 (unpack k))))
@@ -68,7 +78,7 @@
        (win_set_option 0 :number false)
        (win_set_option 0 :winfixwidth true)
        ) {:pattern "term://*"})
-(au! :term-en [:BufEnter] 
+(au! :term-en [:BufEnter]
      (when (= (. (vim.api.nvim_get_mode) :mode) "nt")
        (vim.cmd :startinsert))
      {:pattern "term://*"})

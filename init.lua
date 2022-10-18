@@ -3,7 +3,7 @@ local fn = vim.fn
 local preinstall_list = {
   packer = {author = 'wbthomason', repo = 'packer.nvim'},
   hotpot = {author = 'rktjmp', repo = 'hotpot.nvim'},
-  async = {author = 'ms-jpq', repo = 'lua-async-await'},
+  -- async = {author = 'ms-jpq', repo = 'lua-async-await'},
   -- impatient = {author = 'lewis6991', repo = 'impatient.nvim'},
 }
 

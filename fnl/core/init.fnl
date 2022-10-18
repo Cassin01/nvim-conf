@@ -22,3 +22,14 @@
                                      ((a.wrap (async-preq :cmd)))
                                      ((a.wrap (async-preq :lsp)))])))))
 ((task-load))
+
+; (local req-lib (λ [lib]
+;     (p-req (.. :core. lib))))
+; (req-lib :pack)
+; (req-lib :au)
+; (req-lib :au)
+; (req-lib :opt)
+; (req-lib :gui)
+; (req-lib :map)
+; (req-lib :cmd)
+; (req-lib :lsp)

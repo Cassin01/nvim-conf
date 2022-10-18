@@ -12,7 +12,7 @@
 :SirVer/ultisnips
 :honza/vim-snippets
 {1 :L3MON4D3/LuaSnip
- :tag "v<CurrentMajor>.*"
+ :tag "v1.1.0"
  :config (lambda []
            (local ls (require :luasnip))
            (local types (require :luasnip.util.types))
@@ -54,13 +54,19 @@
 ;  :requires [:nvim-lua/plenary.nvim
 ;             :kyazdani42/nvim-web-devicons
 ;             :MunifTanjim/nui.nvim]}
-{1 :glepnir/dashboard-nvim
- :disable true
- :config (λ [] (tset vim.g :dashboard_default_executive :telescope))}
-{1 :rinx/nvim-minimap ; WARN: startup time
- :config (λ []
-           (vim.cmd "let g:minimap#window#width = 10")
-           (vim.cmd "let g:minimap#window#height = 35"))}
+; {1 :glepnir/dashboard-nvim
+;  :disable true
+;  :config (λ [] (tset vim.g :dashboard_default_executive :telescope))}
+
+; {1 :rinx/nvim-minimap ; WARN: startup time
+;  :config (λ []
+;            (vim.cmd "let g:minimap#window#width = 10")
+;            (vim.cmd "let g:minimap#window#height = 35"))}
+{1 :gorbit99/codewindow.nvim
+:config (λ []
+        (local codewindow (require :codewindow))
+        (codewindow.setup)
+        (codewindow.apply_default_keybinds))}
 
 ;; scrollbar
 {1 :petertriho/nvim-scrollbar
@@ -135,6 +141,12 @@
  :event [:VimEnter]
  :requires [:nvim-lua/plenary.nvim]
  :setup (λ []
+          (ref-f
+            :setup
+            :telescope
+            {:pickers
+             {:colorscheme
+              {:enable_preview true}}})
           (local prefix ((. (require :kaza.map) :prefix-o) :n :<space>t :telescope))
           (prefix.map :f "<cmd>Telescope find_files<cr>" "find files")
           (prefix.map :g "<cmd>Telescope live_grep<cr>" "live grep")
@@ -278,8 +290,23 @@
 ;            ((. (require :nvim-lsp-installer) :on_server_ready)
 ;             (λ [server] (server:setup {}))))}
 {1 :williamboman/mason.nvim
+ :requires
+ ["jose-elias-alvarez/null-ls.nvim"
+  "jayp0521/mason-null-ls.nvim"]
  :config (λ []
-           (ref-f :setup :mason))
+           (ref-f :setup :mason)
+           ; (ref-f :setup :null-ls)
+           (local null_ls (require :null-ls))
+           (local mason_null_ls (require :mason-null-ls))
+           (mason_null_ls.setup
+                  {:ensure_installed [:stylua]
+                   :automatic_installation true})
+           (mason_null_ls.setup_handlers
+             {1 (λ [source_name] )
+              :stylua (λ [source_name]
+                  (null_ls.register null_ls.builtins.formatting.stylua)) })
+           (null_ls.setup))
+
  }
 {1 :williamboman/mason-lspconfig.nvim}
 
@@ -474,11 +501,12 @@
 {1 :neovim/nvim-lspconfig
  :requires [:hrsh7th/cmp-nvim-lsp
             :williamboman/mason.nvim
-            :williamboman/mason-lspconfig.nvim]
+            :williamboman/mason-lspconfig.nvim
+            :lukas-reineke/lsp-format.nvim]
  :after :cmp-nvim-lsp
  :config (lambda []
            (vim.cmd "source ~/.config/nvim/lsp_conf/lsp_conf.lua"))
- ; :config 
+ ; :config
  ; (lambda []
  ;   (require :core.pack.lsp))
  }
@@ -654,7 +682,7 @@
             (prefix.map "" "<Plug>LineLetters" "jump to line"))) }
 
 {1 :Cassin01/emacs-key-source.nvim
- :event [:VimEnter]}
+ :event [:InsertEnter]}
 
 ;; mark
 :kshenoy/vim-signature
@@ -746,9 +774,9 @@
 {1 :uki00a/denops-pomodoro.vim}
 {1 :skanehira/denops-docker.vim}
 
-;; Async
-{1 :ms-jpq/lua-async-await
- :branch :neo}
+; ;; Async
+; {1 :ms-jpq/lua-async-await
+;  :branch :neo}
 
 ;; text
 {1 :sedm0784/vim-you-autocorrect
@@ -831,8 +859,8 @@
 :deton/jasegment.vim
 
 ;; color
-; :Shougo/unite.vim
-; :ujihisa/unite-colorscheme
+:Shougo/unite.vim
+:ujihisa/unite-colorscheme
 
 :folke/tokyonight.nvim
 :rebelot/kanagawa.nvim

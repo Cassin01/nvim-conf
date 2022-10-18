@@ -8,7 +8,7 @@
  :softtabstop indent
  :expandtab true
  :autoindent true ; default on
- :cmdheight 0
+ ;; :cmdheight 0
  :number true
  :relativenumber true
  :winbar :%f

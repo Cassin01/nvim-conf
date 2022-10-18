@@ -5,11 +5,11 @@ require("mason-lspconfig").setup({
     ensure_installed = { "sumneko_lua" },
 })
 
-local default_on_attach = function(client)
-    -- require("mappings").keys_lsp()
-    client.resolved_capabilities.document_formatting = false
-    client.resolved_capabilities.document_range_formatting = false
-end
+-- local default_on_attach = function(client)
+-- --     -- require("mappings").keys_lsp()
+--     client.resolved_capabilities.document_formatting = false
+--     client.resolved_capabilities.document_range_formatting = false
+-- end
 local default_capabilities = require("cmp_nvim_lsp").default_capabilities()
 
 lspconfig.util.default_config = vim.tbl_extend("force", lspconfig.util.default_config, {
@@ -37,6 +37,15 @@ function setup_default()
                         },
                         telemetry = {
                             enable = false,
+                        },
+                        format = {
+                             enable = true,
+                            -- Put format options here
+                            -- NOTE: the value should be STRING!!
+                            defaultConfig = {
+                                indent_style = "space",
+                                indent_size = "2",
+                            }
                         },
                     },
                 },
