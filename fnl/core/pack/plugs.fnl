@@ -298,6 +298,7 @@
            ; (ref-f :setup :null-ls)
            (local null_ls (require :null-ls))
            (local mason_null_ls (require :mason-null-ls))
+           (local b null_ls.builtins)
            (mason_null_ls.setup
                   {:ensure_installed [:stylua]
                    :automatic_installation true})
@@ -305,7 +306,11 @@
              {1 (λ [source_name] )
               :stylua (λ [source_name]
                   (null_ls.register null_ls.builtins.formatting.stylua)) })
-           (null_ls.setup))
+           ;; ref: https://alpha2phi.medium.com/neovim-for-beginners-lsp-using-null-ls-nvim-bd954bf86b40
+           ;; ref: https://www.reddit.com/r/neovim/comments/un3s55/how_to_pass_arguments_for_formatting_in_nullls/
+           (local sources
+             [(b.formatting.stylua.with {:extra_args [:--indent-type :Spaces]})])
+           (null_ls.setup {:sources sources}))
 
  }
 {1 :williamboman/mason-lspconfig.nvim}

@@ -22,80 +22,80 @@ ls.cleanup() -- remove all snippets
 
 local rec_ls
 rec_ls = function()
-	return sn(
-		nil,
-		c(1, {
-			-- Order is important, sn(...) first would cause infinite loop of expansion.
-			t(""),
-			sn(nil, { t({ "", "\t\\item " }), i(1), d(2, rec_ls, {}) }),
-		})
-	)
+    return sn(
+        nil,
+        c(1, {
+            -- Order is important, sn(...) first would cause infinite loop of expansion.
+            t(""),
+            sn(nil, { t({ "", "\t\\item " }), i(1), d(2, rec_ls, {}) }),
+        })
+    )
 end
 
 local rec_arg
 rec_arg = function()
-	return sn(
-		nil,
-		c(1, {
-			-- Order is important, sn(...) first would cause infinite loop of expansion.
-			t(""),
-			sn(nil, { t({ ", " }), i(1), d(2, rec_arg, {}) }),
-		})
-	)
+    return sn(
+        nil,
+        c(1, {
+            -- Order is important, sn(...) first would cause infinite loop of expansion.
+            t(""),
+            sn(nil, { t({ ", " }), i(1), d(2, rec_arg, {}) }),
+        })
+    )
 end
 
 local arg_t = function(n)
-	return sn(n, fmt("{}: {}", { i(1), i(2) }))
+    return sn(n, fmt("{}: {}", { i(1), i(2) }))
 end
 local ret_t = function(n)
-	return c(n, { t(""), sn(nil, fmt("-> {} ", { i(1, "Type") })) })
+    return c(n, { t(""), sn(nil, fmt("-> {} ", { i(1, "Type") })) })
 end
 
 local rec_arg_rs
 rec_arg_rs = function()
-	return sn(
-		nil,
-		c(1, {
-			t(""),
-			sn(nil, { t({ ", " }), arg_t(1), d(2, rec_arg_rs, {}) }),
-		})
-	)
+    return sn(
+        nil,
+        c(1, {
+            t(""),
+            sn(nil, { t({ ", " }), arg_t(1), d(2, rec_arg_rs, {}) }),
+        })
+    )
 end
 
 local snippet = {
-	all = {
-		s("ternary", {
-			i(1, "cond"),
-			t(" ? "),
-			i(2, "then"),
-			t(" : "),
-			i(3, "else"),
-		}),
-	},
-	rust = {
-		s(
-			"fn",
-			fmt(
-				[[
+    all = {
+        s("ternary", {
+            i(1, "cond"),
+            t(" ? "),
+            i(2, "then"),
+            t(" : "),
+            i(3, "else"),
+        }),
+    },
+    rust = {
+        s(
+            "fn",
+            fmt(
+                [[
         fn {1}({2}{3}) {4}{{
             {5}
         }}
         ]],
-				{
-					i(1, "name"),
-					arg_t(2),
-					d(3, rec_arg_rs, {}),
-					ret_t(4),
-					i(5, "body"),
-				}
-			)
-		),
-	},
-	markdown = {
-		s(
-			"header",
-			fmt(
-				[[
+                {
+                    i(1, "name"),
+                    arg_t(2),
+                    d(3, rec_arg_rs, {}),
+                    ret_t(4),
+                    i(5, "body"),
+                }
+            )
+        ),
+    },
+    markdown = {
+        s(
+            "header",
+            fmt(
+                [[
         ```yaml
         layout: post
         title: {}
@@ -104,91 +104,97 @@ local snippet = {
         tags: [{}{}]
         ```
         ]],
-				{
-					i(1, "title"),
-					f(function()
-						return os.date("%Y-%m-%d")
-					end),
-					i(2, "programming"),
-					d(3, rec_arg, {}),
-					i(4, "rust"),
-					d(5, rec_arg, {}),
-				}
-			)
-		),
-		s(
-			",",
-			fmt([[{}{}]], {
-				i(1),
-				d(2, rec_arg, {}),
-			})
-		),
-	},
-	lua = {
-		s(
-			"fn",
-			fmt(
-				[[
+                {
+                    i(1, "title"),
+                    f(function()
+                        return os.date("%Y-%m-%d")
+                    end),
+                    i(2, "programming"),
+                    d(3, rec_arg, {}),
+                    i(4, "rust"),
+                    d(5, rec_arg, {}),
+                }
+            )
+        ),
+        s(
+            ",",
+            fmt([[{}{}]], {
+                i(1),
+                d(2, rec_arg, {}),
+            })
+        ),
+    },
+    lua = {
+        s(
+            "fn",
+            fmt(
+                [[
         function {}({}{})
             {}
         end
         ]],
-				{
-					i(1, "name"),
-					i(2, "a"),
-					d(3, rec_arg, {}),
-					i(4, "return a"),
-				}
-			)
-		),
-		s(
-			"req",
-			fmt('local {} = require("{}")', {
-				dl(2, l._1:match("%.([%w_]+)$"), { 1 }),
-				i(1),
-			})
-		),
-		s("for", {
-			t("for "),
-			c(1, {
-				sn(
-					nil,
-					{ i(1, "k"), t(", "), i(2, "v"), t(" in "), c(3, { t("pairs"), t("ipairs"), i(nil) }), t("("), i(4), t(")") }
-				),
-				sn(nil, { i(1, "i"), t(" = "), i(2), t(", "), i(3) }),
-			}),
-			t({ " do", "\t" }),
-			i(0),
-			t({ "", "end" }),
-		}),
-	},
-	tex = {
-		s("ls", {
-			t({ "\\begin{itemize}", "\t\\item " }),
-			i(1),
-			d(2, rec_ls, {}),
-			t({ "", "\\end{itemize}" }),
-		}),
-	},
-	fennel = {
-		s(
-			"lambda",
-			fmt(
-				[[
+                {
+                    i(1, "name"),
+                    i(2, "a"),
+                    d(3, rec_arg, {}),
+                    i(4, "return a"),
+                }
+            )
+        ),
+        s(
+            "req",
+            fmt('local {} = require("{}")', {
+                dl(2, l._1:match("%.([%w_]+)$"), { 1 }),
+                i(1),
+            })
+        ),
+        s("for", {
+            t("for "),
+            c(1, {
+                sn(nil, {
+                    i(1, "k"),
+                    t(", "),
+                    i(2, "v"),
+                    t(" in "),
+                    c(3, { t("pairs"), t("ipairs"), i(nil) }),
+                    t("("),
+                    i(4),
+                    t(")"),
+                }),
+                sn(nil, { i(1, "i"), t(" = "), i(2), t(", "), i(3) }),
+            }),
+            t({ " do", "\t" }),
+            i(0),
+            t({ "", "end" }),
+        }),
+    },
+    tex = {
+        s("ls", {
+            t({ "\\begin{itemize}", "\t\\item " }),
+            i(1),
+            d(2, rec_ls, {}),
+            t({ "", "\\end{itemize}" }),
+        }),
+    },
+    fennel = {
+        s(
+            "lambda",
+            fmt(
+                [[
         (λ [{}]
             {})]],
-				{
-					i(1, "arg"),
-					i(2, "body"),
-				}
-			)
-		),
-	},
+                {
+                    i(1, "arg"),
+                    i(2, "body"),
+                }
+            )
+        ),
+    },
 }
 
 --info
 -- https://github.com/L3MON4D3/Dotfiles/blob/master/.config/nvim/lua/plugins/luasnip/init.lua
 
 for k, v in pairs(snippet) do
-	ls.add_snippets(k, v)
+    ls.add_snippets(k, v)
 end
