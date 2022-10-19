@@ -43,6 +43,10 @@
                                                       (callback))))
                  (uv.timer_start timer ms 0 callback))
 
+(fn lazy [ms callback]
+  (async-fn (lambda []
+              (timeout ms callback))))
+
 (fn syntax [group pat ...]
   (vim.cmd (concat-with " " :syntax :match group pat ...)))
 
@@ -76,5 +80,6 @@
  : async-fn
  : timeout
  : syntax
+ : lazy
  ; : async-test
  }

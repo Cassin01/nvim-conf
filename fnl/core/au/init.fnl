@@ -43,9 +43,7 @@
       (.. :# (vf.printf :%0x (. target :foreground)))
       (= part :bg)
       (.. :# (vf.printf :%0x (. target :background)))
-      ; (error "part: bg or fg")
-      nil
-      )))
+      nil)))
 
 (fn print-second [a b]
   (print (vim.inspect b)))

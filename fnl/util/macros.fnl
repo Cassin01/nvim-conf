@@ -92,6 +92,10 @@
 (fn M.unless [cond ...]
   `(if (not ,cond) ,...))
 
+(fn M.when-let [res cond ...]
+  `(let [,res ,cond]
+       (when (not= ,res nil) ,...)))
+
 (fn M.until [cond ...]
   `(while (not ,cond) ,...))
 

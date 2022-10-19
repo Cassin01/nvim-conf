@@ -1,6 +1,7 @@
-(import-macros {: epi : req-f : unless} :util.macros)
+(import-macros {: epi : req-f : unless : when-let} :util.macros)
 (import-macros {: la : cmd : plug : space : br : nmaps} :kaza.macros)
 (local vf vim.fn)
+(local va vim.api)
 
 ;;; util {{{
 (fn concat-with [d ...]
@@ -83,6 +84,8 @@
                    (vim.cmd "hi CursorLine guibg=NONE")
                    (vim.cmd "hi StatusLine guibg=NONE guifg=#727169")
                    (vim.cmd "hi StatusLineNC guibg=NONE guifg=#727169")
+                   (vim.cmd "hi StatusLine guibg=NONE guifg=#727169")
+                   (vim.cmd "hi StatusLineNC guibg=NONE guifg=#727169")
                    (vim.cmd "hi LineNr guibg=NONE")
                    (vim.cmd "hi SignColumn guibg=NONE")
                    (vim.cmd "hi Folded guibg=NONE")
@@ -99,6 +102,30 @@
                          (when (not= (hi-name:match "^BufferLine.*$") nil)
                            (vim.cmd (.. "hi " hi-name " guibg=NONE"))))))
                    (bufferline)) :clear-color]
+   [(br :r :b) (la 
+                 (fn get-hl [name part]
+                   "name: hlname
+                   part: bg or fg"
+                   (let [target (va.nvim_get_hl_by_name name 0)]
+                     (if
+                       (= part :fg)
+                       (.. :# (vf.printf :%0x (. target :foreground)))
+                       (= part :bg)
+                       (.. :# (vf.printf :%0x (. target :background)))
+                       nil)))
+
+                 (when-let bg (get-hl :Normal :bg)
+                           (fn bufferline []
+                             (local {: unfold-iter} (require :util.list))
+                             (local res (vim.api.nvim_exec "highlight" true))
+                             (local lines (unfold-iter (res:gmatch "([^\r\n]+)")))
+                             (each [_ line (ipairs lines)]
+                               (local elements (unfold-iter (line:gmatch "%S+")))
+                               (local hi-name (. elements 1))
+                               (when (not= hi-name nil)
+                                 (when (not= (hi-name:match "^BufferLine.*$") nil)
+                                   (vim.cmd (.. "hi " hi-name " guibg=NONE"))))))
+                           (bufferline))) :clear-bufferlne]
    [:fn (la (print (vim.fn.expand :%:t))) "show file name"]
    [:fp (la (print (vim.fn.expand :%:p))) "show file path"]
    [:ft (la (if (= vim.o.foldmethod :indent)

@@ -1,7 +1,8 @@
-(import-macros {: req-f : ref-f : epi : ep} :util.macros)
+(import-macros {: req-f : ref-f : epi : ep : when-let} :util.macros)
 (import-macros {: nmaps : map : cmd : plug : space : ui-ignore-filetype : la : br : let-g : au!} :kaza.macros)
 
 (local va vim.api)
+(local vf vim.fn)
 
 (macro lcnf [file_name]
   `(vim.cmd (table.concat ["source ~/.config/nvim/after_opt/" ,file_name ] "")))
@@ -210,8 +211,34 @@
                [(br :r) (cmd :BufferLineCycleNext) "next"]
                [(br :l) (cmd :BufferLineCyclePrev) "prev"]
                [:e (cmd :BufferLineSortByExtension) "sort by extension"]
-               [:d (cmd :BufferLineSortByDirectory) "sort by directory"]]))
- }
+               [:d (cmd :BufferLineSortByDirectory) "sort by directory"]])
+
+            (fn get-hl [name part]
+              (let [target (vim.api.nvim_get_hl_by_name name 0)]
+                (if
+                  (= part :fg)
+                  (.. :# (vim.fn.printf :%0x (. target :foreground)))
+                  (= part :bg)
+                  (.. :# (vim.fn.printf :%0x (. target :background)))
+                  nil)))
+
+            (print :bg)
+            (local {: lazy} (require :kaza.cmd))
+            (local set-hl (lambda []
+              (when-let bg (get-hl :Normal :bg)
+                        (fn bufferline [bg]
+                          (local {: unfold-iter} (require :util.list))
+                          (local res (vim.api.nvim_exec "highlight" true))
+                          (local lines (unfold-iter (res:gmatch "([^\r\n]+)")))
+                          (each [_ line (ipairs lines)]
+                            (local elements (unfold-iter (line:gmatch "%S+")))
+                            (local hi-name (. elements 1))
+                            (when (not= hi-name nil)
+                              (when (not= (hi-name:match "^BufferLine.*$") nil)
+                                (vim.cmd (.. "hi " hi-name " guibg=" bg))))))
+                        (bufferline bg))))
+            (lazy 1000 set-hl)
+            )}
 
 {1 :sheerun/vim-polyglot :opt true}
 {1 :nvim-treesitter/nvim-treesitter
@@ -755,7 +782,7 @@
 
 ;;; language
 
-;;; deno
+;; deno
 :vim-denops/denops.vim
 {1 :Cassin01/fetch-info.nvim
  :require :ms-jpq/lua-async-await

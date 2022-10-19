@@ -3,8 +3,8 @@
 :python3_host_prog (. (execute-cmd "which python") 1)
 :polyglot_disabled [:markdown :fennel]
 ; :colors_name :kanagawa
-; :colors_name :habamax
-:colors_name :tokyonight
+:colors_name :habamax
+; :colors_name :tokyonight
 :markdown_fenced_languages [:python :ruby :javascript :js=javascript
                             :json=javascript :vim :css :ocaml
                             :rust
