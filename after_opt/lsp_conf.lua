@@ -71,9 +71,19 @@ local setup_handlers = {
             },
         })
     end,
+    ["denols"] = function()
+        lspconfig.denols.setup({
+            single_file_support = false,
+            root_dir = lspconfig.util.root_pattern("denops", "deno.json"),
+            init_options = {
+                lint = false,
+                unstable = true,
+            },
+        })
+    end,
 }
 
-local secret = require'secret'
+local secret = require("secret")
 if secret["grammarly"] ~= nil then
     setup_handlers["grammarly"] = function()
         lspconfig.grammarly.setup({
