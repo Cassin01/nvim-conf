@@ -80,7 +80,8 @@
        ) {:pattern "term://*"})
 (au! :term-en [:BufEnter]
      (when (= (. (vim.api.nvim_get_mode) :mode) "nt")
-       (vim.cmd :startinsert))
+       ; (vim.cmd :startinsert)
+       nil)
      {:pattern "term://*"})
 
 ;; vim grep

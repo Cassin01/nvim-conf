@@ -1,9 +1,6 @@
 (import-macros {: req-f : ref-f : epi : ep} :util.macros)
 (import-macros {: nmaps : map : cmd : plug : space : ui-ignore-filetype : la : br : let-g : au!} :kaza.macros)
 
-(macro au [group event body]
-  `(vim.api.nvim_create_autocmd ,event {:callback (λ [] ,body) :group (vim.api.nvim_create_augroup ,group {:clear true})}))
-
 (local va vim.api)
 
 (macro lcnf [file_name]
@@ -50,7 +47,7 @@
  :config (λ []
            (tset vim.g :fern#renderer :devicons)
            (tset vim.g :fern_renderer_devicons_disable_warning true)
-           (lcnf "fern.vim")
+           ; (lcnf "fern.vim")
            (nmaps
              :<space>n
              :fern
