@@ -222,7 +222,6 @@
                   (.. :# (vim.fn.printf :%0x (. target :background)))
                   nil)))
 
-            (print :bg)
             (local {: lazy} (require :kaza.cmd))
             (local set-hl (lambda []
               (when-let bg (get-hl :Normal :bg)
