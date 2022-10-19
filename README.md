@@ -1,6 +1,6 @@
 # neovim configuration
 
-Powered by [hotpot.nvim](https://github.com/rktjmp/hotpot.nvim).
+Powered by [hotpot.nvim](https://github.com/rktjmp/hotpot.nvim)
 
 ### Features
 

@@ -17,62 +17,75 @@ lspconfig.util.default_config = vim.tbl_extend("force", lspconfig.util.default_c
     capabilities = default_capabilities,
 })
 
-function setup_default()
-    require("mason-lspconfig").setup_handlers({
-        function(server_name)
-            lspconfig[server_name].setup({})
-        end,
-        ["sumneko_lua"] = function()
-            lspconfig.sumneko_lua.setup({
-                settings = {
-                    Lua = {
-                        runtime = {
-                            version = "LuaJIT",
-                        },
-                        diagnostics = {
-                            globals = { "vim", "use", "require" },
-                        },
-                        workspace = {
-                            library = vim.api.nvim_get_runtime_file("", true),
-                        },
-                        telemetry = {
-                            enable = false,
-                        },
-                        format = {
-                            enable = true,
-                            -- Put format options here
-                            -- NOTE: the value should be STRING!!
-                            defaultConfig = {
-                                indent_style = "space",
-                                indent_size = "2",
-                            },
+local setup_handlers = {
+    function(server_name)
+        lspconfig[server_name].setup({})
+    end,
+    ["sumneko_lua"] = function()
+        lspconfig.sumneko_lua.setup({
+            settings = {
+                Lua = {
+                    runtime = {
+                        version = "LuaJIT",
+                    },
+                    diagnostics = {
+                        globals = { "vim", "use", "require" },
+                    },
+                    workspace = {
+                        library = vim.api.nvim_get_runtime_file("", true),
+                    },
+                    telemetry = {
+                        enable = false,
+                    },
+                    format = {
+                        enable = true,
+                        -- Put format options here
+                        -- NOTE: the value should be STRING!!
+                        defaultConfig = {
+                            indent_style = "space",
+                            indent_size = "2",
                         },
                     },
                 },
-            })
-        end,
-        ["rust_analyzer"] = function()
-            lspconfig.rust_analyzer.setup({
-                settings = {
-                    ["rust-analyzer"] = {
-                        assist = {
-                            importGranularity = "module",
-                            importPrefix = "by_self",
-                        },
-                        cargo = {
-                            loadOutDirsFromCheck = true,
-                        },
-                        procMacro = {
-                            enable = false,
-                        },
-                        checkOnSave = {
-                            command = "clippy",
-                        },
+            },
+        })
+    end,
+    ["rust_analyzer"] = function()
+        lspconfig.rust_analyzer.setup({
+            settings = {
+                ["rust-analyzer"] = {
+                    assist = {
+                        importGranularity = "module",
+                        importPrefix = "by_self",
+                    },
+                    cargo = {
+                        loadOutDirsFromCheck = true,
+                    },
+                    procMacro = {
+                        enable = false,
+                    },
+                    checkOnSave = {
+                        command = "clippy",
                     },
                 },
-            })
-        end,
-    })
+            },
+        })
+    end,
+}
+
+local secret = require'secret'
+if secret["grammarly"] ~= nil then
+    setup_handlers["grammarly"] = function()
+        lspconfig.grammarly.setup({
+            init_options = {
+                clientId = secret["grammarly"].clientId,
+            },
+        })
+    end
+end
+
+local function setup_default()
+    require("mason-lspconfig").setup_handlers(setup_handlers)
 end
 
 setup_default()

@@ -7,7 +7,7 @@
 
 (tset M :list list*)
 (tset M :table table*)
-(tset M :object object*)
+; (tset M :object object*)
 (tset M :string string*)
 (tset M :type type*)
 

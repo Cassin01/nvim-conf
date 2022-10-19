@@ -3,3 +3,5 @@ plugged
 .DS_Store
 tools
 init/secret/secret.vim
+secret/
+lua/secret.lua

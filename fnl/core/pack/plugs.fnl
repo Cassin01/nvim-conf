@@ -108,13 +108,14 @@
 ;             :opt true }}
 
 ; notify
-; {1 :rcarriga/nvim-notify
-;  :config (lambda []
-;            ((. (require :notify) :setup) {:stages :fade_in_slide_out
-;                                         :background_colour :FloatShadow
-;                                         :timeout 3000 })
-;            (set vim.notify (require :notify)))
-;  }
+{1 :rcarriga/nvim-notify
+ :config (lambda []
+           ((. (require :notify) :setup) {:stages :fade_in_slide_out
+                                        :background_colour :FloatShadow
+                                        :timeout 3000 })
+           ; (set vim.notify (require :notify))
+           )
+ }
 {1 :folke/noice.nvim
  :event [:VimEnter]
  :config (lambda [] (ref-f :setup :noice))

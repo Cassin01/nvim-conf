@@ -32,7 +32,7 @@
  :inccommand :split
  :equalalways false
  :laststatus 3 ; 0
- ; :ruler false
+ :ruler false
  :history 1000
  :ttimeout true ; default on
  :ttimeoutlen 100
