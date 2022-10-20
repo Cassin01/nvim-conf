@@ -40,6 +40,6 @@
    ))
 
 ;; load plugins lazily
-(timeout 350 (lambda []
+(timeout 200 (lambda []
              (vim.cmd "doautocmd User plug-lazy-load")))
 
