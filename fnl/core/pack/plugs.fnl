@@ -34,7 +34,7 @@
            (vim.cmd "smap <silent><expr> <C-k> luasnip#expand_or_jumpable() ? '<Plug>luasnip-expand-or-jump' : '<C-k>'")
            (vim.cmd "imap <silent><expr> <C-q> luasnip#choice_active() ? '<Plug>luasnip-next-choice' : '<C-q>'")
            (vim.cmd "smap <silent><expr> <C-q> luasnip#choice_active() ? '<Plug>luasnip-next-choice' : '<C-q>'")
-           (vim.keymap.set :n :<leader>k "<cmd>source ~/.config/nvim/after/plugin/luasnip.lua<cr>")
+           (vim.keymap.set :n :<leader>k "<cmd>source ~/.config/nvim/after_opt/luasnip.lua<cr>")
            (load :luasnip.lua)
            (load :luasnip_key.lua)
            )}
@@ -960,12 +960,11 @@
 ;  :event ["User plug-lazy-load"]
 ;  :requires [:Shougo/unite.vim]}
 
-{1 :folke/tokyonight.nvim :opt true}
-{1 :rebelot/kanagawa.nvim :opt true}
-{1 :sam4llis/nvim-tundra :opt true}
-{1 :Mofiqul/dracula.nvim :opt true}
-{1 :zanglg/nova.nvim :opt true}
-
+{1 :folke/tokyonight.nvim :event ["User plug-lazy-load"] :opt true}
+{1 :rebelot/kanagawa.nvim :event ["User plug-lazy-load"] :opt true}
+{1 :sam4llis/nvim-tundra :event ["User plug-lazy-load"] :opt true}
+{1 :Mofiqul/dracula.nvim :event ["User plug-lazy-load"] :opt true}
+{1 :zanglg/nova.nvim :event ["User plug-lazy-load"] :opt true}
 
 ; :altercation/vim-colors-solarized   ; solarized
 ; :croaker/mustang-vim                ; mustang

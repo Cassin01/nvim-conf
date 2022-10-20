@@ -47,6 +47,7 @@ end
 local arg_t = function(n)
     return sn(n, fmt("{}: {}", { i(1), i(2) }))
 end
+
 local ret_t = function(n)
     return c(n, { t(""), sn(nil, fmt("-> {} ", { i(1, "Type") })) })
 end
@@ -184,11 +185,12 @@ local snippet = {
         (λ [{}]
             {})]],
                 {
-                    i(1, "arg"),
-                    i(2, "body"),
+                    i(1, ""),
+                    i(2, ""),
                 }
             )
         ),
+        s("event", t({[[:event ["User plug-lazy-load"]]}))
     },
 }
 

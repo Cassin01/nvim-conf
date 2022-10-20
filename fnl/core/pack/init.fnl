@@ -40,6 +40,12 @@
    ))
 
 ;; load plugins lazily
-(timeout 200 (lambda []
-             (vim.cmd "doautocmd User plug-lazy-load")))
+(macro lplug [file_name]
+  `(vim.cmd (.. "source ~/.config/nvim/plug/" ,file_name)))
+(timeout 200 
+         (lambda []
+           (vim.cmd "doautocmd User plug-lazy-load")
+           (lplug :command.vim)
+           (lplug :hyper_witch.vim)
+           (lplug :terminal.vim)))
 

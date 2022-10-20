@@ -1,7 +1,7 @@
 (local {: execute-cmd} (require :kaza.file))
 {
 ; :python3_host_prog (. (execute-cmd "which python") 1)
-:python3_host_prog "/Users/cassin/.pyenv/shims/python3"
+:python3_host_prog (vim.fn.expand "~/.pyenv/shims/python3")
 :polyglot_disabled [:markdown :fennel]
 ; :colors_name :kanagawa
 :colors_name :habamax
