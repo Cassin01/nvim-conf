@@ -27,7 +27,7 @@ v0.8.0 stable
 ### Startup time
 
 ~~200~300ms on my environment.~~
-around 150ms
+around 100ms
 
 ### Screenshots
 

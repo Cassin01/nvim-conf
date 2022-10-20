@@ -4,7 +4,7 @@
 (ep key val (require :core.opt.opts) (tset vim.o key val))
 (epi _ val (require :core.opt.cmd) (vim.cmd val))
 
-(tset (. _G.__kaza :f) :dump (req-f :dump :util.list))
+; (tset (. _G.__kaza :f) :dump (req-f :dump :util.list))
 
 (vim.opt.clipboard:append {:unnamedplus true
                            :unnamed true})

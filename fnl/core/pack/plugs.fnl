@@ -151,6 +151,7 @@
                :space_char_blankline " "}))}
 
 {1 :edluffy/specs.nvim
+ ; :event ["User plug-lazy-load"]
  :config (la ((req-f :setup :specs) {:show_jumps true
                                      :min_jump 10
                                      :popup {:delay_ms 0
@@ -169,7 +170,7 @@
 ;; telescope {{{
 {1 :nvim-telescope/telescope.nvim
  :event ["User plug-lazy-load"]
- :requires [:nvim-lua/plenary.nvim]
+ :requires [{1 :nvim-lua/plenary.nvim}]
  :config (λ []
           (ref-f
             :setup
@@ -321,7 +322,7 @@
 ; Show git status on left of a code.
 {1 :lewis6991/gitsigns.nvim ; WARN startup
  :event ["User plug-lazy-load"]
- :requires :nvim-lua/plenary.nvim
+ :requires {1 :nvim-lua/plenary.nvim}
  :config (λ []
            ((. (require :gitsigns) :setup)
             {:current_line_blame true}))}
@@ -355,9 +356,8 @@
 ;             (λ [server] (server:setup {}))))}
 {1 :williamboman/mason.nvim
  ; :event ["User plug-lazy-load"]
- :requires
- ["jose-elias-alvarez/null-ls.nvim"
-  "jayp0521/mason-null-ls.nvim"]
+ :requires [{1 "jose-elias-alvarez/null-ls.nvim"}
+            {1 "jayp0521/mason-null-ls.nvim"}]
  :config (λ []
            (ref-f :setup :mason)
            ; (ref-f :setup :null-ls)
@@ -378,7 +378,7 @@
            (null_ls.setup {:sources sources}))
 
  }
-{1 :williamboman/mason-lspconfig.nvim}
+; {1 :williamboman/mason-lspconfig.nvim}
 
 {1 :onsails/lspkind-nvim
  :config (λ [] ((. (require :lspkind) :init) {}))}
@@ -571,10 +571,13 @@
 
 {1 :neovim/nvim-lspconfig
  :event ["User plug-lazy-load"]
- :requires [:hrsh7th/cmp-nvim-lsp
-            :williamboman/mason.nvim
-            :williamboman/mason-lspconfig.nvim
-            :lukas-reineke/lsp-format.nvim]
+ :requires [;:hrsh7th/cmp-nvim-lsp
+            {1 :williamboman/mason.nvim
+             :event ["User plug-lazy-load"]}
+            {1 :williamboman/mason-lspconfig.nvim
+             :event ["User plug-lazy-load"]}
+            {1 :lukas-reineke/lsp-format.nvim
+             :event ["User plug-lazy-load"]}]
  :after :cmp-nvim-lsp
  :config (lambda []
            (lcnf :lsp_conf.lua)
@@ -668,6 +671,7 @@
 
 ;;; vim
 {1 :Shougo/echodoc.vim
+ :event ["User plug-lazy-load"]
  :setup (λ []
           (tset vim.g :echodoc#enable_at_startup true)
           (tset vim.g :echodoc#type :floating))}
@@ -738,10 +742,11 @@
  :event ["User plug-lazy-load"]}
 
 ; :rhysd/clever-f.vim
-:Jorengarenar/vim-MvVis ; Move visually selected text. Ctrl-HLJK
+{1 :Jorengarenar/vim-MvVis
+ :event ["User plug-lazy-load"]} ; Move visually selected text. Ctrl-HLJK
 {1 :terryma/vim-expand-region
  :event ["User plug-lazy-load"]
- :setup (λ []
+ :config (λ []
           (vim.cmd "vmap v <Plug>(expand_region_expand)")
           (vim.cmd "vmap <C-v> <Plug>(expand_region_shrink)"))}
 
@@ -752,7 +757,7 @@
 ;; move dir to dir
 {1 :francoiscabrol/ranger.vim
  :event ["User plug-lazy-load"]
- :requires :rbgrouleff/bclose.vim
+ :requires {1 :rbgrouleff/bclose.vim :event ["User plug-lazy-load"]}
  :config (λ []
           (let [prefix ((. (require :kaza.map) :prefix-o) :n :<space>r :ranger)]
             (prefix.map :r :<cmd>Ranger<cr> "start at here")
@@ -760,6 +765,7 @@
 
 ;;; move
 {1 :Shougo/vimproc.vim
+ :event ["User plug-lazy-load"]
  :run "make"}
 
 ;; Jump to any visible line in the buffer by using letters instead of numbers.
@@ -794,6 +800,7 @@
 
 ;; translation
 {1 :skanehira/translate.vim
+ :event ["User plug-lazy-load"]
  :config (λ []
           (tset vim.g :translate_source :en)
           (tset vim.g :translate_target :ja)
@@ -810,13 +817,14 @@
 ;; web browser
 {1 :thinca/vim-ref
  :event ["User plug-lazy-load"]
- :setup (la (vim.cmd "source ~/.config/nvim/fnl/core/pack/conf/vim-ref.vim"))}
+ :config (la (vim.cmd "source ~/.config/nvim/fnl/core/pack/conf/vim-ref.vim"))}
 
 ;; log
 {1 :wakatime/vim-wakatime
  :event ["User plug-lazy-load"]}
 
-:ThePrimeagen/vim-apm
+{1 :ThePrimeagen/vim-apm
+ :event ["User plug-lazy-load"]}
 
 ;;; language
 
@@ -863,6 +871,7 @@
           (map :c :<c-j> (plug "(skkeleton-toggle)") "[skkeleton] toggle"))}
 {1 :Cassin01/cmp-skkeleton :after  [ "nvim-cmp" "skkeleton" ] }
 {1 :delphinus/skkeleton_indicator.nvim
+ :event ["User plug-lazy-load"]
  :config (λ [] (ref-f :setup :skkeleton_indicator {}))}
 
 {1 :uki00a/denops-pomodoro.vim}
@@ -874,6 +883,7 @@
 
 ;; text
 {1 :sedm0784/vim-you-autocorrect
+ :event ["User plug-lazy-load"]
  :setup (λ []
           (let [prefix ((. (require :kaza.map) :prefix-o) :n :<space>a :auto-collect)]
             (prefix.map "e" "<cmd>EnableAutocorrect<cr>" "enable auto correct")))}
@@ -889,22 +899,27 @@
 ;            ((. (require :orgmode) :setup) {:org_agenda_files ["~/org/*"]}))}
 
 ;; lua
-:bfredl/nvim-luadev
+{ 1 :bfredl/nvim-luadev
+ :event ["User plug-lazy-load"]}
 {1 :mhartington/formatter.nvim
  :event [:BufWritePre]}
 
 ;; binary
-:Shougo/vinarise
+{1 :Shougo/vinarise
+ :event ["User plug-lazy-load"]}
 
 ;; fennel
-:bakpakin/fennel.vim  ; syntax
-:jaawerth/fennel-nvim ; native fennel support
+{1 :bakpakin/fennel.vim
+ :event ["User plug-lazy-load"]}  ; syntax
+{1 :jaawerth/fennel-nvim
+ :event ["User plug-lazy-load"]} ; native fennel support
 ; :Olical/conjure       ; interactive environment
 {1 :Olical/nvim-local-fennel
  :event ["User plug-lazy-load"]}
 
 ;; rust
-:rust-lang/rust.vim
+{1 :rust-lang/rust.vim
+ :event ["User plug-lazy-load"]}
 
 ;; tex
 {1 :Cassin01/texrun.vim
@@ -913,6 +928,7 @@
 
 ;; vim
 {1 :LeafCage/vimhelpgenerator
+ :event ["User plug-lazy-load"]
  :setup (λ []
           (tset vim.g :vimhelpgenerator_defaultlanguage "en")
           (tset vim.g :vimhelpgenerator_version :0.0.1)

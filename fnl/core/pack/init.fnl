@@ -42,7 +42,7 @@
 ;; load plugins lazily
 (macro lplug [file_name]
   `(vim.cmd (.. "source ~/.config/nvim/plug/" ,file_name)))
-(timeout 200 
+(timeout 200
          (lambda []
            (vim.cmd "doautocmd User plug-lazy-load")
            (lplug :command.vim)
