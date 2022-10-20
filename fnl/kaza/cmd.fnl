@@ -25,6 +25,7 @@
              (vim.cmd cmd)
              (async:close)))))
   (async:send))
+
 (fn async-fn [callback]
   (var async nil)
   (set async

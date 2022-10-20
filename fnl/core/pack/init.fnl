@@ -1,5 +1,6 @@
-(import-macros {: cmd : nmaps} :kaza.macros)
-(import-macros {: req-f} :util.macros)
+(import-macros {: cmd : nmaps : au!} :kaza.macros)
+(import-macros {: req-f : when-let} :util.macros)
+(local {: lazy : timeout : async-fn} (require :kaza.cmd))
 
 ;; TEMP
 ; For osx bigsur bug
@@ -37,3 +38,8 @@
    (use_rocks :luasocket)
    ; (use_rocks :Lua-cURL)
    ))
+
+;; load plugins lazily
+(timeout 350 (lambda []
+             (vim.cmd "doautocmd User plug-lazy-load")))
+

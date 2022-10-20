@@ -6,9 +6,11 @@ Powered by [hotpot.nvim](https://github.com/rktjmp/hotpot.nvim)
 
 - Fennel based
 
-- Using 90+ plugins
+- Using 120+ plugins
 
 - Systematized prefix
+
+- Super fast startup
 
 ### Requires
 
@@ -25,7 +27,7 @@ v0.8.0 stable
 ### Startup time
 
 ~~200~300ms on my environment.~~
-around 350ms
+around 170ms
 
 ### Screenshots
 
