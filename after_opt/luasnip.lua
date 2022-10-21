@@ -33,15 +33,18 @@ rec_ls = function()
 end
 
 local rec_arg
-rec_arg = function()
-    return sn(
-        nil,
-        c(1, {
-            -- Order is important, sn(...) first would cause infinite loop of expansion.
-            t(""),
-            sn(nil, { t({ ", " }), i(1), d(2, rec_arg, {}) }),
-        })
-    )
+rec_arg = function(div)
+    local lambda = function()
+        return sn(
+            nil,
+            c(1, {
+                -- Order is important, sn(...) first would cause infinite loop of expansion.
+                t(""),
+                sn(nil, { t({ div .. " " }), i(1), d(2, rec_arg(div), {}) }),
+            })
+        )
+    end
+    return lambda
 end
 
 local arg_t = function(n)
@@ -81,7 +84,7 @@ local snippet = {
         fn {1}({2}{3}) {4}{{
             {5}
         }}
-        ]],
+        ]]       ,
                 {
                     i(1, "name"),
                     arg_t(2),
@@ -104,24 +107,24 @@ local snippet = {
         categories: [{}{}]
         tags: [{}{}]
         ```
-        ]],
+        ]]       ,
                 {
                     i(1, "title"),
                     f(function()
                         return os.date("%Y-%m-%d")
                     end),
                     i(2, "programming"),
-                    d(3, rec_arg, {}),
+                    d(3, rec_arg(","), {}),
                     i(4, "rust"),
-                    d(5, rec_arg, {}),
+                    d(5, rec_arg(","), {}),
                 }
             )
         ),
         s(
             ",",
-            fmt([[{}{}]], {
+            fmt([[, {}{}]], {
                 i(1),
-                d(2, rec_arg, {}),
+                d(2, rec_arg(","), {}),
             })
         ),
     },
@@ -133,12 +136,12 @@ local snippet = {
         function {}({}{})
             {}
         end
-        ]],
+        ]]       ,
                 {
                     i(1, "name"),
-                    i(2, "a"),
-                    d(3, rec_arg, {}),
-                    i(4, "return a"),
+                    i(2, ""),
+                    d(3, rec_arg(","), {}),
+                    i(4, "return nil"),
                 }
             )
         ),
@@ -182,15 +185,16 @@ local snippet = {
             "lambda",
             fmt(
                 [[
-        (λ [{}]
+        (λ [{}{}]
             {})]],
                 {
                     i(1, ""),
-                    i(2, ""),
+                    d(2, rec_arg(""), {}),
+                    i(3, ""),
                 }
             )
         ),
-        s("event", t({[[:event ["User plug-lazy-load"]]}))
+        s("event", t({ [[:event ["User plug-lazy-load"]] })),
     },
 }
 

@@ -29,14 +29,13 @@
              {types.choiceNode
               {:active
                {:virt_text [{"● " "Error" }]}}}})
-           (require :core.pack.conf.luasnip)
+           (lcnf :luasnip.lua)
+           (lcnf :luasnip_key.lua)
            (vim.cmd "imap <silent><expr> <C-k> luasnip#expand_or_jumpable() ? '<Plug>luasnip-expand-or-jump' : '<C-k>'")
            (vim.cmd "smap <silent><expr> <C-k> luasnip#expand_or_jumpable() ? '<Plug>luasnip-expand-or-jump' : '<C-k>'")
            (vim.cmd "imap <silent><expr> <C-q> luasnip#choice_active() ? '<Plug>luasnip-next-choice' : '<C-q>'")
            (vim.cmd "smap <silent><expr> <C-q> luasnip#choice_active() ? '<Plug>luasnip-next-choice' : '<C-q>'")
            (vim.keymap.set :n :<leader>k "<cmd>source ~/.config/nvim/after_opt/luasnip.lua<cr>")
-           (load :luasnip.lua)
-           (load :luasnip_key.lua)
            )}
 
 ;;; UI
