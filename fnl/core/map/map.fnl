@@ -1,7 +1,7 @@
 (local {: prefix : rt} (require :kaza.map))
 (import-macros {: la : cmd} :kaza.macros)
 
-(local {: inc-search} (require :emacs-key-source))
+; (local {: inc-search} (require :emacs-key-source))
 
 [
  [:n :# :*:%s/<C-r>///g<Left><Left> "replace current word"]
@@ -12,6 +12,6 @@
  ; [:n :<c-s-i> "<cmd>echo 'hoge'<cr>" "hge"]
  [:n :<space><c-i> "<cmd>echo 'c-i'<cr>" "for test"]
  [:n :<space><c-u> "<cmd> echom 'c-u'<cr>" "c-u for test"]
- [:n :<c-s> inc-search "incremental search"]
+ ; [:n :<c-s> inc-search "incremental search"]
  [:i :<c-g>t "<Plug>(hwitch-tex)" "h-witch tex"]
 ]

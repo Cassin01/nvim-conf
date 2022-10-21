@@ -14,9 +14,16 @@
   (vim.api.nvim_exec "echo expand('%')" true))
 
 ;;; whether if the file exists
+;; (fn M.filereadable [path]
+;;   (local cmd  (.. "echo filereadable(expand(\"" path "\"))"))
+;;   (vim.api.nvim_exec cmd true))
+
+;; WARN: this is tempolary
 (fn M.filereadable [path]
-  (local cmd  (.. "echo filereadable(expand(\"" path "\"))"))
-  (vim.api.nvim_exec cmd true))
+  (local f (io.open path :r))
+    (if (not= f nil)
+      (do (io.close f) true)
+      false))
 
 ;;; get `~` path
 (fn M.home []

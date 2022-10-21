@@ -16,6 +16,23 @@
 ;   ;; uv.run will block and wait for all events to run.
 ;   ;; when there are not longer any active handles, it will return
 ;   (uv.run))
+
+(fn async-f [f]
+  (λ [...]
+    (local args [...])
+    (λ [callback]
+      (var async nil)
+      (set async
+           (uv.new_async
+             (vim.schedule_wrap
+               (λ []
+                 (if (= args nil)
+                   (f)
+                   (f (unpack args)))
+                 (callback)
+                 (async:close)))))
+      (async:send))))
+
 (fn async-cmd [cmd]
   (var async nil)
   (set async
@@ -82,5 +99,6 @@
  : timeout
  : syntax
  : lazy
+ : async-f
  ; : async-test
  }

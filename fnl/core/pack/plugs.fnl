@@ -819,8 +819,8 @@
  :config (la (vim.cmd "source ~/.config/nvim/fnl/core/pack/conf/vim-ref.vim"))}
 
 ;; log
-{1 :wakatime/vim-wakatime
- :event ["User plug-lazy-load"]}
+;; {1 :wakatime/vim-wakatime
+;;  :event ["User plug-lazy-load"]}
 
 {1 :ThePrimeagen/vim-apm
  :event ["User plug-lazy-load"]}
@@ -975,7 +975,7 @@
 ;  :event ["User plug-lazy-load"]
 ;  :requires [:Shougo/unite.vim]}
 
-{1 :folke/tokyonight.nvim :event ["User plug-lazy-load"] :opt true}
+:folke/tokyonight.nvim
 {1 :rebelot/kanagawa.nvim :event ["User plug-lazy-load"] :opt true}
 {1 :sam4llis/nvim-tundra :event ["User plug-lazy-load"] :opt true}
 {1 :Mofiqul/dracula.nvim :event ["User plug-lazy-load"] :opt true}

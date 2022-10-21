@@ -1,8 +1,8 @@
-(local {: goto-line
-        : universal-argument
-        : inc-search
-        : kill-line2end
-        : kill-line2begging} (require :emacs-key-source))
+; (local {: goto-line
+;         : universal-argument
+;         : inc-search
+;         : kill-line2end
+;         : kill-line2begging} (require :emacs-key-source))
 
 (macro m [c ?s]
   (let [s (or ?s "")]
@@ -90,7 +90,7 @@
     ; [(c :j) :<esc>o "<C-j> insert new line bellow and jump"]
     [(c-s :o) :<esc>O "<C-S-o> insert new line above and jump"] ; *
     [(c :o) :<esc>o "<C-o> insert new line above and jump"]
-    [(c :g ::) goto-line "Goto line"]
+    ; WARN; [(c :g ::) goto-line "Goto line"]
     ; [(c :u) universal-argument :universal-argument] ; *
     ; [(c :p) :<up> "Up"]
     ; [(c :n) :<down> "Down"]
@@ -100,7 +100,7 @@
     [(m :f) :<c-o><c-f> "Page up"]
     [(c :g :g) :<esc>ggi "Beginning of buffer"]
     [(c :g :G) :<c-o>G "End of buffer"]
-    [(c :s) inc-search "Search"]
+    ; [(c :s) inc-search "Search"]
     [(c-s :l) "<c-o><Plug>(leap-backward)" "leap-backward"]
     [(c :l) "<c-o><Plug>(leap-forward)" "leap-forward"]
 
@@ -109,7 +109,7 @@
     [(c-s :h) :<Del> "Delete"]
     [(m :h) :<esc>vbc "Delete previous word"]
     [(m :d) :<esc>wvec "Delete next word"]
-    [(c-s :u) kill-line2end "delete from cursor to EOL"] ; *
+    ; [(c-s :u) kill-line2end "delete from cursor to EOL"] ; *
     ; [(c-s :k) kill-line2begging "delete from cursor to BOL"]
     ; [(c :t) :<esc>xphli :transpose-chars] ; * ; TODO: find a key that replace this
     [(m :t) :<esc>dwea<space><esc>pa<bs> :transpose-words]

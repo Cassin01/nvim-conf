@@ -19,8 +19,9 @@
 
 ;;; highlight
 ;; WARN Should be read before color scheme is loaded.
+(when vim.g.true_color_on ; WRAN: this is tempolary
 (au! :hi-default :BufWinEnter (each [_ k (ipairs (require :core.au.hi))]
-                       (vim.api.nvim_set_hl 0 (unpack k))))
+                       (vim.api.nvim_set_hl 0 (unpack k)))))
 
 ;; annotations
 (fn link [name opt]
@@ -273,13 +274,14 @@
   (when (not= _G.__kaza.v.sche_path nil)
     (local {: read_lines} (require :kaza.file))
     (local lines (read_lines _G.__kaza.v.sche_path))
+    (when (not= lines nil)
     (local data (parser lines))
     (set _G.__kaza.v.sche_data data)
     (local t (os.time))
     (local today (os.date :%Y/%m/%d t))
     (do-notify today data "Today's schedule")
     (local tomorrow (os.date :%Y/%m/%d (+ t 86400)))
-    (do-notify tomorrow data "Tomorrow's schedule")))
+    (do-notify tomorrow data "Tomorrow's schedule"))))
 (au! :sche-parse [:BufWritePost :BufNewFile :BufReadPost]
      (async-do! (notify-main))
      {:pattern [:*.sche]})

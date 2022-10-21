@@ -1,8 +1,8 @@
 (import-macros {: epi : unless } :util.macros)
 (import-macros {: async-do!} :kaza.macros)
-(local {: async-fn} (require :kaza.cmd))
+(local {: async-fn : async-f } (require :kaza.cmd))
 (local a (require :async))
-(local {: async-f} (require :kaza.async))
+; (local {: async-f} (require :kaza.async))
 
 (fn p-req [name]
   (let [(ok err) (pcall require name)]
