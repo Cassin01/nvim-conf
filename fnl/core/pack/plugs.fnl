@@ -7,9 +7,9 @@
 [
 ;;; snippet
 
-{1 :SirVer/ultisnips
-:event ["User plug-lazy-load"]
- }
+; {1 :SirVer/ultisnips
+; :event ["User plug-lazy-load"]
+;  }
 {1 :honza/vim-snippets
 :event ["User plug-lazy-load"]
  }
@@ -196,10 +196,10 @@
  :config (la ((req-f :load_extension :telescope) :packer))
  :requires [:nvim-telescope/telescope.nvim]}
 
-{1 :nvim-telescope/telescope-frecency.nvim
- :after :telescope.nvim
- :config (la ((req-f :load_extension :telescope) :frecency))
- :requires [:tami5/sqlite.lua :nvim-telescope/telescope.nvim]}
+; {1 :nvim-telescope/telescope-frecency.nvim
+;  :after :telescope.nvim
+;  :config (la ((req-f :load_extension :telescope) :frecency))
+;  :requires [:tami5/sqlite.lua :nvim-telescope/telescope.nvim]}
 ;; }}}
 
 {1 :xiyaowong/nvim-transparent
@@ -257,7 +257,7 @@
 {1 :sheerun/vim-polyglot :opt true}
 {1 :nvim-treesitter/nvim-treesitter
  :run ":TSUpdate"
- :event ["User plug-lazy-load"]
+ ; :event ["User plug-lazy-load"]
  :requires {1 :p00f/nvim-ts-rainbow :after :nvim-treesitter}
  :config (λ []
            ; ((. (require :orgmode) :setup_ts_grammar))
@@ -272,6 +272,7 @@
              :rainbow {:enable true
                        :extended_mode true
                        :max_file_lines nil}}))}
+:nvim-treesitter/nvim-treesitter-context
 ; {1 :norcalli/nvim-colorizer.lua
 ;  :config (λ []
 ;            ((. (require :colorizer) :setup)))}
@@ -468,10 +469,10 @@
                                                   :emoji "🚨"
                                                   :documentation "Adding missing tests or correcting existing tests"}}}))
             }
-            {1 :quangnguyen30192/cmp-nvim-ultisnips
-             :after :nvim-cmp
-             ; :config (λ [] (ref-f :setup :cmp-nvim-ultisnips {}))
-             }
+            ; {1 :quangnguyen30192/cmp-nvim-ultisnips
+            ;  :after :nvim-cmp
+            ;  ; :config (λ [] (ref-f :setup :cmp-nvim-ultisnips {}))
+            ;  }
             {1 :zbirenbaum/copilot-cmp :after :nvim-cmp}
             ; :neovim/nvim-lspconfig
             ]
@@ -975,7 +976,8 @@
 ;  :event ["User plug-lazy-load"]
 ;  :requires [:Shougo/unite.vim]}
 
-:folke/tokyonight.nvim
+{1 :folke/tokyonight.nvim}
+:shaunsingh/nord.nvim
 {1 :rebelot/kanagawa.nvim :event ["User plug-lazy-load"] :opt true}
 {1 :sam4llis/nvim-tundra :event ["User plug-lazy-load"] :opt true}
 {1 :Mofiqul/dracula.nvim :event ["User plug-lazy-load"] :opt true}

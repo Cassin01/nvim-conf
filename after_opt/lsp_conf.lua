@@ -83,8 +83,8 @@ local setup_handlers = {
     end,
 }
 
-local secret = require("secret")
-if secret["grammarly"] ~= nil then
+local ok, secret = pcall(require, "secret")
+if ok and secret["grammarly"] ~= nil then
     setup_handlers["grammarly"] = function()
         lspconfig.grammarly.setup({
             init_options = {
