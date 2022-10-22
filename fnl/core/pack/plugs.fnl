@@ -89,7 +89,7 @@
  :event ["User plug-lazy-load"]
 :config (λ []
         (local codewindow (require :codewindow))
-        (codewindow.setup 
+        (codewindow.setup
           {:use_treesitter true
            :use_lsp true})
         (codewindow.apply_default_keybinds))}
@@ -254,7 +254,7 @@
             (set-hl)
             )}
 
-{1 :sheerun/vim-polyglot :opt true}
+; {1 :sheerun/vim-polyglot}
 {1 :nvim-treesitter/nvim-treesitter
  :run ":TSUpdate"
  ; :event ["User plug-lazy-load"]
@@ -262,17 +262,25 @@
  :config (λ []
            ; ((. (require :orgmode) :setup_ts_grammar))
            ((. (require "nvim-treesitter.configs") :setup)
-            {:ensure_installed "maintained"
+            {:ensure_installed [ "nix" "org" "bash" ]  ; "lua" "rust" "c" "org"
              :sync_install false
+             :auto_install true
              :ignore_install [ "javascript" ]
              :highlight {:enable false
                          :disable [ "c" "rust" "org" "vim" "tex"]
                          :additional_vim_regex_highlighting ["org"]}
-             :ensure_installed ["org"]
              :rainbow {:enable true
                        :extended_mode true
-                       :max_file_lines nil}}))}
+                       :max_file_lines nil}
+            :disable (λ [lang buf]
+                (local max_filesize (* 100 1024))
+                (local (ok status) (pcall vim.loop.fs_stat (vim.api.nvim_buf_get_name buf)))
+                (if (and ok status (> status.size max_filesize))
+                  true
+                  nil))
+             :additional_vim_regex_highlighting false}))}
 :nvim-treesitter/nvim-treesitter-context
+:nvim-treesitter/playground
 ; {1 :norcalli/nvim-colorizer.lua
 ;  :config (λ []
 ;            ((. (require :colorizer) :setup)))}
@@ -970,6 +978,11 @@
 ;; japanese
 {1 :deton/jasegment.vim
  :event ["User plug-lazy-load"]}
+{1 :catppuccin/nvim
+ :as :catppuccin
+ :config (λ []
+           ; (ref-f :setup :catppuccin {:flavour :macchiato})
+           (vim.api.nvim_command "colorscheme catppuccin-macchiato"))}
 
 ;; color
 ; {1 :ujihisa/unite-colorscheme
