@@ -11,8 +11,7 @@
 ; :event ["User plug-lazy-load"]
 ;  }
 {1 :honza/vim-snippets
-:event ["User plug-lazy-load"]
- }
+ :event ["User plug-lazy-load"]}
 {1 :L3MON4D3/LuaSnip
  :event ["User plug-lazy-load"]
  :tag "v1.1.0"
@@ -35,8 +34,7 @@
            (vim.cmd "smap <silent><expr> <C-k> luasnip#expand_or_jumpable() ? '<Plug>luasnip-expand-or-jump' : '<C-k>'")
            (vim.cmd "imap <silent><expr> <C-q> luasnip#choice_active() ? '<Plug>luasnip-next-choice' : '<C-q>'")
            (vim.cmd "smap <silent><expr> <C-q> luasnip#choice_active() ? '<Plug>luasnip-next-choice' : '<C-q>'")
-           (vim.keymap.set :n :<leader>k "<cmd>source ~/.config/nvim/after_opt/luasnip.lua<cr>")
-           )}
+           (vim.keymap.set :n :<leader>k "<cmd>source ~/.config/nvim/after_opt/luasnip.lua<cr>"))}
 
 ;;; UI
 
@@ -214,8 +212,11 @@
  ;           (ref-f :setup :bufferline {:options {:separator_style :slant}}))
  ; :setup (λ [] (ref-f :setup :bufferline {}))
  :event ["User plug-lazy-load"]
- :config (la 
-           (ref-f :setup :bufferline {})
+ :config (la
+           (ref-f :setup :bufferline
+                  {:options {:show_close_icon false
+                             :show_buffer_close_icons false
+                             :color_icons false}})
            (nmaps
               :<space>b
               :bufferline
@@ -254,7 +255,7 @@
             (set-hl)
             )}
 
-; {1 :sheerun/vim-polyglot}
+{1 :sheerun/vim-polyglot}
 {1 :nvim-treesitter/nvim-treesitter
  :run ":TSUpdate"
  ; :event ["User plug-lazy-load"]
@@ -663,19 +664,20 @@
 
 ; ;;; copilot
 {1 :zbirenbaum/copilot.lua
- :event ["User plug-lazy-load"]
+ ; :event ["User plug-lazy-load"]
  :requires [:github/copilot.vim]
  :config (lambda [] (vim.defer_fn
                (lambda [] ((. (require :copilot) :setup)))
                100))}
-{1 :zbirenbaum/copilot-cmp
- :after :copilot.lua
- :config (la (ref-f :setup :copilot_cmp))
- }
 
 {1 :github/copilot.vim
  :event ["User plug-lazy-load"]
  :config (λ [] (tset vim.g :copilot_no_tab_map true))} ;; requires command `:Copilot restart`
+
+{1 :zbirenbaum/copilot-cmp
+ :after [:zbirenbaum/copilot.lua]
+ :config (la (ref-f :setup :copilot_cmp))
+ }
 
 ;;; vim
 {1 :Shougo/echodoc.vim
@@ -788,7 +790,17 @@
 
 ;; mark
 {1 :kshenoy/vim-signature
- :event ["User plug-lazy-load"]}
+ :event ["User plug-lazy-load"]
+ :config (la
+           (local {: goto-line
+                   : universal-argument
+                   : inc-search
+                   : kill-line2end
+                   : kill-line2begging} (require :emacs-key-source))
+          (map :i :<C-g> goto-line :goto-line)
+          (map :i :<C-s> inc-search :inc-search)
+          (map :i :<C-S-u> kill-line2end :kill-line2end)
+          (map :n :<C-s> inc-search :inc-search))}
 
 :mhinz/neovim-remote
 
@@ -900,6 +912,17 @@
 ; {1 :mrshmllow/document-color.nvim
 ;  :config (λ []
 ;            ((. (require :document-color) :setup) {:mode :backkground})) }
+{1 :brenoprata10/nvim-highlight-colors
+ :event ["User plug-lazy-load"]
+ :config (la
+           (ref-f :setup :nvim-highlight-colors)
+           (nmaps
+             :<space>h
+             :highlight-colors
+             [["]" (la (ref-f :turnOn :nvim-highlight-colors)) "turn on highlight colors"]
+              ["[" (la (ref-f :turnOff :nvim-highlight-colors)) "turn off highlight colors"]
+              ["t" (la (ref-f :toggle :nvim-highlight-colors)) "toggle highlight colors"]
+              ]))}
 
 ;; org
 ; {1 :nvim-orgmode/orgmode ; INFO startup
@@ -931,7 +954,7 @@
 
 ;; tex
 {1 :Cassin01/texrun.vim
- :event ["User plug-lazy-load"]
+ ; :event ["User plug-lazy-load"]
  :setup (λ [] (tset vim.g :texrun#file_name [:l02.tex :sample.tex :resume.tex]))}
 
 ;; vim
@@ -978,11 +1001,11 @@
 ;; japanese
 {1 :deton/jasegment.vim
  :event ["User plug-lazy-load"]}
-{1 :catppuccin/nvim
- :as :catppuccin
- :config (λ []
-           ; (ref-f :setup :catppuccin {:flavour :macchiato})
-           (vim.api.nvim_command "colorscheme catppuccin-macchiato"))}
+; {1 :catppuccin/nvim
+;  :as :catppuccin
+;  :config (λ []
+;            ; (ref-f :setup :catppuccin {:flavour :macchiato})
+;            (vim.api.nvim_command "colorscheme catppuccin-macchiato"))}
 
 ;; color
 ; {1 :ujihisa/unite-colorscheme

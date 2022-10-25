@@ -19,9 +19,9 @@
 
 ;;; highlight
 ;; WARN Should be read before color scheme is loaded.
-(when vim.g.true_color_on ; WRAN: this is tempolary
-(au! :hi-default :BufWinEnter (each [_ k (ipairs (require :core.au.hi))]
-                       (vim.api.nvim_set_hl 0 (unpack k)))))
+(when (vim.fn.has :macunix) ; WRAN: this is tempolary
+  (au! :hi-default :BufWinEnter (each [_ k (ipairs (require :core.au.hi))]
+                                  (vim.api.nvim_set_hl 0 (unpack k)))))
 
 ;; annotations
 (fn link [name opt]

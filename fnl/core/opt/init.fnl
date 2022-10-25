@@ -9,7 +9,8 @@
 (vim.opt.clipboard:append {:unnamedplus true
                            :unnamed true})
 (tset vim.opt :listchars {:tab "▸▹┊"
-                          :trail "□"
+                          ; :trail "□"
+                          :trail "⋅"
                           :extends "❯"
                           :precedes "❮"
                           ; :space "⋅"

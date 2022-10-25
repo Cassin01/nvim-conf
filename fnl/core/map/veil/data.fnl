@@ -89,8 +89,8 @@
     [(c :e) :<end> "Jump to EOL"]
     ; [(c :j) :<esc>o "<C-j> insert new line bellow and jump"]
     [(c-s :o) :<esc>O "<C-S-o> insert new line above and jump"] ; *
-    [(c :o) :<esc>o "<C-o> insert new line above and jump"]
-    ; WARN; [(c :g ::) goto-line "Goto line"]
+    ; [(c :o) :<esc>o "<C-o> insert new line above and jump"]
+    ; [(c :g ::) goto-line "Goto line"] ; migrated
     ; [(c :u) universal-argument :universal-argument] ; *
     ; [(c :p) :<up> "Up"]
     ; [(c :n) :<down> "Down"]

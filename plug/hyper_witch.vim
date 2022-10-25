@@ -250,7 +250,7 @@ function! s:prefix_trimer(input, matched, parsed_prefixes)
     " - parsed_prefixes: array of string
     " return keys of prefixes
     " WARN: This function must check if there is a same keys as a prefix.
-    " When the keys is find, we must ignore prefix or write redundantly.
+    " When the keys is found, we must ignore prefix or write redundantly.
     " * Ignore prefix or write redundantly?
     " ** Write redundantly
     " This case we can't eliminate duplicate keys after replaced prefixes with

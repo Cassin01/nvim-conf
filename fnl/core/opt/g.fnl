@@ -5,7 +5,7 @@
 :polyglot_disabled [:markdown :fennel]
 ; :colors_name :kanagawa
 ; :colors_name :habamax
-:colors_name :tokyonight
+:colors_name :tokyonight-night
 :markdown_fenced_languages [:python :ruby :javascript :js=javascript
                             :json=javascript :vim :css :ocaml
                             :rust

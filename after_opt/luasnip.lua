@@ -65,6 +65,8 @@ rec_arg_rs = function()
         })
     )
 end
+local function reused_func(args, snip)
+end
 
 local snippet = {
     all = {
@@ -87,6 +89,7 @@ local snippet = {
         ]]       ,
                 {
                     i(1, "name"),
+                    -- i(2, ""),
                     arg_t(2),
                     d(3, rec_arg_rs, {}),
                     ret_t(4),
@@ -94,6 +97,13 @@ local snippet = {
                 }
             )
         ),
+        s(
+            "num2char",
+            fmt([[std::char::from_digit({} as u32, 10)]], {
+                i(1, "num"),
+            })
+        ),
+        s("char2num", fmt([[{} as u8 - '0' as u8]], { i(1, "char") })),
     },
     markdown = {
         s(
@@ -101,7 +111,6 @@ local snippet = {
             fmt(
                 [[
         ```yaml
-        layout: post
         title: {}
         date: {}
         categories: [{}{}]
@@ -128,6 +137,7 @@ local snippet = {
             })
         ),
     },
+
     lua = {
         s(
             "fn",
