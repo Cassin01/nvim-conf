@@ -664,8 +664,8 @@
 
 ; ;;; copilot
 {1 :zbirenbaum/copilot.lua
- ; :event ["User plug-lazy-load"]
- :requires [:github/copilot.vim]
+ :event ["User plug-lazy-load"]
+ :requires [{1 :github/copilot.vim :event ["User plug-lazy-load"]}]
  :config (lambda [] (vim.defer_fn
                (lambda [] ((. (require :copilot) :setup)))
                100))}
@@ -675,7 +675,8 @@
  :config (λ [] (tset vim.g :copilot_no_tab_map true))} ;; requires command `:Copilot restart`
 
 {1 :zbirenbaum/copilot-cmp
- :after [:zbirenbaum/copilot.lua]
+ ; :after [{1 :zbirenbaum/copilot.lua :event ["User plug-lazy-load"]}]
+ ; :event ["User plug-lazy-load"]
  :config (la (ref-f :setup :copilot_cmp))
  }
 
