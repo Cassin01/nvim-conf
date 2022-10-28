@@ -297,6 +297,13 @@
                (tset vim.bo :tabstop indent)
                (tset vim.bo :shiftwidth indent)
                (tset vim.bo :softtabstop indent)
+               (let [{: bmap} (require :kaza.map)]
+                 (epi _ k [[:n :<space><space>  
+                            (λ []
+                                (local date (vim.fn.strftime "^%Y/%m/%d"))
+                                (vim.fn.search date))
+                            :goto-today]]
+                      (bmap 0 (unpack k))))
                (syntax :Comment "'^;.*'" )
                (syntax :Statement "'^\\(\\d\\|\\d\\d\\)月'")
                (syntax :Function m-date)
