@@ -186,143 +186,43 @@
    :pattern [:*.lisp :*.fnl]
    :group pattern})
 
-;;; sche {{{
-(local m-date "'^\\d\\d\\d\\d/\\d\\d/\\d\\d'")
-(local l-date "%d%d%d%d/%d%d/%d%d")
-(local {: u-cmd} (require :kaza))
-(macro thrice-if [sentense lst]
-  (fn car [x ...] x)
-  (fn cdr [x ...] [...])
-  (fn step [l]
-    (if (= (length l) 0)
-      sentense
-      (let [v (car (unpack l))]
-        `(if (string.match ,sentense (.. :^%s+ ,v :.*$))
-           (let [kind# (string.match ,sentense (.. "^%s+(" ,v ").*$"))
-                 desc# (string.match ,sentense (.. "^%s+" ,v "%s+(.*)%s*$"))]
-             {kind# desc#})
-           ,(step (cdr (unpack l)))))))
-  (step lst))
-(fn append [lst x]
-  (tset lst (+ (length lst) 1) x)
-  lst)
-(fn pack [line list]
-  (local elm (thrice-if line ["@" "#" "%+" "%-" "!" "%."]))
-  (if (or (= list nil) (= (length list) 0) )
-    [elm]
-    (append list elm)))
-(fn parser [b-lines]
-  (var ret {})
-  (var date "")
-  (each [_ v (ipairs b-lines)]
-    (if (not= (string.match v (.. :^ l-date :.*$)) nil)
-      (do
-        (set date (string.match v (.. :^ l-date)))
-        (tset ret date []))
-      (tset ret date (pack v (. ret date)))))
-  ret)
-(u-cmd
-  :ParseSche
-  (λ []
-    (local lines (vim.api.nvim_buf_get_lines 0 0 -1 1))
-    (local ob (parser lines))
-    (print (vim.inspect ob))))
-(fn syntax [group pat ...]
-  (vim.cmd
-    (concat-with " "
-      :syntax :match group pat ...)))
-(macro weekday []
-  (let [keywords# [:Fri :Mon :Tue :Wed :Thu]]
-    (.. "'" :\<\ "(" (table.concat keywords# :\|) :\ ")'")))
-(au! :match-hi-sche :ColorScheme
-     (each [_ k (ipairs [[:GCalendarMikan {:fg :#F4511E}]
-                         [:GCalendarPeacock {:fg :#039BE5}]
-                         [:GCalendarGraphite {:fg :#616161}]
-                         [:GCalendarSage {:fg :#33B679}]
-                         [:GCalendarBanana {:fg :#f6bf26}]
-                         [:GCalendarLavender {:fg :#7986cb}]
-                         [:GCalendarTomato {:fg :#d50000}]
-                         [:GCalendarFlamingo {:fg :#e67c73}]])]
-       (vim.api.nvim_set_hl 0 (unpack k))))
-(set _G.__kaza.v.sche_path (vim.fn.expand "~/.config/nvim/data/10.sche"))
-(fn read-data [data]
-  (var ret "")
-  (each [k v (pairs {"@" "の予定があります."
-                     "#" "のメモがあります."
-                     "+" "をしなければなりません."
-                     "-" "の備忘録があります."
-                     "!" "締め切りがあります．"
-                     "." "はやりました．"})]
-    (local annex (. data k))
-    (when (not= annex nil)
-      (set ret (.. annex v))))
-  ret)
-(fn get-data [sd]
-  (var ll [])
-  (when (not= sd nil)
-    (each [_ v (ipairs sd)]
-      (if (= (type v) :table)
-        (set ll (append ll (read-data v)))
-        (set ll (append ll v)))))
-  ll)
-(fn do-notify [date data title]
-  (local sd (. data date))
-  (when (and (not= sd nil) (not= (length sd) 0))
-    (local ll (get-data sd))
-    ((require :notify) ll nil {:title title})))
-(fn notify-main []
-  (when (not= _G.__kaza.v.sche_path nil)
-    (local {: read_lines} (require :kaza.file))
-    (local lines (read_lines _G.__kaza.v.sche_path))
-    (when (not= lines nil)
-    (local data (parser lines))
-    (set _G.__kaza.v.sche_data data)
-    (local t (os.time))
-    (local today (os.date :%Y/%m/%d t))
-    (do-notify today data "Today's schedule")
-    (local tomorrow (os.date :%Y/%m/%d (+ t 86400)))
-    (do-notify tomorrow data "Tomorrow's schedule"))))
-(au! :sche-parse [:BufWritePost :BufNewFile :BufReadPost]
-     (async-do! (notify-main))
-     {:pattern [:*.sche]})
-(au! :sche-parse [:VimEnter]
-     (when (= _G.__kaza.v.sche_entered nil)
-       (async-do! (notify-main))
-       (set _G.__kaza.v.sche_entered true)))
-(create_autocmd
-  [:BufReadPost :BufNewFile]
-  {:callback (λ []
-               (tset vim.bo :filetype :sche)
-               (local indent 2)
-               (tset vim.bo :tabstop indent)
-               (tset vim.bo :shiftwidth indent)
-               (tset vim.bo :softtabstop indent)
-               (let [{: bmap} (require :kaza.map)]
-                 (epi _ k [[:n :<space><space>  
-                            (λ []
-                                (local date (vim.fn.strftime "^%Y/%m/%d"))
-                                (vim.fn.search date))
-                            :goto-today]]
-                      (bmap 0 (unpack k))))
-               (syntax :Comment "'^;.*'" )
-               (syntax :Statement "'^\\(\\d\\|\\d\\d\\)月'")
-               (syntax :Function m-date)
-               (syntax :Special "'\\s\\+@'")
-               (syntax :GCalendarBanana "'\\s\\++'")
-               (syntax :Special "'\\s\\+-'")
-               (syntax :GCalendarLavender "'\\s\\+#'")
-               (syntax :GCalendarBanana "'\\s\\+\\.'")
-               (syntax :GCalendarFlamingo "'\\s\\+!'")
-               (syntax :GCalendarGraphite (weekday))
-               (syntax :GCalendarMikan "'\\<Sun\\>'")
-               (syntax :GCalendarPeacock "'\\<Sat\\>'")
-               (syntax :GCalendarSage (vim.fn.strftime "'%Y/%m/%d'")))
-   :pattern [:*.sche]
-   :group :pattern})
-;;; }}}
 ;; }}}
+(when (vim.fn.has :mac)
+  (au! :adoc_preview :BufWritePost
+       (let [cmd (concat-with " " "(cd"
+                     (vf.expand :%:h)
+                     :&&
+                     "asciidoctor --backend html5"
+                     (.. (vf.expand :%:r) :.adoc)
+                     "-o"
+                     (vf.expand "~/.cache/nvim/adoc_preview/index.html")
+                     ; (.. (vf.expand :%:r) :.html)
+                     ")")]
+        (async-do! (vim.cmd (.. :! cmd))))
+    {:pattern :*.adoc})
+  (local {: u-cmd} (require :kaza))
+  (u-cmd :AdocPreview
+         (la
+           (let [cmd (concat-with " "
+                                  :livereloadx
+                                  :-s
+                                  :-p
+                                  :9000
+                                  (vf.expand "~/.cache/nvim/adoc_preview/")
+                                  )
+                 cmd_open (concat-with " " :open "http://localhost:9000")
+                 ]
+              ; (async-do! (vim.cmd (.. :! cmd)))
+              (local job (vim.fn.jobstart [:zsh :-c cmd]))
+              (async-do! (vim.cmd (.. :! cmd_open)))
+              ))))
 
 ;;; plugin specific
+
+;; sche
+; (local sche (require :core.au.sche))
+; (sche.setup {:sche_path (vim.fn.expand "~/.config/nvim/data/10.sche")
+;              :syntax {:month "'^\\(\\d\\|\\d\\d\\)月'"}})
 
 ;; packer
 (create_autocmd
