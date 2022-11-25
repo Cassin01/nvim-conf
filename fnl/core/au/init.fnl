@@ -189,7 +189,7 @@
 ;; }}}
 (when (vim.fn.has :mac)
   (au! :adoc_preview :BufWritePost
-       (let [cmd (concat-with 
+       (let [cmd (concat-with
                    " "
                    "(cd"
                    (vf.expand :%:h)
@@ -199,23 +199,23 @@
                    "-o"
                    (vf.expand "~/.cache/nvim/adoc_preview/index.html")
                    ")")]
-        (async-do! (vim.cmd (.. :! cmd))))
+        (local job (vim.fn.jobstart [:zsh :-c cmd])))
     {:pattern :*.adoc})
   (local {: u-cmd} (require :kaza))
   (u-cmd :AdocPreview
          (la
            (when (not vim.g.adoc_preview)
-            (tset vim.g :adoc_preview true)
-             (let [cmd (concat-with 
+             (tset vim.g :adoc_preview true)
+             (let [cmd1 (concat-with
                          " "
                          :livereloadx
                          :-s
                          :-p
                          :9000
                          (vf.expand "~/.cache/nvim/adoc_preview/"))
-                   cmd_open (concat-with " " :open "http://localhost:9000")]
-               (local job (vim.fn.jobstart [:zsh :-c cmd]))
-               (async-do! (vim.cmd (.. :! cmd_open))))))))
+                   cmd2 (concat-with " " :open "http://localhost:9000")]
+               (local job1 (vim.fn.jobstart [:zsh :-c cmd1]))
+               (local job2 (vim.fn.jobstart [:zsh :-c cmd2])))))))
 
 ;;; plugin specific
 
