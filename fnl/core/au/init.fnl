@@ -189,33 +189,33 @@
 ;; }}}
 (when (vim.fn.has :mac)
   (au! :adoc_preview :BufWritePost
-       (let [cmd (concat-with " " "(cd"
-                     (vf.expand :%:h)
-                     :&&
-                     "asciidoctor --backend html5"
-                     (.. (vf.expand :%:r) :.adoc)
-                     "-o"
-                     (vf.expand "~/.cache/nvim/adoc_preview/index.html")
-                     ; (.. (vf.expand :%:r) :.html)
-                     ")")]
+       (let [cmd (concat-with 
+                   " "
+                   "(cd"
+                   (vf.expand :%:h)
+                   :&&
+                   "asciidoctor --backend html5"
+                   (.. (vf.expand :%:r) :.adoc)
+                   "-o"
+                   (vf.expand "~/.cache/nvim/adoc_preview/index.html")
+                   ")")]
         (async-do! (vim.cmd (.. :! cmd))))
     {:pattern :*.adoc})
   (local {: u-cmd} (require :kaza))
   (u-cmd :AdocPreview
          (la
-           (let [cmd (concat-with " "
-                                  :livereloadx
-                                  :-s
-                                  :-p
-                                  :9000
-                                  (vf.expand "~/.cache/nvim/adoc_preview/")
-                                  )
-                 cmd_open (concat-with " " :open "http://localhost:9000")
-                 ]
-              ; (async-do! (vim.cmd (.. :! cmd)))
-              (local job (vim.fn.jobstart [:zsh :-c cmd]))
-              (async-do! (vim.cmd (.. :! cmd_open)))
-              ))))
+           (when (not vim.g.adoc_preview)
+            (tset vim.g :adoc_preview true)
+             (let [cmd (concat-with 
+                         " "
+                         :livereloadx
+                         :-s
+                         :-p
+                         :9000
+                         (vf.expand "~/.cache/nvim/adoc_preview/"))
+                   cmd_open (concat-with " " :open "http://localhost:9000")]
+               (local job (vim.fn.jobstart [:zsh :-c cmd]))
+               (async-do! (vim.cmd (.. :! cmd_open))))))))
 
 ;;; plugin specific
 
