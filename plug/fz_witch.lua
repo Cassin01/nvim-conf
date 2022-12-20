@@ -1,36 +1,21 @@
--- util
-local function cmd(name, f, opt)
-  opt = (opt or {})
-  opt["force"] = true
-  vim.api.nvim_create_user_command(name, f, opt)
-end
-
-local function aug(group)
-  vim.api.nvim_create_augroup(group, { clear = true })
-end
-
-local function au(group, event, callback, opt_)
-  local opt = vim.fn.extend(opt_ or {}, { callback = callback, group = group })
-  vim.api.nvim_create_autocmd(event, opt)
-end
-
-local function bmap(buf, mode, key, f, desc)
-  if type(mode) == "table" then
-    for _, v in pairs(mode) do
-      vim.api.nvim_buf_set_keymap(buf, v, key, "", { callback = f, noremap = true, silent = true, desc = desc })
-    end
-  elseif type(mode) == "string" then
-    vim.api.nvim_buf_set_keymap(buf, mode, key, "", { callback = f, noremap = true, silent = true, desc = desc })
-  end
-end
+local util = require("util")
+local cmd = util.cmd
+local aug = util.aug
+local au = util.au
 
 -- user option
 local _index = { "a", "s", "d", "f", "g", "h", "j", "k", "l" }
-local full_name = (function(plug_name, hash)
+local plug_name = "fz_witch"
+local full_name = (function(hash)
   return plug_name .. hash
-end)("fz_witch", "309240")
+end)("309240")
 local _g = aug(full_name)
 local input_win_row_offset = 3 -- shift up output-window's row with input-window's height
+
+local function bmap(buf, mode, key, f, desc)
+  util.bmap(buf, mode, key, f, "[" .. plug_name .. "] ".. desc)
+end
+-- util
 
 local index = (function(list)
   local set = {}
@@ -200,6 +185,7 @@ local function input_obj_gen(output_obj, choices, co, prompt)
     end
   end
   bmap(buf, { "i", "n" }, "<c-c>", del, "")
+  bmap(buf, { "n" }, "<esc>", del, "")
   bmap(buf, { "i", "n" }, "<c-m>", on_choice, "")
   bmap(buf, { "i", "n" }, "<c-w>", to_witch, "")
   bmap(buf, { "i", "n" }, "<c-f>", to_fuzzy, "")
@@ -232,7 +218,7 @@ local function inputlist(choices, opts)
     end)
     coroutine.yield(callback)
   end)
-  local input_obj = input_obj_gen(output_obj, choices, co, opts.prompt)
+  input_obj_gen(output_obj, choices, co, opts.prompt)
 
   return co
 end
