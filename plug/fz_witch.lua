@@ -3,7 +3,7 @@ local cmd = util.cmd
 local aug = util.aug
 local au = util.au
 
--- user option
+-- user options
 local _index = { "a", "s", "d", "f", "g", "h", "j", "k", "l" }
 local plug_name = "fz_witch"
 local full_name = (function(hash)
@@ -11,12 +11,6 @@ local full_name = (function(hash)
 end)("309240")
 local _g = aug(full_name)
 local input_win_row_offset = 3 -- shift up output-window's row with input-window's height
-
-local function bmap(buf, mode, key, f, desc)
-  util.bmap(buf, mode, key, f, "[" .. plug_name .. "] ".. desc)
-end
--- util
-
 local index = (function(list)
   local set = {}
   for _, l in ipairs(list) do
@@ -25,6 +19,12 @@ local index = (function(list)
   return set
 end)(_index)
 
+-- util
+local function bmap(buf, mode, key, f, desc)
+  util.bmap(buf, mode, key, f, "[" .. plug_name .. "] " .. desc)
+end
+
+-- core
 local function open_win(buf, height, row_offset)
   local conf_ = {
     col = 0,
@@ -184,15 +184,15 @@ local function input_obj_gen(output_obj, choices, co, prompt)
       end
     end
   end
-  bmap(buf, { "i", "n" }, "<c-c>", del, "")
-  bmap(buf, { "n" }, "<esc>", del, "")
-  bmap(buf, { "i", "n" }, "<c-m>", on_choice, "")
-  bmap(buf, { "i", "n" }, "<c-w>", to_witch, "")
-  bmap(buf, { "i", "n" }, "<c-f>", to_fuzzy, "")
-  bmap(buf, { "i" }, "<c-k>", update_selector("up"), "")
-  bmap(buf, { "i" }, "<c-j>", update_selector("down"), "")
-  bmap(buf, { "n" }, "k", update_selector("up"), "")
-  bmap(buf, { "n" }, "j", update_selector("down"), "")
+  bmap(buf, { "i", "n" }, "<c-c>", del, "quit")
+  bmap(buf, { "n" }, "<esc>", del, "quit")
+  bmap(buf, { "i", "n" }, "<c-m>", on_choice, "choice")
+  bmap(buf, { "i", "n" }, "<c-w>", to_witch, "start witch key mode")
+  bmap(buf, { "i", "n" }, "<c-f>", to_fuzzy, "start fuzzy finder mode")
+  bmap(buf, { "i" }, "<c-k>", update_selector("up"), "up selector")
+  bmap(buf, { "i" }, "<c-j>", update_selector("down"), "down selector")
+  bmap(buf, { "n" }, "k", update_selector("up"), "up selector")
+  bmap(buf, { "n" }, "j", update_selector("down"), "down selector")
 
   return { buf = buf, win = win }, co
 end
