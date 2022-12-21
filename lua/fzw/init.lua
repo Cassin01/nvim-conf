@@ -148,19 +148,9 @@ local function input_obj_gen(output_obj, choices, co, prompt)
       print("not matched")
     end
   end
-  local function getchar()
-    while true do
-      if vim.fn.getchar(1) then
-        local c = vim.fn.getchar()
-        if index[c] then
-          return c
-        else
-          return nil
-        end
-      end
-    end
-  end
 
+  local to_fuzzy = function()
+  end
   local to_witch = function()
     local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, true)
     local matches = vim.fn.matchfuzzy(choices, lines[1])
@@ -175,13 +165,29 @@ local function input_obj_gen(output_obj, choices, co, prompt)
 
     vim.cmd("redraw!")
 
+    local getchar = function()
+      while true do
+        if vim.fn.getchar(1) then
+          local c = vim.fn.getchar()
+          return c
+        end
+      end
+    end
     local c = getchar()
     if c ~= nil then
-      return callback(c)
+      local callback = co()
+      if callback ~= nil then
+        local num = tonumber(vim.fn.nr2char(c))
+        if 1 <= num and num <= #matches then
+          callback(num)
+        else
+          print(c)
+          print(num)
+        end
+        del()
+      end
     end
-    to_fuzzy()
-  end
-  local to_fuzzy = function() 
+
   end
   local update_selector = function(direction)
     return function()
