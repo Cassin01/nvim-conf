@@ -4,6 +4,63 @@
 ;         : kill-line2end
 ;         : kill-line2begging} (require :emacs-key-source))
 
+(local jump_col 
+  (lambda [direction_]
+    (lambda []
+      (local D {:forward :forward
+                :backward :backward})
+      (var cm -1)
+      (var gm {})
+      (local input_
+        (lambda []
+          (while true
+            (when (vim.fn.getchar 1)
+              (local c_ (vim.fn.getchar ))
+              (local ret (vim.fn.nr2char c_))
+              (lua "return ret")))))
+      (local f_
+        (lambda [c_ direction]
+          (local gfindc (. (require :lua.util) :gfindc))
+          (local findc (. (require :lua.util) :findc))
+          (local lnum (vim.fn.line "."))
+          (local col (vim.fn.col "."))
+          (local line_ (vim.api.nvim_get_current_line))
+          (local d
+            (if (= direction D.forward)
+              (findc (string.sub line_ col (length line_)) c_)
+              (findc (string.reverse (string.sub line_ 1 col)) c_)))
+          (if (= d nil)
+            1 ; failed to search char
+            (do
+              (each [_ v (ipairs (gfindc line_ c_))]
+                (table.insert gm (vim.fn.matchaddpos "CurSearch" [[lnum v 1]] )))
+              (if (= direction D.forward)
+                (do
+                  (vim.fn.cursor lnum (+ d col))
+                  (set cm (vim.fn.matchaddpos "Cursor" [[lnum (- (vim.fn.col ".") 1) 1]] )))
+                (do 
+                  (vim.fn.cursor lnum (- col d))
+                  (set cm (vim.fn.matchaddpos "Cursor" [[lnum (+ (vim.fn.col ".") 1) 1]] ))))
+              (vim.cmd "redraw!")
+              0))))
+      (fn core [c_ direction]
+        (local res (f_ c_ direction))
+        (when (= res 0)
+          (local i_ (input_))
+          (when (not= cm -1)
+            (vim.fn.matchdelete cm))
+          (each [i v (ipairs gm)]
+            (vim.fn.matchdelete v))
+          (set gm {})
+          (if
+            (= i_ ";")
+            (core c_ D.forward)
+            (= i_ ":")
+            (core c_ D.backward)
+            (vim.api.nvim_feedkeys i_ :i false))))
+      (local c_ (input_))
+      (core c_ direction_))))
+
 (macro m [c ?s]
   (let [s (or ?s "")]
     (.. (string.format :<M-%s> c) s)))
@@ -62,7 +119,7 @@
 
 ;;; EXCEPTION: I'm not prefer to make short cut on Insert-mode for bellow commands.
 ;;; - case Change
-;;;    - Because We can't expect any key efficiency. 
+;;;    - Because We can't expect any key efficiency.
 
 ;;; TODO: Key reloading (auto reloading would be great)
 ;;; TODO: Key map not reloading well detector (Not necessary)
@@ -83,8 +140,12 @@
     ;           ) "toggle cmp"]
     ; [(c :b) :<left> "Left"]
     ; [(c :f) :<right> "Right"]
-    [(c :f) :<c-o>f "normal-f"]
-    [(c-s :f) :<c-o>F "normal-F"]
+    ; [(c :f) :<c-o>f "normal-f"]
+    ; [(c-s :f) :<c-o>F "normal-F"]
+    [(c :f)
+     (jump_col :forward)
+     "normal-f"]
+    [(c-s :f) (jump_col :backward) "normal-F"]
     [(c :a) :<c-o>^ "Jump to BOL"] ; *
     [(c :e) :<end> "Jump to EOL"]
     ; [(c :j) :<esc>o "<C-j> insert new line bellow and jump"]
