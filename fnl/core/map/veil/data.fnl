@@ -3,8 +3,10 @@
 ;         : inc-search
 ;         : kill-line2end
 ;         : kill-line2begging} (require :emacs-key-source))
+(fn rt [str]
+  (vim.api.nvim_replace_termcodes str true true true))
 
-(local jump_col 
+(local jump_col
   (lambda [direction_]
     (lambda []
       (local D {:forward :forward
@@ -16,8 +18,11 @@
           (while true
             (when (vim.fn.getchar 1)
               (local c_ (vim.fn.getchar ))
-              (local ret (vim.fn.nr2char c_))
-              (lua "return ret")))))
+              ; (local ret (vim.fn.nr2char c_))
+              (lua "return c_")))))
+      (local input
+        (lambda []
+          (vim.fn.nr2char (input_))))
       (local f_
         (lambda [c_ direction]
           (local gfindc (. (require :lua.util) :gfindc))
@@ -27,8 +32,8 @@
           (local line_ (vim.api.nvim_get_current_line))
           (local d
             (if (= direction D.forward)
-              (findc (string.sub line_ col (length line_)) c_)
-              (findc (string.reverse (string.sub line_ 1 col)) c_)))
+              (findc (string.sub line_ (+ col 1) (length line_)) c_)
+              (findc (string.reverse (string.sub line_ 1 (- col 1))) c_)))
           (if (= d nil)
             1 ; failed to search char
             (do
@@ -37,10 +42,10 @@
               (if (= direction D.forward)
                 (do
                   (vim.fn.cursor lnum (+ d col))
-                  (set cm (vim.fn.matchaddpos "Cursor" [[lnum (- (vim.fn.col ".") 1) 1]] )))
-                (do 
+                  (set cm (vim.fn.matchaddpos "Cursor" [[lnum (vim.fn.col ".") 1]] )))
+                (do
                   (vim.fn.cursor lnum (- col d))
-                  (set cm (vim.fn.matchaddpos "Cursor" [[lnum (+ (vim.fn.col ".") 1) 1]] ))))
+                  (set cm (vim.fn.matchaddpos "Cursor" [[lnum (vim.fn.col ".") 1]] ))))
               (vim.cmd "redraw!")
               0))))
       (fn core [c_ direction]
@@ -53,13 +58,27 @@
             (vim.fn.matchdelete v))
           (set gm {})
           (if
-            (= i_ ";")
+            (= i_ 6)
             (core c_ D.forward)
-            (= i_ ":")
+            (= i_ (rt "<c-s-f>"))
             (core c_ D.backward)
-            (vim.api.nvim_feedkeys i_ :i false))))
-      (local c_ (input_))
+            ; (vim.fn.nr2char i_)
+            (vim.api.nvim_feedkeys (vim.fn.nr2char i_) :i false)
+            )))
+      (local c_ (input))
       (core c_ direction_))))
+(vim.api.nvim_set_keymap "i" :<c-f> "" {:desc :normal-f
+                                        :noremap true
+                                        :silent true
+                                        ; :expr true
+                                        :callback (jump_col :forward)})
+(vim.api.nvim_set_keymap "i" :<c-s-f> "" {:desc :normal-F
+                                          :noremap true
+                                          :silent true
+                                          ; :expr true
+                                          :callback (jump_col :backward)})
+    ; [(c :f) (jump_col :forward) "normal-f"]
+    ; [(c-s :f) (jump_col :backward) "normal-F"]
 
 (macro m [c ?s]
   (let [s (or ?s "")]
@@ -142,10 +161,6 @@
     ; [(c :f) :<right> "Right"]
     ; [(c :f) :<c-o>f "normal-f"]
     ; [(c-s :f) :<c-o>F "normal-F"]
-    [(c :f)
-     (jump_col :forward)
-     "normal-f"]
-    [(c-s :f) (jump_col :backward) "normal-F"]
     [(c :a) :<c-o>^ "Jump to BOL"] ; *
     [(c :e) :<end> "Jump to EOL"]
     ; [(c :j) :<esc>o "<C-j> insert new line bellow and jump"]
