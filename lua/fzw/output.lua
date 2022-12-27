@@ -4,7 +4,7 @@ local input_win_row_offset = static.input_win_row_offset -- shift up output-wind
 local gen_obj = require("fzw.common").gen_obj
 
 local function output_obj_gen()
-  local buf, win = gen_obj(vim.o.cmdheight + (vim.o.laststatus > 0 and 1 or 0) + input_win_row_offset)
+  local buf, win = gen_obj(vim.o.cmdheight + (vim.o.laststatus > 0 and 1 or 0) + input_win_row_offset + input_win_row_offset)
   vim.api.nvim_buf_set_option(buf, "filetype", full_name .. "output")
 
   return { buf = buf, win = win }
