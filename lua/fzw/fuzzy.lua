@@ -8,18 +8,16 @@ local input_win_row_offset = static.input_win_row_offset
 local bmap = static.bmap
 local au = require("fzw.util").au
 local _update_output_obj = require("fzw.output")._update_output_obj
-local cell = require("cell")
 
-local function input_obj_gen(output_obj, choices, co, prompt)
+local function input_obj_gen(output_obj, choices, callback)
   local _row_offset = vim.o.cmdheight + (vim.o.laststatus > 0 and 1 or 0) + input_win_row_offset
   local _lines = vim.o.lines
   local buf, win = gen_obj(_row_offset)
 
   -- vim.fn.sign_place(0, sign_group_prompt .. "fuzzy", full_name .. "prompt" .. "fuzzy", buf, { lnum = 1, priority = 10 })
 
-
   _update_output_obj(output_obj, choices, _lines, _row_offset + input_win_row_offset)
-  au(_g, "InsertEnter", function()
+  au(_g, "BufEnter", function()
     local _, _ = pcall(function()
       -- turn off the completion
       require("cmp").setup.buffer({ enabled = false })
@@ -50,7 +48,13 @@ local function input_obj_gen(output_obj, choices, co, prompt)
     end
   end, { buffer = buf })
   au(_g, "WinEnter", function()
-    vim.fn.sign_place(0, sign_group_prompt .. "fuzzy", sign_group_prompt .. "fuzzy", buf, { lnum = 1, priority = 10 })
+    vim.fn.sign_place(
+      0,
+      sign_group_prompt .. "fuzzy",
+      sign_group_prompt .. "fuzzy",
+      buf,
+      { lnum = 1, priority = 10 }
+    )
   end, { buffer = buf })
   au(_g, "WinLeave", function()
     vim.fn.sign_unplace(sign_group_prompt .. "fuzzy", { buffer = buf })
@@ -59,7 +63,6 @@ local function input_obj_gen(output_obj, choices, co, prompt)
     local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, true)
     local matches = vim.fn.matchfuzzy(choices, lines[1])
     if #matches == 1 then
-      local callback = co()
       if callback ~= nil then
         local c = string.match(matches[1], "^%d+")
         if c ~= nil then
@@ -75,57 +78,6 @@ local function input_obj_gen(output_obj, choices, co, prompt)
     end
   end
 
-  local to_fuzzy = function() end
-  local to_witch = function()
-    -- オブジェクトを作成
-    local choices_obj = {}
-    for i, val in ipairs(choices) do
-      choices_obj[i] = cell.new(i, tostring(i), val)
-    end
-
-    local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, true)
-    local matches_obj = vim.fn.matchfuzzy(choices_obj, lines[1], { key = "text" })
-
-    for lnum, match in pairs(matches_obj) do
-      local c = match.key
-      vim.fn.sign_define(full_name .. "prompt" .. c, {
-        text = c,
-        texthl = "Error",
-      })
-      vim.fn.sign_place(
-        0,
-        sign_group_witch,
-        full_name .. "prompt" .. c,
-        output_obj.buf,
-        { lnum = lnum, priority = 10 }
-      )
-    end
-
-    vim.cmd("redraw!")
-
-    local getchar = function()
-      while true do
-        if vim.fn.getchar(1) then
-          local c = vim.fn.getchar()
-          return c
-        end
-      end
-    end
-    local c = getchar()
-    if c ~= nil then
-      local callback = co()
-      if callback ~= nil then
-        print(vim.fn.nr2char(c))
-        -- local num = tonumber(vim.fn.nr2char(c))
-        -- if 1 <= num and num <= #choices then
-        --   callback(num)
-        -- else
-        --   print(num)
-        -- end
-        -- del()
-      end
-    end
-  end
   local update_selector = function(direction)
     return function()
       if direction == "up" then
