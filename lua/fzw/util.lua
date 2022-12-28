@@ -25,4 +25,30 @@ function M.bmap(buf, mode, key, f, desc)
   end
 end
 
+function M.fill_spaces(str, len)
+  local res = ""
+  for c in str:gmatch"." do
+    if vim.fn.strdisplaywidth(res .. c) > len then
+      break
+    end
+    res = res .. c
+  end
+  for _ = 1, len - vim.fn.strdisplaywidth(res) do
+    res = res .. " "
+  end
+  return res
+end
+
+function M.match_front(str, patt)
+  if string.len(str) < string.len(patt) then
+    return false
+  end
+  for i = 1, patt:len() do
+    if string.sub(str, i, i) ~= string.sub(patt,i, i) then
+      return false
+    end
+  end
+  return true
+end
+
 return M

@@ -1,6 +1,8 @@
 local util = require("fzw.util")
 local cmd = util.cmd
 local au = util.au
+local match_front = util.match_front
+local fill_spaces = util.fill_spaces
 local fuzzy = require("fzw.fuzzy")
 local witch = require("fzw.witch")
 local output_obj_gen = require("fzw.output").output_obj_gen
@@ -67,30 +69,53 @@ local sign_place_witch = function(choices, witch_obj, fuzzy_obj, output_obj)
     if _lines[1] == "" then
       return choices_obj
     else
-      return vim.fn.matchfuzzy(choices_obj, _lines[1], { key = "text" })
+      local obj = vim.fn.matchfuzzypos(choices_obj, _lines[1], { key = "text" })
+      local poss = obj[2]
+      local diff = 7
+      for _, match in ipairs(vim.fn.getmatches(output_obj.win)) do
+        if match.group == "IncSearch" then
+          vim.fn.matchdelete(match.id, output_obj.win)
+        end
+      end
+      for i, _ in ipairs(obj[1]) do
+        for _, v in ipairs(poss[i]) do
+          vim.fn.matchaddpos("IncSearch", { { i, diff + v + 1 } }, 0, -1, { window = output_obj["win"] })
+        end
+      end
+      return obj[1]
     end
   end)()
   local lines = vim.api.nvim_buf_get_lines(witch_obj.buf, 0, -1, true)
   local ids = {}
   local texts = {}
-  local cs = {}
+  local match_posses = {}
   for lnum, match in pairs(matches_obj) do
-    if string.find(match.key, "^" .. lines[1]) then
+    if match_front(match.key, lines[1]) then
       table.insert(ids, match.id)
-      table.insert(texts, match.text)
-      local c = string.sub(match.key, 1 + #lines[1], 2 + #lines[1])
-      table.insert(cs, lnum, c)
+      local _c = string.sub(match.key, 1 + #lines[1], 2 + #lines[1])
+      local c = fill_spaces(_c, 2)
+      local text = string.format("%s %s %s", c, "→", match.text)
+      table.insert(texts, text)
+      table.insert(match_posses, { lnum, 1, 2 })
+    end
+  end
+  if lines[1] == "" then
+    texts = {}
+    for _, match in ipairs(matches_obj) do
+      local c = fill_spaces(match.key, 2)
+      local text = string.format("%s %s %s", c, "→", match.text)
+      table.insert(texts, text)
     end
   end
   local _row_offset = vim.o.cmdheight + (vim.o.laststatus > 0 and 1 or 0) + input_win_row_offset
-  -- _update_output_obj(output_obj, texts, vim.o.lines, _row_offset + input_win_row_offset)
-  for lnum, c in pairs(cs) do
-    print("hoge" .. c)
-    vim.fn.sign_define(sign_group_witch .. c, {
-      text = c,
-      texthl = "Error",
-    })
-    vim.fn.sign_place(0, sign_group_witch, sign_group_witch .. c, output_obj.buf, { lnum = lnum, priority = 10 })
+  _update_output_obj(output_obj, texts, vim.o.lines, _row_offset + input_win_row_offset)
+  for _, match in ipairs(vim.fn.getmatches(output_obj.win)) do
+    if match.group == "FzwWith" then
+      vim.fn.matchdelete(match.id, output_obj.win)
+    end
+  end
+  for _, match_pos in ipairs(match_posses) do
+    vim.fn.matchaddpos("FzwWitch", { match_pos }, 10, -1, { window = output_obj.win })
   end
 
   if lines[1] == "" then
@@ -98,6 +123,32 @@ local sign_place_witch = function(choices, witch_obj, fuzzy_obj, output_obj)
   else
     return ids
   end
+end
+
+local function swap_win_pos(up, down)
+  local _row_offset = vim.o.cmdheight + (vim.o.laststatus > 0 and 1 or 0)
+  local height = 1
+  local row = vim.o.lines - height - _row_offset - 1
+  local wcnf = vim.api.nvim_win_get_config(up.win)
+  vim.api.nvim_win_set_config(up.win, vim.fn.extend(wcnf, { row = row - input_win_row_offset }))
+  local fcnf = vim.api.nvim_win_get_config(down.win)
+  vim.api.nvim_win_set_config(down.win, vim.fn.extend(fcnf, { row = row }))
+end
+
+local function fuzzy_setup(witch_obj, fuzzy_obj, output_obj, choices, callback, obj_handlers)
+  au(_g, "TextChangedI", function()
+    local ids = sign_place_witch(choices, witch_obj, fuzzy_obj, output_obj)
+  end, { buffer = fuzzy_obj.buf })
+  au(_g, "WinEnter", function()
+    vim.fn.sign_place(
+      0,
+      sign_group_prompt .. "fuzzy",
+      sign_group_prompt .. "fuzzy",
+      fuzzy_obj.buf,
+      { lnum = 1, priority = 10 }
+    )
+    swap_win_pos(fuzzy_obj, witch_obj)
+  end, { buffer = fuzzy_obj.buf })
 end
 
 local function witch_setup(witch_obj, fuzzy_obj, output_obj, choices, callback, obj_handlers)
@@ -111,7 +162,7 @@ local function witch_setup(witch_obj, fuzzy_obj, output_obj, choices, callback, 
     vim.fn.sign_unplace(sign_group_witch, { buffer = output_obj.buf })
   end, { buffer = witch_obj.buf })
   au(_g, "TextChangedI", function()
-    vim.fn.sign_unplace(sign_group_witch, { buffer = output_obj.buf })
+    -- vim.fn.sign_unplace(sign_group_witch, { buffer = output_obj.buf })
     local ids = sign_place_witch(choices, witch_obj, fuzzy_obj, output_obj)
     if #ids == 1 then
       callback(ids[1])
@@ -126,11 +177,8 @@ local function witch_setup(witch_obj, fuzzy_obj, output_obj, choices, callback, 
       witch_obj.buf,
       { lnum = 1, priority = 10 }
     )
-    local ids = sign_place_witch(choices, witch_obj, fuzzy_obj, output_obj)
-    if #ids == 1 then
-      callback(ids[1])
-      -- obj_handlers.del()
-    end
+    sign_place_witch(choices, witch_obj, fuzzy_obj, output_obj)
+    swap_win_pos(witch_obj, fuzzy_obj)
   end, { buffer = witch_obj.buf })
 end
 
@@ -162,6 +210,7 @@ local function inputlist(choices, callback, opts)
 
   local obj_handlers = objs_setup(fuzzy_obj, witch_obj, output_obj)
   witch_setup(witch_obj, fuzzy_obj, output_obj, choices, callback, obj_handlers)
+  fuzzy_setup(witch_obj, fuzzy_obj, output_obj, choices, callback, obj_handlers)
 
   if vim.fn.mode() == "n" then
     vim.fn.feedkeys("i", "n")
