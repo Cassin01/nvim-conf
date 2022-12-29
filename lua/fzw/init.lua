@@ -14,13 +14,17 @@ local sign_group_prompt = static.sign_group_prompt
 local sign_group_witch = static.sign_group_witch
 local cell = require("fzw.cell")
 local _update_output_obj = require("fzw.output")._update_output_obj
+local fg_witch = "#f38ba8"
+local fg_fuzzy = "#72D4F2" -- "#7ec9d8"
+local fg_rem = "#585b70"
 
 local function setup()
-  vim.api.nvim_set_hl(0, "FzwWitch", { fg = "#f38ba8", bold = true })
-  vim.api.nvim_set_hl(0, "FzwFuzzy", { fg = "#7ec9d8", bold = true })
+  vim.api.nvim_set_hl(0, "FzwWitchRem", { fg = fg_rem, bold = true })
+  vim.api.nvim_set_hl(0, "FzwFuzzy", { fg = fg_fuzzy, bold = true })
+  vim.api.nvim_set_hl(0, "FzwFreeze", { fg = fg_rem })
 end
 
-local function objs_setup(fuzzy_obj, witch_obj, output_obj)
+local function objs_setup(fuzzy_obj, witch_obj, output_obj, choices_obj, callback)
   local objs = { fuzzy_obj, witch_obj, output_obj }
 
   local del = function() -- deliminator of the whole process
@@ -53,33 +57,52 @@ local function objs_setup(fuzzy_obj, witch_obj, output_obj)
   end
   bmap(fuzzy_obj.buf, { "i", "n" }, "<c-w>", to_witch, "start witch key mode")
   bmap(witch_obj.buf, { "i", "n" }, "<c-w>", to_fuzzy, "start witch key mode")
-
+  local select_ = function()
+    local fuzzy_line = vim.api.nvim_buf_get_lines(fuzzy_obj.buf, 0, -1, true)[1]
+    local witch_line = vim.api.nvim_buf_get_lines(witch_obj.buf, 0, -1, true)[1]
+    -- local choices_obj = {}
+    -- for i, val in ipairs(choices) do
+    --   choices_obj[i] = cell.new(i, tostring(i), val)
+    -- end
+    local fuzzy_matched_obj = (function()
+      if fuzzy_line == "" then
+        return choices_obj
+      else
+        return vim.fn.matchfuzzy(choices_obj, fuzzy_line, { key = "text" })
+      end
+    end)()
+    for _, match in ipairs(fuzzy_matched_obj) do
+      print(match.key, witch_line)
+      if match.key == witch_line then
+        callback(match.id)
+        del()
+      end
+    end
+  end
+  bmap(witch_obj.buf, { "n", "i" }, "<cr>", select_, "select matched witch key")
+  bmap(fuzzy_obj.buf, { "n", "i" }, "<cr>", select_, "select matched witch key")
   return { del = del }
 end
 
-local sign_place_witch = function(choices, witch_obj, fuzzy_obj, output_obj)
-  -- オブジェクトを作成
-  local choices_obj = {}
-  for i, val in ipairs(choices) do
-    choices_obj[i] = cell.new(i, tostring(i), val)
-  end
+local sign_place_witch = function(choices_obj, witch_obj, fuzzy_obj, output_obj)
 
   local _lines = vim.api.nvim_buf_get_lines(fuzzy_obj.buf, 0, -1, true)
+  for _, match in ipairs(vim.fn.getmatches(output_obj.win)) do
+    if match.group == "IncSearch" then
+      vim.fn.matchdelete(match.id, output_obj.win)
+    end
+  end
+  local prefix_size = 2
+  local diff = 5 + prefix_size
   local matches_obj = (function()
     if _lines[1] == "" then
       return choices_obj
     else
       local obj = vim.fn.matchfuzzypos(choices_obj, _lines[1], { key = "text" })
       local poss = obj[2]
-      local diff = 7
-      for _, match in ipairs(vim.fn.getmatches(output_obj.win)) do
-        if match.group == "IncSearch" then
-          vim.fn.matchdelete(match.id, output_obj.win)
-        end
-      end
       for i, _ in ipairs(obj[1]) do
         for _, v in ipairs(poss[i]) do
-          vim.fn.matchaddpos("IncSearch", { { i, diff + v + 1 } }, 0, -1, { window = output_obj["win"] })
+          vim.fn.matchaddpos("IncSearch", { { i, diff + v + 2 } }, 0, -1, { window = output_obj["win"] })
         end
       end
       return obj[1]
@@ -94,16 +117,16 @@ local sign_place_witch = function(choices, witch_obj, fuzzy_obj, output_obj)
       table.insert(ids, match.id)
       local _c = string.sub(match.key, 1 + #lines[1], 2 + #lines[1])
       local c = fill_spaces(_c, 2)
-      local text = string.format("%s %s %s", c, "→", match.text)
+      local text = string.format(" %s %s %s", c, "→", match.text)
       table.insert(texts, text)
-      table.insert(match_posses, { lnum, 1, 2 })
+      table.insert(match_posses, { lnum, 2, vim.fn.strdisplaywidth(string.match(c, ".")) })
     end
   end
   if lines[1] == "" then
     texts = {}
     for _, match in ipairs(matches_obj) do
-      local c = fill_spaces(match.key, 2)
-      local text = string.format("%s %s %s", c, "→", match.text)
+      local c = fill_spaces(match.key, prefix_size)
+      local text = string.format(" %s %s %s", c, "→", match.text)
       table.insert(texts, text)
     end
   end
@@ -114,8 +137,10 @@ local sign_place_witch = function(choices, witch_obj, fuzzy_obj, output_obj)
       vim.fn.matchdelete(match.id, output_obj.win)
     end
   end
-  for _, match_pos in ipairs(match_posses) do
+  for i, match_pos in ipairs(match_posses) do
+    vim.fn.matchaddpos("FzwWitchRem", { { i, 2, prefix_size } }, 9, -1, { window = output_obj.win })
     vim.fn.matchaddpos("FzwWitch", { match_pos }, 10, -1, { window = output_obj.win })
+    vim.fn.matchaddpos("FzwArrow", { { i, 5, vim.fn.strdisplaywidth("→") } }, 9, -1, { window = output_obj.win })
   end
 
   if lines[1] == "" then
@@ -135,11 +160,13 @@ local function swap_win_pos(up, down)
   vim.api.nvim_win_set_config(down.win, vim.fn.extend(fcnf, { row = row }))
 end
 
-local function fuzzy_setup(witch_obj, fuzzy_obj, output_obj, choices, callback, obj_handlers)
+local function fuzzy_setup(witch_obj, fuzzy_obj, output_obj, choices_obj, callback, obj_handlers)
   au(_g, "TextChangedI", function()
-    local ids = sign_place_witch(choices, witch_obj, fuzzy_obj, output_obj)
+    sign_place_witch(choices_obj, witch_obj, fuzzy_obj, output_obj)
   end, { buffer = fuzzy_obj.buf })
   au(_g, "WinEnter", function()
+    vim.api.nvim_set_hl(0, "FzwArrow", { fg = fg_fuzzy, bold = true })
+    vim.fn.sign_unplace(sign_group_prompt .. "freeze", { buffer = fuzzy_obj.buf})
     vim.fn.sign_place(
       0,
       sign_group_prompt .. "fuzzy",
@@ -147,29 +174,55 @@ local function fuzzy_setup(witch_obj, fuzzy_obj, output_obj, choices, callback, 
       fuzzy_obj.buf,
       { lnum = 1, priority = 10 }
     )
+    vim.api.nvim_win_set_option(fuzzy_obj.win, "winhl", "Normal:Normal")
     swap_win_pos(fuzzy_obj, witch_obj)
+  end, { buffer = fuzzy_obj.buf })
+  au(_g, "WinLeave", function()
+    vim.api.nvim_set_hl(0, "FzwArrow", { fg = fg_rem, bold = true })
+    vim.fn.sign_unplace(sign_group_prompt .. "freeze", { buffer = fuzzy_obj.buf})
+    vim.fn.sign_unplace(sign_group_prompt .. "fuzzy", { buffer = fuzzy_obj.buf })
+    vim.fn.sign_place(
+      0,
+      sign_group_prompt .. "freeze",
+      sign_group_prompt .. "freeze",
+      fuzzy_obj.buf,
+      { lnum = 1, priority = 10 }
+    )
+    vim.api.nvim_win_set_option(fuzzy_obj.win, "winhl", "Normal:Comment")
   end, { buffer = fuzzy_obj.buf })
 end
 
-local function witch_setup(witch_obj, fuzzy_obj, output_obj, choices, callback, obj_handlers)
+local function witch_setup(witch_obj, fuzzy_obj, output_obj, choices_obj, callback, obj_handlers)
   au(_g, "BufEnter", function()
+    vim.fn.sign_unplace(sign_group_prompt .. "freeze", { buffer = witch_obj.buf})
     local _, _ = pcall(function()
       require("cmp").setup.buffer({ enabled = false })
     end)
   end, { buffer = witch_obj.buf })
   au(_g, "WinLeave", function()
+    vim.api.nvim_set_hl(0, "FzwWitch", { fg = fg_rem, bold = true })
     vim.fn.sign_unplace(sign_group_prompt .. "witch", { buffer = witch_obj.buf })
     vim.fn.sign_unplace(sign_group_witch, { buffer = output_obj.buf })
+    vim.fn.sign_place(
+      0,
+      sign_group_prompt .. "freeze",
+      sign_group_prompt .. "freeze",
+      witch_obj.buf,
+      { lnum = 1, priority = 10 }
+    )
+    vim.api.nvim_win_set_option(witch_obj.win, "winhl", "Normal:Comment")
   end, { buffer = witch_obj.buf })
   au(_g, "TextChangedI", function()
     -- vim.fn.sign_unplace(sign_group_witch, { buffer = output_obj.buf })
-    local ids = sign_place_witch(choices, witch_obj, fuzzy_obj, output_obj)
+    local ids = sign_place_witch(choices_obj, witch_obj, fuzzy_obj, output_obj)
     if #ids == 1 then
       callback(ids[1])
       obj_handlers.del()
     end
   end, { buffer = witch_obj.buf })
   au(_g, "WinEnter", function()
+    vim.api.nvim_set_hl(0, "FzwWitch", { fg = fg_witch, bold = true })
+    vim.api.nvim_win_set_option(witch_obj.win, "winhl", "Normal:Normal")
     vim.fn.sign_place(
       0,
       sign_group_prompt .. "witch",
@@ -177,9 +230,36 @@ local function witch_setup(witch_obj, fuzzy_obj, output_obj, choices, callback, 
       witch_obj.buf,
       { lnum = 1, priority = 10 }
     )
-    sign_place_witch(choices, witch_obj, fuzzy_obj, output_obj)
+    sign_place_witch(choices_obj, witch_obj, fuzzy_obj, output_obj)
     swap_win_pos(witch_obj, fuzzy_obj)
   end, { buffer = witch_obj.buf })
+  bmap(witch_obj.buf, { "n", "i" }, "<cr>", function()
+    local fuzzy_line = vim.api.nvim_buf_get_lines(fuzzy_obj.buf, 0, -1, true)[1]
+    local witch_line = vim.api.nvim_buf_get_lines(witch_obj.buf, 0, -1, true)[1]
+    local fuzzy_matched_obj = (function()
+      if fuzzy_line == "" then
+        return choices_obj
+      else
+        return vim.fn.matchfuzzy(choices_obj, fuzzy_line, { key = "text" })
+      end
+    end)()
+    for _, match in ipairs(fuzzy_matched_obj) do
+      print(match.key, witch_line)
+      if match.key == witch_line then
+        callback(match.id)
+        obj_handlers.del()
+      end
+    end
+  end, "match")
+end
+
+local function is_array(t)
+  local i = 0
+  for _ in pairs(t) do
+      i = i + 1
+      if t[i] == nil then return false end
+  end
+  return true
 end
 
 -- core
@@ -200,17 +280,36 @@ local function inputlist(choices, callback, opts)
     text = opts.prompt,
     texthl = "FzwWitch",
   })
+  vim.fn.sign_define(sign_group_prompt .. "freeze", {
+    text = opts.prompt,
+    texthl = "FzwFreeze",
+  })
+
+  local choices_list = nil
+  local choices_obj = {}
+  if is_array(choices) then
+    choices_list = choices
+    for i, val in ipairs(choices) do
+      choices_obj[i] = cell.new(i, tostring(i), val)
+    end
+    print(vim.inspect(choices))
+  else -- dict
+    choices_list = vim.fn.values(choices)
+    for key, val in pairs(choices) do
+      table.insert(choices_obj, cell.new(key, key, val))
+    end
+  end
 
   -- 表示用バッファを作成
   local output_obj = output_obj_gen()
 
   -- -- 入力用バッファを作成
-  local witch_obj = witch.input_obj_gen(output_obj, choices, callback)
-  local fuzzy_obj = fuzzy.input_obj_gen(output_obj, choices, callback)
+  local witch_obj = witch.input_obj_gen(output_obj)
+  local fuzzy_obj = fuzzy.input_obj_gen(output_obj, choices_list)
 
-  local obj_handlers = objs_setup(fuzzy_obj, witch_obj, output_obj)
-  witch_setup(witch_obj, fuzzy_obj, output_obj, choices, callback, obj_handlers)
-  fuzzy_setup(witch_obj, fuzzy_obj, output_obj, choices, callback, obj_handlers)
+  local obj_handlers = objs_setup(fuzzy_obj, witch_obj, output_obj, choices_obj, callback)
+  witch_setup(witch_obj, fuzzy_obj, output_obj, choices_obj, callback, obj_handlers)
+  fuzzy_setup(witch_obj, fuzzy_obj, output_obj, choices_obj, callback, obj_handlers)
 
   if vim.fn.mode() == "n" then
     vim.fn.feedkeys("i", "n")
@@ -233,18 +332,21 @@ local function select(items, opts, on_choice)
   opts = opts or {}
   local choices = {}
   local format_item = opts.format_item or tostring
-  for _, item in pairs(items) do
-    table.insert(choices, format_item(item))
+
+
+  for k, item in pairs(items) do
+    choices[k] = format_item(item)
   end
   local callback = function(choice)
-    if choice < 1 or choice > #items then
-      on_choice(nil, nil)
-    else
+    if type(choice) == "string" then
       on_choice(items[choice], choice)
-    end
+    elseif choice < 1 or choice > #items then
+        on_choice(nil, nil)
+      else
+        on_choice(items[choice], choice)
+      end
   end
   inputlist(choices, callback, opts)
-  -- co()(callback)
 end
 
 (function()
@@ -253,10 +355,7 @@ end
     select(
       { "tabs", "spaces", "core", "hoge", "huga", "hoge", "cole", "ghoe", "falf", "thoe", "oewi", "ooew", "feow" },
       {
-        prompt = "❯ ",
-        format_item = function(item)
-          return "I'd like to choose " .. item
-        end,
+        prompt = "> ",
       },
       function(choice)
         print("You chose " .. choice)
@@ -264,7 +363,28 @@ end
     )
   end
 
+  local function test2()
+    local keys = vim.api.nvim_get_keymap('n')
+    -- print(vim.inspect(keys))
+    local choices = {}
+    for _, val in ipairs(keys) do
+        if not string.match(val.lhs, "^<Plug>") then
+          choices[val.lhs] = val.desc or val.rhs
+        end
+    end
+    -- print(vim.inspect(choices))
+    select(
+      choices,
+      {
+          prompt = "> "
+      },
+      function(choice)
+        print("You chose " .. choice)
+      end
+      )
+  end
+
   -- test
-  cmd("WindowNew", test)
-  bmap(0, "n", "<space>mw", test, "windownew")
+  cmd("WF", test2)
+  bmap(0, "n", "<space>mw", test2, "WF")
 end)()

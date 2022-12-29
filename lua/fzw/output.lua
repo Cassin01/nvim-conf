@@ -15,6 +15,11 @@ local function _update_output_obj(obj, choices, lines, row_offset)
   local cnf = vim.api.nvim_win_get_config(obj.win)
   local height = vim.api.nvim_buf_line_count(obj.buf)
   local row = lines - height - row_offset - 1
+  if height > lines - row_offset then
+    height = lines - row_offset - 1
+    row = 0
+  end
+
   vim.api.nvim_win_set_config(obj.win, vim.fn.extend(cnf, { height = height, row = row }))
 end
 
