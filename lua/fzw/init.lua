@@ -94,19 +94,18 @@ local sign_place_witch = function(choices_obj, witch_obj, fuzzy_obj, output_obj,
         end
     end
     local prefix_size = 7
-    local diff = 5 + prefix_size
-    local matches_obj = (function()
+    local matches_obj, poss = (function()
         if _lines[1] == "" then
             return choices_obj
         else
             local obj = vim.fn.matchfuzzypos(choices_obj, _lines[1], { key = "text" })
             local poss = obj[2]
-            for i, _ in ipairs(obj[1]) do
-                for _, v in ipairs(poss[i]) do
-                    vim.fn.matchaddpos("IncSearch", { { i, diff + v + 2 } }, 0, -1, { window = output_obj["win"] })
-                end
-            end
-            return obj[1]
+            -- for i, _ in ipairs(obj[1]) do
+            --     for _, v in ipairs(poss[i]) do
+            --         vim.fn.matchaddpos("IncSearch", { { i, v + prefix_size + 7 } }, 0, -1, { window = output_obj["win"] })
+            --     end
+            -- end
+            return obj[1], poss
         end
     end)()
     local lines = vim.api.nvim_buf_get_lines(witch_obj.buf, 0, -1, true)
@@ -148,6 +147,11 @@ local sign_place_witch = function(choices_obj, witch_obj, fuzzy_obj, output_obj,
             -1,
             { window = output_obj.win }
         )
+        if poss ~= nil then
+            for _, v in ipairs(poss[match_pos[1]]) do
+                vim.fn.matchaddpos("IncSearch", { { i, v + prefix_size + 7 } }, 0, -1, { window = output_obj["win"] })
+            end
+        end
     end
 
     if lines[1] == "" then
