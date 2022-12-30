@@ -75,7 +75,6 @@ local function objs_setup(fuzzy_obj, witch_obj, output_obj, choices_obj, callbac
             end
         end)()
         for _, match in ipairs(fuzzy_matched_obj) do
-            print(match.key, witch_line)
             if match.key == witch_line then
                 del()
                 callback(match.id)
@@ -256,7 +255,6 @@ local function witch_setup(witch_obj, fuzzy_obj, output_obj, choices_obj, callba
             end
         end)()
         for _, match in ipairs(fuzzy_matched_obj) do
-            print(match.key, witch_line)
             if match.key == witch_line then
                 obj_handlers.del()
                 callback(match.id)
@@ -306,7 +304,6 @@ local function inputlist(choices, callback, opts)
         for i, val in ipairs(choices) do
             choices_obj[i] = cell.new(i, tostring(i), val)
         end
-        print(vim.inspect(choices))
     else -- dict
         choices_list = vim.fn.values(choices)
         for key, val in pairs(choices) do
@@ -389,8 +386,8 @@ end
         select(choices, {
             prompt = "> ",
         }, function(rhs, lhs)
-            while buf ~= vim.api.nvim_get_current_buf() do
-            end
+            -- while buf ~= vim.api.nvim_get_current_buf() do
+            -- end
             local function rt(str)
                 return vim.api.nvim_replace_termcodes(str, true, false, true)
             end
@@ -398,7 +395,7 @@ end
             local mode = vim.fn.mode()
             if mode == "i" then
                 vim.api.nvim_feedkeys(rt("<esc>"), "n", 0)
-                vim.api.nvim_feedkeys(lhs, "m", 1)
+                vim.api.nvim_feedkeys(rt(lhs), "m", 0)
             elseif vim.fn.mode() == "n" then
             end
         end)
@@ -407,13 +404,15 @@ end
     -- test
     cmd("WF", test2)
     -- bmap(0, "n", "<space>mw", test2, "WF")
+    local function hello()
+        vim.cmd("echo 'hello'")
+        -- print("hello")
+    end
     vim.api.nvim_set_keymap("n", "<space>mw", "", { callback = test2, noremap = true, silent = true, desc = "wf" })
-    vim.api.nvim_set_keymap("n", "<C-W>mw", "", {
-        callback = function()
-            print("WF!")
-        end,
+    vim.api.nvim_set_keymap("n", "<C-W>mw","", {
+        callback = hello,
         noremap = true,
         silent = true,
-        desc = "[window] WF!",
+        desc = "[window] hello!",
     })
 end)()
