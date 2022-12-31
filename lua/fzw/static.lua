@@ -7,7 +7,7 @@ end)("309240")
 local _g = util.aug(full_name)
 local input_win_row_offset = 3 -- shift up output-window's row with input-window's height
 local sign_group_prompt = full_name .. "prompt"
-local sign_group_witch = full_name .. "witch"
+local sign_group_witch = full_name .. "which"
 
 -- util
 local function bmap(buf, mode, key, f, desc)
