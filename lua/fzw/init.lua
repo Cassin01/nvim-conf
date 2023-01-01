@@ -293,12 +293,12 @@ local function which_setup(which_obj, fuzzy_obj, output_obj, choices_obj, callba
         local front = string.sub(line, 1, pos[2])
         local match = string.match(front, "<[%l%u%-]+>$")
         if match == nil then
-            vim.api.nvim_feedkeys(rt("<C-h>"), "n", false)
+            vim.api.nvim_feedkeys(rt("<C-H>"), "n", false)
         else
-            local back_line = string.sub(line, pos[2] + 1)
-            local new_front = string.gsub(line, "<[%l%u%-]+>$", "")
+            local back = string.sub(line, pos[2] + 1)
+            local new_front = string.gsub(front, "<[%l%u%-]+>$", "")
             vim.fn.sign_unplace(sign_group_prompt .. "which", { buffer = which_obj.buf })
-            vim.api.nvim_buf_set_lines(which_obj.buf, pos[1] - 1, pos[1], true, { new_front .. back_line })
+            vim.api.nvim_buf_set_lines(which_obj.buf, pos[1] - 1, pos[1], true, { new_front .. back })
             vim.api.nvim_win_set_cursor(which_obj.win, { pos[1], vim.fn.strdisplaywidth(new_front) })
             vim.fn.sign_place(
                 0,
