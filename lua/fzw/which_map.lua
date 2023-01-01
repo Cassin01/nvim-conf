@@ -68,7 +68,7 @@ local function setup(buf, black_list)
   table.insert(map_list, "<C-@>")
   table.insert(map_list, "<Space>")
   map(buf, map_list)
-  return black_dict
+  return map_list
 end
 
 return { setup = setup }

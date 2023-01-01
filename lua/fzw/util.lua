@@ -51,12 +51,24 @@ function M.fill_spaces(str, len)
   return res
 end
 
-function M.match_front(str, patt)
+function M.match_from_front(str, patt)
   if string.len(str) < string.len(patt) then
     return false
   end
   for i = 1, patt:len() do
     if string.sub(str, i, i) ~= string.sub(patt, i, i) then
+      return false
+    end
+  end
+  return true
+end
+
+function M.match_from_tail(str, patt)
+  if string.len(str) < string.len(patt) then
+    return false
+  end
+  for i = 1, patt:len() do
+    if string.sub(str, -i, -i) ~= string.sub(patt, -i, -i) then
       return false
     end
   end
