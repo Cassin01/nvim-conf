@@ -68,10 +68,12 @@ local function objs_setup(fuzzy_obj, which_obj, output_obj, caller_obj, choices_
         escape = "<C-C>",
         toggle = "<C-T>",
     }
+    for _, o in ipairs(objs) do
+        bmap(o.buf, "n", "<esc>", del, "quit")
+    end
     for _, o in ipairs(inputs) do
         bmap(o.buf, { "i", "n" }, which_key_list_operator.escape, del, "quit")
-        bmap(o.buf, { "n" }, "<esc>", del, "quit")
-        bmap(o.buf, { "n" }, "m", "", "quit")
+        bmap(o.buf, { "n" }, "m", "", "disable sign")
     end
     bmap(fuzzy_obj.buf, { "i", "n" }, which_key_list_operator.toggle, to_which, "start which key mode")
     bmap(which_obj.buf, { "i", "n" }, which_key_list_operator.toggle, to_fuzzy, "start which key mode")
