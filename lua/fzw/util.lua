@@ -1,5 +1,13 @@
 local M = {}
 
+function M.array_reverse(x)
+  local n, m = #x, #x / 2
+  for i = 1, m do
+    x[i], x[n - i + 1] = x[n - i + 1], x[i]
+  end
+  return x
+end
+
 function M.cmd(name, f, opt)
   opt = (opt or {})
   opt["force"] = true
@@ -15,6 +23,10 @@ function M.au(group, event, callback, opt_)
   vim.api.nvim_create_autocmd(event, opt)
 end
 
+function M.rt(str)
+  return vim.api.nvim_replace_termcodes(str, true, false, true)
+end
+
 function M.bmap(buf, mode, key, f, desc)
   if type(mode) == "table" then
     for _, v in pairs(mode) do
@@ -27,7 +39,7 @@ end
 
 function M.fill_spaces(str, len)
   local res = ""
-  for c in str:gmatch"." do
+  for c in str:gmatch(".") do
     if vim.fn.strdisplaywidth(res .. c) > len then
       break
     end
@@ -44,11 +56,18 @@ function M.match_front(str, patt)
     return false
   end
   for i = 1, patt:len() do
-    if string.sub(str, i, i) ~= string.sub(patt,i, i) then
+    if string.sub(str, i, i) ~= string.sub(patt, i, i) then
       return false
     end
   end
   return true
+end
+
+function M.replace_nth(str, n, old, new)
+  if n <= #str and str:sub(n, n) == old then
+    return str:sub(1, n - 1) .. new .. str:sub(n + 1)
+  end
+  return str
 end
 
 return M

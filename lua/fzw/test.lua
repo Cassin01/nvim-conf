@@ -29,5 +29,38 @@
 --   print("a")
 -- end
 
-print(string.sub(" a", 1, 2))
-            -- local sub = string.sub(match.key, 1 + #witch_line, prefix_size + #witch_line)
+-- local sub = string.sub(match.key, 1 + #witch_line, prefix_size + #witch_line)
+
+-- local function array_reverse(x)
+--   local n, m = #x, #x/2
+--   for i=1, m do
+--     x[i], x[n-i+1] = x[n-i+1], x[i]
+--   end
+--   return x
+-- end
+-- local ret = array_reverse({"a", "b"})
+-- for i, v in ipairs(ret) do
+-- print(i, v)
+-- end
+-- local function replace_nth(str, n, old, new)
+--   if n <= #str and str:sub(n, n) == old then
+--     return str:sub(1, n - 1) .. new ..str:sub(n + 1)
+--   end
+--   return str
+-- end
+
+-- local ret = replace_nth("ac", 3, "c", "d")
+
+-- print(ret)
+local obj = {
+  c = function()
+    print("c")
+  end,
+}
+
+local c_ = obj.c
+obj.c = function()
+  print("d")
+  c_()
+end
+obj.c()

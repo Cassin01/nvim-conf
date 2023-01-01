@@ -1,5 +1,4 @@
 local plug_name = require("fzw.static").plug_name
--- local bmap = require("fzw.static").bmap
 
 local function ctrl(c)
   return "<C-" .. c .. ">"
@@ -17,7 +16,7 @@ local function alt(c)
   return "<A-" .. c .. ">"
 end
 
-local function map(black_dict, buf)
+local function map(buf, list)
   local function bmap(key, send, desc)
     vim.api.nvim_buf_set_keymap(buf, "i", key, "", {
       callback = function()
@@ -31,21 +30,29 @@ local function map(black_dict, buf)
     })
   end
 
+  for _, v in ipairs(list) do
+    bmap(v, v, "send as if typed keys")
+  end
+end
+
+local function map_list_gen(black_dict)
+  local list = {}
   for i = 1, 26 do
     local c = string.char(i + 64)
     if not black_dict[ctrl(c)] then
-      bmap(ctrl(c), ctrl(c), "send key")
+      table.insert(list, ctrl(c))
     end
     if not black_dict[ctrl_shift(c)] then
-      bmap(ctrl_shift(c), ctrl_shift(c), "send key")
+      table.insert(list, ctrl_shift(c))
     end
     if not black_dict[meta(c)] then
-      bmap(meta(c), meta(c), "send key")
+      table.insert(list, meta(c))
     end
     if not black_dict[alt(c)] then
-      bmap(alt(c), meta(c), "send key")
+      table.insert(list, alt(c))
     end
   end
+  return list
 end
 
 local function setup(buf, black_list)
@@ -57,7 +64,10 @@ local function setup(buf, black_list)
   for _, name in ipairs(black_list) do
     black_dict[name:upper()] = true
   end
-  map(black_dict, buf)
+  local map_list = map_list_gen(black_dict)
+  table.insert(map_list, "<C-@>")
+  table.insert(map_list, "<Space>")
+  map(buf, map_list)
   return black_dict
 end
 
