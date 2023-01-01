@@ -237,7 +237,7 @@ local function which_setup(which_obj, fuzzy_obj, output_obj, choices_obj, callba
         vim.api.nvim_set_hl(0, "FzwWhich", { link = "Normal" })
 
         vim.fn.sign_unplace(sign_group_prompt .. "which", { buffer = which_obj.buf })
-        vim.fn.sign_unplace(sign_group_which, { buffer = output_obj.buf })
+        -- vim.fn.sign_unplace(sign_group_which, { buffer = output_obj.buf })
         vim.fn.sign_place(
             0,
             sign_group_prompt .. "freeze",
@@ -297,6 +297,7 @@ local function which_setup(which_obj, fuzzy_obj, output_obj, choices_obj, callba
         else
             local back_line = string.sub(line, pos[2] + 1)
             local new_front = string.gsub(line, "<[%l%u%-]+>$", "")
+            vim.fn.sign_unplace(sign_group_prompt .. "which", { buffer = which_obj.buf })
             vim.api.nvim_buf_set_lines(which_obj.buf, pos[1] - 1, pos[1], true, { new_front .. back_line })
             vim.api.nvim_win_set_cursor(which_obj.win, { pos[1], vim.fn.strdisplaywidth(new_front) })
             vim.fn.sign_place(
@@ -447,14 +448,9 @@ end
         end
         select(choices, {
             prompt = "> ",
-            text_insert_in_advance = " ",
+            text_insert_in_advance = "<Space>",
         }, function(_, lhs)
-            -- print(win)
-            -- print(buf)
-            -- print(vim.api.nvim_get_current_win())
-            -- print(vim.api.nvim_get_current_buf())
             if win == vim.api.nvim_get_current_win() and buf == vim.api.nvim_get_current_buf() then
-                -- vim.cmd("normal" .. lhs)
                 if vim.fn.mode() == "i" then
                     vim.api.nvim_feedkeys(rt("<esc>"), "n", 0)
                     vim.api.nvim_feedkeys(rt(lhs), "m", 0)
@@ -478,56 +474,4 @@ end
         silent = true,
         desc = "[window] hello!",
     })
-    -- vim.api.nvim_set_keymap("i", "<C-t>mw", "", {
-    --     callback = which_key,
-    --     nowait = true,
-    --     noremap = true,
-    --     silent = true,
-    --     desc = "[window] hello!",
-    -- })
-    -- local uv = vim.loop
-    -- local function async_fn(callback)
-    --     local async = nil
-    --     local function _7_()
-    --         callback()
-    --         return async:close()
-    --     end
-
-    --     async = uv.new_async(vim.schedule_wrap(_7_))
-    --     return async:send()
-    -- end
-
-    -- vim.api.nvim_set_keymap("i", "<C-t>mt", "", {
-    --     callback = function()
-    --         local co= coroutine
-    --         local async = require("kaza.cmd")--["async-fn"]
-    --         print(vim.inspect(async))
-    --         local mode = vim.api.nvim_get_mode()
-    --         local fi = co.create(function()
-    --             co.yield()
-    --             local mode = vim.api.nvim_get_mode()
-    --             print(vim.inspect(mode))
-
-    --             -- local keys = vim.api.nvim_get_mode().mode ~= "n" and "<ESC>A" or "A"
-    --             -- vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(keys, true, false, true), "n", true)
-    --         end)
-
-    --             vim.cmd("stopinsert")
-    --         co.resume(fi)
-    --         mode = vim.api.nvim_get_mode()
-    --         print(vim.inspect(mode))
-    --         co.resume(fi)
-    --         -- async_fn(fi)
-    --         mode = vim.api.nvim_get_mode()
-    --         print(vim.inspect(mode))
-    --         mode = vim.api.nvim_get_mode()
-    --         local f = function()
-    --             print(vim.inspect(mode))
-    --         end
-    --         async.timeout(1000, f)
-    --     end,
-    --     noremap = true,
-    --     silent = true,
-    --     desc = "[window] test",
-    -- })
 end)()
