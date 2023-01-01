@@ -23,11 +23,14 @@ local fg_which = "#f2cdcd" --"#f38ba8"
 local fg_fuzzy = "#89b4fa" -- "#72D4F2" -- "#7ec9d8"
 local fg_rem = "#585b70"
 local which_insert_map = require("fzw.which_map").setup
+local prompt_counter_update = require("fzw.prompt_counter").update
+local ns_wf_output_obj_fuzzy = vim.api.nvim_create_namespace("wf_output_obj")
 
 local function setup()
-    vim.api.nvim_set_hl(0, "FzwWhichRem", { default = true, link = "Comment" })
-    vim.api.nvim_set_hl(0, "FzwFuzzy", { default = true, link = "FloatBorder" })
-    vim.api.nvim_set_hl(0, "FzwFreeze", { default = true, link = "Comment" })
+    vim.api.nvim_set_hl(0, "WFWhichRem", { default = true, link = "Comment" })
+    vim.api.nvim_set_hl(0, "WFFuzzy", { default = true, link = "FloatBorder" })
+    vim.api.nvim_set_hl(0, "WFFreeze", { default = true, link = "Comment" })
+    vim.api.nvim_set_hl(0, "WFWhichObjCounter", { default = true, link = "NonText" })
 end
 
 local function objs_setup(fuzzy_obj, which_obj, output_obj, caller_obj, choices_obj, callback)
@@ -142,20 +145,25 @@ local sign_place_which = function(choices_obj, which_obj, fuzzy_obj, output_obj,
     end
     local _row_offset = vim.o.cmdheight + (vim.o.laststatus > 0 and 1 or 0) + input_win_row_offset
     _update_output_obj(output_obj, texts, vim.o.lines, _row_offset + input_win_row_offset)
-    for i, match_pos in ipairs(match_posses) do
-        if poss ~= nil then
-            for _, v in ipairs(poss[match_pos[1]]) do
-                vim.api.nvim_buf_add_highlight(
-                    output_obj.buf,
-                    0,
-                    "FzwFuzzy",
-                    i - 1,
-                    v + prefix_size + 6,
-                    v + prefix_size + 7
-                )
+    vim.api.nvim_buf_clear_namespace(output_obj.buf, ns_wf_output_obj_fuzzy, 0, -1)
+    if vim.api.nvim_get_current_buf() == fuzzy_obj.buf then
+        for i, match_pos in ipairs(match_posses) do
+            if poss ~= nil then
+                for _, v in ipairs(poss[match_pos[1]]) do
+                    vim.api.nvim_buf_add_highlight(
+                        output_obj.buf,
+                        ns_wf_output_obj_fuzzy,
+                        "WFFuzzy",
+                        i - 1,
+                        v + prefix_size + 6,
+                        v + prefix_size + 7
+                    )
+                end
             end
         end
     end
+
+    prompt_counter_update(which_obj, fuzzy_obj, #choices_obj, #ids)
 
     if which_line == "" then
         return nil
@@ -183,8 +191,10 @@ local function fuzzy_setup(which_obj, fuzzy_obj, output_obj, choices_obj, callba
         sign_place_which(choices_obj, which_obj, fuzzy_obj, output_obj, obj_handlers)
     end, { buffer = fuzzy_obj.buf })
     au(_g, "WinEnter", function()
-        -- vim.api.nvim_set_hl(0, "FzwArrow", { fg = fg_fuzzy, bold = true })
-        vim.api.nvim_set_hl(0, "FzwArrow", { link = "FloatBorder" })
+        -- vim.api.nvim_set_hl(0, "WFArrow", { fg = fg_fuzzy, bold = true })
+        vim.api.nvim_set_hl(0, "WFArrow", { link = "FloatBorder" })
+        vim.api.nvim_win_set_option(fuzzy_obj.win, "winhl", "Normal:Normal")
+
         vim.fn.sign_unplace(sign_group_prompt .. "freeze", { buffer = fuzzy_obj.buf })
         vim.fn.sign_place(
             0,
@@ -193,12 +203,12 @@ local function fuzzy_setup(which_obj, fuzzy_obj, output_obj, choices_obj, callba
             fuzzy_obj.buf,
             { lnum = 1, priority = 10 }
         )
-        vim.api.nvim_win_set_option(fuzzy_obj.win, "winhl", "Normal:Normal")
+        sign_place_which(choices_obj, which_obj, fuzzy_obj, output_obj, obj_handlers)
         swap_win_pos(fuzzy_obj, which_obj)
     end, { buffer = fuzzy_obj.buf })
     au(_g, "WinLeave", function()
-        -- vim.api.nvim_set_hl(0, "FzwArrow", { fg = fg_rem, bold = true })
-        vim.api.nvim_set_hl(0, "FzwArrow", { link = "Comment" })
+        -- vim.api.nvim_set_hl(0, "WFArrow", { fg = fg_rem, bold = true })
+        vim.api.nvim_set_hl(0, "WFArrow", { link = "Identifier" })
         vim.fn.sign_unplace(sign_group_prompt .. "freeze", { buffer = fuzzy_obj.buf })
         vim.fn.sign_unplace(sign_group_prompt .. "fuzzy", { buffer = fuzzy_obj.buf })
         vim.fn.sign_place(
@@ -220,8 +230,8 @@ local function which_setup(which_obj, fuzzy_obj, output_obj, choices_obj, callba
         end)
     end, { buffer = which_obj.buf })
     au(_g, "WinLeave", function()
-        -- vim.api.nvim_set_hl(0, "FzwWhich", { fg = fg_rem, bold = true })
-        vim.api.nvim_set_hl(0, "FzwWhich", { link = "Normal" })
+        -- vim.api.nvim_set_hl(0, "WFWhich", { fg = fg_rem, bold = true })
+        vim.api.nvim_set_hl(0, "WFWhich", { link = "Normal" })
 
         vim.fn.sign_unplace(sign_group_prompt .. "which", { buffer = which_obj.buf })
         -- vim.fn.sign_unplace(sign_group_which, { buffer = output_obj.buf })
@@ -234,7 +244,7 @@ local function which_setup(which_obj, fuzzy_obj, output_obj, choices_obj, callba
         )
         vim.api.nvim_win_set_option(which_obj.win, "winhl", "Normal:Comment")
     end, { buffer = which_obj.buf })
-    au(_g, "TextChangedI", function()
+    au(_g, { "TextChangedI", "TextChanged" }, function()
         -- vim.fn.sign_unplace(sign_group_which, { buffer = output_obj.buf })
         local id = sign_place_which(choices_obj, which_obj, fuzzy_obj, output_obj, obj_handlers)
         if id ~= nil then
@@ -243,8 +253,8 @@ local function which_setup(which_obj, fuzzy_obj, output_obj, choices_obj, callba
         end
     end, { buffer = which_obj.buf })
     au(_g, "WinEnter", function()
-        -- vim.api.nvim_set_hl(0, "FzwWhich", { fg = fg_which, bold = true })
-        vim.api.nvim_set_hl(0, "FzwWhich", { link = "Identifier" })
+        -- vim.api.nvim_set_hl(0, "WFWhich", { fg = fg_which, bold = true })
+        vim.api.nvim_set_hl(0, "WFWhich", { link = "Identifier" })
 
         vim.api.nvim_win_set_option(which_obj.win, "winhl", "Normal:Normal")
         vim.fn.sign_place(
@@ -328,15 +338,15 @@ local function inputlist(choices, callback, opts)
 
     vim.fn.sign_define(sign_group_prompt .. "fuzzy", {
         text = opts.prompt,
-        texthl = "FzwFuzzy",
+        texthl = "WFFuzzy",
     })
     vim.fn.sign_define(sign_group_prompt .. "which", {
         text = opts.prompt,
-        texthl = "FzwWhich",
+        texthl = "WFWhich",
     })
     vim.fn.sign_define(sign_group_prompt .. "freeze", {
         text = opts.prompt,
-        texthl = "FzwFreeze",
+        texthl = "WFFreeze",
     })
 
     local choices_list = nil
@@ -460,7 +470,12 @@ end
         vim.cmd("echo 'hello'")
     end
 
-    vim.api.nvim_set_keymap("n", "<space>", "", { callback = which_key, noremap = true, silent = true, desc = "which-key" })
+    vim.api.nvim_set_keymap(
+        "n",
+        "<space>",
+        "",
+        { callback = which_key, noremap = true, silent = true, desc = "which-key" }
+    )
     vim.api.nvim_set_keymap("n", "<space><C-W>mw", "", {
         callback = hello,
         noremap = true,
