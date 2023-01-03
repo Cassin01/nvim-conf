@@ -1,8 +1,9 @@
-local new = function(id, key, text)
+local new = function(id, key, text, type_)
   return {
     key = key,
     id = id,
     text = text,
+    ["type"] = type_
   }
 end
 

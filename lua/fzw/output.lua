@@ -12,12 +12,17 @@ local function output_obj_gen()
   -- U+2423 ␣ OPEN BOX
   -- U+23B5 ⎵ BOTTOM SQUARE BRACKET
   -- U+23B6 ⎶ BOTTOM SQUARE BRACKET OVER TOP SQUARE BRACKET
-  vim.cmd([[syntax match WFHead "\%(^\s\)\@<=."]])
+  -- vim.cmd([[syntax match WFKeys "\%(^\s\)\@<=.\{]]..tostring(prefix_size).. [[}"]])
+  vim.cmd([[syntax match WFKeys "\%(^\s\)\@<=]].. string.rep(".", prefix_size).. [[" contains=WFHead,WFKey]])
+  vim.cmd("hi link WFKeys WFWhichRem")
+  vim.cmd([[syntax match WFHead "\%(^\s\)\@<=." contained]])
   vim.cmd("hi link WFHead WFWhich")
-  vim.cmd([[syntax match WFKey "\%(^\s\)\@<=<[a-zA-Z\-]\+>"]])
+
+  vim.cmd([[syntax match WFKey "\%(^\s\)\@<=<[a-zA-Z\-]\+>" contained]])
   vim.cmd("hi link WFKey WFWhich")
+
  vim.fn.matchadd("WFA", [[\%(^.\{]]..tostring(prefix_size + 2)..[[}\)\@<=.]], 5, -1)       -- vim.cmd("hi Conceal guifg=" .. fg_rem)
-  vim.cmd("hi link WFA WFArrow")
+  vim.cmd("hi link WFA WFSeparator")
 
   -- vim.fn.matchadd("Conceal", [[\%(^\s\)\@<=\s]], 5, -1, { conceal = "␠", window = win })
   -- vim.cmd("hi! link Conceal Identifier")

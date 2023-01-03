@@ -1,17 +1,19 @@
-
 local function open_win(buf, height, row_offset)
   local conf_ = {
     -- col = 0,
-    col = math.ceil(vim.o.columns * 0.6),
+    -- col = math.ceil(vim.o.columns * 0.6),
+    width = vim.o.columns > 45 and 45 or math.ceil(vim.o.columns * 0.3),
     relative = "editor",
     anchor = "NW",
     style = "minimal",
     border = "rounded",
   }
-  local conf = vim.fn.extend(
-    conf_,
-    { height = height, row = vim.o.lines - height - row_offset - 1, width = vim.o.columns - conf_.col }
-  )
+  local conf = vim.fn.extend(conf_, {
+    height = height,
+    row = vim.o.lines - height - row_offset - 1,
+    -- width = vim.o.columns - conf_.col,
+    col = vim.o.columns - conf_.width,
+  })
   return vim.api.nvim_open_win(buf, true, conf)
 end
 

@@ -63,6 +63,27 @@ function M.match_from_front(str, patt)
   return true
 end
 
+local function _escape(c)
+  if c == [[\]] then
+    return [[\\]]
+  else
+    return c
+  end
+end
+function M.match_from_front_ignore_case(str, patt)
+  if string.len(str) < string.len(patt) then
+    return false
+  end
+  for i = 1, patt:len() do
+    local c = string.sub(str, i, i)
+    local p = string.sub(patt, i, i)
+    if vim.api.nvim_eval( [["]] .. _escape(c) .. [[" ==? "]] .. _escape(p) .. [["]]) == 0 then
+      return false
+    end
+  end
+  return true
+end
+
 function M.match_from_tail(str, patt)
   if string.len(str) < string.len(patt) then
     return false
