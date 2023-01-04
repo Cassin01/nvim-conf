@@ -30,6 +30,7 @@ local function output_obj_gen()
 end
 
 local function _update_output_obj(obj, choices, lines, row_offset)
+  vim.api.nvim_buf_set_option(obj.buf, "modifiable", true)
   vim.api.nvim_buf_set_lines(obj.buf, 0, -1, true, choices)
   local cnf = vim.api.nvim_win_get_config(obj.win)
   local height = vim.api.nvim_buf_line_count(obj.buf)
@@ -40,6 +41,7 @@ local function _update_output_obj(obj, choices, lines, row_offset)
   end
 
   vim.api.nvim_win_set_config(obj.win, vim.fn.extend(cnf, { height = height, row = row }))
+  vim.api.nvim_buf_set_option(obj.buf, "modifiable", false)
 end
 
 return { _update_output_obj = _update_output_obj, output_obj_gen = output_obj_gen }
