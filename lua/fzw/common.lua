@@ -6,7 +6,15 @@ local function open_win(buf, height, row_offset)
     relative = "editor",
     anchor = "NW",
     style = "minimal",
+    -- border = "shadow",
+    -- border = {" ", " ", " ", " ", " ", " ", " ", " "},
+    -- border = "none",
     border = "rounded",
+    -- title = {
+    --   {"T","TRed"}, {"i","TOrange"},{"t","TYellow"},
+    --   {"i","TGreen"},{"l","TBlue"},{"e","TPurple"},
+    -- },
+    -- title_pos = "center"
   }
   local conf = vim.fn.extend(conf_, {
     height = height,

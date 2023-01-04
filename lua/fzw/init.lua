@@ -7,6 +7,7 @@ local match_from_front = util.match_from_front
 local match_from_tail = util.match_from_tail
 local fill_spaces = util.fill_spaces
 local rep_n = util.replace_nth
+local extend = util.extend
 local fuzzy = require("fzw.fuzzy")
 local which = require("fzw.which")
 local output_obj_gen = require("fzw.output").output_obj_gen
@@ -54,8 +55,12 @@ local function objs_setup(fuzzy_obj, which_obj, output_obj, caller_obj, choices_
                 vim.api.nvim_win_close(o.win, true)
             end
         end
+        local cursor_valid, original_cursor = pcall(vim.api.nvim_win_get_cursor, caller_obj.win)
         if vim.api.nvim_win_is_valid(caller_obj.win) then
-            vim.api.nvim_set_current_win(caller_obj.win)
+            pcall(vim.api.nvim_set_current_win, caller_obj.win)
+            if cursor_valid and vim.api.nvim_get_mode().mode == "i" and caller_obj.mode ~= "i" then
+                pcall(vim.api.nvim_win_set_cursor, caller_obj.win, { original_cursor[1], original_cursor[2] + 1 })
+            end
         end
     end
     for _, o in ipairs(objs) do
@@ -446,13 +451,16 @@ local function inputlist(choices, callback, opts)
     fuzzy_setup(which_obj, fuzzy_obj, output_obj, choices_obj, groups_obj, callback, obj_handlers, opts)
 
     -- vim.cmd("startinsert")
-    local keys = vim.api.nvim_get_mode().mode ~= "n" and "<ESC>A" or "A"
-    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(keys, true, false, true), "n", true)
+    -- local keys = vim.api.nvim_get_mode().mode ~= "n" and "<ESC>A" or "A"
+    -- vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(keys, true, false, true), "n", true)
+
     vim.api.nvim_buf_set_lines(which_obj.buf, 0, -1, true, { opts.text_insert_in_advance })
     if opts.selector == "fuzzy" then
         vim.api.nvim_set_current_win(fuzzy_obj.win)
+        vim.cmd("startinsert!")
     elseif opts.selector == "which" then
         vim.api.nvim_set_current_win(which_obj.win)
+        vim.cmd("startinsert!")
     else
         print("selector must be fuzzy or which")
         obj_handlers.del()
@@ -498,18 +506,37 @@ end
         )
     end
 
+    local function _get_gmap()
+        local keys = vim.api.nvim_get_keymap("n")
+        local choices = {}
+        for _, val in ipairs(keys) do
+            if not string.match(val.lhs, "^<Plug>") then
+                local lhs = string.gsub(val.lhs, " ", "<Space>")
+                choices[lhs] = val.desc or val.rhs
+            end
+        end
+        return choices
+    end
+
+    local function _get_bmap(buf)
+        local keys = vim.api.nvim_buf_get_keymap(buf, "n")
+        local choices = {}
+        for _, val in ipairs(keys) do
+            if not string.match(val.lhs, "^<Plug>") then
+                local lhs = string.gsub(val.lhs, " ", "<Space>")
+                choices[lhs] = val.desc or val.lhs .. " [buf]" --or val.rhs
+            end
+        end
+        return choices
+    end
+
     local function which_key(text_insert_in_advance)
         local core = function()
             local buf = vim.api.nvim_get_current_buf()
             local win = vim.api.nvim_get_current_win()
-            local keys = vim.api.nvim_get_keymap("n")
-            local choices = {}
-            for _, val in ipairs(keys) do
-                if not string.match(val.lhs, "^<Plug>") then
-                    local lhs = string.gsub(val.lhs, " ", "<Space>")
-                    choices[lhs] = val.desc --or val.rhs
-                end
-            end
+            local g = _get_gmap()
+            local b = _get_bmap(buf)
+            local choices = extend(g, b)
             select(choices, {
                 prompt = "> ",
                 text_insert_in_advance = text_insert_in_advance or "",
@@ -517,11 +544,11 @@ end
             }, function(_, lhs)
                 if win == vim.api.nvim_get_current_win() and buf == vim.api.nvim_get_current_buf() then
                     if vim.fn.mode() == "i" then
-                        vim.api.nvim_feedkeys(rt("<esc>"), "n", 0)
+                        vim.api.nvim_feedkeys(rt("<Esc>"), "n", 0)
                         vim.api.nvim_feedkeys(rt(lhs), "t", true)
                         -- vim.api.nvim_feedkeys(rt(lhs), "m", 0)
                     else
-                        print(vim.fn.mode())
+                        print(vim.fn.mode(), "current mode")
                     end
                 end
             end)
@@ -535,12 +562,12 @@ end
         "n",
         "<Space>",
         "",
-        { callback = which_key("<Space>"), noremap = true, silent = true, desc = "which-key", nowait = true }
+        { callback = which_key("<Space>"), noremap = true, silent = true, desc = "which-key-space", nowait = true }
     )
     vim.api.nvim_set_keymap(
         "n",
-        "g",
+        "s",
         "",
-        { callback = which_key("g"), noremap = true, silent = true, desc = "which-key", nowait = true }
+        { callback = which_key("s"), noremap = true, silent = true, desc = "which-key-s", nowait = true }
     )
 end)()

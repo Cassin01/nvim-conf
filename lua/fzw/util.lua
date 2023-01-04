@@ -1,7 +1,6 @@
 local M = {}
 
-function M.array_reverse(x)
-  local n, m = #x, #x / 2
+function M.array_reverse(x) local n, m = #x, #x / 2
   for i = 1, m do
     x[i], x[n - i + 1] = x[n - i + 1], x[i]
   end
@@ -37,6 +36,14 @@ function M.bmap(buf, mode, key, f, desc)
   end
 end
 
+-- Extend dictionary
+function M.extend(a, b)
+  for k, v in pairs(b) do
+    a[k] = v
+  end
+  return a
+end
+
 function M.fill_spaces(str, len)
   local res = ""
   for c in str:gmatch(".") do
@@ -64,11 +71,7 @@ function M.match_from_front(str, patt)
 end
 
 local function _escape(c)
-  if c == [[\]] then
-    return [[\\]]
-  else
-    return c
-  end
+    return c == [[\]] and [[\\]] or c
 end
 function M.match_from_front_ignore_case(str, patt)
   if string.len(str) < string.len(patt) then
