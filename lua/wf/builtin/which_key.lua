@@ -1,6 +1,7 @@
 local util = require("wf.util")
 local extend = util.extend
 local rt = util.rt
+
 local select = require("wf").select
 local function _get_gmap()
   local keys = vim.api.nvim_get_keymap("n")
