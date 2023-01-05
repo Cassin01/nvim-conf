@@ -1,9 +1,9 @@
-local static = require("wf.static")
-local prefix_size = static.prefix_size
 local ns_output_obj = vim.api.nvim_create_namespace("ns_output_obj")
+
 local M = {
   hls = {},
 }
+
 function M.add(self, buf, line, list, prefix_size)
   local index = prefix_size
   local text = ""
@@ -27,6 +27,14 @@ end
 function M.clear(self, buf)
   vim.api.nvim_buf_clear_namespace(buf, ns_output_obj, 0, -1)
   self.hls = {}
+end
+
+function M.tostring(val, output_obj_which_mode_desc_format)
+  local text = ""
+  for _, v in ipairs(output_obj_which_mode_desc_format(val)) do
+    text = text .. v[1]
+  end
+  return text
 end
 
 return M

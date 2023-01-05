@@ -1,8 +1,10 @@
-local function open_win(buf, height, row_offset)
+local style = require("wf.style").new()
+local function open_win(buf, height, row_offset, style)
   local conf_ = {
     -- col = 0,
     -- col = math.ceil(vim.o.columns * 0.6),
-    width = vim.o.columns > 45 and 45 or math.ceil(vim.o.columns * 0.3),
+    width = style.width,
+    -- width = vim.o.columns > 45 and 45 or math.ceil(vim.o.columns * 0.3),
     relative = "editor",
     anchor = "NW",
     style = "minimal",
@@ -28,7 +30,7 @@ end
 local function gen_obj(row_offset)
   local buf = vim.api.nvim_create_buf(false, true)
   local height = vim.api.nvim_buf_line_count(buf)
-  local win = open_win(buf, height, row_offset)
+  local win = open_win(buf, height, row_offset, style)
   vim.api.nvim_win_set_option(win, "winhl", "Normal:Normal")
   vim.api.nvim_win_set_option(win, "wrap", false)
   vim.api.nvim_buf_set_option(buf, "buftype", "nofile")

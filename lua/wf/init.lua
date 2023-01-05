@@ -17,7 +17,7 @@ local _g = static._g
 local input_win_row_offset = static.input_win_row_offset
 local sign_group_prompt = static.sign_group_prompt
 local sign_group_which = static.sign_group_which
-local prefix_size = static.prefix_size
+-- local prefix_size = static.prefix_size
 local cell = require("wf.cell")
 local _update_output_obj = require("wf.output")._update_output_obj
 local fg_which = "#f2cdcd" --"#f38ba8"
@@ -91,7 +91,7 @@ local function objs_setup(fuzzy_obj, which_obj, output_obj, caller_obj, choices_
     bmap(fuzzy_obj.buf, { "i", "n" }, which_key_list_operator.toggle, to_which, "start which key mode")
     bmap(which_obj.buf, { "i", "n" }, which_key_list_operator.toggle, to_fuzzy, "start which key mode")
     local which_map_list =
-    which_insert_map(which_obj.buf, { which_key_list_operator.toggle, which_key_list_operator.escape })
+        which_insert_map(which_obj.buf, { which_key_list_operator.toggle, which_key_list_operator.escape })
     local select_ = function()
         local fuzzy_line = vim.api.nvim_buf_get_lines(fuzzy_obj.buf, 0, -1, true)[1]
         local which_line = vim.api.nvim_buf_get_lines(which_obj.buf, 0, -1, true)[1]
@@ -146,16 +146,16 @@ local sign_place_which = function(choices_obj, groups_obj, which_obj, fuzzy_obj,
     end
 
     local matches_which_group_obj = vim.api.nvim_get_current_buf() == which_obj.buf
-        and group.integrate(matches_obj, groups_obj, #which_line)
+            and group.integrate(matches_obj, groups_obj, #which_line)
         or matches_obj
 
     for lnum, match in ipairs(matches_which_group_obj) do
         -- for lnum, match in ipairs(matches_obj) do
         if match_from_front(match.key, which_line) then
             table.insert(ids, { id = match.id, key = match.key })
-            local sub = string.sub(match.key, 1 + #which_line, prefix_size + #which_line)
+            local sub = string.sub(match.key, 1 + #which_line, opts.prefix_size + #which_line)
 
-            local str = fill_spaces(sub, prefix_size)
+            local str = fill_spaces(sub, opts.prefix_size)
             -- local text = (function(str)
             --     if match.type == "group" then
             --         return string.format(" %s %s %s", str, "→", match.text .. " *")
@@ -167,7 +167,7 @@ local sign_place_which = function(choices_obj, groups_obj, which_obj, fuzzy_obj,
                 output_obj.buf,
                 #texts,
                 opts.output_obj_which_mode_desc_format(match),
-                prefix_size + 6
+                opts.prefix_size + 6
             )
             -- local text = string.format(" %s %s %s", str, "→", match.text .. (match.type == "group" and " *" or ""))
             local text = string.format(" %s %s %s", str, "→", desc)
@@ -190,8 +190,8 @@ local sign_place_which = function(choices_obj, groups_obj, which_obj, fuzzy_obj,
                         ns_wf_output_obj_fuzzy,
                         "WFFuzzy",
                         i - 1,
-                        v + prefix_size + 6,
-                        v + prefix_size + 7
+                        v + opts.prefix_size + 6,
+                        v + opts.prefix_size + 7
                     )
                 end
             end
@@ -373,6 +373,7 @@ local function inputlist(choices, callback, opts)
         selector = "which",
         text_insert_in_advance = "",
         key_group_dict = {},
+        prefix_size = 7,
         output_obj_which_mode_desc_format = function(match_obj)
             local desc = match_obj.text
             local front = desc:match("^%[[%l%u%d%si%-]+%]")
@@ -421,7 +422,7 @@ local function inputlist(choices, callback, opts)
     else -- dict
         choices_list = vim.fn.values(choices)
         for key, val in pairs(choices) do
-            table.insert(choices_obj, cell.new(key, key, val))
+            table.insert(choices_obj, cell.new(key, key, val, "key"))
         end
     end
 
@@ -440,7 +441,7 @@ local function inputlist(choices, callback, opts)
     local groups_obj = group.new(opts.key_group_dict)
 
     -- 表示用バッファを作成
-    local output_obj = output_obj_gen()
+    local output_obj = output_obj_gen(opts.prefix_size)
 
     -- -- 入力用バッファを作成
     local which_obj = which.input_obj_gen(output_obj)
@@ -491,85 +492,4 @@ local function select(items, opts, on_choice)
     inputlist(choices, callback, opts)
 end
 
--- (function()
---     setup()
---     local function test()
---         select(
---             { "tabs", "spaces", "core", "hoge", "huga", "hoge", "cole", "ghoe", "falf", "thoe", "oewi", "ooew", "feow" }
---             ,
---             {
---                 prompt = "> ",
---             },
---             function(choice)
---                 print("You chose " .. choice)
---             end
---         )
---     end
-
---     local function _get_gmap()
---         local keys = vim.api.nvim_get_keymap("n")
---         local choices = {}
---         for _, val in ipairs(keys) do
---             if not string.match(val.lhs, "^<Plug>") then
---                 local lhs = string.gsub(val.lhs, " ", "<Space>")
---                 choices[lhs] = val.desc or val.rhs
---             end
---         end
---         return choices
---     end
-
---     local function _get_bmap(buf)
---         local keys = vim.api.nvim_buf_get_keymap(buf, "n")
---         local choices = {}
---         for _, val in ipairs(keys) do
---             if not string.match(val.lhs, "^<Plug>") then
---                 local lhs = string.gsub(val.lhs, " ", "<Space>")
---                 choices[lhs] = val.desc or val.lhs .. " [buf]" --or val.rhs
---             end
---         end
---         return choices
---     end
-
---     local function which_key(text_insert_in_advance)
---         local core = function()
---             local buf = vim.api.nvim_get_current_buf()
---             local win = vim.api.nvim_get_current_win()
---             local g = _get_gmap()
---             local b = _get_bmap(buf)
---             local choices = extend(g, b)
---             select(choices, {
---                 prompt = "> ",
---                 text_insert_in_advance = text_insert_in_advance or "",
---                 key_group_dict = vim.fn.luaeval("_G.__kaza.prefix"),
---             }, function(_, lhs)
---                 if win == vim.api.nvim_get_current_win() and buf == vim.api.nvim_get_current_buf() then
---                     if vim.fn.mode() == "i" then
---                         vim.api.nvim_feedkeys(rt("<Esc>"), "n", 0)
---                         vim.api.nvim_feedkeys(rt(lhs), "t", true)
---                         -- vim.api.nvim_feedkeys(rt(lhs), "m", 0)
---                     else
---                         print(vim.fn.mode(), "current mode")
---                     end
---                 end
---             end)
---         end
---         return core
---     end
-
---     -- test
---     cmd("WF", which_key(""))
---     vim.api.nvim_set_keymap(
---         "n",
---         "<Space>",
---         "",
---         { callback = which_key("<Space>"), noremap = true, silent = true, desc = "which-key-space", nowait = true }
---     )
---     vim.api.nvim_set_keymap(
---         "n",
---         "s",
---         "",
---         { callback = which_key("s"), noremap = true, silent = true, desc = "which-key-s", nowait = true }
---     )
--- end)()
-
-return {select=select, setup = setup}
+return { select = select, setup = setup }

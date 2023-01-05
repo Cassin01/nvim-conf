@@ -23,5 +23,5 @@ return {
   bmap = bmap,
   sign_group_prompt = sign_group_prompt,
   sign_group_which = sign_group_which,
-  prefix_size = prefix_size,
+  -- prefix_size = prefix_size,
 }

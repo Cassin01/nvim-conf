@@ -1,10 +1,10 @@
 local static = require("wf.static")
 local full_name = static.full_name
 local input_win_row_offset = static.input_win_row_offset -- shift up output-window's row with input-window's height
-local prefix_size = static.prefix_size
+-- local prefix_size = static.prefix_size
 local gen_obj = require("wf.common").gen_obj
 
-local function output_obj_gen()
+local function output_obj_gen(prefix_size)
   local buf, win = gen_obj(vim.o.cmdheight + (vim.o.laststatus > 0 and 1 or 0) + input_win_row_offset + input_win_row_offset)
   vim.api.nvim_buf_set_option(buf, "filetype", full_name .. "output")
   -- U+2420 ␠ SYMBOL FOR SPACE

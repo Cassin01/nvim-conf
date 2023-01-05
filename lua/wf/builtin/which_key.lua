@@ -41,11 +41,8 @@ local function which_key(text_insert_in_advance)
     }, function(_, lhs)
       if win == vim.api.nvim_get_current_win() and buf == vim.api.nvim_get_current_buf() then
         if vim.fn.mode() == "i" then
-          vim.api.nvim_feedkeys(rt("<Esc>"), "n", 0)
-          vim.api.nvim_feedkeys(rt(lhs), "t", true)
-          -- vim.api.nvim_feedkeys(rt(lhs), "m", 0)
-        else
-          print(vim.fn.mode(), "current mode")
+          vim.api.nvim_feedkeys(rt("<Esc>"), "n", false)
+          vim.api.nvim_feedkeys(rt(lhs), "t", false)
         end
       end
     end)
