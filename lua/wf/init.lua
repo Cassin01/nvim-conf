@@ -59,7 +59,7 @@ local function objs_setup(fuzzy_obj, which_obj, output_obj, caller_obj, choices_
         if vim.api.nvim_win_is_valid(caller_obj.win) then
             pcall(vim.api.nvim_set_current_win, caller_obj.win)
             if cursor_valid and vim.api.nvim_get_mode().mode == "i" and caller_obj.mode ~= "i" then
-                pcall(vim.api.nvim_win_set_cursor, caller_obj.win, { original_cursor[1], original_cursor[2] + 1 })
+                pcall(vim.api.nvim_win_set_cursor, caller_obj.win, { original_cursor[1], original_cursor[2] })
             end
         end
     end

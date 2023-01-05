@@ -14,30 +14,37 @@ local labels = {
   ["_"] = "black hole",
   ["/"] = "last search pattern",
 }
-local function regex()
-  local choices = {}
-  for i = 1, #registers, 1 do
-    local key = registers:sub(i, i)
-    local ok, value = pcall(vim.fn.getreg, key, 1)
-    if ok then
-      value = vim.fn.substitute(value, "[[:cntrl:]]", "", "g")
-      value = vim.fn.substitute(value, "\n", "", "g")
-      if #value > 0 then
-        choices[key] = (labels[key] or "") .. " " .. value
+local function regex(opts)
+  local function _regex()
+    local choices = {}
+    for i = 1, #registers, 1 do
+      local key = registers:sub(i, i)
+      local ok, value = pcall(vim.fn.getreg, key, 1)
+      if ok then
+        value = vim.fn.substitute(value, "[[:cntrl:]]", "", "g")
+        value = vim.fn.substitute(value, "\n", "", "g")
+        if #value > 0 then
+          choices[key] = (labels[key] or "") .. " " .. value
+        end
       end
     end
-  end
 
-  local opts = {
-    output_obj_which_mode_desc_format = function(c)
-      return { { (labels[c.key] or "") .. " ", "WFGroup" }, { c.text, "WFWhichDesc" } }
-    end,
-    prefix_size = 1,
-  }
-  select(choices, opts, function(_, lhs)
-    local cmd = [[normal! "]] .. lhs .. "p"
-    vim.cmd(cmd)
-  end)
+    local _opts = {
+      output_obj_which_mode_desc_format = function(c)
+        return { { (labels[c.key] or "") .. " ", "WFGroup" }, { c.text, "WFWhichDesc" } }
+      end,
+      prefix_size = 1,
+    }
+    opts = opts or {}
+    for k, v in pairs(opts) do
+      _opts[k] = v
+    end
+    select(choices, _opts, function(_, lhs)
+      local cmd = [[normal! "]] .. lhs .. "p"
+      vim.cmd(cmd)
+    end)
+  end
+  return _regex
 end
 
 return regex
