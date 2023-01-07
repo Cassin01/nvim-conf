@@ -1,6 +1,7 @@
 local util = require("wf.util")
 local extend = util.extend
 local rt = util.rt
+local get_mode = util.get_mode
 local select = require("wf").select
 
 local function _get_gmap()
@@ -35,7 +36,8 @@ local function which_key(opts)
     local g = _get_gmap()
     local b = _get_bmap(buf)
     local choices = extend(g, b)
-
+    local mode = get_mode()
+    local count = vim.api.nvim_get_vvar("count")
     opts = opts or {}
     local _opts = {
       prompt = "> ",
@@ -50,9 +52,22 @@ local function which_key(opts)
     select(choices, _opts, function(_, lhs)
       if win == vim.api.nvim_get_current_win() and buf == vim.api.nvim_get_current_buf() then
         if vim.fn.mode() == "i" then
-          vim.api.nvim_feedkeys(rt("<Esc>"), "n", false)
-          vim.api.nvim_feedkeys(rt(lhs), "t", false)
+          if count and count ~= 0 then
+            lhs = count .. lhs
+          end
+
+          -- feed CTRL-O again i called from CTRL-O
+          if mode == "nii" or mode == "nir" or mode == "niv" or mode == "vs" then
+            vim.api.nvim_feedkeys(rt("<C-O>"), "n", false)
+          else
+            vim.api.nvim_feedkeys(rt("<Esc>"), "n", false)
+          end
+
+          -- feed the keys with remap
+          vim.api.nvim_feedkeys(rt(lhs), "m", false)
         end
+
+
       end
     end)
   end

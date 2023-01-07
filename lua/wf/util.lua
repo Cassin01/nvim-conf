@@ -26,6 +26,13 @@ function M.rt(str)
   return vim.api.nvim_replace_termcodes(str, true, false, true)
 end
 
+function M.get_mode()
+  local mode = vim.api.nvim_get_mode().mode
+  mode = mode:gsub(M.rt("<C-V>"), "v")
+  mode = mode:gsub(M.rt("<C-S>"), "s")
+  return mode:lower()
+end
+
 function M.bmap(buf, mode, key, f, desc, _opt)
   local opt = { callback = f, noremap = true, silent = true, desc = desc }
   opt = M.extend(_opt or {}, opt)
