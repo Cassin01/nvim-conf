@@ -10,8 +10,8 @@ local sign_group_prompt = full_name .. "prompt"
 local sign_group_which = full_name .. "which"
 
 -- util
-local function bmap(buf, mode, key, f, desc)
-  util.bmap(buf, mode, key, f, "[" .. plug_name .. "] " .. desc)
+local function bmap(buf, mode, key, f, desc, _opt)
+  util.bmap(buf, mode, key, f, "[" .. plug_name .. "] " .. desc, _opt)
 end
 local prefix_size = 7
 

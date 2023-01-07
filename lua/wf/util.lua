@@ -26,13 +26,15 @@ function M.rt(str)
   return vim.api.nvim_replace_termcodes(str, true, false, true)
 end
 
-function M.bmap(buf, mode, key, f, desc)
+function M.bmap(buf, mode, key, f, desc, _opt)
+  local opt = { callback = f, noremap = true, silent = true, desc = desc }
+  opt = M.extend(_opt or {}, opt)
   if type(mode) == "table" then
     for _, v in pairs(mode) do
-      vim.api.nvim_buf_set_keymap(buf, v, key, "", { callback = f, noremap = true, silent = true, desc = desc })
+      vim.api.nvim_buf_set_keymap(buf, v, key, "", opt)
     end
   elseif type(mode) == "string" then
-    vim.api.nvim_buf_set_keymap(buf, mode, key, "", { callback = f, noremap = true, silent = true, desc = desc })
+    vim.api.nvim_buf_set_keymap(buf, mode, key, "", opt)
   end
 end
 

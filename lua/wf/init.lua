@@ -337,22 +337,36 @@ local function which_setup(which_obj, fuzzy_obj, output_obj, choices_obj, groups
             return nil
         end)()
         if match == nil then
-            vim.api.nvim_feedkeys(rt("<C-H>"), "n", false)
+            return rt("<C-H>")
         else
-            local back = string.sub(line, pos[2] + 1)
-            local new_front = string.sub(front, 1, #front - #match)
-            vim.fn.sign_unplace(sign_group_prompt .. "which", { buffer = which_obj.buf })
-            vim.api.nvim_buf_set_lines(which_obj.buf, pos[1] - 1, pos[1], true, { new_front .. back })
-            vim.api.nvim_win_set_cursor(which_obj.win, { pos[1], vim.fn.strdisplaywidth(new_front) })
-            vim.fn.sign_place(
-                0,
-                sign_group_prompt .. "which",
-                sign_group_prompt .. "which",
-                which_obj.buf,
-                { lnum = 1, priority = 10 }
-            )
+            return rt("<Plug>(wf-erase-word)")
         end
-    end, "<C-h>")
+    end, "<C-h>", { expr = true })
+bmap(which_obj.buf, { "i" }, "<Plug>(wf-erase-word)", function()
+    local pos = vim.api.nvim_win_get_cursor(which_obj.win)
+    local line = vim.api.nvim_buf_get_lines(which_obj.buf, pos[1] - 1, pos[1], true)[1]
+    local front = string.sub(line, 1, pos[2])
+    local match = (function()
+        for _, v in ipairs(obj_handlers.which_map_list) do
+            if match_from_tail(front, v) then
+                return v
+            end
+        end
+        return nil
+    end)()
+    local back = string.sub(line, pos[2] + 1)
+    local new_front = string.sub(front, 1, #front - #match)
+    vim.fn.sign_unplace(sign_group_prompt .. "which", { buffer = which_obj.buf })
+    vim.api.nvim_buf_set_lines(which_obj.buf, pos[1] - 1, pos[1], true, { new_front .. back })
+    vim.api.nvim_win_set_cursor(which_obj.win, { pos[1], vim.fn.strdisplaywidth(new_front) })
+    vim.fn.sign_place(
+        0,
+        sign_group_prompt .. "which",
+        sign_group_prompt .. "which",
+        which_obj.buf,
+        { lnum = 1, priority = 10 }
+        )
+end, "<C-h>")
 end
 
 local function is_array(t)

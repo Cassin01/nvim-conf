@@ -70,6 +70,7 @@ local function setup(buf, black_list)
   table.insert(map_list, "[")
   table.insert(map_list, "{")
   table.insert(map_list, "(")
+  table.insert(map_list, "<lt>")
   map(buf, map_list)
   return map_list
 end
