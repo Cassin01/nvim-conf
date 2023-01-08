@@ -94,9 +94,9 @@ local function swap_win_pos(up, down, style)
     local height = 1
     local row = vim.o.lines - height - row_offset() - 1
     local wcnf = vim.api.nvim_win_get_config(up.win)
-    vim.api.nvim_win_set_config(up.win, vim.fn.extend(wcnf, { row = row - style.input_win_row_offset, border = style.borderchars.center }))
+    vim.api.nvim_win_set_config(up.win, vim.fn.extend(wcnf, { row = row - style.input_win_row_offset, border = style.borderchars.center, title_pos = "center" }))
     local fcnf = vim.api.nvim_win_get_config(down.win)
-    vim.api.nvim_win_set_config(down.win, vim.fn.extend(fcnf, { row = row, border = style.borderchars.bottom }))
+    vim.api.nvim_win_set_config(down.win, vim.fn.extend(fcnf, { row = row, border = style.borderchars.bottom, title_pos="center" }))
 end
 
 local function fuzzy_setup(which_obj, fuzzy_obj, output_obj, choices_obj, groups_obj, opts)

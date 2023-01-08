@@ -12,11 +12,8 @@ local function open_win(buf, height, row_offset, style)
     -- border = {" ", " ", " ", " ", " ", " ", " ", " "},
     -- border = "none",
     border = style.border,
-    -- title = {
-    --   {"T","TRed"}, {"i","TOrange"},{"t","TYellow"},
-    --   {"i","TGreen"},{"l","TBlue"},{"e","TPurple"},
-    -- },
-    -- title_pos = "center"
+    title = "Hoge",
+    title_pos = "center",
   }
   local conf = vim.fn.extend(conf_, {
     height = height,
@@ -37,6 +34,8 @@ local function gen_obj(row_offset, style)
   vim.api.nvim_buf_set_option(buf, "bufhidden", "wipe")
   vim.api.nvim_buf_set_option(buf, "swapfile", false)
   vim.api.nvim_buf_set_option(buf, "buflisted", false)
+  -- local cnf = vim.api.nvim_win_get_config(win)
+  -- vim.api.nvim_win_set_config(win, vim.fn.extend(cnf, {title = {{"+", "Normal"}}, title_pos = "center"}))
   return buf, win
 end
 

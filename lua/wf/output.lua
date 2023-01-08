@@ -9,7 +9,7 @@ local function output_obj_gen(prefix_size, style)
   local buf, win = gen_obj(row_offset() + style.input_win_row_offset + style.input_win_row_offset, style)
   vim.api.nvim_buf_set_option(buf, "filetype", full_name .. "output")
   local wcnf = vim.api.nvim_win_get_config(win)
-  vim.api.nvim_win_set_config(win, vim.fn.extend(wcnf, { border = style.borderchars.top }))
+  vim.api.nvim_win_set_config(win, vim.fn.extend(wcnf, { border = style.borderchars.top, title_pos = "center" }))
   -- U+2420 ␠ SYMBOL FOR SPACE
   -- U+2422 ␢ BLANK SYMBOL
   -- U+2423 ␣ OPEN BOX
@@ -44,7 +44,7 @@ local function _update_output_obj(obj, choices, lines, row_offset)
     row = 0 + top_margin
   end
 
-  vim.api.nvim_win_set_config(obj.win, vim.fn.extend(cnf, { height = height, row = row }))
+  vim.api.nvim_win_set_config(obj.win, vim.fn.extend(cnf, { height = height, row = row, title_pos = "center" }))
   vim.api.nvim_buf_set_option(obj.buf, "modifiable", false)
 end
 
