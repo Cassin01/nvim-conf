@@ -13,7 +13,6 @@ local sign_group_prompt = static.sign_group_prompt
 local cell = require("wf.cell")
 local which_insert_map = require("wf.which_map").setup
 local group = require("wf.group")
-local config = require("wf.config")
 local core = require("wf.core").core
 local setup = require("wf.setup").setup
 
@@ -248,7 +247,8 @@ end
 
 -- core
 local function inputlist(choices, callback, opts)
-    local _opts = config
+    local _opts = vim.fn.deepcopy(require("wf.config"))
+    opts = opts or {}
     for k, v in pairs(opts) do
         if vim.fn.has_key(_opts, k) then
             _opts[k] = v
@@ -307,10 +307,6 @@ local function inputlist(choices, callback, opts)
     local obj_handlers = objs_setup(fuzzy_obj, which_obj, output_obj, caller_obj, choices_obj, callback)
     which_setup(which_obj, fuzzy_obj, output_obj, choices_obj, groups_obj, callback, obj_handlers, opts)
     fuzzy_setup(which_obj, fuzzy_obj, output_obj, choices_obj, groups_obj, callback, obj_handlers, opts)
-
-    -- vim.cmd("startinsert")
-    -- local keys = vim.api.nvim_get_mode().mode ~= "n" and "<ESC>A" or "A"
-    -- vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(keys, true, false, true), "n", true)
 
     vim.api.nvim_buf_set_lines(which_obj.buf, 0, -1, true, { opts.text_insert_in_advance })
     if opts.selector == "fuzzy" then

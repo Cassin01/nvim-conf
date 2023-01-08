@@ -7,6 +7,7 @@ local _opts = {
   text_insert_in_advance = "",
   key_group_dict = {},
   prefix_size = 7,
+  sorter = require("wf.sorter").which,
   output_obj_which_mode_desc_format = function(match_obj)
     local desc = match_obj.text
     local front = desc:match("^%[[%l%u%d%si%-]+%]")
@@ -26,6 +27,5 @@ local _opts = {
   end,
   style = style,
 }
-
 
 return _opts

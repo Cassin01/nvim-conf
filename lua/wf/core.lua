@@ -10,7 +10,10 @@ local _update_output_obj = require("wf.output")._update_output_obj
 local prompt_counter_update = require("wf.prompt_counter").update
 local ns_wf_output_obj_fuzzy = vim.api.nvim_create_namespace("wf_output_obj")
 
+-- core filtering flow
 local core = function(choices_obj, groups_obj, which_obj, fuzzy_obj, output_obj, opts)
+
+    -- filter with fuzzy match
     local fuzzy_line = vim.api.nvim_buf_get_lines(fuzzy_obj.buf, 0, -1, true)[1]
     local matches_obj, poss = (function()
         if fuzzy_line == "" then
@@ -21,26 +24,9 @@ local core = function(choices_obj, groups_obj, which_obj, fuzzy_obj, output_obj,
             return rev(obj[1]), rev(poss)
         end
     end)()
+
+    -- filter with which key match
     local which_line = vim.api.nvim_buf_get_lines(which_obj.buf, 0, -1, true)[1]
-    local ids = {}
-    local texts = {}
-    local match_posses = {}
-    local function meta_key(sub)
-        if string.match(sub, "^<") == "<" then
-            local till = sub:match("^<[%w%-]+>")
-            if till ~= nil then
-                return #till
-            end
-        end
-        return vim.fn.strdisplaywidth(string.match(sub, "."))
-    end
-
-    -- local matches_which_group_obj = vim.api.nvim_get_current_buf() == which_obj.buf
-    --     and group.integrate(matches_obj, groups_obj, #which_line)
-    --     or matches_obj
-
-    -- altar
-    -- filter which key matches
     local which_matches_obj = (function()
         local obj = {}
         for lnum, match in ipairs(matches_obj) do
@@ -53,11 +39,32 @@ local core = function(choices_obj, groups_obj, which_obj, fuzzy_obj, output_obj,
     end)()
 
     -- integrate groups
-    local endup_obj = vim.api.nvim_get_current_buf() == which_obj.buf
+    local folded_obj = vim.api.nvim_get_current_buf() == which_obj.buf
         and group.integrate(which_matches_obj, groups_obj, #which_line)
         or which_matches_obj
 
+    -- sorter
+    local endup_obj = (function()
+        if opts.sorter == nil then
+            return folded_obj
+        else
+            return opts.sorter(folded_obj)
+        end
+    end)()
+
     -- take out info's
+    local function meta_key(sub)
+        if string.match(sub, "^<") == "<" then
+            local till = sub:match("^<[%w%-]+>")
+            if till ~= nil then
+                return #till
+            end
+        end
+        return vim.fn.strdisplaywidth(string.match(sub, "."))
+    end
+    local ids = {}
+    local texts = {}
+    local match_posses = {}
     for _, match in ipairs(endup_obj) do
         table.insert(ids, { id = match.id, key = match.key })
         local sub = string.sub(match.key, 1 + #which_line, opts.prefix_size + #which_line)
@@ -68,7 +75,7 @@ local core = function(choices_obj, groups_obj, which_obj, fuzzy_obj, output_obj,
             #texts,
             opts.output_obj_which_mode_desc_format(match),
             opts.prefix_size + 6
-            )
+        )
         local text = string.format(" %s %s %s", str, "→", desc)
 
         table.insert(texts, text)
@@ -76,31 +83,12 @@ local core = function(choices_obj, groups_obj, which_obj, fuzzy_obj, output_obj,
         local till_len = meta_key(sub)
         table.insert(match_posses, { match.lnum, till_len })
     end
-    -- alter
 
-    -- for lnum, match in ipairs(matches_which_group_obj) do
-    --     if match_from_front(match.key, which_line) then
-    --         table.insert(ids, { id = match.id, key = match.key })
-    --         local sub = string.sub(match.key, 1 + #which_line, opts.prefix_size + #which_line)
-
-    --         local str = fill_spaces(sub, opts.prefix_size)
-    --         local desc = output_obj_which:add(
-    --             output_obj.buf,
-    --             #texts,
-    --             opts.output_obj_which_mode_desc_format(match),
-    --             opts.prefix_size + 6
-    --         )
-    --         local text = string.format(" %s %s %s", str, "→", desc)
-
-    --         table.insert(texts, text)
-
-    --         local till_len = meta_key(sub)
-    --         table.insert(match_posses, { lnum, till_len })
-    --     end
-    -- end
+    -- update output_obj
     local _row_offset = vim.o.cmdheight + (vim.o.laststatus > 0 and 1 or 0) + input_win_row_offset
     _update_output_obj(output_obj, texts, vim.o.lines, _row_offset + input_win_row_offset)
 
+    -- highlight fuzzy matches
     if vim.api.nvim_get_current_buf() == fuzzy_obj.buf then
         for i, match_pos in ipairs(match_posses) do
             if poss ~= nil then
@@ -117,14 +105,18 @@ local core = function(choices_obj, groups_obj, which_obj, fuzzy_obj, output_obj,
             end
         end
     end
+
+    -- highlight which matches
     if vim.api.nvim_get_current_buf() == which_obj.buf then
         output_obj_which:place(output_obj.buf)
     else
         output_obj_which:clear(output_obj.buf)
     end
 
+    -- update prompt counter
     prompt_counter_update(which_obj, fuzzy_obj, #choices_obj, #which_matches_obj)
 
+    -- when narrowed down to one, return it
     if which_line == "" then
         return nil
     else
