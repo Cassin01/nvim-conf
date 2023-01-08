@@ -1,12 +1,15 @@
 local static = require("wf.static")
 local full_name = static.full_name
-local input_win_row_offset = static.input_win_row_offset -- shift up output-window's row with input-window's height
+local row_offset = static.row_offset
+-- local input_win_row_offset = static.input_win_row_offset -- shift up output-window's row with input-window's height
 -- local prefix_size = static.prefix_size
 local gen_obj = require("wf.common").gen_obj
 
 local function output_obj_gen(prefix_size, style)
-  local buf, win = gen_obj(vim.o.cmdheight + (vim.o.laststatus > 0 and 1 or 0) + input_win_row_offset + input_win_row_offset, style)
+  local buf, win = gen_obj(row_offset() + style.input_win_row_offset + style.input_win_row_offset, style)
   vim.api.nvim_buf_set_option(buf, "filetype", full_name .. "output")
+  local wcnf = vim.api.nvim_win_get_config(win)
+  vim.api.nvim_win_set_config(win, vim.fn.extend(wcnf, { border = style.borderchars.top }))
   -- U+2420 ␠ SYMBOL FOR SPACE
   -- U+2422 ␢ BLANK SYMBOL
   -- U+2423 ␣ OPEN BOX
@@ -18,7 +21,7 @@ local function output_obj_gen(prefix_size, style)
   vim.cmd([[syntax match WFHead "\%(^\s\)\@<=." contained]])
   vim.cmd("hi link WFHead WFWhich")
 
-  vim.cmd([[syntax match WFKey "\%(^\s\)\@<=<[a-zA-Z\-]\+>" contained]])
+  vim.cmd([[syntax match WFKey "\%(^\s\)\@<=<[0-9a-zA-Z\-@]\+>" contained]])
   vim.cmd("hi link WFKey WFWhich")
 
  vim.fn.matchadd("WFA", [[\%(^.\{]]..tostring(prefix_size + 2)..[[}\)\@<=.]], 5, -1)       -- vim.cmd("hi Conceal guifg=" .. fg_rem)
@@ -35,9 +38,10 @@ local function _update_output_obj(obj, choices, lines, row_offset)
   local cnf = vim.api.nvim_win_get_config(obj.win)
   local height = vim.api.nvim_buf_line_count(obj.buf)
   local row = lines - height - row_offset - 1
-  if height > lines - row_offset then
-    height = lines - row_offset - 1
-    row = 0
+  local top_margin = 4
+  if height > lines - row_offset + top_margin then
+    height = lines - row_offset - 1 - top_margin
+    row = 0 + top_margin
   end
 
   vim.api.nvim_win_set_config(obj.win, vim.fn.extend(cnf, { height = height, row = row }))

@@ -4,7 +4,7 @@ local match_from_front = util.match_from_front
 local fill_spaces = util.fill_spaces
 local group = require("wf.group")
 local static = require("wf.static")
-local input_win_row_offset = static.input_win_row_offset
+-- local input_win_row_offset = static.input_win_row_offset
 local output_obj_which = require("wf.output_obj_which")
 local _update_output_obj = require("wf.output")._update_output_obj
 local prompt_counter_update = require("wf.prompt_counter").update
@@ -76,7 +76,7 @@ local core = function(choices_obj, groups_obj, which_obj, fuzzy_obj, output_obj,
             opts.output_obj_which_mode_desc_format(match),
             opts.prefix_size + 6
         )
-        local text = string.format(" %s %s %s", str, "→", desc)
+        local text = string.format(" %s %s %s", str, opts.style.icons.separator, desc)
 
         table.insert(texts, text)
 
@@ -85,8 +85,8 @@ local core = function(choices_obj, groups_obj, which_obj, fuzzy_obj, output_obj,
     end
 
     -- update output_obj
-    local _row_offset = vim.o.cmdheight + (vim.o.laststatus > 0 and 1 or 0) + input_win_row_offset
-    _update_output_obj(output_obj, texts, vim.o.lines, _row_offset + input_win_row_offset)
+    local _row_offset = vim.o.cmdheight + (vim.o.laststatus > 0 and 1 or 0) + opts.style.input_win_row_offset
+    _update_output_obj(output_obj, texts, vim.o.lines, _row_offset + opts.style.input_win_row_offset)
 
     -- highlight fuzzy matches
     if vim.api.nvim_get_current_buf() == fuzzy_obj.buf then

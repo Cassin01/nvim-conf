@@ -1,4 +1,5 @@
-local style = require("wf.config.style").new()
+local full_name = require("wf.static").full_name
+local style = require("wf.config.style").new(vim.g[full_name .. "#theme"] or "default")
 
 -- Default configuration
 local _opts = {
@@ -10,7 +11,7 @@ local _opts = {
   sorter = require("wf.sorter").which,
   output_obj_which_mode_desc_format = function(match_obj)
     local desc = match_obj.text
-    local front = desc:match("^%[[%l%u%d%si%-]+%]")
+    local front = desc:match("^%[[%l%u%d%s%-]+%]")
     if front == nil then
       if match_obj.type == "group" then
         return { { match_obj.text, "WFWhichDesc" }, { " *", "WFExpandable" } }

@@ -11,7 +11,7 @@ local function open_win(buf, height, row_offset, style)
     -- border = "shadow",
     -- border = {" ", " ", " ", " ", " ", " ", " ", " "},
     -- border = "none",
-    border = "rounded",
+    border = style.border,
     -- title = {
     --   {"T","TRed"}, {"i","TOrange"},{"t","TYellow"},
     --   {"i","TGreen"},{"l","TBlue"},{"e","TPurple"},
@@ -31,7 +31,7 @@ local function gen_obj(row_offset, style)
   local buf = vim.api.nvim_create_buf(false, true)
   local height = vim.api.nvim_buf_line_count(buf)
   local win = open_win(buf, height, row_offset, style)
-  vim.api.nvim_win_set_option(win, "winhl", "Normal:Normal")
+  vim.api.nvim_win_set_option(win, "winhl", "Normal:WFNormal,FloatBorder:WFFloatBorder")
   vim.api.nvim_win_set_option(win, "wrap", false)
   vim.api.nvim_buf_set_option(buf, "buftype", "nofile")
   vim.api.nvim_buf_set_option(buf, "bufhidden", "wipe")
