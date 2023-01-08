@@ -1,4 +1,4 @@
-local style = require("wf.style").new()
+-- local style = require("wf.style").new()
 local function open_win(buf, height, row_offset, style)
   local conf_ = {
     -- col = 0,
@@ -27,7 +27,7 @@ local function open_win(buf, height, row_offset, style)
   return vim.api.nvim_open_win(buf, true, conf)
 end
 
-local function gen_obj(row_offset)
+local function gen_obj(row_offset, style)
   local buf = vim.api.nvim_create_buf(false, true)
   local height = vim.api.nvim_buf_line_count(buf)
   local win = open_win(buf, height, row_offset, style)

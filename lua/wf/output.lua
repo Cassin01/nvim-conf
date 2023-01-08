@@ -4,8 +4,8 @@ local input_win_row_offset = static.input_win_row_offset -- shift up output-wind
 -- local prefix_size = static.prefix_size
 local gen_obj = require("wf.common").gen_obj
 
-local function output_obj_gen(prefix_size)
-  local buf, win = gen_obj(vim.o.cmdheight + (vim.o.laststatus > 0 and 1 or 0) + input_win_row_offset + input_win_row_offset)
+local function output_obj_gen(prefix_size, style)
+  local buf, win = gen_obj(vim.o.cmdheight + (vim.o.laststatus > 0 and 1 or 0) + input_win_row_offset + input_win_row_offset, style)
   vim.api.nvim_buf_set_option(buf, "filetype", full_name .. "output")
   -- U+2420 ␠ SYMBOL FOR SPACE
   -- U+2422 ␢ BLANK SYMBOL
