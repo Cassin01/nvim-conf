@@ -10,6 +10,19 @@ local function get_hl(tbl, name, ground)
   return tbl
 end
 
+local function rev(name)
+  local tbl = { default = true }
+  local bg = vim.fn.synIDattr(vim.fn.hlID("NormalFloat"), "bg")
+  local fg = vim.fn.synIDattr(vim.fn.hlID(name), "fg")
+  if bg ~= "" then
+    tbl["fg"] = bg
+  end
+  if fg ~= "" then
+    tbl["bg"] = fg
+  end
+  return tbl
+end
+
 local themes = {
   chad = {
     highlight = {
@@ -38,6 +51,9 @@ local themes = {
       WFSeparator = "Comment",
       WFGroup = "Function",
       WFExpandable = "Type",
+      WFTitleWhich = rev("Keyword"),
+      WFTitleFuzzy = rev("Error"),
+      WFTitleFreeze = "WFFreeze",
     },
   },
   default = {
@@ -57,6 +73,9 @@ local themes = {
       WFSeparator = "Comment",
       WFGroup = "Function",
       WFExpandable = "Type",
+      WFTitleWhich = "Title",
+      WFTitleFuzzy = "Title",
+      WFTitleFreeze = "WFFreeze",
     },
   },
   space = {
@@ -76,6 +95,9 @@ local themes = {
       WFSeparator = "Comment",
       WFGroup = "Function",
       WFExpandable = "Type",
+      WFTitleWhich = "Title",
+      WFTitleFuzzy = "Title",
+      WFTitleFreeze = "WFFreeze",
     },
   },
 }

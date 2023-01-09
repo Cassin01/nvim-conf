@@ -17,7 +17,9 @@ local function input_obj_gen(style)
     end)
   end, { buffer = buf })
 
-  return { buf = buf, win = win }
+  local wcnf = vim.api.nvim_win_get_config(win)
+  vim.api.nvim_win_set_config(win, vim.fn.extend(wcnf, { title_pos = "left", title = style.borderchars.bottom[2] }))
+  return { buf = buf, win = win, name = " Fuzzy Finder " }
 end
 
 return { input_obj_gen = input_obj_gen }

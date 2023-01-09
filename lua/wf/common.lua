@@ -12,8 +12,6 @@ local function open_win(buf, height, row_offset, style)
     -- border = {" ", " ", " ", " ", " ", " ", " ", " "},
     -- border = "none",
     border = style.border,
-    title = "Hoge",
-    title_pos = "center",
   }
   local conf = vim.fn.extend(conf_, {
     height = height,

@@ -11,6 +11,8 @@ function M.new(theme)
       },
       icons = {
         separator = "➜", -- symbol used between a key and it's label
+        fuzzy_prompt = "> ",
+        which_prompt = "> ",
       },
       input_win_row_offset = 3, -- shift up output-window's row with input-window's height
     },
@@ -24,6 +26,8 @@ function M.new(theme)
       },
       icons = {
         separator = "➜", -- symbol used between a key and it's label
+        fuzzy_prompt = "> ",
+        which_prompt = "> ",
       },
       input_win_row_offset = 3, -- shift up output-window's row with input-window's height
     },
@@ -37,6 +41,8 @@ function M.new(theme)
       },
       icons = {
         separator = "   ", -- symbol used between a key and it's label (strdisplaywidth = 3)
+        fuzzy_prompt = " ",
+        which_prompt = " ",
       },
       input_win_row_offset = 3, -- shift up output-window's row with input-window's height
     },

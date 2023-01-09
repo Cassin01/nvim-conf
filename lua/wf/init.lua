@@ -94,9 +94,26 @@ local function swap_win_pos(up, down, style)
     local height = 1
     local row = vim.o.lines - height - row_offset() - 1
     local wcnf = vim.api.nvim_win_get_config(up.win)
-    vim.api.nvim_win_set_config(up.win, vim.fn.extend(wcnf, { row = row - style.input_win_row_offset, border = style.borderchars.center, title_pos = "center" }))
+    vim.api.nvim_win_set_config(
+        up.win,
+        vim.fn.extend(wcnf, {
+            row = row - style.input_win_row_offset,
+            border = style.borderchars.center,
+            title_pos = "center",
+            title = { { up.name, up.name == " Which Key " and "WFTitleWhich" or "WFTitleFuzzy" } },
+        })
+    )
     local fcnf = vim.api.nvim_win_get_config(down.win)
-    vim.api.nvim_win_set_config(down.win, vim.fn.extend(fcnf, { row = row, border = style.borderchars.bottom, title_pos="center" }))
+    vim.api.nvim_win_set_config(
+        down.win,
+        vim.fn.extend(
+            fcnf,
+            { row = row, border = style.borderchars.bottom, title_pos = "center", 
+            -- title = style.borderchars.bottom[2] 
+            title = { { down.name, "WFTitleFreeze" } },
+        }
+        )
+    )
 end
 
 local function fuzzy_setup(which_obj, fuzzy_obj, output_obj, choices_obj, groups_obj, opts)
@@ -106,7 +123,7 @@ local function fuzzy_setup(which_obj, fuzzy_obj, output_obj, choices_obj, groups
     au(_g, "WinEnter", function()
         vim.api.nvim_win_set_option(fuzzy_obj.win, "winhl", "Normal:WFFocus,FloatBorder:WFFloatBorderFocus")
 
-        vim.fn.sign_unplace(sign_group_prompt .. "freeze", { buffer = fuzzy_obj.buf })
+        vim.fn.sign_unplace(sign_group_prompt .. "fuzzyfreeze", { buffer = fuzzy_obj.buf })
         vim.fn.sign_place(
             0,
             sign_group_prompt .. "fuzzy",
@@ -118,12 +135,12 @@ local function fuzzy_setup(which_obj, fuzzy_obj, output_obj, choices_obj, groups
         swap_win_pos(fuzzy_obj, which_obj, opts.style)
     end, { buffer = fuzzy_obj.buf })
     au(_g, "WinLeave", function()
-        vim.fn.sign_unplace(sign_group_prompt .. "freeze", { buffer = fuzzy_obj.buf })
+        vim.fn.sign_unplace(sign_group_prompt .. "fuzzyfreeze", { buffer = fuzzy_obj.buf })
         vim.fn.sign_unplace(sign_group_prompt .. "fuzzy", { buffer = fuzzy_obj.buf })
         vim.fn.sign_place(
             0,
-            sign_group_prompt .. "freeze",
-            sign_group_prompt .. "freeze",
+            sign_group_prompt .. "fuzzyfreeze",
+            sign_group_prompt .. "fuzzyfreeze",
             fuzzy_obj.buf,
             { lnum = 1, priority = 10 }
         )
@@ -133,7 +150,7 @@ end
 
 local function which_setup(which_obj, fuzzy_obj, output_obj, choices_obj, groups_obj, callback, obj_handlers, opts)
     au(_g, "BufEnter", function()
-        vim.fn.sign_unplace(sign_group_prompt .. "freeze", { buffer = which_obj.buf })
+        vim.fn.sign_unplace(sign_group_prompt .. "whichfreeze", { buffer = which_obj.buf })
         local _, _ = pcall(function()
             require("cmp").setup.buffer({ enabled = false })
         end)
@@ -144,8 +161,8 @@ local function which_setup(which_obj, fuzzy_obj, output_obj, choices_obj, groups
         vim.fn.sign_unplace(sign_group_prompt .. "which", { buffer = which_obj.buf })
         vim.fn.sign_place(
             0,
-            sign_group_prompt .. "freeze",
-            sign_group_prompt .. "freeze",
+            sign_group_prompt .. "whichfreeze",
+            sign_group_prompt .. "whichfreeze",
             which_obj.buf,
             { lnum = 1, priority = 10 }
         )
@@ -257,15 +274,19 @@ local function inputlist(choices, callback, opts)
     opts = _opts
 
     vim.fn.sign_define(sign_group_prompt .. "fuzzy", {
-        text = opts.prompt,
+        text = opts.style.icons.fuzzy_prompt,
         texthl = "WFFuzzyPrompt",
     })
     vim.fn.sign_define(sign_group_prompt .. "which", {
-        text = opts.prompt,
+        text = opts.style.icons.which_prompt,
         texthl = "WFWhich",
     })
-    vim.fn.sign_define(sign_group_prompt .. "freeze", {
-        text = opts.prompt,
+    vim.fn.sign_define(sign_group_prompt .. "fuzzyfreeze", {
+        text = opts.style.icons.fuzzy_prompt,
+        texthl = "WFFreeze",
+    })
+    vim.fn.sign_define(sign_group_prompt .. "whichfreeze", {
+        text = opts.style.icons.which_prompt,
         texthl = "WFFreeze",
     })
 
@@ -281,19 +302,22 @@ local function inputlist(choices, callback, opts)
     end
     local choices_obj = {}
     for _, val in ipairs(_choices_obj) do
-        table.insert(choices_obj, cell.new(
-            val.id,
-            val.key,
-            (function()
-                local list = opts.output_obj_which_mode_desc_format(val)
-                local str = ""
-                for _, v in ipairs(list) do
-                    str = str .. v[1]
-                end
-                return str
-            end)(),
-            "key"
-        ))
+        table.insert(
+            choices_obj,
+            cell.new(
+                val.id,
+                val.key,
+                (function()
+                    local list = opts.output_obj_which_mode_desc_format(val)
+                    local str = ""
+                    for _, v in ipairs(list) do
+                        str = str .. v[1]
+                    end
+                    return str
+                end)(),
+                "key"
+            )
+        )
     end
 
     local caller_obj = (function()
