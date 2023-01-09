@@ -14,8 +14,8 @@ local labels = {
   ["_"] = "black hole",
   ["/"] = "last search pattern",
 }
-local function regex(opts)
-  local function _regex()
+local function register(opts)
+  local function _register()
     local choices = {}
     for i = 1, #registers, 1 do
       local key = registers:sub(i, i)
@@ -30,6 +30,7 @@ local function regex(opts)
     end
 
     local _opts = {
+      title = "Registers",
       output_obj_which_mode_desc_format = function(c)
         return { { (labels[c.key] or "") .. " ", "WFGroup" }, { c.text, "WFWhichDesc" } }
       end,
@@ -44,7 +45,7 @@ local function regex(opts)
       vim.cmd(cmd)
     end)
   end
-  return _regex
+  return _register
 end
 
-return regex
+return register

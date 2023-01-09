@@ -33,12 +33,13 @@ local themes = {
         tbl = get_hl(tbl, "NormalFloat", "bg")
         return tbl
       end)(),
-      WFFloatBorder = (function()
-        local tbl = { default = true }
-        tbl = get_hl(tbl, "FloatBorder", "fg")
-        tbl = get_hl(tbl, "NormalFloat", "bg")
-        return tbl
-      end)(),
+      -- WFFloatBorder = (function()
+      --   local tbl = { default = true }
+      --   tbl = get_hl(tbl, "FloatBorder", "fg")
+      --   tbl = get_hl(tbl, "NormalFloat", "bg")
+      --   return tbl
+      -- end)(),
+      WFFloatBorder = "NormalFloat",
       WFFloatBorderFocus = "Normal",
       WFWhichRem = "Comment",
       WFWhichOn = "Keyword",
@@ -51,6 +52,8 @@ local themes = {
       WFSeparator = "Comment",
       WFGroup = "Function",
       WFExpandable = "Type",
+      WFTitleOutputWhich = rev("Function"),
+      WFTitleOutputFuzzy = rev("String"),
       WFTitleWhich = rev("Keyword"),
       WFTitleFuzzy = rev("Error"),
       WFTitleFreeze = "WFFreeze",
@@ -73,6 +76,7 @@ local themes = {
       WFSeparator = "Comment",
       WFGroup = "Function",
       WFExpandable = "Type",
+      WFTitleOutput ="Title",
       WFTitleWhich = "Title",
       WFTitleFuzzy = "Title",
       WFTitleFreeze = "WFFreeze",
@@ -95,6 +99,7 @@ local themes = {
       WFSeparator = "Comment",
       WFGroup = "Function",
       WFExpandable = "Type",
+      WFTitleOutput ="Title",
       WFTitleWhich = "Title",
       WFTitleFuzzy = "Title",
       WFTitleFreeze = "WFFreeze",

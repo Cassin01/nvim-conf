@@ -1,22 +1,14 @@
--- local style = require("wf.style").new()
 local function open_win(buf, height, row_offset, style)
   local conf_ = {
-    -- col = 0,
-    -- col = math.ceil(vim.o.columns * 0.6),
     width = style.width,
-    -- width = vim.o.columns > 45 and 45 or math.ceil(vim.o.columns * 0.3),
     relative = "editor",
     anchor = "NW",
     style = "minimal",
-    -- border = "shadow",
-    -- border = {" ", " ", " ", " ", " ", " ", " ", " "},
-    -- border = "none",
     border = style.border,
   }
   local conf = vim.fn.extend(conf_, {
     height = height,
     row = vim.o.lines - height - row_offset - 1,
-    -- width = vim.o.columns - conf_.col,
     col = vim.o.columns - conf_.width,
   })
   return vim.api.nvim_open_win(buf, true, conf)
@@ -32,8 +24,6 @@ local function gen_obj(row_offset, style)
   vim.api.nvim_buf_set_option(buf, "bufhidden", "wipe")
   vim.api.nvim_buf_set_option(buf, "swapfile", false)
   vim.api.nvim_buf_set_option(buf, "buflisted", false)
-  -- local cnf = vim.api.nvim_win_get_config(win)
-  -- vim.api.nvim_win_set_config(win, vim.fn.extend(cnf, {title = {{"+", "Normal"}}, title_pos = "center"}))
   return buf, win
 end
 

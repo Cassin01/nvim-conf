@@ -9,7 +9,6 @@ local static = require("wf.static")
 local bmap = static.bmap
 local row_offset = static.row_offset
 local _g = static._g
--- local input_win_row_offset = static.input_win_row_offset
 local sign_group_prompt = static.sign_group_prompt
 local cell = require("wf.cell")
 local which_insert_map = require("wf.which_map").setup
@@ -106,13 +105,13 @@ local function swap_win_pos(up, down, style)
     local fcnf = vim.api.nvim_win_get_config(down.win)
     vim.api.nvim_win_set_config(
         down.win,
-        vim.fn.extend(
-            fcnf,
-            { row = row, border = style.borderchars.bottom, title_pos = "center", 
-            -- title = style.borderchars.bottom[2] 
+        vim.fn.extend(fcnf, {
+            row = row,
+            border = style.borderchars.bottom,
+            title_pos = "center",
+            -- title = style.borderchars.bottom[2]
             title = { { down.name, "WFTitleFreeze" } },
-        }
-        )
+        })
     )
 end
 
@@ -131,6 +130,22 @@ local function fuzzy_setup(which_obj, fuzzy_obj, output_obj, choices_obj, groups
             fuzzy_obj.buf,
             { lnum = 1, priority = 10 }
         )
+
+        local wcnf = vim.api.nvim_win_get_config(output_obj.win)
+        vim.api.nvim_win_set_config(
+            output_obj.win,
+            vim.fn.extend(wcnf, {
+                title_pos = "center",
+                title = (function()
+                    if opts.title ~= nil then
+                        return { { opts.title, "WFTitleOutputFuzzy" } }
+                    else
+                        return opts.style.borderchars.top[2]
+                    end
+                end)(),
+            })
+        )
+
         core(choices_obj, groups_obj, which_obj, fuzzy_obj, output_obj, opts)
         swap_win_pos(fuzzy_obj, which_obj, opts.style)
     end, { buffer = fuzzy_obj.buf })
@@ -185,6 +200,20 @@ local function which_setup(which_obj, fuzzy_obj, output_obj, choices_obj, groups
             sign_group_prompt .. "which",
             which_obj.buf,
             { lnum = 1, priority = 10 }
+        )
+        local wcnf = vim.api.nvim_win_get_config(output_obj.win)
+        vim.api.nvim_win_set_config(
+            output_obj.win,
+            vim.fn.extend(wcnf, {
+                title_pos = "center",
+                title = (function()
+                    if opts.title ~= nil then
+                        return { { opts.title, "WFTitleOutputWhich" } }
+                    else
+                        return opts.style.borderchars.top[2]
+                    end
+                end)(),
+            })
         )
         core(choices_obj, groups_obj, which_obj, fuzzy_obj, output_obj, opts)
         swap_win_pos(which_obj, fuzzy_obj, opts.style)
@@ -335,7 +364,7 @@ local function inputlist(choices, callback, opts)
     local groups_obj = group.new(opts.key_group_dict)
 
     -- 表示用バッファを作成
-    local output_obj = output_obj_gen(opts.prefix_size, opts.style)
+    local output_obj = output_obj_gen(opts.prefix_size, opts)
 
     -- -- 入力用バッファを作成
     local which_obj = which.input_obj_gen(opts.style)

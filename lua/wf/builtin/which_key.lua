@@ -40,7 +40,7 @@ local function which_key(opts)
     local count = vim.api.nvim_get_vvar("count")
     opts = opts or {}
     local _opts = {
-      prompt = "> ",
+      title = "Which Key",
       text_insert_in_advance = "",
       key_group_dict = vim.fn.luaeval("_G.__kaza.prefix"),
     }

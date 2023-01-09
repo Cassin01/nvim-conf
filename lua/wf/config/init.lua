@@ -3,7 +3,7 @@ local style = require("wf.config.style").new(vim.g[full_name .. "#theme"] or "de
 
 -- Default configuration
 local _opts = {
-  -- prompt = "> ",
+  title = nil,
   selector = "which",
   text_insert_in_advance = "",
   key_group_dict = {},
