@@ -1,7 +1,7 @@
 local util = require("wf.util")
 local au = util.au
 local rt = util.rt
-local run = require("wf.async").run
+-- local run = require("wf.async").run
 local ingect_deeply = util.ingect_deeply
 local match_from_tail = util.match_from_tail
 local fuzzy = require("wf.fuzzy")
