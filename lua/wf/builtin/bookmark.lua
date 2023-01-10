@@ -7,7 +7,6 @@ local function bookmark(opts)
       fnl = "~/.config/nvim/fnl",
       kaza = "~/.config/nvim/fnl/kaza",
       core = "~/.config/nvim/fnl/core",
-      plug = "~/.config/nvim/plugin",
       vim = "~/.config/nvim/vim",
       macros = "~/.config/nvim/lua/macros",
       packer = "~/.config/nvim/fnl/core/pack/plugs.fnl",
@@ -30,8 +29,9 @@ local function bookmark(opts)
     end
 
     select(bookmark_dir, _opts, function(paths, lhs)
-      local path = paths[lhs]
-      if vim.fn.isdirectory(vim.fn.expand(path)) then
+      local path = vim.fn.expand(bookmark_dir[lhs])
+
+      if vim.fn.isdirectory(path) then
         if vim.fn.exists(":Telescope") then
           require("telescope").extensions.file_browser.file_browser({ path = path, depth = 4 })
           return

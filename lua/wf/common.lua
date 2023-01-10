@@ -1,10 +1,10 @@
-local function open_win(buf, height, row_offset, style)
+local function open_win(buf, height, row_offset, opts)
   local conf_ = {
-    width = style.width,
+    width = opts.style.width,
     relative = "editor",
     anchor = "NW",
     style = "minimal",
-    border = style.border,
+    border = opts.style.border,
   }
   local conf = vim.fn.extend(conf_, {
     height = height,
@@ -14,10 +14,10 @@ local function open_win(buf, height, row_offset, style)
   return vim.api.nvim_open_win(buf, true, conf)
 end
 
-local function gen_obj(row_offset, style)
+local function gen_obj(row_offset, opts)
   local buf = vim.api.nvim_create_buf(false, true)
   local height = vim.api.nvim_buf_line_count(buf)
-  local win = open_win(buf, height, row_offset, style)
+  local win = open_win(buf, height, row_offset, opts)
   vim.api.nvim_win_set_option(win, "winhl", "Normal:WFNormal,FloatBorder:WFFloatBorder")
   vim.api.nvim_win_set_option(win, "wrap", false)
   vim.api.nvim_buf_set_option(buf, "buftype", "nofile")

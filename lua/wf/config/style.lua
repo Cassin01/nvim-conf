@@ -2,7 +2,6 @@ local M = {}
 function M.new(theme)
   local themes = {
     default = {
-      width = vim.o.columns > 45 and 45 or math.ceil(vim.o.columns * 0.5),
       border = "rounded",
       borderchars = {
         top = { "╭", "─", "╮", "│", "╯", "─", "╰", "│" },
@@ -15,9 +14,9 @@ function M.new(theme)
         which_prompt = "> ",
       },
       input_win_row_offset = 3, -- shift up output-window's row with input-window's height
+      width = vim.o.columns > 45 and 45 or math.ceil(vim.o.columns * 0.5),
     },
     space = {
-      width = vim.o.columns > 45 and 45 or math.ceil(vim.o.columns * 0.5),
       border = "rounded",
       borderchars = {
         top = { "╭", "─", "╮", "│", "╯", "─", "╰", "│" },
@@ -30,9 +29,9 @@ function M.new(theme)
         which_prompt = "> ",
       },
       input_win_row_offset = 3, -- shift up output-window's row with input-window's height
+      width = vim.o.columns > 45 and 45 or math.ceil(vim.o.columns * 0.5),
     },
     chad = {
-      width = vim.o.columns > 45 and 45 or math.ceil(vim.o.columns * 0.5),
       border = "solid",
       borderchars = {
         top = { " ", " ", " ", " ", " ", " ", " ", " " },
@@ -45,6 +44,7 @@ function M.new(theme)
         which_prompt = " ",
       },
       input_win_row_offset = 3, -- shift up output-window's row with input-window's height
+      width = vim.o.columns > 45 and 45 or math.ceil(vim.o.columns * 0.5),
     },
   }
   return themes[theme] or themes["default"]

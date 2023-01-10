@@ -5,22 +5,21 @@ local gen_obj = require("wf.common").gen_obj
 
 local function output_obj_gen(prefix_size, opts)
   local style = opts.style
-  local buf, win = gen_obj(row_offset() + style.input_win_row_offset + style.input_win_row_offset, style)
+  local buf, win = gen_obj(row_offset() + style.input_win_row_offset + style.input_win_row_offset, opts)
   vim.api.nvim_buf_set_option(buf, "filetype", full_name .. "output")
   local wcnf = vim.api.nvim_win_get_config(win)
   vim.api.nvim_win_set_config(
     win,
     vim.fn.extend(
       wcnf,
-      { border = style.borderchars.top, title_pos = "center", title = 
-        style.borderchars.top[2]}
-        -- (function()  
-        --     if opts.title ~= nil then
-        --       return { {opts.title,"WFTitleOutput"} }
-        --     else
-        --       return  style.borderchars.top[2]
-        --     end
-      -- end)()}
+      { border = style.borderchars.top, title_pos = "center", title = style.borderchars.top[2] }
+    -- (function()
+    --     if opts.title ~= nil then
+    --       return { {opts.title,"WFTitleOutput"} }
+    --     else
+    --       return  style.borderchars.top[2]
+    --     end
+    -- end)()}
     )
   )
   -- U+2420 ␠ SYMBOL FOR SPACE

@@ -10,7 +10,6 @@ local ns_wf_output_obj_fuzzy = vim.api.nvim_create_namespace("wf_output_obj")
 
 -- core filtering flow
 local core = function(choices_obj, groups_obj, which_obj, fuzzy_obj, output_obj, opts)
-
     -- filter with fuzzy match
     local fuzzy_line = vim.api.nvim_buf_get_lines(fuzzy_obj.buf, 0, -1, true)[1]
     local matches_obj, poss = (function()
@@ -60,6 +59,7 @@ local core = function(choices_obj, groups_obj, which_obj, fuzzy_obj, output_obj,
         end
         return vim.fn.strdisplaywidth(string.match(sub, "."))
     end
+
     local ids = {}
     local texts = {}
     local match_posses = {}
@@ -67,13 +67,19 @@ local core = function(choices_obj, groups_obj, which_obj, fuzzy_obj, output_obj,
         table.insert(ids, { id = match.id, key = match.key })
         local sub = string.sub(match.key, 1 + #which_line, opts.prefix_size + #which_line)
 
-        local str = fill_spaces(sub, opts.prefix_size)
-        local desc = output_obj_which:add(
-            output_obj.buf,
-            #texts,
-            opts.output_obj_which_mode_desc_format(match),
-            opts.prefix_size + 6
-        )
+        local str = fill_spaces(sub == "" and "<CR>" or sub, opts.prefix_size)
+        local desc = (function()
+            if vim.api.nvim_get_current_buf() == which_obj.buf then
+                return output_obj_which:add(
+                    output_obj.buf,
+                    #texts,
+                    opts.output_obj_which_mode_desc_format(match),
+                    opts.prefix_size + 6
+                )
+            else
+                return match.text
+            end
+        end)()
         local text = string.format(" %s %s %s", str, opts.style.icons.separator, desc)
 
         table.insert(texts, text)

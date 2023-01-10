@@ -51,11 +51,12 @@ local function which_key(opts)
 
     select(choices, _opts, function(_, lhs)
       if win == vim.api.nvim_get_current_win() and buf == vim.api.nvim_get_current_buf() then
-        if vim.fn.mode() == "i" then
-          if count and count ~= 0 then
-            lhs = count .. lhs
-          end
+        local current_mode = vim.fn.mode()
+        if count and count ~= 0 then
+          lhs = count .. lhs
+        end
 
+        if current_mode == "i" then
           -- feed CTRL-O again i called from CTRL-O
           if mode == "nii" or mode == "nir" or mode == "niv" or mode == "vs" then
             vim.api.nvim_feedkeys(rt("<C-O>"), "n", false)
@@ -65,9 +66,11 @@ local function which_key(opts)
 
           -- feed the keys with remap
           vim.api.nvim_feedkeys(rt(lhs), "m", false)
+        elseif current_mode == "n" then
+          if mode == "n" then
+            vim.api.nvim_feedkeys(rt(lhs), "m", false)
+          end
         end
-
-
       end
     end)
   end

@@ -22,7 +22,6 @@ return {
   plug_name = plug_name,
   full_name = full_name,
   _g = _g,
-  -- input_win_row_offset = input_win_row_offset,
   bmap = bmap,
   sign_group_prompt = sign_group_prompt,
   sign_group_which = sign_group_which,

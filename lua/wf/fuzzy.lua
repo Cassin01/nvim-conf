@@ -4,9 +4,9 @@ local row_offset = static.row_offset
 local _g = static._g
 local au = require("wf.util").au
 
-local function input_obj_gen(style)
-  local _row_offset = row_offset() + style.input_win_row_offset
-  local buf, win = gen_obj(_row_offset, style)
+local function input_obj_gen(opts)
+  local _row_offset = row_offset() + opts.style.input_win_row_offset
+  local buf, win = gen_obj(_row_offset, opts)
 
   au(_g, "BufEnter", function()
     local _, _ = pcall(function()
@@ -16,7 +16,7 @@ local function input_obj_gen(style)
   end, { buffer = buf })
 
   local wcnf = vim.api.nvim_win_get_config(win)
-  vim.api.nvim_win_set_config(win, vim.fn.extend(wcnf, { title_pos = "left", title = style.borderchars.bottom[2] }))
+  vim.api.nvim_win_set_config(win, vim.fn.extend(wcnf, { title_pos = "left", title = opts.style.borderchars.bottom[2] }))
   return { buf = buf, win = win, name = " Fuzzy Finder " }
 end
 

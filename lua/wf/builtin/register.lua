@@ -32,9 +32,13 @@ local function register(opts)
     local _opts = {
       title = "Registers",
       output_obj_which_mode_desc_format = function(c)
-        return { { (labels[c.key] or "") .. " ", "WFGroup" }, { c.text, "WFWhichDesc" } }
+        local s = (labels[c.key] or "") .. " "
+        return { { s, "WFGroup" }, { string.sub(c.text, #s + 1), "WFWhichDesc" } }
       end,
       prefix_size = 1,
+      style = {
+        width = vim.o.columns,
+      },
     }
     opts = opts or {}
     for k, v in pairs(opts) do
@@ -45,6 +49,7 @@ local function register(opts)
       vim.cmd(cmd)
     end)
   end
+
   return _register
 end
 

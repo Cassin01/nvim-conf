@@ -1,6 +1,8 @@
 local util = require("wf.util")
 local au = util.au
 local rt = util.rt
+local run = require("wf.async").run
+local ingect_deeply = util.ingect_deeply
 local match_from_tail = util.match_from_tail
 local fuzzy = require("wf.fuzzy")
 local which = require("wf.which")
@@ -20,22 +22,28 @@ local function objs_setup(fuzzy_obj, which_obj, output_obj, caller_obj, choices_
     local objs = { fuzzy_obj, which_obj, output_obj }
 
     local del = function() -- deliminator of the whole process
-        for _, o in ipairs(objs) do
-            if vim.api.nvim_win_is_valid(o.buf) then
-                vim.api.nvim_set_current_win(o.win)
-                vim.api.nvim_buf_delete(o.buf, { force = true })
-            end
-            if vim.api.nvim_win_is_valid(o.win) then
-                vim.api.nvim_win_close(o.win, true)
-            end
+        if caller_obj.mode ~= "i" and caller_obj.mode ~= "t" then
+            vim.cmd("stopinsert")
         end
-        local cursor_valid, original_cursor = pcall(vim.api.nvim_win_get_cursor, caller_obj.win)
-        if vim.api.nvim_win_is_valid(caller_obj.win) then
-            pcall(vim.api.nvim_set_current_win, caller_obj.win)
-            if cursor_valid and vim.api.nvim_get_mode().mode == "i" and caller_obj.mode ~= "i" then
-                pcall(vim.api.nvim_win_set_cursor, caller_obj.win, { original_cursor[1], original_cursor[2] })
+
+        vim.schedule(function()
+            local cursor_valid, original_cursor = pcall(vim.api.nvim_win_get_cursor, caller_obj.win)
+            if vim.api.nvim_win_is_valid(caller_obj.win) then
+                pcall(vim.api.nvim_set_current_win, caller_obj.win)
+                if cursor_valid and vim.api.nvim_get_mode().mode == "i" and caller_obj.mode ~= "i" then
+                    pcall(vim.api.nvim_win_set_cursor, caller_obj.win, { original_cursor[1], original_cursor[2] })
+                end
             end
-        end
+            for _, o in ipairs(objs) do
+                if vim.api.nvim_win_is_valid(o.buf) then
+                    vim.api.nvim_set_current_win(o.win)
+                    vim.api.nvim_buf_delete(o.buf, { force = true })
+                end
+                if vim.api.nvim_win_is_valid(o.win) then
+                    vim.api.nvim_win_close(o.win, true)
+                end
+            end
+        end)
     end
     for _, o in ipairs(objs) do
         au(_g, "BufWinLeave", function()
@@ -80,7 +88,6 @@ local function objs_setup(fuzzy_obj, which_obj, output_obj, caller_obj, choices_
             if match.key == which_line then
                 del()
                 callback(match.id)
-                return
             end
         end
     end
@@ -118,6 +125,7 @@ end
 local function fuzzy_setup(which_obj, fuzzy_obj, output_obj, choices_obj, groups_obj, opts)
     au(_g, { "TextChangedI", "TextChanged" }, function()
         core(choices_obj, groups_obj, which_obj, fuzzy_obj, output_obj, opts)
+        -- run(core)(choices_obj, groups_obj, which_obj, fuzzy_obj, output_obj, opts)
     end, { buffer = fuzzy_obj.buf })
     au(_g, "WinEnter", function()
         vim.api.nvim_win_set_option(fuzzy_obj.win, "winhl", "Normal:WFFocus,FloatBorder:WFFloatBorderFocus")
@@ -138,7 +146,7 @@ local function fuzzy_setup(which_obj, fuzzy_obj, output_obj, choices_obj, groups
                 title_pos = "center",
                 title = (function()
                     if opts.title ~= nil then
-                        return { { opts.title, "WFTitleOutputFuzzy" } }
+                        return { { " " .. opts.title .. " ", "WFTitleOutputFuzzy" } }
                     else
                         return opts.style.borderchars.top[2]
                     end
@@ -147,6 +155,7 @@ local function fuzzy_setup(which_obj, fuzzy_obj, output_obj, choices_obj, groups
         )
 
         core(choices_obj, groups_obj, which_obj, fuzzy_obj, output_obj, opts)
+        -- run(core)(choices_obj, groups_obj, which_obj, fuzzy_obj, output_obj, opts)
         swap_win_pos(fuzzy_obj, which_obj, opts.style)
     end, { buffer = fuzzy_obj.buf })
     au(_g, "WinLeave", function()
@@ -208,7 +217,7 @@ local function which_setup(which_obj, fuzzy_obj, output_obj, choices_obj, groups
                 title_pos = "center",
                 title = (function()
                     if opts.title ~= nil then
-                        return { { opts.title, "WFTitleOutputWhich" } }
+                        return { { " " .. opts.title .. " ", "WFTitleOutputWhich" } }
                     else
                         return opts.style.borderchars.top[2]
                     end
@@ -280,27 +289,14 @@ local function which_setup(which_obj, fuzzy_obj, output_obj, choices_obj, groups
     end, "<C-h>")
 end
 
-local function is_array(t)
-    local i = 0
-    for _ in pairs(t) do
-        i = i + 1
-        if t[i] == nil then
-            return false
-        end
-    end
-    return true
-end
-
 -- core
-local function inputlist(choices, callback, opts)
-    local _opts = vim.fn.deepcopy(require("wf.config"))
-    opts = opts or {}
-    for k, v in pairs(opts) do
-        if vim.fn.has_key(_opts, k) then
-            _opts[k] = v
-        end
-    end
-    opts = _opts
+local function inputtable(choices, callback, opts)
+    local _opts = vim.deepcopy(require("wf.config"))
+    opts = ingect_deeply(_opts, opts or vim.emptydict())
+    -- for k, v in pairs(opts or vim.emptydict()) do
+    --     _opts[k] = v
+    -- end
+    -- opts = _opts
 
     vim.fn.sign_define(sign_group_prompt .. "fuzzy", {
         text = opts.style.icons.fuzzy_prompt,
@@ -319,34 +315,15 @@ local function inputlist(choices, callback, opts)
         texthl = "WFFreeze",
     })
 
-    local _choices_obj = {}
-    if is_array(choices) then
+    local choices_obj = {}
+    if vim.tbl_islist(choices) then
         for i, val in ipairs(choices) do
-            _choices_obj[i] = cell.new(i, tostring(i), val, "key")
+            choices_obj[i] = cell.new(i, tostring(i), val, "key")
         end
     else -- dict
         for key, val in pairs(choices) do
-            table.insert(_choices_obj, cell.new(key, key, val, "key"))
+            table.insert(choices_obj, cell.new(key, key, val, "key"))
         end
-    end
-    local choices_obj = {}
-    for _, val in ipairs(_choices_obj) do
-        table.insert(
-            choices_obj,
-            cell.new(
-                val.id,
-                val.key,
-                (function()
-                    local list = opts.output_obj_which_mode_desc_format(val)
-                    local str = ""
-                    for _, v in ipairs(list) do
-                        str = str .. v[1]
-                    end
-                    return str
-                end)(),
-                "key"
-            )
-        )
     end
 
     local caller_obj = (function()
@@ -367,8 +344,8 @@ local function inputlist(choices, callback, opts)
     local output_obj = output_obj_gen(opts.prefix_size, opts)
 
     -- -- 入力用バッファを作成
-    local which_obj = which.input_obj_gen(opts.style)
-    local fuzzy_obj = fuzzy.input_obj_gen(opts.style)
+    local which_obj = which.input_obj_gen(opts)
+    local fuzzy_obj = fuzzy.input_obj_gen(opts)
 
     local obj_handlers = objs_setup(fuzzy_obj, which_obj, output_obj, caller_obj, choices_obj, callback)
     which_setup(which_obj, fuzzy_obj, output_obj, choices_obj, groups_obj, callback, obj_handlers, opts)
@@ -381,6 +358,7 @@ local function inputlist(choices, callback, opts)
     elseif opts.selector == "which" then
         vim.api.nvim_set_current_win(which_obj.win)
         vim.cmd("startinsert!")
+        -- vim.cmd("startinsert!")
     else
         print("selector must be fuzzy or which")
         obj_handlers.del()
@@ -394,21 +372,22 @@ local function select(items, opts, on_choice)
     })
     opts = opts or {}
     local choices = {}
-    local format_item = opts.format_item or tostring
 
     for k, item in pairs(items) do
-        choices[k] = format_item(item)
+        choices[k] = tostring(item)
     end
     local callback = function(choice)
-        if type(choice) == "string" then
-            on_choice(items[choice], choice)
-        elseif choice < 1 or choice > #items then
-            on_choice(nil, nil)
-        else
-            on_choice(items[choice], choice)
-        end
+        vim.schedule(function()
+            if type(choice) == "string" then
+                on_choice(items[choice], choice)
+            elseif choice < 1 or choice > #items then
+                on_choice(nil, nil)
+            else
+                on_choice(items[choice], choice)
+            end
+        end)
     end
-    inputlist(choices, callback, opts)
+    inputtable(choices, callback, opts)
 end
 
 return { select = select, setup = setup }

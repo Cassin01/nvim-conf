@@ -1,10 +1,27 @@
 local M = {}
 
-function M.array_reverse(x) local n, m = #x, #x / 2
+function M.array_reverse(x)
+  local n, m = #x, #x / 2
   for i = 1, m do
     x[i], x[n - i + 1] = x[n - i + 1], x[i]
   end
   return x
+end
+
+-- Inject obj into org
+-- @param org: table
+-- @param obj: table
+function M.ingect_deeply(org, obj)
+  for k, v in pairs(obj) do
+    if vim.fn.has_key(org, k) then
+      if type(org[k]) == "table" and vim.tbl_islist(org[k]) == 0 then
+        org[k] = M.ingect_deeply(org[k], v)
+      else
+        org[k] = v
+      end
+    end
+  end
+  return org
 end
 
 function M.cmd(name, f, opt)
@@ -80,8 +97,9 @@ function M.match_from_front(str, patt)
 end
 
 local function _escape(c)
-    return c == [[\]] and [[\\]] or c
+  return c == [[\]] and [[\\]] or c
 end
+
 function M.match_from_front_ignore_case(str, patt)
   if string.len(str) < string.len(patt) then
     return false
@@ -89,7 +107,7 @@ function M.match_from_front_ignore_case(str, patt)
   for i = 1, patt:len() do
     local c = string.sub(str, i, i)
     local p = string.sub(patt, i, i)
-    if vim.api.nvim_eval( [["]] .. _escape(c) .. [[" ==? "]] .. _escape(p) .. [["]]) == 0 then
+    if vim.api.nvim_eval([["]] .. _escape(c) .. [[" ==? "]] .. _escape(p) .. [["]]) == 0 then
       return false
     end
   end
