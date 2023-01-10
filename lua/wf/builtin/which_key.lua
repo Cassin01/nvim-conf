@@ -70,6 +70,8 @@ local function which_key(opts)
           if mode == "n" then
             vim.api.nvim_feedkeys(rt(lhs), "m", false)
           end
+        else
+          print("which-key: mode is not n or i")
         end
       end
     end)

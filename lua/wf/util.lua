@@ -14,7 +14,7 @@ end
 function M.ingect_deeply(org, obj)
   for k, v in pairs(obj) do
     if vim.fn.has_key(org, k) then
-      if type(org[k]) == "table" and vim.tbl_islist(org[k]) == 0 then
+      if type(org[k]) == "table" and not vim.tbl_islist(org[k]) then
         org[k] = M.ingect_deeply(org[k], v)
       else
         org[k] = v

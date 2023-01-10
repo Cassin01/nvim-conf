@@ -290,13 +290,9 @@ local function which_setup(which_obj, fuzzy_obj, output_obj, choices_obj, groups
 end
 
 -- core
-local function inputtable(choices, callback, opts)
+local function inputtable(choices, callback, opts_)
     local _opts = vim.deepcopy(require("wf.config"))
-    opts = ingect_deeply(_opts, opts or vim.emptydict())
-    -- for k, v in pairs(opts or vim.emptydict()) do
-    --     _opts[k] = v
-    -- end
-    -- opts = _opts
+    local opts = ingect_deeply(_opts, opts_ or vim.emptydict())
 
     vim.fn.sign_define(sign_group_prompt .. "fuzzy", {
         text = opts.style.icons.fuzzy_prompt,
@@ -376,17 +372,16 @@ local function select(items, opts, on_choice)
     for k, item in pairs(items) do
         choices[k] = tostring(item)
     end
-    local callback = function(choice)
-        vim.schedule(function()
+    local on_choice_wraped = vim.schedule_wrap(on_choice)
+    local callback = vim.schedule_wrap(function(choice)
             if type(choice) == "string" then
-                on_choice(items[choice], choice)
+                on_choice_wraped(items[choice], choice)
             elseif choice < 1 or choice > #items then
-                on_choice(nil, nil)
+                on_choice_wraped(nil, nil)
             else
-                on_choice(items[choice], choice)
+                on_choice_wraped(items[choice], choice)
             end
-        end)
-    end
+    end)
     inputtable(choices, callback, opts)
 end
 

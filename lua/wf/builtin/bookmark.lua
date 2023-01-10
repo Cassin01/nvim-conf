@@ -29,11 +29,11 @@ local function bookmark(opts)
     end
 
     select(bookmark_dir, _opts, function(paths, lhs)
-      local path = vim.fn.expand(bookmark_dir[lhs])
 
+      local path = vim.fn.expand(paths[lhs])
       if vim.fn.isdirectory(path) then
         if vim.fn.exists(":Telescope") then
-          require("telescope").extensions.file_browser.file_browser({ path = path, depth = 4 })
+          require("telescope").extensions.file_browser.file_browser({ path = paths, depth = 4 })
           return
         elseif vim.fn.exists(":CtrlP") then
           local command = "CtrlP " .. path
