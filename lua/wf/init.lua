@@ -290,7 +290,7 @@ local function which_setup(which_obj, fuzzy_obj, output_obj, choices_obj, groups
 end
 
 -- core
-local function inputtable(choices, callback, opts_)
+local function inputobj(choices_obj, callback, opts_)
     local _opts = vim.deepcopy(require("wf.config"))
     local opts = ingect_deeply(_opts, opts_ or vim.emptydict())
 
@@ -310,17 +310,6 @@ local function inputtable(choices, callback, opts_)
         text = opts.style.icons.which_prompt,
         texthl = "WFFreeze",
     })
-
-    local choices_obj = {}
-    if vim.tbl_islist(choices) then
-        for i, val in ipairs(choices) do
-            choices_obj[i] = cell.new(i, tostring(i), val, "key")
-        end
-    else -- dict
-        for key, val in pairs(choices) do
-            table.insert(choices_obj, cell.new(key, key, val, "key"))
-        end
-    end
 
     local caller_obj = (function()
         local win = vim.api.nvim_get_current_win()
@@ -367,22 +356,23 @@ local function select(items, opts, on_choice)
         on_choice = { on_choice, "function", false },
     })
     opts = opts or {}
-    local choices = {}
 
-    for k, item in pairs(items) do
-        choices[k] = tostring(item)
+    local choices = {}
+    for i, val in pairs(items) do
+        table.insert(choices, cell.new(i, tostring(i), val, "key"))
     end
+
     local on_choice_wraped = vim.schedule_wrap(on_choice)
     local callback = vim.schedule_wrap(function(choice)
-            if type(choice) == "string" then
+            if type(choice) == "string" and vim.fn.has_key(items, choice)then
                 on_choice_wraped(items[choice], choice)
-            elseif choice < 1 or choice > #items then
-                on_choice_wraped(nil, nil)
+            elseif choice >= 1 and choice <= #items then
+                on_choice_wraped(items[choice], choice)
             else
-                on_choice_wraped(items[choice], choice)
+                print("invalid choice")
             end
     end)
-    inputtable(choices, callback, opts)
+    inputobj(choices, callback, opts)
 end
 
 return { select = select, setup = setup }
