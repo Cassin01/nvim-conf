@@ -1,4 +1,3 @@
-local co = coroutine
 local util = require("wf.util")
 local au = util.au
 local rt = util.rt
@@ -58,7 +57,7 @@ local function objs_setup(fuzzy_obj, which_obj, output_obj, caller_obj, choices_
     local to_fuzzy = function()
         vim.api.nvim_set_current_win(fuzzy_obj.win)
     end
-    -- which_key_list_operator
+
     local which_key_list_operator = {
         escape = "<C-C>",
         toggle = "<C-T>",
@@ -69,11 +68,15 @@ local function objs_setup(fuzzy_obj, which_obj, output_obj, caller_obj, choices_
     for _, o in ipairs(inputs) do
         bmap(o.buf, { "i", "n" }, which_key_list_operator.escape, del, "quit")
         bmap(o.buf, { "n" }, "m", "", "disable sign")
-        -- vim.api.nvim_buf_set_option(o.buf, "foldcolumn", "3")
         vim.api.nvim_win_set_option(o.win, "foldcolumn", "1")
     end
     bmap(fuzzy_obj.buf, { "i", "n" }, which_key_list_operator.toggle, to_which, "start which key mode")
     bmap(which_obj.buf, { "i", "n" }, which_key_list_operator.toggle, to_fuzzy, "start which key mode")
+
+    -- If `[` is mapped at buffer with `no wait`, sometimes `<C-[>` is ignored and neovim regard as `[`.
+    -- So we need to map `<C-[>` to `<C-[>` at buffer with `no wait`.
+    vim.api.nvim_buf_set_keymap(which_obj.buf, "n", "<C-[>", "<ESC>", {noremap = true, silent = true, desc = "Normal mode"})
+
     local which_map_list =
     which_insert_map(which_obj.buf, { which_key_list_operator.toggle, which_key_list_operator.escape })
     local select_ = function()
