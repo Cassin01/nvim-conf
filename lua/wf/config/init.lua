@@ -11,7 +11,7 @@ local _opts = {
   -- width = vim.o.columns > 45 and 45 or math.ceil(vim.o.columns * 0.5),
   sorter = require("wf.sorter").which,
   behavior = {
-    skip_head_deplication = false,
+    skip_head_duplication = false,
     shortest_match = false,
   },
   output_obj_which_mode_desc_format = function(match_obj)

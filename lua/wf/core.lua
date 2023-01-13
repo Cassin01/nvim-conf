@@ -90,7 +90,7 @@ local core = function(choices_obj, groups_obj, which_obj, fuzzy_obj, output_obj,
 
     -- update output_obj
     local _row_offset = vim.o.cmdheight + (vim.o.laststatus > 0 and 1 or 0) + opts.style.input_win_row_offset
-    _update_output_obj(output_obj, texts, vim.o.lines, _row_offset + opts.style.input_win_row_offset, opts, endup_obj)
+    _update_output_obj(output_obj, texts, vim.o.lines, _row_offset + opts.style.input_win_row_offset, opts, endup_obj, which_obj, fuzzy_obj)
 
     -- highlight fuzzy matches
     if vim.api.nvim_get_current_buf() == fuzzy_obj.buf then

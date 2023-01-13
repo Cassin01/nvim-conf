@@ -75,7 +75,7 @@ local function objs_setup(fuzzy_obj, which_obj, output_obj, caller_obj, choices_
 
     -- If `[` is mapped at buffer with `no wait`, sometimes `<C-[>` is ignored and neovim regard as `[`.
     -- So we need to map `<C-[>` to `<C-[>` at buffer with `no wait`.
-    vim.api.nvim_buf_set_keymap(which_obj.buf, "n", "<C-[>", "<ESC>", {noremap = true, silent = true, desc = "Normal mode"})
+    vim.api.nvim_buf_set_keymap(which_obj.buf, "i", "<C-[>", "<ESC>", {noremap = true, silent = true, desc = "Normal mode"})
 
     local which_map_list =
     which_insert_map(which_obj.buf, { which_key_list_operator.toggle, which_key_list_operator.escape })

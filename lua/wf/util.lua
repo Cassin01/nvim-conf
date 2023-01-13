@@ -51,7 +51,7 @@ function M.get_mode()
 end
 
 function M.bmap(buf, mode, key, f, desc, _opt)
-  local opt = { callback = f, noremap = true, silent = true, desc = desc }
+  local opt = { callback = f, noremap = true, silent = true, desc = desc, nowait = true }
   opt = M.extend(_opt or {}, opt)
   if type(mode) == "table" then
     for _, v in pairs(mode) do

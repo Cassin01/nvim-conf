@@ -14,7 +14,8 @@ local function bookmark(opts)
       witch = "~/.config/nvim/plugin/hyper_witch.vim",
       dotfile = "~/dotfiles",
       memo = "~/tech-memo",
-      lua = "~/.cache/nvim/hotpot/Users/cassin/.config/nvim/fnl",
+      ["nvimfnl"] = "~/.cache/nvim/hotpot/Users/cassin/.config/nvim/fnl",
+      ["nvim<Space>lua"] = "~/.cache/nvim/hotpot/Users/cassin/.config/nvim/lua",
       org = "~/org/",
       projects = "~/all_year",
       lab = "~/2022/lab",
@@ -26,7 +27,7 @@ local function bookmark(opts)
     local _opts = {
       title = "Bookmark",
       behavior = {
-        skip_head_deplication = true,
+        skip_head_duplication = true,
         shortest_match = true,
       },
     }

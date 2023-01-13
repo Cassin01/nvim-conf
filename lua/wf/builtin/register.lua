@@ -1,18 +1,23 @@
 local select = require("wf").select
 local registers = [[*+"-:.%/#=_abcdefghijklmnopqrstuvwxyz0123456789]]
 local labels = {
-    ['"'] = "last deleted, changed, or yanked content",
-    ["0"] = "last yank",
-    ["-"] = "deleted or changed content smaller than one line",
-    ["."] = "last inserted text",
-    ["%"] = "name of the current file",
-    [":"] = "most recent executed command",
-    ["#"] = "alternate buffer",
-    ["="] = "result of an expression",
-    ["+"] = "synchronized with the system clipboard",
-    ["*"] = "synchronized with the selection clipboard",
-    ["_"] = "black hole",
-    ["/"] = "last search pattern",
+    ['"'] = "delet,chang,yank", -- "last deleted, changed, or yanked content",
+    ["0"] = "yank", -- "last yank",
+    ["-"] = "small delte", -- "deleted or changed content smaller than one line",
+    ["."] = "insert", -- "last inserted text",
+    ["%"] = "file", -- "name of the current file",
+    [":"] = "command", -- "most recent executed command",
+    ["#"] = "buf", -- "alternate buffer",
+    ["="] = "expr", -- "result of an expression",
+    ["+"] = "system clip", -- "synchronized with the system clipboard",
+    ["*"] = "selection clip", -- "synchronized with the selection clipboard",
+    ["_"] = "black hole", -- "black hole",
+    ["/"] = "search", -- "last search pattern",
+}
+local types = {
+    ["v"] = "c",
+    ["V"] = "l",
+    [""] = "u",
 }
 local function register(opts)
     local function _register()
@@ -24,7 +29,7 @@ local function register(opts)
                 value = vim.fn.substitute(value, "[[:cntrl:]]", "", "g")
                 value = vim.fn.substitute(value, "\n", "", "g")
                 if #value > 0 then
-                    choices[key] = (labels[key] or "") .. " " .. value
+                    choices[key] = value
                 end
             end
         end
@@ -32,8 +37,9 @@ local function register(opts)
         local _opts = {
             title = "Registers",
             output_obj_which_mode_desc_format = function(c)
+                local t = (types[vim.fn.getregtype(c.key)] or "b")
                 local s = (labels[c.key] or "") .. " "
-                return { { s, "WFGroup" }, { string.sub(c.text, #s + 1), "WFWhichDesc" } }
+                return { { t .. " ", "Type" }, { c.text .. " ", "WFWhichDesc" }, { s, "Comment" } }
             end,
             prefix_size = 1,
             style = {
