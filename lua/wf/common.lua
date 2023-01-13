@@ -11,7 +11,7 @@ local function open_win(buf, height, row_offset, opts)
     row = vim.o.lines - height - row_offset - 1,
     col = vim.o.columns - conf_.width,
   })
-  return vim.api.nvim_open_win(buf, true, conf)
+  return vim.api.nvim_open_win(buf, false, conf)
 end
 
 local function gen_obj(row_offset, opts)

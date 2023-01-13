@@ -1,6 +1,6 @@
 local util = require("wf.util")
 
-local plug_name = "wf.nvim"
+local plug_name = "wf_nvim"
 local full_name = (function(hash)
   return plug_name .. hash
 end)("309240")

@@ -1,50 +1,38 @@
 local static = require("wf.static")
-local full_name = static.full_name
-local row_offset = static.row_offset
+local plug_name = static.plug_name
+local row_offset_ = static.row_offset
 local gen_obj = require("wf.common").gen_obj
+local ns_wf_output_obj_which = vim.api.nvim_create_namespace("wf_output_obj_which")
 
-local function output_obj_gen(prefix_size, opts)
+local function set_highlight(buf, prefix_size)
+  vim.api.nvim_buf_clear_namespace(buf, ns_wf_output_obj_which, 0, -1)
+  local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, true)
+  for l = 0, #lines - 1 do
+    -- head
+    local match_ = lines[l + 1]:sub(1, prefix_size + 1)
+    local match = string.match(match_, "<[%u%l%d%-@]+>")
+    local till = match ~= nil and #match or 1
+    vim.api.nvim_buf_add_highlight(buf, ns_wf_output_obj_which, "WFWhich", l, 1, 1 + till)
+    -- prefix
+    vim.api.nvim_buf_add_highlight(buf, ns_wf_output_obj_which, "WFWhichRem", l, 1 + till, prefix_size + 1)
+    -- separator
+    vim.api.nvim_buf_add_highlight(buf, ns_wf_output_obj_which, "WFSeparator", l, prefix_size + 4, prefix_size + 5)
+  end
+end
+
+local function output_obj_gen(opts)
   local style = opts.style
-  local buf, win = gen_obj(row_offset() + style.input_win_row_offset + style.input_win_row_offset, opts)
-  vim.api.nvim_buf_set_option(buf, "filetype", full_name .. "output")
+  local buf, win = gen_obj(row_offset_() + style.input_win_row_offset + style.input_win_row_offset, opts)
+  vim.api.nvim_buf_set_option(buf, "filetype", plug_name .. "output")
   local wcnf = vim.api.nvim_win_get_config(win)
   vim.api.nvim_win_set_config(
     win,
-    vim.fn.extend(
-      wcnf,
-      { border = style.borderchars.top, title_pos = "center", title = style.borderchars.top[2] }
-    -- (function()
-    --     if opts.title ~= nil then
-    --       return { {opts.title,"WFTitleOutput"} }
-    --     else
-    --       return  style.borderchars.top[2]
-    --     end
-    -- end)()}
-    )
+    vim.fn.extend(wcnf, { border = style.borderchars.top, title_pos = "center", title = style.borderchars.top[2] })
   )
-  -- U+2420 ␠ SYMBOL FOR SPACE
-  -- U+2422 ␢ BLANK SYMBOL
-  -- U+2423 ␣ OPEN BOX
-  -- U+23B5 ⎵ BOTTOM SQUARE BRACKET
-  -- U+23B6 ⎶ BOTTOM SQUARE BRACKET OVER TOP SQUARE BRACKET
-  -- vim.cmd([[syntax match WFKeys "\%(^\s\)\@<=.\{]]..tostring(prefix_size).. [[}"]])
-  vim.cmd([[syntax match WFKeys "\%(^\s\)\@<=]] .. string.rep(".", prefix_size) .. [[" contains=WFHead,WFKey]])
-  vim.cmd("hi link WFKeys WFWhichRem")
-  vim.cmd([[syntax match WFHead "\%(^\s\)\@<=." contained]])
-  vim.cmd("hi link WFHead WFWhich")
-
-  vim.cmd([[syntax match WFKey "\%(^\s\)\@<=<[0-9a-zA-Z\-@]\+>" contained]])
-  vim.cmd("hi link WFKey WFWhich")
-
-  vim.fn.matchadd("WFA", [[\%(^.\{]] .. tostring(prefix_size + 2) .. [[}\)\@<=.]], 5, -1) -- vim.cmd("hi Conceal guifg=" .. fg_rem)
-  vim.cmd("hi link WFA WFSeparator")
-
-  -- vim.fn.matchadd("Conceal", [[\%(^\s\)\@<=\s]], 5, -1, { conceal = "␠", window = win })
-  -- vim.cmd("hi! link Conceal Identifier")
   return { buf = buf, win = win }
 end
 
-local function _update_output_obj(obj, choices, lines, row_offset)
+local function _update_output_obj(obj, choices, lines, row_offset, prefix_size)
   vim.api.nvim_buf_set_option(obj.buf, "modifiable", true)
   vim.api.nvim_buf_set_lines(obj.buf, 0, -1, true, choices)
   local cnf = vim.api.nvim_win_get_config(obj.win)
@@ -57,6 +45,7 @@ local function _update_output_obj(obj, choices, lines, row_offset)
   end
 
   vim.api.nvim_win_set_config(obj.win, vim.fn.extend(cnf, { height = height, row = row, title_pos = "center" }))
+  set_highlight(obj.buf, prefix_size)
   vim.api.nvim_buf_set_option(obj.buf, "modifiable", false)
 end
 

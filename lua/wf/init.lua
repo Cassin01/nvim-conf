@@ -1,7 +1,7 @@
+local co = coroutine
 local util = require("wf.util")
 local au = util.au
 local rt = util.rt
--- local run = require("wf.async").run
 local ingect_deeply = util.ingect_deeply
 local match_from_tail = util.match_from_tail
 local fuzzy = require("wf.fuzzy")
@@ -69,6 +69,8 @@ local function objs_setup(fuzzy_obj, which_obj, output_obj, caller_obj, choices_
     for _, o in ipairs(inputs) do
         bmap(o.buf, { "i", "n" }, which_key_list_operator.escape, del, "quit")
         bmap(o.buf, { "n" }, "m", "", "disable sign")
+        -- vim.api.nvim_buf_set_option(o.buf, "foldcolumn", "3")
+        vim.api.nvim_win_set_option(o.win, "foldcolumn", "1")
     end
     bmap(fuzzy_obj.buf, { "i", "n" }, which_key_list_operator.toggle, to_which, "start which key mode")
     bmap(which_obj.buf, { "i", "n" }, which_key_list_operator.toggle, to_fuzzy, "start which key mode")
@@ -290,26 +292,44 @@ local function which_setup(which_obj, fuzzy_obj, output_obj, choices_obj, groups
 end
 
 -- core
-local function inputobj(choices_obj, callback, opts_)
+local function _callback(caller_obj, fuzzy_obj, which_obj, output_obj, choices_obj, groups_obj, callback, opts)
+        local obj_handlers = objs_setup(fuzzy_obj, which_obj, output_obj, caller_obj, choices_obj, callback)
+        which_setup(which_obj, fuzzy_obj, output_obj, choices_obj, groups_obj, callback, obj_handlers, opts)
+        fuzzy_setup(which_obj, fuzzy_obj, output_obj, choices_obj, groups_obj, opts)
+
+        vim.api.nvim_buf_set_lines(which_obj.buf, 0, -1, true, { opts.text_insert_in_advance })
+        if opts.selector == "fuzzy" then
+            vim.api.nvim_set_current_win(fuzzy_obj.win)
+            vim.cmd("startinsert!")
+        elseif opts.selector == "which" then
+            vim.api.nvim_set_current_win(which_obj.win)
+            vim.cmd("startinsert!")
+            -- vim.cmd("startinsert!")
+        else
+            print("selector must be fuzzy or which")
+            obj_handlers.del()
+        end
+end
+local function setup_objs(choices_obj, callback, opts_)
     local _opts = vim.deepcopy(require("wf.config"))
     local opts = ingect_deeply(_opts, opts_ or vim.emptydict())
 
     vim.fn.sign_define(sign_group_prompt .. "fuzzy", {
-        text = opts.style.icons.fuzzy_prompt,
-        texthl = "WFFuzzyPrompt",
-    })
+            text = opts.style.icons.fuzzy_prompt,
+            texthl = "WFFuzzyPrompt",
+        })
     vim.fn.sign_define(sign_group_prompt .. "which", {
-        text = opts.style.icons.which_prompt,
-        texthl = "WFWhich",
-    })
+            text = opts.style.icons.which_prompt,
+            texthl = "WFWhich",
+        })
     vim.fn.sign_define(sign_group_prompt .. "fuzzyfreeze", {
-        text = opts.style.icons.fuzzy_prompt,
-        texthl = "WFFreeze",
-    })
+            text = opts.style.icons.fuzzy_prompt,
+            texthl = "WFFreeze",
+        })
     vim.fn.sign_define(sign_group_prompt .. "whichfreeze", {
-        text = opts.style.icons.which_prompt,
-        texthl = "WFFreeze",
-    })
+            text = opts.style.icons.which_prompt,
+            texthl = "WFFreeze",
+        })
 
     local caller_obj = (function()
         local win = vim.api.nvim_get_current_win()
@@ -326,28 +346,13 @@ local function inputobj(choices_obj, callback, opts_)
     local groups_obj = group.new(opts.key_group_dict)
 
     -- 表示用バッファを作成
-    local output_obj = output_obj_gen(opts.prefix_size, opts)
+    local output_obj = output_obj_gen(opts)
 
     -- -- 入力用バッファを作成
     local which_obj = which.input_obj_gen(opts)
     local fuzzy_obj = fuzzy.input_obj_gen(opts)
 
-    local obj_handlers = objs_setup(fuzzy_obj, which_obj, output_obj, caller_obj, choices_obj, callback)
-    which_setup(which_obj, fuzzy_obj, output_obj, choices_obj, groups_obj, callback, obj_handlers, opts)
-    fuzzy_setup(which_obj, fuzzy_obj, output_obj, choices_obj, groups_obj, opts)
-
-    vim.api.nvim_buf_set_lines(which_obj.buf, 0, -1, true, { opts.text_insert_in_advance })
-    if opts.selector == "fuzzy" then
-        vim.api.nvim_set_current_win(fuzzy_obj.win)
-        vim.cmd("startinsert!")
-    elseif opts.selector == "which" then
-        vim.api.nvim_set_current_win(which_obj.win)
-        vim.cmd("startinsert!")
-        -- vim.cmd("startinsert!")
-    else
-        print("selector must be fuzzy or which")
-        obj_handlers.del()
-    end
+    _callback(caller_obj, fuzzy_obj, which_obj, output_obj, choices_obj, groups_obj, callback, opts)
 end
 
 local function select(items, opts, on_choice)
@@ -364,15 +369,15 @@ local function select(items, opts, on_choice)
 
     local on_choice_wraped = vim.schedule_wrap(on_choice)
     local callback = vim.schedule_wrap(function(choice)
-            if type(choice) == "string" and vim.fn.has_key(items, choice)then
-                on_choice_wraped(items[choice], choice)
-            elseif choice >= 1 and choice <= #items then
-                on_choice_wraped(items[choice], choice)
-            else
-                print("invalid choice")
-            end
+        if type(choice) == "string" and vim.fn.has_key(items, choice) then
+            on_choice_wraped(items[choice], choice)
+        elseif choice >= 1 and choice <= #items then
+            on_choice_wraped(items[choice], choice)
+        else
+            print("invalid choice")
+        end
     end)
-    inputobj(choices, callback, opts)
+    setup_objs(choices, callback, opts)
 end
 
 return { select = select, setup = setup }

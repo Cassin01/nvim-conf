@@ -3,6 +3,7 @@ local extend = util.extend
 local rt = util.rt
 local get_mode = util.get_mode
 local select = require("wf").select
+local full_name = require("wf.static").full_name
 
 local function _get_gmap()
   local keys = vim.api.nvim_get_keymap("n")

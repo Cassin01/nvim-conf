@@ -6,7 +6,7 @@ local group = require("wf.group")
 local output_obj_which = require("wf.output_obj_which")
 local _update_output_obj = require("wf.output")._update_output_obj
 local prompt_counter_update = require("wf.prompt_counter").update
-local ns_wf_output_obj_fuzzy = vim.api.nvim_create_namespace("wf_output_obj")
+local ns_wf_output_obj_fuzzy = vim.api.nvim_create_namespace("wf_output_obj_fuzzy")
 
 -- core filtering flow
 local core = function(choices_obj, groups_obj, which_obj, fuzzy_obj, output_obj, opts)
@@ -90,7 +90,7 @@ local core = function(choices_obj, groups_obj, which_obj, fuzzy_obj, output_obj,
 
     -- update output_obj
     local _row_offset = vim.o.cmdheight + (vim.o.laststatus > 0 and 1 or 0) + opts.style.input_win_row_offset
-    _update_output_obj(output_obj, texts, vim.o.lines, _row_offset + opts.style.input_win_row_offset)
+    _update_output_obj(output_obj, texts, vim.o.lines, _row_offset + opts.style.input_win_row_offset, opts.prefix_size)
 
     -- highlight fuzzy matches
     if vim.api.nvim_get_current_buf() == fuzzy_obj.buf then
