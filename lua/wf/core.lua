@@ -7,9 +7,11 @@ local output_obj_which = require("wf.output_obj_which")
 local _update_output_obj = require("wf.output")._update_output_obj
 local prompt_counter_update = require("wf.prompt_counter").update
 local ns_wf_output_obj_fuzzy = vim.api.nvim_create_namespace("wf_output_obj_fuzzy")
+local same_text = require("wf.skip_head_duplcation")
 
+local core
 -- core filtering flow
-local core = function(choices_obj, groups_obj, which_obj, fuzzy_obj, output_obj, opts)
+core = function(choices_obj, groups_obj, which_obj, fuzzy_obj, output_obj, opts)
     -- filter with fuzzy match
     local fuzzy_line = vim.api.nvim_buf_get_lines(fuzzy_obj.buf, 0, -1, true)[1]
     local matches_obj, poss = (function()
@@ -48,6 +50,34 @@ local core = function(choices_obj, groups_obj, which_obj, fuzzy_obj, output_obj,
             return opts.sorter(folded_obj)
         end
     end)()
+
+    -- skip_head_duplication
+    -- if opts.behavior.skip_head_duplication then
+    --     local which_line_ = vim.api.nvim_buf_get_lines(which_obj.buf, 0, -1, true)[1]
+    --     local subs = {}
+    --     for _, match in ipairs(endup_obj) do
+    --         local sub = string.sub(match.key, 1 + #which_line_)
+    --         table.insert(subs, sub)
+    --     end
+    --     local rest = same_text(subs)
+    --     if rest ~= "" then
+    --         local text = which_line_ .. rest
+    --         -- print(text, rest)
+    --         -- local buf = which_obj.buf
+    --         -- local win = which_obj.win
+    --         -- vim.api.nvim_buf_set_lines(buf, 0, -1, true, { text })
+    --         -- vim.api.nvim_win_set_cursor(win, { 1, vim.fn.strdisplaywidth(text) })
+    --         -- local sign_group_prompt = require("wf.static").sign_group_prompt
+    --         -- vim.fn.sign_place(
+    --         --     0,
+    --         --     sign_group_prompt .. "which",
+    --         --     sign_group_prompt .. "which",
+    --         --     which_obj.buf,
+    --         --     { lnum = 1, priority = 10 }
+    --         --     )
+    --         -- return core(choices_obj, groups_obj, which_obj, fuzzy_obj, output_obj, opts)
+    --     end
+    -- end
 
     -- take out info's
     local function meta_key(sub)
@@ -90,7 +120,7 @@ local core = function(choices_obj, groups_obj, which_obj, fuzzy_obj, output_obj,
 
     -- update output_obj
     local _row_offset = vim.o.cmdheight + (vim.o.laststatus > 0 and 1 or 0) + opts.style.input_win_row_offset
-    _update_output_obj(output_obj, texts, vim.o.lines, _row_offset + opts.style.input_win_row_offset, opts, endup_obj, which_obj, fuzzy_obj)
+    _update_output_obj(output_obj, texts, vim.o.lines, _row_offset + opts.style.input_win_row_offset, opts, endup_obj, which_obj, fuzzy_obj, which_line)
 
     -- highlight fuzzy matches
     if vim.api.nvim_get_current_buf() == fuzzy_obj.buf then
