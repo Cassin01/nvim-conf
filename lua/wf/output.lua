@@ -31,11 +31,10 @@ local function set_highlight(buf, lines, opts, endup_obj, which_obj, fuzzy_obj, 
     local subs = {}
     for _, line in ipairs(lines) do
       local sub = string.sub(line, 2, prefix_size + 1)
-      -- print("sub" .. sub .. "sub")
       table.insert(subs, sub)
     end
     local rest = same_text(subs)
-    if rest ~= "" then
+    if rest ~= "" and #rest < prefix_size then
       duplication = true
       local function _add_rest(text)
         return function()
@@ -54,14 +53,6 @@ local function set_highlight(buf, lines, opts, endup_obj, which_obj, fuzzy_obj, 
 
       local cs = {}
       for l, _ in ipairs(lines) do
-        vim.api.nvim_buf_add_highlight(
-          buf,
-          ns_wf_output_obj_which,
-          "WFWhichUnique",
-          l - 1,
-          1 + #rest,
-          2 + #rest
-        )
         local c = subs[l]:sub(1 + #rest, 1 + #rest)
         vim.api.nvim_buf_set_keymap(
           which_obj.buf,
@@ -71,6 +62,14 @@ local function set_highlight(buf, lines, opts, endup_obj, which_obj, fuzzy_obj, 
           { callback = _add_rest(which_line .. rest .. c) }
         )
         table.insert(cs, c)
+        vim.api.nvim_buf_add_highlight(
+          buf,
+          ns_wf_output_obj_which,
+          "WFWhichUnique",
+          l - 1,
+          1 + #rest,
+          2 + #rest
+        )
       end
       local g = vim.api.nvim_create_augroup("wf_buf_skip", { clear = true })
       vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI" }, {

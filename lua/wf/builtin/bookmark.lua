@@ -1,28 +1,7 @@
 local select = require("wf").select
 
-local function bookmark(opts)
+local function bookmark(bookmark_dirs, opts)
   local function _bookmark()
-    local bookmark_dir = {
-      ome = "~/.config/nvim",
-      fnl = "~/.config/nvim/fnl",
-      kaza = "~/.config/nvim/fnl/kaza",
-      core = "~/.config/nvim/fnl/core",
-      vim = "~/.config/nvim/vim",
-      macros = "~/.config/nvim/lua/macros",
-      packer = "~/.config/nvim/fnl/core/pack/plugs.fnl",
-      snip = "~/.config/nvim/UltiSnips",
-      witch = "~/.config/nvim/plugin/hyper_witch.vim",
-      dotfile = "~/dotfiles",
-      memo = "~/tech-memo",
-      ["nvimfnl"] = "~/.cache/nvim/hotpot/Users/cassin/.config/nvim/fnl",
-      ["nvim<Space>lua"] = "~/.cache/nvim/hotpot/Users/cassin/.config/nvim/lua",
-      org = "~/org/",
-      projects = "~/all_year",
-      lab = "~/2022/lab",
-      sche = "~/.config/nvim/data/10.sche",
-      ghq = "~/ghq",
-    }
-
     opts = opts or {}
     local _opts = {
       title = "Bookmark",
@@ -35,27 +14,29 @@ local function bookmark(opts)
       _opts[k] = v
     end
 
-    select(bookmark_dir, _opts, function(paths, lhs)
-      local path = vim.fn.expand(paths[lhs])
-      if vim.fn.isdirectory(path) then
+    select(bookmark_dirs, _opts, function(path_, _)
+      local path = vim.fn.expand(path_)
+      if vim.fn.isdirectory(path) ~= 0 then
         if vim.fn.exists(":Telescope") then
-          require("telescope").extensions.file_browser.file_browser({ path = paths, depth = 4 })
+          require("telescope").extensions.file_browser.file_browser({ path = path_, depth = 4 })
           return
         elseif vim.fn.exists(":CtrlP") then
           local command = "CtrlP " .. path
           vim.cmd(command)
           return
-        elseif vim.g.loaded_netrwPlugin ~= 1 then
+        elseif vim.g.loaded_netrwPlugin == 0 and vim.g.loaded_netrw == 0 then
           local command = "e " .. path
           vim.cmd(command)
           return
         else
           print("not matched")
         end
-      else
+      elseif vim.fn.filereadable(path) ~= 0 then
         local command = "vi " .. path
         vim.cmd(command)
         return
+      else
+        print("The file/dir does not found")
       end
     end)
   end
