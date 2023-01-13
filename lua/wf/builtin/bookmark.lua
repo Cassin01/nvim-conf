@@ -23,13 +23,18 @@ local function bookmark(opts)
     }
 
     opts = opts or {}
-    local _opts = { title = "Bookmark"}
+    local _opts = {
+      title = "Bookmark",
+      behavior = {
+        skip_head_deplication = true,
+        shortest_match = true,
+      },
+    }
     for k, v in pairs(opts) do
       _opts[k] = v
     end
 
     select(bookmark_dir, _opts, function(paths, lhs)
-
       local path = vim.fn.expand(paths[lhs])
       if vim.fn.isdirectory(path) then
         if vim.fn.exists(":Telescope") then
@@ -39,7 +44,7 @@ local function bookmark(opts)
           local command = "CtrlP " .. path
           vim.cmd(command)
           return
-        elseif  vim.g.loaded_netrwPlugin ~= 1 then
+        elseif vim.g.loaded_netrwPlugin ~= 1 then
           local command = "e " .. path
           vim.cmd(command)
           return

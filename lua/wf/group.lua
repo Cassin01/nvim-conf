@@ -1,7 +1,6 @@
 local match_from_front = require("wf.util").match_from_front_ignore_case
 local cell = require("wf.cell")
 
-
 local function new(group_dict)
   local obj = {}
   for k, v in pairs(group_dict) do
@@ -15,9 +14,12 @@ local function integrate(matched_objs, groups_obj, input_len)
   local new_matched_objs = {}
   for _, matched_obj in ipairs(matched_objs) do
     local new_group_obj = nil
-    for _,group_obj in ipairs(groups_obj) do
+    for _, group_obj in ipairs(groups_obj) do
       local group_obj_key_len = #group_obj.key
-      if group_obj_key_len > input_len and  group_obj_key_len < #matched_obj.key and match_from_front(matched_obj.key, group_obj.key) then
+      if group_obj_key_len > input_len
+          and group_obj_key_len < #matched_obj.key
+          and match_from_front(matched_obj.key, group_obj.key)
+      then
         if new_group_obj == nil then
           new_group_obj = group_obj
         else

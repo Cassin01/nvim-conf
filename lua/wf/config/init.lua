@@ -12,7 +12,7 @@ local _opts = {
   sorter = require("wf.sorter").which,
   behavior = {
     skip_head_deplication = false,
-    minim_match = false,
+    shortest_match = false,
   },
   output_obj_which_mode_desc_format = function(match_obj)
     local desc = match_obj.text
