@@ -56,8 +56,8 @@ local function objs_setup(fuzzy_obj, which_obj, output_obj, caller_obj, choices_
                 end
             end
             for _, o in ipairs(objs) do
-                if vim.api.nvim_win_is_valid(o.buf) then
-                    vim.api.nvim_set_current_win(o.win)
+                if vim.api.nvim_buf_is_valid(o.buf) then
+                    -- vim.api.nvim_set_current_win(o.win)
                     vim.api.nvim_buf_delete(o.buf, { force = true })
                 end
                 if vim.api.nvim_win_is_valid(o.win) then
