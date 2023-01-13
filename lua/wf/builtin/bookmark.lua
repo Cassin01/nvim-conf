@@ -27,8 +27,8 @@ local function bookmark(opts)
     local _opts = {
       title = "Bookmark",
       behavior = {
-        skip_head_duplication = true,
-        shortest_match = true,
+        skip_front_duplication = true,
+        skip_back_duplication = true,
       },
     }
     for k, v in pairs(opts) do

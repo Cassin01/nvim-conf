@@ -3,7 +3,7 @@ local plug_name = static.plug_name
 local row_offset_ = static.row_offset
 local gen_obj = require("wf.common").gen_obj
 local ns_wf_output_obj_which = vim.api.nvim_create_namespace("wf_output_obj_which")
-local same_text = require("wf.skip_head_duplcation")
+local same_text = require("wf.skip_front_duplication")
 
 local function set_highlight(buf, lines, opts, endup_obj, which_obj, fuzzy_obj, which_line)
   local current_buf = vim.api.nvim_get_current_buf()
@@ -27,7 +27,7 @@ local function set_highlight(buf, lines, opts, endup_obj, which_obj, fuzzy_obj, 
 
   -- skip
   local duplication = false
-  if opts.behavior.skip_head_duplication and current_buf == which_obj.buf then
+  if opts.behavior.skip_front_duplication and current_buf == which_obj.buf then
     local subs = {}
     for _, line in ipairs(lines) do
       local sub = string.sub(line, 2, prefix_size + 1)
@@ -98,7 +98,7 @@ local function set_highlight(buf, lines, opts, endup_obj, which_obj, fuzzy_obj, 
         end
         return true
       end)()
-      if is_unique and endup_obj[l]["type"] == "key" and opts.behavior.shortest_match then
+      if is_unique and endup_obj[l]["type"] == "key" and opts.behavior.skip_back_duplication then
         vim.api.nvim_buf_add_highlight(buf, ns_wf_output_obj_which, "WFWhichUnique", l - 1, 1, 1 + #head)
       else
         vim.api.nvim_buf_add_highlight(buf, ns_wf_output_obj_which, "WFWhichOn", l - 1, 1, 1 + #head)
