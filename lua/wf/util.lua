@@ -36,7 +36,7 @@ end
 
 function M.au(group, event, callback, opt_)
   local opt = vim.fn.extend(opt_ or {}, { callback = callback, group = group })
-  vim.api.nvim_create_autocmd(event, opt)
+  return vim.api.nvim_create_autocmd(event, opt)
 end
 
 function M.rt(str)

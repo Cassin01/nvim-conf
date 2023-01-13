@@ -39,7 +39,6 @@ local function set_highlight(buf, lines, opts, endup_obj, which_obj, fuzzy_obj, 
       duplication = true
       local function _add_rest(text)
         return function()
-          print("called!")
           vim.api.nvim_buf_set_lines(which_obj.buf, 0, -1, true, { text })
           vim.api.nvim_win_set_cursor(which_obj.win, { 1, vim.fn.strdisplaywidth(text) })
           local sign_group_prompt = require("wf.static").sign_group_prompt

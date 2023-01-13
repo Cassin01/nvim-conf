@@ -17,10 +17,29 @@ local group = require("wf.group")
 local core = require("wf.core").core
 local setup = require("wf.setup").setup
 
+-- if cursor not on the objects then quit wf.
+local lg = vim.api.nvim_create_augroup("wf_leave_check", { clear = true })
+local function leave_check(which_obj, fuzzy_obj, output_obj, del)
+    pcall(au,
+        lg,
+        "WinEnter",
+        vim.schedule_wrap(function()
+            local current_win = vim.api.nvim_get_current_win()
+            for _, obj in ipairs({ fuzzy_obj, which_obj, output_obj }) do
+                if current_win == obj.win then
+                    leave_check( fuzzy_obj, which_obj, output_obj, del)
+                    return
+                end
+            end
+            return del()
+        end),
+        { once = true }
+    )
+end
+
 local function objs_setup(fuzzy_obj, which_obj, output_obj, caller_obj, choices_obj, callback)
     local objs = { fuzzy_obj, which_obj, output_obj }
-
-    local del = function() -- deliminator of the whole process
+    local del_ = function() -- deliminator of the whole process
         if caller_obj.mode ~= "i" and caller_obj.mode ~= "t" then
             vim.cmd("stopinsert")
         end
@@ -44,6 +63,12 @@ local function objs_setup(fuzzy_obj, which_obj, output_obj, caller_obj, choices_
             end
         end)
     end
+    local function del()
+        -- call once
+        local t = coroutine.create(del_)
+        coroutine.resume(t)
+    end
+
     for _, o in ipairs(objs) do
         au(_g, "BufWinLeave", function()
             del()
@@ -75,7 +100,13 @@ local function objs_setup(fuzzy_obj, which_obj, output_obj, caller_obj, choices_
 
     -- If `[` is mapped at buffer with `no wait`, sometimes `<C-[>` is ignored and neovim regard as `[`.
     -- So we need to map `<C-[>` to `<C-[>` at buffer with `no wait`.
-    vim.api.nvim_buf_set_keymap(which_obj.buf, "i", "<C-[>", "<ESC>", {noremap = true, silent = true, desc = "Normal mode"})
+    vim.api.nvim_buf_set_keymap(
+        which_obj.buf,
+        "i",
+        "<C-[>",
+        "<ESC>",
+        { noremap = true, silent = true, desc = "Normal mode" }
+    )
 
     local which_map_list =
     which_insert_map(which_obj.buf, { which_key_list_operator.toggle, which_key_list_operator.escape })
@@ -200,6 +231,9 @@ local function which_setup(which_obj, fuzzy_obj, output_obj, choices_obj, groups
     au(_g, { "TextChangedI", "TextChanged" }, function()
         local id = core(choices_obj, groups_obj, which_obj, fuzzy_obj, output_obj, opts)
         if id ~= nil then
+            vim.schedule(function() vim.api.nvim_del_augroup_by_name("wf_leave_check")
+                lg = vim.api.nvim_create_augroup("wf_leave_check", {clear = true})
+            end)
             obj_handlers.del()
             callback(id)
         end
@@ -296,43 +330,46 @@ end
 
 -- core
 local function _callback(caller_obj, fuzzy_obj, which_obj, output_obj, choices_obj, groups_obj, callback, opts)
-        local obj_handlers = objs_setup(fuzzy_obj, which_obj, output_obj, caller_obj, choices_obj, callback)
-        which_setup(which_obj, fuzzy_obj, output_obj, choices_obj, groups_obj, callback, obj_handlers, opts)
-        fuzzy_setup(which_obj, fuzzy_obj, output_obj, choices_obj, groups_obj, opts)
+    local obj_handlers = objs_setup(fuzzy_obj, which_obj, output_obj, caller_obj, choices_obj, callback)
+    which_setup(which_obj, fuzzy_obj, output_obj, choices_obj, groups_obj, callback, obj_handlers, opts)
+    fuzzy_setup(which_obj, fuzzy_obj, output_obj, choices_obj, groups_obj, opts)
 
-        vim.api.nvim_buf_set_lines(which_obj.buf, 0, -1, true, { opts.text_insert_in_advance })
-        if opts.selector == "fuzzy" then
-            vim.api.nvim_set_current_win(fuzzy_obj.win)
-            vim.cmd("startinsert!")
-        elseif opts.selector == "which" then
-            vim.api.nvim_set_current_win(which_obj.win)
-            vim.cmd("startinsert!")
-            -- vim.cmd("startinsert!")
-        else
-            print("selector must be fuzzy or which")
-            obj_handlers.del()
-        end
+    vim.api.nvim_buf_set_lines(which_obj.buf, 0, -1, true, { opts.text_insert_in_advance })
+    if opts.selector == "fuzzy" then
+        vim.api.nvim_set_current_win(fuzzy_obj.win)
+        vim.cmd("startinsert!")
+    elseif opts.selector == "which" then
+        vim.api.nvim_set_current_win(which_obj.win)
+        vim.cmd("startinsert!")
+        -- vim.cmd("startinsert!")
+    else
+        print("selector must be fuzzy or which")
+        obj_handlers.del()
+        return
+    end
+    leave_check(which_obj, fuzzy_obj, output_obj, obj_handlers.del)
 end
+
 local function setup_objs(choices_obj, callback, opts_)
     local _opts = vim.deepcopy(require("wf.config"))
     local opts = ingect_deeply(_opts, opts_ or vim.emptydict())
 
     vim.fn.sign_define(sign_group_prompt .. "fuzzy", {
-            text = opts.style.icons.fuzzy_prompt,
-            texthl = "WFFuzzyPrompt",
-        })
+        text = opts.style.icons.fuzzy_prompt,
+        texthl = "WFFuzzyPrompt",
+    })
     vim.fn.sign_define(sign_group_prompt .. "which", {
-            text = opts.style.icons.which_prompt,
-            texthl = "WFWhich",
-        })
+        text = opts.style.icons.which_prompt,
+        texthl = "WFWhich",
+    })
     vim.fn.sign_define(sign_group_prompt .. "fuzzyfreeze", {
-            text = opts.style.icons.fuzzy_prompt,
-            texthl = "WFFreeze",
-        })
+        text = opts.style.icons.fuzzy_prompt,
+        texthl = "WFFreeze",
+    })
     vim.fn.sign_define(sign_group_prompt .. "whichfreeze", {
-            text = opts.style.icons.which_prompt,
-            texthl = "WFFreeze",
-        })
+        text = opts.style.icons.which_prompt,
+        texthl = "WFFreeze",
+    })
 
     local caller_obj = (function()
         local win = vim.api.nvim_get_current_win()
