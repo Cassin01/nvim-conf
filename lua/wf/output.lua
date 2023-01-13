@@ -17,7 +17,6 @@ local function set_highlight(buf, lines, opts, endup_obj, which_obj, fuzzy_obj, 
     local match = string.match(match_, "^<[%u%l%d%-@]+>")
     table.insert(heads, match ~= nil and match or lines[l + 1]:sub(2, 2))
     local till = match ~= nil and #match or 1
-    -- vim.api.nvim_buf_add_highlight(buf, ns_wf_output_obj_which, "WFWhich", l, 1, 1 + till)
 
     -- prefix
     vim.api.nvim_buf_add_highlight(buf, ns_wf_output_obj_which, "WFWhichRem", l, 1 + till, prefix_size + 1)
@@ -65,10 +64,16 @@ local function set_highlight(buf, lines, opts, endup_obj, which_obj, fuzzy_obj, 
           2 + #rest
         )
         local c = subs[l]:sub(1 + #rest, 1 + #rest)
-        vim.api.nvim_buf_set_keymap(which_obj.buf, "i", c, "", { callback = _add_rest(which_line .. rest .. c) })
+        vim.api.nvim_buf_set_keymap(
+          which_obj.buf,
+          "i",
+          c,
+          "",
+          { callback = _add_rest(which_line .. rest .. c) }
+        )
         table.insert(cs, c)
       end
-      local g = vim.api.nvim_create_augroup("wf_buf_skip", {clear = true})
+      local g = vim.api.nvim_create_augroup("wf_buf_skip", { clear = true })
       vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI" }, {
         callback = function()
           for _, c in ipairs(cs) do
@@ -79,20 +84,6 @@ local function set_highlight(buf, lines, opts, endup_obj, which_obj, fuzzy_obj, 
         buffer = which_obj.buf,
         group = g,
       })
-      -- print(text, rest)
-      -- local buf = which_obj.buf
-      -- local win = which_obj.win
-      -- vim.api.nvim_buf_set_lines(buf, 0, -1, true, { text })
-      -- vim.api.nvim_win_set_cursor(win, { 1, vim.fn.strdisplaywidth(text) })
-      -- local sign_group_prompt = require("wf.static").sign_group_prompt
-      -- vim.fn.sign_place(
-      --     0,
-      --     sign_group_prompt .. "which",
-      --     sign_group_prompt .. "which",
-      --     which_obj.buf,
-      --     { lnum = 1, priority = 10 }
-      --     )
-      -- return core(choices_obj, groups_obj, which_obj, fuzzy_obj, output_obj, opts)
     end
   end
 
