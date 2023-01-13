@@ -39,7 +39,7 @@ end
 
 local function objs_setup(fuzzy_obj, which_obj, output_obj, caller_obj, choices_obj, callback)
     local objs = { fuzzy_obj, which_obj, output_obj }
-    local del_ = function() -- deliminator of the whole process
+    local del = function() -- deliminator of the whole process
         if caller_obj.mode ~= "i" and caller_obj.mode ~= "t" then
             vim.cmd("stopinsert")
         end
@@ -62,11 +62,6 @@ local function objs_setup(fuzzy_obj, which_obj, output_obj, caller_obj, choices_
                 end
             end
         end)
-    end
-    local function del()
-        -- call once
-        local t = coroutine.create(del_)
-        coroutine.resume(t)
     end
 
     for _, o in ipairs(objs) do
