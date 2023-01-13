@@ -27,7 +27,7 @@ local function set_highlight(buf, lines, opts, endup_obj, which_obj)
   -- head
   if vim.api.nvim_get_current_buf() == which_obj.buf then
     for l, head in ipairs(heads) do
-      local is_unique = (function ()
+      local is_unique = (function()
         for j, head_ in ipairs(heads) do
           if l ~= j and head == head_ then
             return false
@@ -36,9 +36,9 @@ local function set_highlight(buf, lines, opts, endup_obj, which_obj)
         return true
       end)()
       if is_unique and endup_obj[l]["type"] == "key" and opts.behavior.shortest_match then
-        vim.api.nvim_buf_add_highlight(buf, ns_wf_output_obj_which, "WFWhichUnique", l-1, 1, 1 + #head)
+        vim.api.nvim_buf_add_highlight(buf, ns_wf_output_obj_which, "WFWhichUnique", l - 1, 1, 1 + #head)
       else
-        vim.api.nvim_buf_add_highlight(buf, ns_wf_output_obj_which, "WFWhich", l-1, 1, 1 + #head)
+        vim.api.nvim_buf_add_highlight(buf, ns_wf_output_obj_which, "WFWhich", l - 1, 1, 1 + #head)
       end
     end
   end
