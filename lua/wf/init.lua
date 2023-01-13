@@ -9,6 +9,7 @@ local output_obj_gen = require("wf.output").output_obj_gen
 local static = require("wf.static")
 local bmap = static.bmap
 local row_offset = static.row_offset
+local augname_leave_check = static.augname_leave_check
 local _g = static._g
 local sign_group_prompt = static.sign_group_prompt
 local cell = require("wf.cell")
@@ -18,7 +19,7 @@ local core = require("wf.core").core
 local setup = require("wf.setup").setup
 
 -- if cursor not on the objects then quit wf.
-local lg = vim.api.nvim_create_augroup("wf_leave_check", { clear = true })
+local lg = vim.api.nvim_create_augroup(augname_leave_check, { clear = true })
 local function leave_check(which_obj, fuzzy_obj, output_obj, del)
     pcall(au,
         lg,
@@ -40,8 +41,8 @@ end
 local function objs_setup(fuzzy_obj, which_obj, output_obj, caller_obj, choices_obj, callback)
     local objs = { fuzzy_obj, which_obj, output_obj }
     local del = function() -- deliminator of the whole process
-        vim.schedule(function() vim.api.nvim_del_augroup_by_name("wf_leave_check")
-            lg = vim.api.nvim_create_augroup("wf_leave_check", {clear = true})
+        vim.schedule(function() vim.api.nvim_del_augroup_by_name(augname_leave_check)
+            lg = vim.api.nvim_create_augroup(augname_leave_check, {clear = true})
         end)
         if caller_obj.mode ~= "i" and caller_obj.mode ~= "t" then
             vim.cmd("stopinsert")

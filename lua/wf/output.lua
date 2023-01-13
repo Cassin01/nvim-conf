@@ -4,6 +4,8 @@ local row_offset_ = static.row_offset
 local gen_obj = require("wf.common").gen_obj
 local ns_wf_output_obj_which = vim.api.nvim_create_namespace("wf_output_obj_which")
 local same_text = require("wf.skip_front_duplication")
+local sign_group_prompt = require("wf.static").sign_group_prompt
+local augname_skip_front_duplicate = static.augname_skip_front_duplicate
 
 local function set_highlight(buf, lines, opts, endup_obj, which_obj, fuzzy_obj, which_line)
   local current_buf = vim.api.nvim_get_current_buf()
@@ -40,7 +42,6 @@ local function set_highlight(buf, lines, opts, endup_obj, which_obj, fuzzy_obj, 
         return function()
           vim.api.nvim_buf_set_lines(which_obj.buf, 0, -1, true, { text })
           vim.api.nvim_win_set_cursor(which_obj.win, { 1, vim.fn.strdisplaywidth(text) })
-          local sign_group_prompt = require("wf.static").sign_group_prompt
           vim.fn.sign_place(
             0,
             sign_group_prompt .. "which",
@@ -71,7 +72,7 @@ local function set_highlight(buf, lines, opts, endup_obj, which_obj, fuzzy_obj, 
           2 + #rest
         )
       end
-      local g = vim.api.nvim_create_augroup("wf_buf_skip", { clear = true })
+      local g = vim.api.nvim_create_augroup(augname_skip_front_duplicate, { clear = true })
       vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI" }, {
         callback = function()
           for _, c in ipairs(cs) do

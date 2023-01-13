@@ -8,9 +8,8 @@ local _update_output_obj = require("wf.output")._update_output_obj
 local prompt_counter_update = require("wf.prompt_counter").update
 local ns_wf_output_obj_fuzzy = vim.api.nvim_create_namespace("wf_output_obj_fuzzy")
 
-local core
 -- core filtering flow
-core = function(choices_obj, groups_obj, which_obj, fuzzy_obj, output_obj, opts)
+local core = function(choices_obj, groups_obj, which_obj, fuzzy_obj, output_obj, opts)
     -- filter with fuzzy match
     local fuzzy_line = vim.api.nvim_buf_get_lines(fuzzy_obj.buf, 0, -1, true)[1]
     local matches_obj, poss = (function()
