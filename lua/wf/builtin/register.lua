@@ -1,18 +1,18 @@
 local select = require("wf").select
 local registers = [[*+"-:.%/#=_abcdefghijklmnopqrstuvwxyz0123456789]]
 local labels = {
-    ['"'] = "delet,chang,yank", -- "last deleted, changed, or yanked content",
-    ["0"] = "yank", -- "last yank",
-    ["-"] = "small delte", -- "deleted or changed content smaller than one line",
-    ["."] = "insert", -- "last inserted text",
-    ["%"] = "file", -- "name of the current file",
-    [":"] = "command", -- "most recent executed command",
-    ["#"] = "buf", -- "alternate buffer",
-    ["="] = "expr", -- "result of an expression",
-    ["+"] = "system clip", -- "synchronized with the system clipboard",
-    ["*"] = "selection clip", -- "synchronized with the selection clipboard",
-    ["_"] = "black hole", -- "black hole",
-    ["/"] = "search", -- "last search pattern",
+    ['"'] = "last deleted, changed, or yanked content", -- "delet,chang,yank", -- "last deleted, changed, or yanked content",
+    ["0"] = "last yank", -- "last yank",
+    ["-"] = "deleted or changed content smaller than one line",
+    ["."] = "last inserted text", -- "last inserted text",
+    ["%"] = "name of the current file",
+    [":"] = "most recent executed command",
+    ["#"] = "alternate buffer",
+    ["="] = "result of an expression",
+    ["+"] = "synchronized with the system clipboard",
+    ["*"] = "synchronized with the selection clipboard",
+    ["_"] = "black hole",
+    ["/"] = "last search pattern",
 }
 local types = {
     ["v"] = "c",

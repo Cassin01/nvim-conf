@@ -21,14 +21,15 @@ local setup = require("wf.setup").setup
 -- if cursor not on the objects then quit wf.
 local lg = vim.api.nvim_create_augroup(augname_leave_check, { clear = true })
 local function leave_check(which_obj, fuzzy_obj, output_obj, del)
-    pcall(au,
+    pcall(
+        au,
         lg,
         "WinEnter",
         vim.schedule_wrap(function()
             local current_win = vim.api.nvim_get_current_win()
             for _, obj in ipairs({ fuzzy_obj, which_obj, output_obj }) do
                 if current_win == obj.win then
-                    leave_check( fuzzy_obj, which_obj, output_obj, del)
+                    leave_check(fuzzy_obj, which_obj, output_obj, del)
                     return
                 end
             end
@@ -41,8 +42,9 @@ end
 local function objs_setup(fuzzy_obj, which_obj, output_obj, caller_obj, choices_obj, callback)
     local objs = { fuzzy_obj, which_obj, output_obj }
     local del = function() -- deliminator of the whole process
-        vim.schedule(function() vim.api.nvim_del_augroup_by_name(augname_leave_check)
-            lg = vim.api.nvim_create_augroup(augname_leave_check, {clear = true})
+        vim.schedule(function()
+            vim.api.nvim_del_augroup_by_name(augname_leave_check)
+            lg = vim.api.nvim_create_augroup(augname_leave_check, { clear = true })
         end)
         if caller_obj.mode ~= "i" and caller_obj.mode ~= "t" then
             vim.cmd("stopinsert")
@@ -74,7 +76,6 @@ local function objs_setup(fuzzy_obj, which_obj, output_obj, caller_obj, choices_
         end, { buffer = o.buf })
     end
 
-    local inputs = { fuzzy_obj, which_obj }
     local to_which = function()
         vim.api.nvim_set_current_win(which_obj.win)
     end
@@ -89,10 +90,10 @@ local function objs_setup(fuzzy_obj, which_obj, output_obj, caller_obj, choices_
     for _, o in ipairs(objs) do
         bmap(o.buf, "n", "<esc>", del, "quit")
     end
+    local inputs = { fuzzy_obj, which_obj }
     for _, o in ipairs(inputs) do
         bmap(o.buf, { "i", "n" }, which_key_list_operator.escape, del, "quit")
         bmap(o.buf, { "n" }, "m", "", "disable sign")
-        vim.api.nvim_win_set_option(o.win, "foldcolumn", "1")
     end
     bmap(fuzzy_obj.buf, { "i", "n" }, which_key_list_operator.toggle, to_which, "start which key mode")
     bmap(which_obj.buf, { "i", "n" }, which_key_list_operator.toggle, to_fuzzy, "start which key mode")
@@ -151,10 +152,13 @@ local function swap_win_pos(up, down, style)
             row = row,
             border = style.borderchars.bottom,
             title_pos = "center",
-            -- title = style.borderchars.bottom[2]
             title = { { down.name, "WFTitleFreeze" } },
         })
     )
+    for _, o in ipairs({ up, down }) do
+        vim.api.nvim_win_set_option(o.win, "foldcolumn", "1")
+        vim.api.nvim_win_set_option(o.win, "signcolumn", "yes:2")
+    end
 end
 
 local function fuzzy_setup(which_obj, fuzzy_obj, output_obj, choices_obj, groups_obj, opts)
@@ -164,7 +168,6 @@ local function fuzzy_setup(which_obj, fuzzy_obj, output_obj, choices_obj, groups
     end, { buffer = fuzzy_obj.buf })
     au(_g, "WinEnter", function()
         vim.api.nvim_win_set_option(fuzzy_obj.win, "winhl", "Normal:WFFocus,FloatBorder:WFFloatBorderFocus")
-
         vim.fn.sign_unplace(sign_group_prompt .. "fuzzyfreeze", { buffer = fuzzy_obj.buf })
         vim.fn.sign_place(
             0,
@@ -173,6 +176,10 @@ local function fuzzy_setup(which_obj, fuzzy_obj, output_obj, choices_obj, groups
             fuzzy_obj.buf,
             { lnum = 1, priority = 10 }
         )
+        -- vim.schedule(function()
+        --     vim.api.nvim_win_set_option(fuzzy_obj.win, "foldcolumn", "1")
+        --     vim.api.nvim_win_set_option(fuzzy_obj.win, "signcolumn", "yes:2")
+        -- end)
 
         local wcnf = vim.api.nvim_win_get_config(output_obj.win)
         vim.api.nvim_win_set_config(
@@ -245,6 +252,10 @@ local function which_setup(which_obj, fuzzy_obj, output_obj, choices_obj, groups
             which_obj.buf,
             { lnum = 1, priority = 10 }
         )
+        -- vim.schedule(function()
+        --     vim.api.nvim_win_set_option(which_obj.win, "foldcolumn", "1")
+        --     vim.api.nvim_win_set_option(which_obj.win, "signcolumn", "yes:2")
+        -- end)
         local wcnf = vim.api.nvim_win_get_config(output_obj.win)
         vim.api.nvim_win_set_config(
             output_obj.win,
@@ -333,11 +344,14 @@ local function _callback(caller_obj, fuzzy_obj, which_obj, output_obj, choices_o
     vim.api.nvim_buf_set_lines(which_obj.buf, 0, -1, true, { opts.text_insert_in_advance })
     if opts.selector == "fuzzy" then
         vim.api.nvim_set_current_win(fuzzy_obj.win)
-        vim.cmd("startinsert!")
+        vim.schedule(function()
+            vim.cmd("startinsert!")
+        end)
     elseif opts.selector == "which" then
         vim.api.nvim_set_current_win(which_obj.win)
-        vim.cmd("startinsert!")
-        -- vim.cmd("startinsert!")
+        vim.schedule(function()
+            vim.cmd("startinsert!")
+        end)
     else
         print("selector must be fuzzy or which")
         obj_handlers.del()
