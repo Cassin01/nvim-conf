@@ -41,7 +41,7 @@ local function set_highlight(buf, lines, opts, endup_obj, which_obj, fuzzy_obj, 
       local function _add_rest(text)
         return function()
           vim.api.nvim_buf_set_lines(which_obj.buf, 0, -1, true, { text })
-          vim.api.nvim_win_set_cursor(which_obj.win, { 1, vim.fn.strdisplaywidth(text) })
+          vim.api.nvim_win_set_cursor(which_obj.win, { 1, vim.fn.strlen(text) })
           vim.fn.sign_place(
             0,
             sign_group_prompt .. "which",
@@ -112,12 +112,12 @@ end
 
 local function output_obj_gen(opts)
   local style = opts.style
-  local buf, win = gen_obj(row_offset_() + style.input_win_row_offset + style.input_win_row_offset, opts)
+  local buf, win = gen_obj(row_offset_() + style.input_win_row_offset + style.input_win_row_offset, opts, false)
   vim.api.nvim_buf_set_option(buf, "filetype", plug_name .. "output")
   local wcnf = vim.api.nvim_win_get_config(win)
   vim.api.nvim_win_set_config(
     win,
-    vim.fn.extend(wcnf, { border = style.borderchars.top, title_pos = "center", title = style.borderchars.top[2] })
+    vim.fn.extend(wcnf, { border = style.borderchars.top, title_pos = "center", title = style.borderchars.top[2]})
   )
   return { buf = buf, win = win }
 end

@@ -73,12 +73,12 @@ end
 function M.fill_spaces(str, len)
   local res = ""
   for c in str:gmatch(".") do
-    if vim.fn.strdisplaywidth(res .. c) > len then
+    if vim.fn.strlen(res .. c) > len then
       break
     end
     res = res .. c
   end
-  for _ = 1, len - vim.fn.strdisplaywidth(res) do
+  for _ = 1, len - vim.fn.strlen(res) do
     res = res .. " "
   end
   return res
@@ -133,30 +133,27 @@ function M.replace_nth(str, n, old, new)
   return str
 end
 
-
 -- usage
 -- async_print = run(print)
 -- async_print("hello world")
-function M.async(f, callback)
-  local function core(...)
-    local args = {...}
-    local async = nil
-    async = vim.loop.new_async(vim.schedule_wrap(
-        function()
-          if args == nil then
-            f()
-          else
-            f(unpack(args))
-          end
-          if callback ~= nil then
-            callback()
-          end
-          async:close()
-        end
-      ))
-    async:send()
+function M.async(callback)
+  local function run(...)
+    local args = { ... }
+    local handle
+    handle = vim.loop.new_async(vim.schedule_wrap(function()
+      if #args > 0 then
+        callback(unpack(args))
+      else
+        callback()
+      end
+      if not handle:is_closing() then
+        handle:close()
+      end
+    end))
+    handle:send()
+    return handle
   end
-  return core
+  return run
 end
 
 return M

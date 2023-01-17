@@ -4,9 +4,9 @@ local row_offset = static.row_offset
 local _g = static._g
 local au = require("wf.util").au
 
-local function input_obj_gen(opts)
+local function input_obj_gen(opts, cursor)
   local _row_offset = row_offset() + opts.style.input_win_row_offset
-  local buf, win = gen_obj(_row_offset, opts)
+  local buf, win = gen_obj(_row_offset, opts, cursor)
 
   au(_g, "BufEnter", function()
     local _, _ = pcall(function()

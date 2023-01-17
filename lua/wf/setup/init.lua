@@ -1,5 +1,6 @@
 local extend = require("wf.util").extend
 local full_name = require("wf.static").full_name
+local sign_group_prompt = require("wf.static").sign_group_prompt
 
 -- @param ground string "fg" or "bg"
 local function get_hl(tbl, name, ground)

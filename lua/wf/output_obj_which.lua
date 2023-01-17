@@ -8,10 +8,16 @@ function M.add(self, buf, line, list, prefix_size)
   local index = prefix_size
   local text = ""
   for _, v in ipairs(list) do
-    local text_len = vim.fn.strdisplaywidth(v[1])
+    local text_len = vim.fn.strlen(v[1])
+    print(text_len, v[1])
     table.insert(self.hls, { buf, ns_output_obj, v[2], line, index, index + text_len })
     index = index + text_len
     text = text .. v[1]
+    -- -- if vim.fn.strdisplaywidth(v[1]) ~= vim.fn.strlen(v[1]) then
+    -- --   print(v[1], vim.fn.strdisplaywidth(v[1]), vim.fn.strlen(v[1]))
+    -- -- end
+    -- table.insert(self.hls, { buf, ns_output_obj, v[2], line, prefix_size + vim.fn.strdisplaywidth(text), prefix_size + vim.fn.strdisplaywidth(text .. v[1]) })
+    -- text = text .. v[1]
   end
   return text
 end

@@ -10,6 +10,7 @@ local output_obj_gen = require("wf.output").output_obj_gen
 local static = require("wf.static")
 local bmap = static.bmap
 local row_offset = static.row_offset
+local full_name = static.full_name
 local augname_leave_check = static.augname_leave_check
 local _g = static._g
 local sign_group_prompt = static.sign_group_prompt
@@ -18,6 +19,7 @@ local which_insert_map = require("wf.which_map").setup
 local group = require("wf.group")
 local core = require("wf.core").core
 local setup = require("wf.setup").setup
+local input = require("wf.input").input
 
 -- FIXME: 起動時直後に入力した文字を適切に消化できてない
 -- current windowをwhich_obj or fuzzy_objに移動しない状態でstartinsertに入っている.
@@ -173,12 +175,8 @@ local function swap_win_pos(up, down, style)
     end
 end
 
-local function fuzzy_setup(which_obj, fuzzy_obj, output_obj, choices_obj, groups_obj, opts)
-    au(_g, { "TextChangedI", "TextChanged" }, function()
-        core(choices_obj, groups_obj, which_obj, fuzzy_obj, output_obj, opts)
-        -- run(core)(choices_obj, groups_obj, which_obj, fuzzy_obj, output_obj, opts)
-    end, { buffer = fuzzy_obj.buf })
-    au(_g, "WinEnter", function()
+local function fuzzy_setup(which_obj, fuzzy_obj, output_obj, choices_obj, groups_obj, opts, cursor)
+    local winenter = function()
         vim.api.nvim_win_set_option(fuzzy_obj.win, "winhl", "Normal:WFFocus,FloatBorder:WFFloatBorderFocus")
         vim.fn.sign_unplace(sign_group_prompt .. "fuzzyfreeze", { buffer = fuzzy_obj.buf })
         vim.fn.sign_place(
@@ -211,7 +209,27 @@ local function fuzzy_setup(which_obj, fuzzy_obj, output_obj, choices_obj, groups
         core(choices_obj, groups_obj, which_obj, fuzzy_obj, output_obj, opts)
         -- run(core)(choices_obj, groups_obj, which_obj, fuzzy_obj, output_obj, opts)
         swap_win_pos(fuzzy_obj, which_obj, opts.style)
+    end
+    if cursor then
+        vim.schedule(function()
+            winenter()
+            vim.fn.sign_place(
+                0,
+                sign_group_prompt .. "whichfreeze",
+                sign_group_prompt .. "whichfreeze",
+                which_obj.buf,
+                { lnum = 1, priority = 10 }
+                )
+            local _, _ = pcall(function()
+                require("cmp").setup.buffer({ enabled = false })
+            end)
+        end)
+    end
+    au(_g, { "TextChangedI", "TextChanged" }, function()
+        core(choices_obj, groups_obj, which_obj, fuzzy_obj, output_obj, opts)
+        -- run(core)(choices_obj, groups_obj, which_obj, fuzzy_obj, output_obj, opts)
     end, { buffer = fuzzy_obj.buf })
+    au(_g, "WinEnter", winenter , { buffer = fuzzy_obj.buf })
     au(_g, "WinLeave", function()
         vim.fn.sign_unplace(sign_group_prompt .. "fuzzyfreeze", { buffer = fuzzy_obj.buf })
         vim.fn.sign_unplace(sign_group_prompt .. "fuzzy", { buffer = fuzzy_obj.buf })
@@ -226,34 +244,8 @@ local function fuzzy_setup(which_obj, fuzzy_obj, output_obj, choices_obj, groups
     end, { buffer = fuzzy_obj.buf })
 end
 
-local function which_setup(which_obj, fuzzy_obj, output_obj, choices_obj, groups_obj, callback, obj_handlers, opts)
-    au(_g, "BufEnter", function()
-        vim.fn.sign_unplace(sign_group_prompt .. "whichfreeze", { buffer = which_obj.buf })
-        local _, _ = pcall(function()
-            require("cmp").setup.buffer({ enabled = false })
-        end)
-    end, { buffer = which_obj.buf })
-    au(_g, "WinLeave", function()
-        vim.api.nvim_set_hl(0, "WFWhich", { link = "WFFreeze" })
-
-        vim.fn.sign_unplace(sign_group_prompt .. "which", { buffer = which_obj.buf })
-        vim.fn.sign_place(
-            0,
-            sign_group_prompt .. "whichfreeze",
-            sign_group_prompt .. "whichfreeze",
-            which_obj.buf,
-            { lnum = 1, priority = 10 }
-        )
-        vim.api.nvim_win_set_option(which_obj.win, "winhl", "Normal:WFComment,FloatBorder:WFFloatBorder")
-    end, { buffer = which_obj.buf })
-    au(_g, { "TextChangedI", "TextChanged" }, function()
-        local id = core(choices_obj, groups_obj, which_obj, fuzzy_obj, output_obj, opts)
-        if id ~= nil then
-            obj_handlers.del()
-            callback(id)
-        end
-    end, { buffer = which_obj.buf })
-    au(_g, "WinEnter", function()
+local function which_setup(which_obj, fuzzy_obj, output_obj, choices_obj, groups_obj, callback, obj_handlers, opts, cursor)
+    local winenter = function()
         vim.api.nvim_set_hl(0, "WFWhich", { link = "WFWhichOn" })
 
         vim.api.nvim_win_set_option(which_obj.win, "winhl", "Normal:WFFocus,FloatBorder:WFFloatBorderFocus")
@@ -284,7 +276,49 @@ local function which_setup(which_obj, fuzzy_obj, output_obj, choices_obj, groups
         )
         core(choices_obj, groups_obj, which_obj, fuzzy_obj, output_obj, opts)
         swap_win_pos(which_obj, fuzzy_obj, opts.style)
+    end
+    if cursor then
+        vim.schedule(function()
+            winenter()
+            vim.fn.sign_place(
+                0,
+                sign_group_prompt .. "fuzzyfreeze",
+                sign_group_prompt .. "fuzzyfreeze",
+                fuzzy_obj.buf,
+                { lnum = 1, priority = 10 }
+                )
+            local _, _ = pcall(function()
+                require("cmp").setup.buffer({ enabled = false })
+            end)
+        end)
+    end
+    au(_g, "BufEnter", function()
+        vim.fn.sign_unplace(sign_group_prompt .. "whichfreeze", { buffer = which_obj.buf })
+        local _, _ = pcall(function()
+            require("cmp").setup.buffer({ enabled = false })
+        end)
     end, { buffer = which_obj.buf })
+    au(_g, "WinLeave", function()
+        vim.api.nvim_set_hl(0, "WFWhich", { link = "WFFreeze" })
+
+        vim.fn.sign_unplace(sign_group_prompt .. "which", { buffer = which_obj.buf })
+        vim.fn.sign_place(
+            0,
+            sign_group_prompt .. "whichfreeze",
+            sign_group_prompt .. "whichfreeze",
+            which_obj.buf,
+            { lnum = 1, priority = 10 }
+        )
+        vim.api.nvim_win_set_option(which_obj.win, "winhl", "Normal:WFComment,FloatBorder:WFFloatBorder")
+    end, { buffer = which_obj.buf })
+    au(_g, { "TextChangedI", "TextChanged" }, function()
+        local id = core(choices_obj, groups_obj, which_obj, fuzzy_obj, output_obj, opts)
+        if id ~= nil then
+            obj_handlers.del()
+            callback(id)
+        end
+    end, { buffer = which_obj.buf })
+    au(_g, "WinEnter", winenter , { buffer = which_obj.buf })
     bmap(which_obj.buf, { "n", "i" }, "<CR>", function()
         local fuzzy_line = vim.api.nvim_buf_get_lines(fuzzy_obj.buf, 0, -1, true)[1]
         local which_line = vim.api.nvim_buf_get_lines(which_obj.buf, 0, -1, true)[1]
@@ -336,7 +370,7 @@ local function which_setup(which_obj, fuzzy_obj, output_obj, choices_obj, groups
         local new_front = string.sub(front, 1, #front - #match)
         vim.fn.sign_unplace(sign_group_prompt .. "which", { buffer = which_obj.buf })
         vim.api.nvim_buf_set_lines(which_obj.buf, pos[1] - 1, pos[1], true, { new_front .. back })
-        vim.api.nvim_win_set_cursor(which_obj.win, { pos[1], vim.fn.strdisplaywidth(new_front) })
+        vim.api.nvim_win_set_cursor(which_obj.win, { pos[1], vim.fn.strlen(new_front) })
         vim.fn.sign_place(
             0,
             sign_group_prompt .. "which",
@@ -350,21 +384,33 @@ end
 -- core
 local function _callback(caller_obj, fuzzy_obj, which_obj, output_obj, choices_obj, groups_obj, callback, opts)
     local obj_handlers = objs_setup(fuzzy_obj, which_obj, output_obj, caller_obj, choices_obj, callback)
-    which_setup(which_obj, fuzzy_obj, output_obj, choices_obj, groups_obj, callback, obj_handlers, opts)
-    fuzzy_setup(which_obj, fuzzy_obj, output_obj, choices_obj, groups_obj, opts)
+    which_setup(which_obj, fuzzy_obj, output_obj, choices_obj, groups_obj, callback, obj_handlers, opts, opts.selector == "which")
+    fuzzy_setup(which_obj, fuzzy_obj, output_obj, choices_obj, groups_obj, opts, opts.selector == "fuzzy")
 
-    vim.api.nvim_buf_set_lines(which_obj.buf, 0, -1, true, { opts.text_insert_in_advance })
-    if opts.selector == "fuzzy" then
-        vim.api.nvim_set_current_win(fuzzy_obj.win)
-        -- vim.schedule(function()
-            vim.cmd("startinsert!")
-        -- end)
-    elseif opts.selector == "which" then
-        vim.api.nvim_set_current_win(which_obj.win)
-        -- vim.schedule(function()
-            vim.cmd("startinsert!")
-        -- end)
-    else
+    -- vim.api.nvim_buf_set_lines(which_obj.buf, 0, -1, true, { opts.text_insert_in_advance })
+    -- local c = vim.g[full_name .. "#char_insert_in_advance"]
+    -- if c ~= nil then
+    --     vim.api.nvim_buf_set_lines(fuzzy_obj.buf, 0, -1, true, { opts.text_insert_in_advance .. c })
+    -- else
+    --     vim.g[full_name .. "#text_insert_in_advance"] = opts.text_insert_in_advance
+    --     vim.g[full_name .. "#which_obj_buf"] = which_obj.buf
+    -- end
+    -- if opts.selector == "fuzzy" then
+    --     vim.api.nvim_set_current_win(fuzzy_obj.win)
+    --     -- vim.schedule(function()
+    --         -- vim.cmd("startinsert!")
+    --     -- end)
+    -- elseif opts.selector == "which" then
+    --     vim.api.nvim_set_current_win(which_obj.win)
+    --     -- vim.schedule(function()
+    --         -- vim.cmd("startinsert!")
+    --     -- end)
+    -- else
+    --     print("selector must be fuzzy or which")
+    --     obj_handlers.del()
+    --     return
+    -- end
+    if opts.selector ~= "fuzzy" and opts.selector ~= "which" then
         print("selector must be fuzzy or which")
         obj_handlers.del()
         return
@@ -373,6 +419,8 @@ local function _callback(caller_obj, fuzzy_obj, which_obj, output_obj, choices_o
 end
 
 local function setup_objs(choices_obj, callback, opts_)
+    -- print(vim.fn.nr2char(vim.fn.getchar()))
+
     local _opts = vim.deepcopy(require("wf.config"))
     local opts = ingect_deeply(_opts, opts_ or vim.emptydict())
 
@@ -411,11 +459,15 @@ local function setup_objs(choices_obj, callback, opts_)
     local output_obj = output_obj_gen(opts)
 
     -- -- 入力用バッファを作成
-    local which_obj = which.input_obj_gen(opts)
-    local fuzzy_obj = fuzzy.input_obj_gen(opts)
+    local which_obj = which.input_obj_gen(opts, opts.selector == "which")
+    local fuzzy_obj = fuzzy.input_obj_gen(opts, opts.selector == "fuzzy")
+    vim.api.nvim_buf_set_lines(which_obj.buf, 0, -1, true, { opts.text_insert_in_advance })
+    vim.schedule(function()
+        vim.cmd("startinsert!")
+    end)
 
-    _callback(caller_obj, fuzzy_obj, which_obj, output_obj, choices_obj, groups_obj, callback, opts)
     -- async(_callback)(caller_obj, fuzzy_obj, which_obj, output_obj, choices_obj, groups_obj, callback, opts)
+    _callback(caller_obj, fuzzy_obj, which_obj, output_obj, choices_obj, groups_obj, callback, opts)
 end
 
 local function select(items, opts, on_choice)
