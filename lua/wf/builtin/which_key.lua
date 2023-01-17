@@ -1,5 +1,6 @@
 local util = require("wf.util")
 local extend = util.extend
+local ingect_deeply = util.ingect_deeply
 local rt = util.rt
 local get_mode = util.get_mode
 local select = require("wf").select
@@ -39,19 +40,18 @@ local function which_key(opts)
         local choices = extend(g, b)
         local mode = get_mode()
         local count = vim.api.nvim_get_vvar("count")
-        opts = opts or {}
+
+        opts = opts or { text_insert_in_advance = "" }
+        opts["text_insert_in_advance"] =
+        string.gsub(opts["text_insert_in_advance"], "<Leader>", vim.g["mapleader"] or [[\]])
         local _opts = {
             title = "Which Key",
             text_insert_in_advance = "",
-            key_group_dict = vim.fn.luaeval("_G.__kaza.prefix"),
+            -- key_group_dict = vim.fn.luaeval("_G.__kaza.prefix"),
         }
-        for k, v in pairs(opts) do
-            _opts[k] = v
-        end
-        _opts["text_insert_in_advance"] =
-            string.gsub(_opts["text_insert_in_advance"], "<Leader>", vim.g["mapleader"] or [[\]])
+        local opts_ = ingect_deeply(_opts, opts)
 
-        select(choices, _opts, function(_, lhs)
+        select(choices, opts_, function(_, lhs)
             if win == vim.api.nvim_get_current_win() and buf == vim.api.nvim_get_current_buf() then
                 local current_mode = vim.fn.mode()
                 if count and count ~= 0 then

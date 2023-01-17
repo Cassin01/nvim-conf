@@ -49,6 +49,12 @@ local core = function(choices_obj, groups_obj, which_obj, fuzzy_obj, output_obj,
         end
     end)()
 
+    -- return early  without drawing if determined
+    -- when narrowed down to one, return it
+    if which_line ~= "" and #endup_obj == 1 and (opts.behavior.skip_back_duplication or endup_obj[1].key == which_line) then
+        return endup_obj[1].id
+    end
+
     -- take out info's
     local function meta_key(sub)
         if string.match(sub, "^<") == "<" then
@@ -60,11 +66,11 @@ local core = function(choices_obj, groups_obj, which_obj, fuzzy_obj, output_obj,
         return vim.fn.strdisplaywidth(string.match(sub, "."))
     end
 
-    local ids = {}
+    -- local ids = {}
     local texts = {}
     local match_posses = {}
     for _, match in ipairs(endup_obj) do
-        table.insert(ids, { id = match.id, key = match.key })
+        -- table.insert(ids, { id = match.id, key = match.key })
         local sub = string.sub(match.key, 1 + #which_line, opts.prefix_size + #which_line)
 
         local str = fill_spaces(sub == "" and "<CR>" or sub, opts.prefix_size)
@@ -120,18 +126,18 @@ local core = function(choices_obj, groups_obj, which_obj, fuzzy_obj, output_obj,
     -- update prompt counter
     prompt_counter_update(which_obj, fuzzy_obj, #choices_obj, #which_matches_obj)
 
-    -- when narrowed down to one, return it
-    if which_line == "" then
-        return nil
-    else
-        if #ids == 1 and ids[1].key == which_line then
-            return ids[1].id
-        elseif opts.behavior.skip_back_duplication and #ids == 1 then
-            return ids[1].id
-        else
-            return nil
-        end
-    end
+    -- -- when narrowed down to one, return it
+    -- if which_line == "" then
+    --     return nil
+    -- else
+    --     if #ids == 1 and ids[1].key == which_line then
+    --         return ids[1].id
+    --     elseif opts.behavior.skip_back_duplication and #ids == 1 then
+    --         return ids[1].id
+    --     else
+    --         return nil
+    --     end
+    -- end
 end
 
 return { core = core }

@@ -133,4 +133,30 @@ function M.replace_nth(str, n, old, new)
   return str
 end
 
+
+-- usage
+-- async_print = run(print)
+-- async_print("hello world")
+function M.async(f, callback)
+  local function core(...)
+    local args = {...}
+    local async = nil
+    async = vim.loop.new_async(vim.schedule_wrap(
+        function()
+          if args == nil then
+            f()
+          else
+            f(unpack(args))
+          end
+          if callback ~= nil then
+            callback()
+          end
+          async:close()
+        end
+      ))
+    async:send()
+  end
+  return core
+end
+
 return M

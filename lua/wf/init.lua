@@ -1,6 +1,7 @@
 local util = require("wf.util")
 local au = util.au
 local rt = util.rt
+local async = util.async
 local ingect_deeply = util.ingect_deeply
 local match_from_tail = util.match_from_tail
 local fuzzy = require("wf.fuzzy")
@@ -17,6 +18,17 @@ local which_insert_map = require("wf.which_map").setup
 local group = require("wf.group")
 local core = require("wf.core").core
 local setup = require("wf.setup").setup
+
+-- FIXME: 起動時直後に入力した文字を適切に消化できてない
+-- current windowをwhich_obj or fuzzy_objに移動しない状態でstartinsertに入っている.
+-- この方法では呼び出し元のbufferが直後に入力した文字に書き換えられてしまう可能性がある。
+-- これを防ぐため、vim.scheduleでstartinsertを囲んだが、
+-- 今度は直後に入力した文字がnormalモードのコマンドとして、どこかのwindowで消化されてしまうことがわかった.
+-- また、呼び出し元のbufferがイミュータブルになっている場合も考慮する必要がある。
+-- TODO: これをどうにかする
+-- 方法1: 起動時に文字一つを読み込むinputを起動する。この結果を
+-- 方法2: insert modeに入るまでに呼び出し先へのあらゆる入力を禁止する。
+--      - この方法はユーザの入力をブロックするので、ユーザは遅延を感じやすい.
 
 -- if cursor not on the objects then quit wf.
 local lg = vim.api.nvim_create_augroup(augname_leave_check, { clear = true })
@@ -344,14 +356,14 @@ local function _callback(caller_obj, fuzzy_obj, which_obj, output_obj, choices_o
     vim.api.nvim_buf_set_lines(which_obj.buf, 0, -1, true, { opts.text_insert_in_advance })
     if opts.selector == "fuzzy" then
         vim.api.nvim_set_current_win(fuzzy_obj.win)
-        vim.schedule(function()
+        -- vim.schedule(function()
             vim.cmd("startinsert!")
-        end)
+        -- end)
     elseif opts.selector == "which" then
         vim.api.nvim_set_current_win(which_obj.win)
-        vim.schedule(function()
+        -- vim.schedule(function()
             vim.cmd("startinsert!")
-        end)
+        -- end)
     else
         print("selector must be fuzzy or which")
         obj_handlers.del()
@@ -403,6 +415,7 @@ local function setup_objs(choices_obj, callback, opts_)
     local fuzzy_obj = fuzzy.input_obj_gen(opts)
 
     _callback(caller_obj, fuzzy_obj, which_obj, output_obj, choices_obj, groups_obj, callback, opts)
+    -- async(_callback)(caller_obj, fuzzy_obj, which_obj, output_obj, choices_obj, groups_obj, callback, opts)
 end
 
 local function select(items, opts, on_choice)
