@@ -6,11 +6,6 @@ end
 
 local ok, devicon = pcall(require_deviocon)
 
-local icon_folder = {
-  icon = "",
-  highlight = "Directory",
-}
-
 local icons = {}
 local ns = vim.api.nvim_create_namespace("WFBookmark")
 local function gen_highlight(icon, color)
@@ -20,7 +15,7 @@ local function gen_highlight(icon, color)
     local hlname = "WFBookmark" .. tostring(#icons)
     vim.api.nvim_set_hl(0, hlname, { default = true, fg = color })
     icons[icon] = hlname
-    return "Directory"
+    return hlname
   end
 end
 
@@ -33,7 +28,6 @@ local function bookmark(bookmark_dirs, opts)
         skip_front_duplication = true,
         skip_back_duplication = true,
       },
-      key_group_dict = key_group_dict,
       output_obj_which_mode_desc_format = function(match_obj)
         local desc = match_obj.text
         if ok then
