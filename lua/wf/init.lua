@@ -32,6 +32,9 @@ local input = require("wf.input").input
 -- 方法2: insert modeに入るまでに呼び出し先へのあらゆる入力を禁止する。
 --      - この方法はユーザの入力をブロックするので、ユーザは遅延を感じやすい.
 
+-- 追記
+-- ウィンドウ起動時にカーソルを移動することである程度早くなった。
+
 -- if cursor not on the objects then quit wf.
 local lg = vim.api.nvim_create_augroup(augname_leave_check, { clear = true })
 local function leave_check(which_obj, fuzzy_obj, output_obj, del)
@@ -465,6 +468,15 @@ local function setup_objs(choices_obj, callback, opts_)
     vim.schedule(function()
         vim.cmd("startinsert!")
     end)
+        -- local keys
+        -- if "mode" == "normal" then
+        --     -- n: A<ESC> makes sure cursor is at always at end of prompt w/o default_text
+        --     keys = caller_obj.original_mode ~= "n" and "<ESC>A<ESC>" or "A<ESC>"
+        -- else
+        --     -- always fully retrigger insert mode: required for going from one picker to next
+        --     keys = caller_obj.original_mode ~= "n" and "<ESC>A" or "A"
+        -- end
+        -- vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(keys, true, false, true), "n", true)
 
     -- async(_callback)(caller_obj, fuzzy_obj, which_obj, output_obj, choices_obj, groups_obj, callback, opts)
     _callback(caller_obj, fuzzy_obj, which_obj, output_obj, choices_obj, groups_obj, callback, opts)
@@ -486,9 +498,12 @@ local function select(items, opts, on_choice)
     local callback = vim.schedule_wrap(function(choice)
         if type(choice) == "string" and vim.fn.has_key(items, choice) then
             on_choice_wraped(items[choice], choice)
-        elseif choice >= 1 and choice <= #items then
+        elseif type(choice) == "number" and items[choice] ~= nil then
             on_choice_wraped(items[choice], choice)
+        -- elseif choice >= 1 and choice <= #items then
+        --     on_choice_wraped(items[choice], choice)
         else
+
             print("invalid choice")
         end
     end)

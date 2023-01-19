@@ -1,5 +1,29 @@
 local select = require("wf").select
 
+local function require_deviocon()
+  return require("nvim-web-devicons")
+end
+
+local ok, devicon = pcall(require_deviocon)
+
+local icon_folder = {
+  icon = "",
+  highlight = "Directory",
+}
+
+local icons = {}
+local ns = vim.api.nvim_create_namespace("WFBookmark")
+local function gen_highlight(icon, color)
+  if icons[icon] ~= nil then
+    return icons[icon]
+  else
+    local hlname = "WFBookmark" .. tostring(#icons)
+    vim.api.nvim_set_hl(0, hlname, { default = true, fg = color })
+    icons[icon] = hlname
+    return "Directory"
+  end
+end
+
 local function bookmark(bookmark_dirs, opts)
   local function _bookmark()
     opts = opts or {}
@@ -9,6 +33,29 @@ local function bookmark(bookmark_dirs, opts)
         skip_front_duplication = true,
         skip_back_duplication = true,
       },
+      key_group_dict = key_group_dict,
+      output_obj_which_mode_desc_format = function(match_obj)
+        local desc = match_obj.text
+        if ok then
+          if match_obj.type == "group" then
+            return { { desc, "WFWhichDesc" }, { " +", "WFExpandable" } }
+          else
+            local icon, color = devicon.get_icon_color(desc)
+            if icon ~= nil then
+              local name = gen_highlight(icon, color)
+              return { { icon .. "  ", name }, { desc, "WFWhichDesc" } }
+            else
+              return { { "  ", "Directory" }, { desc, "WFWhichDesc" } }
+            end
+          end
+        else
+          if match_obj.type == "group" then
+            return { { desc, "WFWhichDesc" }, { " +", "WFExpandable" } }
+          else
+            return { { desc, "WFWhichDesc" } }
+          end
+        end
+      end,
     }
     for k, v in pairs(opts) do
       _opts[k] = v

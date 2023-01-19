@@ -36,7 +36,7 @@ local function buffer(opts)
     end
     select(blist, _opts, function(_, lhs)
       if vim.fn.bufexists(lhs) ~= 0 then
-        vim.api.nvim_set_current_buf(lhs)
+        vim.api.nvim_set_current_buf(tonumber(lhs))
       end
     end)
   end

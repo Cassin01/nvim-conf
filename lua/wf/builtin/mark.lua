@@ -30,7 +30,7 @@ local function mark(opts)
     select(choice, _opts, function(_, lhs)
       local pos = minfo[lhs].pos
       vim.api.nvim_win_set_buf(win, pos[1])
-      vim.api.nvim_win_set_cursor(win, pos[2], pos[3])
+      vim.api.nvim_win_set_cursor(win, {pos[2], pos[3]})
     end)
   end
 
