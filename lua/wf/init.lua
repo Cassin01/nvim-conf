@@ -158,7 +158,6 @@ local function swap_win_pos(up, down, style)
         vim.fn.extend(wcnf, {
             row = row - style.input_win_row_offset,
             border = style.borderchars.center,
-            title_pos = "center",
             title = { { up.name, up.name == " Which Key " and "WFTitleWhich" or "WFTitleFuzzy" } },
         })
     )
@@ -168,7 +167,6 @@ local function swap_win_pos(up, down, style)
         vim.fn.extend(fcnf, {
             row = row,
             border = style.borderchars.bottom,
-            title_pos = "center",
             title = { { down.name, "WFTitleFreeze" } },
         })
     )
@@ -198,7 +196,6 @@ local function fuzzy_setup(which_obj, fuzzy_obj, output_obj, choices_obj, groups
         vim.api.nvim_win_set_config(
             output_obj.win,
             vim.fn.extend(wcnf, {
-                title_pos = "center",
                 title = (function()
                     if opts.title ~= nil then
                         return { { " " .. opts.title .. " ", "WFTitleOutputFuzzy" } }
@@ -267,7 +264,6 @@ local function which_setup(which_obj, fuzzy_obj, output_obj, choices_obj, groups
         vim.api.nvim_win_set_config(
             output_obj.win,
             vim.fn.extend(wcnf, {
-                title_pos = "center",
                 title = (function()
                     if opts.title ~= nil then
                         return { { " " .. opts.title .. " ", "WFTitleOutputWhich" } }
@@ -373,7 +369,7 @@ local function which_setup(which_obj, fuzzy_obj, output_obj, choices_obj, groups
         local new_front = string.sub(front, 1, #front - #match)
         vim.fn.sign_unplace(sign_group_prompt .. "which", { buffer = which_obj.buf })
         vim.api.nvim_buf_set_lines(which_obj.buf, pos[1] - 1, pos[1], true, { new_front .. back })
-        vim.api.nvim_win_set_cursor(which_obj.win, { pos[1], vim.fn.strlen(new_front) })
+        vim.api.nvim_win_set_cursor(which_obj.win, { pos[1], vim.fn.strwidth(new_front) })
         vim.fn.sign_place(
             0,
             sign_group_prompt .. "which",

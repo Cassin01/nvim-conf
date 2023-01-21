@@ -41,7 +41,7 @@ local function set_highlight(buf, lines, opts, endup_obj, which_obj, fuzzy_obj, 
       local function _add_rest(text)
         return function()
           vim.api.nvim_buf_set_lines(which_obj.buf, 0, -1, true, { text })
-          vim.api.nvim_win_set_cursor(which_obj.win, { 1, vim.fn.strlen(text) })
+          vim.api.nvim_win_set_cursor(which_obj.win, { 1, vim.fn.strwidth(text) })
           vim.fn.sign_place(
             0,
             sign_group_prompt .. "which",

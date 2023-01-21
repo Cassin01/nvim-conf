@@ -1,23 +1,11 @@
 local select = require("wf").select
+local gen_highlight = require("wf.util").gen_highlight
 
 local function require_deviocon()
   return require("nvim-web-devicons")
 end
 
 local ok, devicon = pcall(require_deviocon)
-
-local icons = {}
-local ns = vim.api.nvim_create_namespace("WFBookmark")
-local function gen_highlight(icon, color)
-  if icons[icon] ~= nil then
-    return icons[icon]
-  else
-    local hlname = "WFBookmark" .. tostring(#icons)
-    vim.api.nvim_set_hl(0, hlname, { default = true, fg = color })
-    icons[icon] = hlname
-    return hlname
-  end
-end
 
 local function bookmark(bookmark_dirs, opts)
   local function _bookmark()
@@ -36,8 +24,9 @@ local function bookmark(bookmark_dirs, opts)
           else
             local icon, color = devicon.get_icon_color(desc)
             if icon ~= nil then
-              local name = gen_highlight(icon, color)
-              return { { icon .. "  ", name }, { desc, "WFWhichDesc" } }
+              local name = gen_highlight(desc, color)
+              local sp = vim.fn.strwidth(icon) > 1 and  (icon.."") or (icon .. " ")
+              return { { sp .. " ", name }, { desc, "WFWhichDesc" } }
             else
               return { { "  ", "Directory" }, { desc, "WFWhichDesc" } }
             end

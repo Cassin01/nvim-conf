@@ -73,12 +73,12 @@ end
 function M.fill_spaces(str, len)
   local res = ""
   for c in str:gmatch(".") do
-    if vim.fn.strlen(res .. c) > len then
+    if vim.fn.strwidth(res .. c) > len then
       break
     end
     res = res .. c
   end
-  for _ = 1, len - vim.fn.strlen(res) do
+  for _ = 1, len - vim.fn.strwidth(res) do
     res = res .. " "
   end
   return res
@@ -154,6 +154,18 @@ function M.async(callback)
     return handle
   end
   return run
+end
+
+-- for nvim-web-devicons
+function M.gen_highlight(name, color)
+  local ext = name:match("^.*%.(.*)$") or ""
+  local hlname = "WFDevicon" .. ext
+  if pcall(vim.api.nvim_get_hl_by_name, hlname, false) then
+    return hlname
+  else
+    vim.api.nvim_set_hl(0, hlname, {fg=color})
+    return hlname
+  end
 end
 
 return M

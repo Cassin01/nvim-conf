@@ -63,7 +63,7 @@ local core = function(choices_obj, groups_obj, which_obj, fuzzy_obj, output_obj,
                 return #till
             end
         end
-        return vim.fn.strlen(string.match(sub, "."))
+        return vim.fn.strwidth(string.match(sub, "."))
     end
 
     -- local ids = {}
