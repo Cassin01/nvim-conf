@@ -2,12 +2,25 @@ local util = require("wf.util")
 local extend = util.extend
 local ingect_deeply = util.ingect_deeply
 local rt = util.rt
+local feedkeys = util.feedkeys
+local secret_key = util.secret_key
 local get_mode = util.get_mode
 local select = require("wf").select
 local full_name = require("wf.static").full_name
 
-local function _get_gmap()
-    local keys = vim.api.nvim_get_keymap("n")
+local modes = {
+    n = "normal",
+    v = "visual",
+    x = "visual and select",
+    s = "select",
+    o = "operator pending",
+    l = "langmap",
+    c = "command",
+    t = "terminal",
+}
+
+local function _get_gmap(mode)
+    local keys = vim.api.nvim_get_keymap(mode)
     local choices = {}
     for _, val in ipairs(keys) do
         if not string.match(val.lhs, "^<Plug>") then
@@ -18,8 +31,8 @@ local function _get_gmap()
     return choices
 end
 
-local function _get_bmap(buf)
-    local keys = vim.api.nvim_buf_get_keymap(buf, "n")
+local function _get_bmap(buf, mode)
+    local keys = vim.api.nvim_buf_get_keymap(buf, mode)
     local choices = {}
     for _, val in ipairs(keys) do
         if not string.match(val.lhs, "^<Plug>") then
@@ -35,10 +48,14 @@ local function which_key(opts)
     local core = function()
         local buf = vim.api.nvim_get_current_buf()
         local win = vim.api.nvim_get_current_win()
-        local g = _get_gmap()
-        local b = _get_bmap(buf)
-        local choices = extend(g, b)
         local mode = get_mode()
+        local mode_shortname = mode:sub(1,1)
+        if modes[mode_shortname] == nil then
+            print("Not support mode: " .. mode_shortname)
+        end
+        local g = _get_gmap("n")
+        local b = _get_bmap(buf, "n")
+        local choices = extend(g, b)
         local count = vim.api.nvim_get_vvar("count")
 
         opts = opts or { text_insert_in_advance = "" }
@@ -52,29 +69,14 @@ local function which_key(opts)
         local opts_ = ingect_deeply(_opts, opts)
 
         select(choices, opts_, function(_, lhs)
-            if win == vim.api.nvim_get_current_win() and buf == vim.api.nvim_get_current_buf() then
-                local current_mode = vim.fn.mode()
-                if count and count ~= 0 then
-                    lhs = count .. lhs
+            local rhs = vim.fn.maparg(rt(lhs), mode_shortname, false, true)
+            if type(rhs["callback"]) == "function" then
+                rhs["callback"]()
+                if rhs.silent == 0 then
+                    vim.api.nvim_echo({{rhs.lhsraw, "Normal"}}, false, {})
                 end
-                if current_mode == "i" then
-                    -- feed CTRL-O again i called from CTRL-O
-                    if mode == "nii" or mode == "nir" or mode == "niv" or mode == "vs" then
-                        vim.api.nvim_feedkeys(rt("<C-O>"), "n", false)
-                    else
-                        vim.api.nvim_feedkeys(rt("<Esc>"), "n", false)
-                    end
-
-                    -- feed the keys with remap
-                    vim.api.nvim_feedkeys(rt(lhs), "m", false)
-                elseif current_mode == "n" then
-                    if mode == "n" then
-                        vim.api.nvim_feedkeys(rt(lhs), "m", false)
-                    end
-                else
-                    print("current mode: ", current_mode, "\n", "mode: ", mode)
-                    print("which-key: mode is not n or i")
-                end
+            else
+                feedkeys(lhs, count,{ win = win, buf = buf, mode = mode }, false)
             end
         end)
     end

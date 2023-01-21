@@ -1,5 +1,7 @@
 local M = {}
 
+M.secret_key = "Ƿ"
+
 function M.array_reverse(x)
   local n, m = #x, #x / 2
   for i = 1, m do
@@ -189,6 +191,37 @@ function M.path_from_head(name, depth)
     cs = c..cs
   end
   return cs
+end
+
+-- @param current: buf, win, mode
+function M.feedkeys(keys, count, current, noremap)
+  local mode = current.mode
+  if current.win == vim.api.nvim_get_current_win() and current.buf == vim.api.nvim_get_current_buf() then
+    local current_mode = vim.fn.mode()
+    if count and count ~= 0 then
+      keys = count .. keys
+    end
+    if current_mode == "i" then
+      -- feed CTRL-O again i called from CTRL-O
+      if mode == "nii" or mode == "nir" or mode == "niv" or mode == "vs" then
+        vim.api.nvim_feedkeys(M.rt("<C-O>"), "n", false)
+      else
+        vim.api.nvim_feedkeys(M.rt("<Esc>"), "n", false)
+      end
+
+      -- feed the keys with remap
+      vim.api.nvim_feedkeys(M.rt(keys), noremap and "n" or "m", false)
+    elseif current_mode == "n" then
+      if mode == "n" then
+        print(vim.inspect(vim.fn.maparg(M.rt(keys), "n")))
+        vim.api.nvim_feedkeys(M.rt(keys), noremap and "n" or "m", false)
+      end
+    else
+      print("current mode: ", current_mode, "\n", "mode: ", mode)
+      print("which-key: mode is not n or i")
+    end
+  end
+
 end
 
 return M

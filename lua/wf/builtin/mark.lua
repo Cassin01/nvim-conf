@@ -1,6 +1,8 @@
 local select = require("wf").select
 local util = require("wf.util")
 local path_from_head = util.path_from_head
+local feedkeys = util.feedkeys
+local get_mode = util.get_mode
 local format_length = util.format_length
 local cell = require("wf.cell")
 
@@ -20,6 +22,8 @@ local labels = {
 local function mark(opts)
   local function _mark()
     local buf = vim.api.nvim_get_current_buf()
+    local win = vim.api.nvim_get_current_win()
+    local mode = get_mode()
     local mlist = {}
     for _, m in ipairs(vim.fn.getmarklist(buf)) do
       table.insert(mlist, m)
@@ -29,7 +33,7 @@ local function mark(opts)
     end
     local minfo = {}
     local choice = {}
-    setmetatable(choice, {__type="cells"})
+    setmetatable(choice, { __type = "cells" })
     for _, m in pairs(mlist) do
       local line = (function()
         local lines = vim.fn.getbufline(m.pos[1], m.pos[2])
@@ -39,14 +43,15 @@ local function mark(opts)
           return ""
         end
       end)()
-      local index = string.sub(m.mark, 2, 2)
+      -- local index = string.sub(m.mark, 2, 2)
+      local index = m.mark
       m["line"] = format_length(line, 40)
       minfo[index] = m
       table.insert(choice, cell.new(index, index, m.file, "key"))
     end
 
     local _opts = {
-      prefix_size = 1,
+      prefix_size = 2,
       title = "Mark",
       behavior = {
         skip_front_duplication = true,
@@ -66,8 +71,8 @@ local function mark(opts)
           local fpath = path_from_head(m.file)
           table.insert(ret, { " " .. fpath, "WFWhichDesc" })
         end
-        if labels[key] ~= nil then
-          table.insert(ret, { " " .. labels[key], "Comment" })
+        if labels[key:sub(2, 2)] ~= nil then
+          table.insert(ret, { " " .. labels[key:sub(2, 2)], "Comment" })
         end
         return ret
       end,
@@ -76,7 +81,6 @@ local function mark(opts)
     for k, v in pairs(opts) do
       _opts[k] = v
     end
-    local win = vim.api.nvim_get_current_win()
     if table.maxn(mlist) == 0 then
       vim.api.nvim_echo({
         { "No buffers to switch to.", "ErrorMsg" },
@@ -85,17 +89,7 @@ local function mark(opts)
       return
     end
     select(choice, _opts, function(_, lhs)
-      local m = minfo[lhs]
-      local pos = m.pos
-      if m["file"] ~= nil then
-        vim.cmd("e " .. m.file)
-        vim.api.nvim_win_set_cursor(win, { pos[2], pos[3] })
-      else
-        vim.api.nvim_echo({
-            { "No file to switch to.", "ErrorMsg" },
-            { " @wf.builtin.buffer", "Comment" },
-          }, false, {})
-      end
+      feedkeys(lhs, 0, { win = win, buf = buf, mode = mode }, true)
     end)
   end
 
