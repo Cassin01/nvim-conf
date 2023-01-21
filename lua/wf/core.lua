@@ -52,7 +52,7 @@ local core = function(choices_obj, groups_obj, which_obj, fuzzy_obj, output_obj,
     -- return early  without drawing if determined
     -- when narrowed down to one, return it
     if which_line ~= "" and #endup_obj == 1 and (opts.behavior.skip_back_duplication or endup_obj[1].key == which_line) then
-        return endup_obj[1].id
+            return endup_obj[1].id, endup_obj[1].text
     end
 
     -- take out info's

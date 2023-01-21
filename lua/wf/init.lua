@@ -140,7 +140,7 @@ local function objs_setup(fuzzy_obj, which_obj, output_obj, caller_obj, choices_
         for _, match in ipairs(fuzzy_matched_obj) do
             if match.key == which_line then
                 del()
-                callback(match.id)
+                callback(match.id, match.text)
             end
         end
     end
@@ -311,10 +311,10 @@ local function which_setup(which_obj, fuzzy_obj, output_obj, choices_obj, groups
         vim.api.nvim_win_set_option(which_obj.win, "winhl", "Normal:WFComment,FloatBorder:WFFloatBorder")
     end, { buffer = which_obj.buf })
     au(_g, { "TextChangedI", "TextChanged" }, function()
-        local id = core(choices_obj, groups_obj, which_obj, fuzzy_obj, output_obj, opts)
+        local id, text = core(choices_obj, groups_obj, which_obj, fuzzy_obj, output_obj, opts)
         if id ~= nil then
             obj_handlers.del()
-            callback(id)
+            callback(id, text)
         end
     end, { buffer = which_obj.buf })
     au(_g, "WinEnter", winenter , { buffer = which_obj.buf })
@@ -485,21 +485,30 @@ local function select(items, opts, on_choice)
     })
     opts = opts or {}
 
-    local choices = {}
-    for i, val in pairs(items) do
-        table.insert(choices, cell.new(i, tostring(i), val, "key"))
-    end
+    local cells = false
+    local choices = (function()
+        local metatable = getmetatable(items)
+        if metatable ~= nil and metatable["__type"] == "cells" then
+            cells = true
+            return items
+        else
+            local choices = {}
+            for i, val in pairs(items) do
+                table.insert(choices, cell.new(i, tostring(i), val, "key"))
+            end
+            return choices
+        end
+    end)()
 
     local on_choice_wraped = vim.schedule_wrap(on_choice)
-    local callback = vim.schedule_wrap(function(choice)
-        if type(choice) == "string" and vim.fn.has_key(items, choice) then
+    local callback = vim.schedule_wrap(function(choice, text)
+        if cells then
+            on_choice_wraped(text, choice)
+        elseif type(choice) == "string" and vim.fn.has_key(items, choice) then
             on_choice_wraped(items[choice], choice)
         elseif type(choice) == "number" and items[choice] ~= nil then
             on_choice_wraped(items[choice], choice)
-        -- elseif choice >= 1 and choice <= #items then
-        --     on_choice_wraped(items[choice], choice)
         else
-
             print("invalid choice")
         end
     end)

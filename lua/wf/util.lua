@@ -84,6 +84,11 @@ function M.fill_spaces(str, len)
   return res
 end
 
+function M.format_length(str, len)
+  local ret = string.sub(str, 1, len)
+  return M.fill_spaces(ret, len)
+end
+
 function M.match_from_front(str, patt)
   if string.len(str) < string.len(patt) then
     return false
@@ -166,6 +171,24 @@ function M.gen_highlight(name, color)
     vim.api.nvim_set_hl(0, hlname, {fg=color})
     return hlname
   end
+end
+
+-- builtin plugin
+function M.path_from_head(name, depth)
+  depth = depth or 2
+  local d = 0
+  local cs = ""
+  for i = #name, 1, -1 do
+    local c = name:sub(i, i)
+    if c == "/" then
+      d = d + 1
+    end
+    if d >= depth then
+      break
+    end
+    cs = c..cs
+  end
+  return cs
 end
 
 return M

@@ -3,6 +3,7 @@ local new = function(id, key, text, type_)
     key = key,
     id = id,
     text = text,
+    -- key or group
     ["type"] = type_
   }
 end
