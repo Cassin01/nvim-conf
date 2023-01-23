@@ -9,7 +9,7 @@ local ok, devicon = pcall(require_deviocon)
 
 
 local function get_active_buffers()
-  local blist = vim.fn.getbufinfo({ bufloadled = 1, buflisted = 1 })
+  local blist = vim.fn.getbufinfo({ bufloadled = 1, buflisted = 0 })
   local res = {}
   local bs = {}
   for _, b in ipairs(blist) do
@@ -45,14 +45,14 @@ local function buffer(opts)
           return { { "  ", "Identifier" }, { desc, "WFWhichDesc" } }
         end
         local hldesc = bufinfo.changed == 1 and "String" or "WFWhichDesc"
-        local bh = vim.api.nvim_get_current_buf()
         if id == current_buf then
           return {{ "  ", "Identifier" }, { desc, hldesc }}
         end
         if ok then
           local icon, color = devicon.get_icon_color(desc)
           if icon ~= nil then
-            return { { icon .. "  ", gen_highlight(desc, color) }, { desc, hldesc } }
+            local sp = vim.fn.strwidth(icon) > 1 and  (icon.."") or (icon .. " ")
+            return { { sp .. "  ", gen_highlight(desc, color) }, { desc, hldesc } }
           else
             return { { "  ", "Identifier" }, { desc, hldesc } }
           end

@@ -6,7 +6,8 @@ local function open_win(buf, height, row_offset, opts, cursor)
     style = "minimal",
     border = opts.style.border,
     title = "ff",
-    title_pos = "center"
+    title_pos = "center",
+    noautocmd = true,
   }
   local conf = vim.fn.extend(conf_, {
     height = height,

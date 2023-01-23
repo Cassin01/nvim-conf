@@ -460,19 +460,14 @@ local function setup_objs(choices_obj, callback, opts_)
     -- -- 入力用バッファを作成
     local which_obj = which.input_obj_gen(opts, opts.selector == "which")
     local fuzzy_obj = fuzzy.input_obj_gen(opts, opts.selector == "fuzzy")
-    vim.api.nvim_buf_set_lines(which_obj.buf, 0, -1, true, { opts.text_insert_in_advance })
-    vim.schedule(function()
-        vim.cmd("startinsert!")
-    end)
-        -- local keys
-        -- if "mode" == "normal" then
-        --     -- n: A<ESC> makes sure cursor is at always at end of prompt w/o default_text
-        --     keys = caller_obj.original_mode ~= "n" and "<ESC>A<ESC>" or "A<ESC>"
-        -- else
-        --     -- always fully retrigger insert mode: required for going from one picker to next
-        --     keys = caller_obj.original_mode ~= "n" and "<ESC>A" or "A"
-        -- end
-        -- vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(keys, true, false, true), "n", true)
+        vim.api.nvim_buf_set_lines(which_obj.buf, -2, -1, true, { opts.text_insert_in_advance })
+        local autocommands = vim.api.nvim_get_autocmds({
+            event = "InsertEnter",
+            })
+        print(vim.inspect(autocommands))
+        vim.schedule(function()
+            vim.cmd("startinsert!")
+        end)
 
     -- async(_callback)(caller_obj, fuzzy_obj, which_obj, output_obj, choices_obj, groups_obj, callback, opts)
     _callback(caller_obj, fuzzy_obj, which_obj, output_obj, choices_obj, groups_obj, callback, opts)
