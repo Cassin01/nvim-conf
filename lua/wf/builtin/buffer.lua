@@ -34,7 +34,7 @@ local function buffer(opts)
         skip_back_duplication = true,
       },
       style = {
-          width = vim.o.columns,
+        width = vim.o.columns,
       },
       prefix_size = 3,
       output_obj_which_mode_desc_format = function(match_obj)
@@ -46,13 +46,13 @@ local function buffer(opts)
         end
         local hldesc = bufinfo.changed == 1 and "String" or "WFWhichDesc"
         if id == current_buf then
-          return {{ "  ", "Identifier" }, { desc, hldesc }}
+          return { { "  ", "Identifier" }, { desc, hldesc } }
         end
         if ok then
           local icon, color = devicon.get_icon_color(desc)
           if icon ~= nil then
-            local sp = vim.fn.strwidth(icon) > 1 and  (icon.."") or (icon .. " ")
-            return { { sp .. "  ", gen_highlight(desc, color) }, { desc, hldesc } }
+            local sp = vim.fn.strwidth(icon) > 1 and (icon .. "") or (icon .. " ")
+            return { { sp .. " ", gen_highlight(desc, color) }, { desc, hldesc } }
           else
             return { { "  ", "Identifier" }, { desc, hldesc } }
           end
