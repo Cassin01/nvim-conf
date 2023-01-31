@@ -212,6 +212,8 @@ table.insert(maps, Map.new({ striker = "c", { prefix = ";", ret = "+" } }))
 table.insert(maps, Map.new({ striker = "v", { prefix = ";", ret = "=" } }))
 table.insert(maps, Map.new({ striker = "b", { prefix = ";", ret = "|" } }))
 table.insert(maps, Map.new({ striker = "n", { prefix = ";", ret = "\\" } }))
+table.insert(maps, Map.new({ striker = "m", { prefix = ";", ret = "~" } }))
+table.insert(maps, Map.new({ striker = ",", { prefix = ";", ret = "`" } }))
 
 local function match_back(str, patt)
     if string.len(patt) == 0 then
