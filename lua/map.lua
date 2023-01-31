@@ -1,7 +1,7 @@
 vim.keymap.set("n", "<Space><Space>", "<cmd>update<cr>", { silent = true, noremap = true })
 
 -- ╭──────────────────────────────────────────────────────────────────────────────╮
--- │                                    Braket                                    │
+-- │                                    Bracket                                    │
 -- ╰──────────────────────────────────────────────────────────────────────────────╯
 local bracket = {
     new = function(p_, n_)
@@ -66,7 +66,7 @@ local function wrap_(line, col, next_)
             end
         end
     end
-    return "<C-'>"
+    return "<C-;>"
 end
 
 local function wrap()
@@ -79,14 +79,14 @@ local function wrap()
             return wrap_(line, col, next_)
         end
     end
-    return "<C-'>"
+    return "<C-;>"
 end
 
 vim.keymap.set("i", "<Space>", space, { silent = true, noremap = true, expr = true })
 vim.keymap.set("i", "<BS>", backspace, { silent = true, noremap = true, expr = true })
 vim.keymap.set("i", "<C-h>", backspace, { silent = true, noremap = true, expr = true })
 vim.keymap.set("i", "<CR>", enter, { silent = true, noremap = true, expr = true })
-vim.keymap.set("i", "<C-'>", wrap, { silent = true, noremap = true, expr = true })
+vim.keymap.set("i", "<C-;>", wrap, { silent = true, noremap = true, expr = true })
 
 -- ╭──────────────────────────────────────────────────────────────────────────────╮
 -- │                                  Hyper Map                                   │
@@ -121,7 +121,7 @@ table.insert(maps, Map.new({ striker = "p", { prefix = ";", ret = "0" } }))
 table.insert(maps, Map.new({ striker = "a", { prefix = ";", ret = "!" } }))
 table.insert(maps, Map.new({ striker = "s", { prefix = ";", ret = "@" } }))
 table.insert(maps, Map.new({ striker = "d", { prefix = ";", ret = "#" } }))
-table.insert(maps, Map.new({ striker = "f", { prefix = ";", ret = "$" } }))
+table.insert(maps, Map.new({ striker = "f", { prefix = ";", ret = "$$<left>" } }))
 table.insert(maps, Map.new({ striker = "g", { prefix = ";", ret = "%" } }))
 table.insert(maps, Map.new({ striker = "h", { prefix = ";", ret = "^" } }))
 table.insert(maps, Map.new({ striker = "j", { prefix = ";", ret = "&" }, { prefix = "j", ret = "<ESC>" } }))
@@ -131,8 +131,9 @@ table.insert(maps, Map.new({ striker = "l", { prefix = ";", ret = "()<left>" }, 
 table.insert(
     maps,
     Map.new({
-        striker = "a",
-        { prefix = ";", ret = "()<left>" },
+        striker = "(",
+        { prefix = "", ret = "()<left>" },
+        { prefix = ";", ret = "(" },
         {
             prefix = ";;",
             ret = function()
@@ -144,8 +145,9 @@ table.insert(
 table.insert(
     maps,
     Map.new({
-        striker = "s",
-        { prefix = ";", ret = "{}<left>" },
+        striker = "{",
+        { prefix = "", ret = "{}<left>" },
+        { prefix = ";", ret = "{" },
         {
             prefix = ";;",
             ret = function()
@@ -157,8 +159,9 @@ table.insert(
 table.insert(
     maps,
     Map.new({
-        striker = "d",
-        { prefix = ";", ret = "[]<left>" },
+        striker = "[",
+        { prefix = "", ret = "[]<left>" },
+        { prefix = ";", ret = "[" },
         {
             prefix = ";;",
             ret = function()
@@ -167,15 +170,60 @@ table.insert(
         },
     })
 )
+table.insert(
+    maps,
+    Map.new({
+        striker = "'",
+        { prefix = "", ret = "''<left>" },
+        { prefix = ";", ret = "'" },
+        {
+            prefix = ";;",
+            ret = "''''''<Left><Left><Left><CR><ESC>O",
+        },
+    })
+)
+table.insert(
+    maps,
+    Map.new({
+        striker = "`",
+        { prefix = "", ret = "``<left>" },
+        { prefix = ";", ret = "`" },
+        {
+            prefix = ";;",
+            ret = "``````<Left><Left><Left><CR><ESC>O",
+        },
+    })
+)
+table.insert(
+    maps,
+    Map.new({
+        striker = '"',
+        { prefix = "", ret = '""<left>' },
+        { prefix = ";", ret = '"' },
+        {
+            prefix = ";;",
+            ret = '""""""<Left><Left><Left><CR><ESC>O',
+        },
+    })
+)
+table.insert(maps, Map.new({ striker = "z", { prefix = ";", ret = "-" } }))
+table.insert(maps, Map.new({ striker = "x", { prefix = ";", ret = "_" } }))
+table.insert(maps, Map.new({ striker = "c", { prefix = ";", ret = "+" } }))
+table.insert(maps, Map.new({ striker = "v", { prefix = ";", ret = "=" } }))
+table.insert(maps, Map.new({ striker = "b", { prefix = ";", ret = "|" } }))
+table.insert(maps, Map.new({ striker = "n", { prefix = ";", ret = "\\" } }))
 
 local function match_back(str, patt)
+    if string.len(patt) == 0 then
+        return true
+    end
     return string.sub(str, string.len(patt) * -1, -1) == patt
 end
 
 for _, m in ipairs(maps) do
     vim.keymap.set("i", m.striker, function()
         local prefix = vim.fn.getline("."):sub(1, vim.fn.col(".") - 1)
-        local max_len = 0
+        local max_len = -1
         local cont
         for _, a in ipairs(m) do
             if match_back(prefix, a.prefix) then
@@ -188,7 +236,7 @@ for _, m in ipairs(maps) do
                 end
             end
         end
-        if max_len ~= 0 then
+        if max_len ~= -1 then
             return cont()
         end
         return m.striker
