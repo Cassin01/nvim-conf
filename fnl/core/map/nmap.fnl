@@ -43,6 +43,13 @@
            (vim.cmd "%s/。/. /ge")
            (vim.cmd "%s/．/. /ge"))
            "replace `.`"]
+   [:ra (la
+          (vim.cmd "%s/。/. /ge")
+          (vim.cmd "%s/．/. /ge")
+          (vim.cmd "%s/、/, /ge")
+          (vim.cmd "%s/，/, /ge")
+          (vim.cmd :%s/\s\+$//ge))
+    "replace `.` and `,`"]
    [:a ":vim TODO ~/org/*.org<cr>" "agenda"]
    [:ts ":%s/\t/ /g<cr>" "replace tab with space"]
    [:tm (la
@@ -102,7 +109,7 @@
                          (when (not= (hi-name:match "^BufferLine.*$") nil)
                            (vim.cmd (.. "hi " hi-name " guibg=NONE"))))))
                    (bufferline)) :clear-color]
-   [(br :r :b) (la 
+   [(br :r :b) (la
                  (fn get-hl [name part]
                    "name: hlname
                    part: bg or fg"
