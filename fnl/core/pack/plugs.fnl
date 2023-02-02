@@ -7,9 +7,9 @@
 [
 ;;; snippet
 
-; {1 :SirVer/ultisnips
-; :event ["User plug-lazy-load"]
-;  }
+{1 :SirVer/ultisnips
+:event ["User plug-lazy-load"]
+ }
 {1 :honza/vim-snippets
  :event ["User plug-lazy-load"]}
 {1 :L3MON4D3/LuaSnip
@@ -54,11 +54,15 @@
            (tset vim.g :fern_renderer_devicons_disable_warning true)
            (lcnf "fern.vim")
            (nmaps
-             :<space>n
+             :<Space>n
              :fern
              [[:p (cmd "Fern . -drawer -toggle") "open fern on a current working drectory"]
               [:d (cmd "Fern %:h -drawer -toggle") "open fern on a parent directory of a current buffer"]])
            )}
+
+; {1 :stevearc/oil.nvim
+;  :config (lambda [] (ref-f :setup :oil))
+;  }
 ; {1 :kyazdani42/nvim-tree.lua ; INFO: startup time
 ;  :requires :kyazdani42/nvim-web-devicons
 ;  :disabe true
@@ -98,8 +102,7 @@
  :config (λ [] ((req-f :setup :scrollbar) {:excluded_buftypes [:terminal]
                                            :excluded_filetypes (ui-ignore-filetype)}))}
 
-;; status line
-; {1 :b0o/incline.nvim
+
 ;  :config (la (ref-f :setup :incline))}
 ; {1 :feline-nvim/feline.nvim
 ;  :setup (la (ref-f :setup :feline)
@@ -121,7 +124,11 @@
  }
 {1 :folke/noice.nvim
  ; :event ["User plug-lazy-load"]
- :config (lambda [] (ref-f :setup :noice))
+ :config (lambda []
+           nil
+           ; (ref-f :setup :noice
+           ;        {:lsp {:progress {:enabled false}}})
+           )
  :requires [:MunifTanjim/nui.nvim :rcarriga/nvim-notify]}
 
 {1 :anuvyklack/windows.nvim
@@ -147,22 +154,22 @@
                :show_current_context_start true
                :space_char_blankline " "}))}
 
-{1 :edluffy/specs.nvim
- ; :event ["User plug-lazy-load"]
- :config (la ((req-f :setup :specs) {:show_jumps true
-                                     :min_jump 10
-                                     :popup {:delay_ms 0
-                                             :inc_ms 10
-                                             :blend 10
-                                             :width 50
-                                             :winhl :Pmenu
-                                             :fader (let [specs (require :specs)]
-                                                      (. specs :linear_fader))
-                                             :resizer (let [specs (require :specs)]
-                                                        (. specs :shrink_resizer))}
-                                     :ignore_filetypes []
-                                     :ignore_buftypes {:nofile true}}))
- }
+; {1 :edluffy/specs.nvim
+;  ; :event ["User plug-lazy-load"]
+;  :config (la ((req-f :setup :specs) {:show_jumps true
+;                                      :min_jump 10
+;                                      :popup {:delay_ms 0
+;                                              :inc_ms 10
+;                                              :blend 10
+;                                              :width 50
+;                                              :winhl :Pmenu
+;                                              :fader (let [specs (require :specs)]
+;                                                       (. specs :linear_fader))
+;                                              :resizer (let [specs (require :specs)]
+;                                                         (. specs :shrink_resizer))}
+;                                      :ignore_filetypes []
+;                                      :ignore_buftypes {:nofile true}}))
+;  }
 
 ;; telescope {{{
 {1 :nvim-telescope/telescope.nvim
@@ -175,7 +182,7 @@
             {:pickers
              {:colorscheme
               {:enable_preview true}}})
-          (local prefix ((. (require :kaza.map) :prefix-o) :n :<space>t :telescope))
+          (local prefix ((. (require :kaza.map) :prefix-o) :n :<Space>t :telescope))
           (prefix.map :f "<cmd>Telescope find_files<cr>" "find files")
           (prefix.map :g "<cmd>Telescope live_grep<cr>" "live grep")
           (prefix.map :b "<cmd>Telescope buffers<cr>" "buffers")
@@ -198,6 +205,7 @@
 ;  :after :telescope.nvim
 ;  :config (la ((req-f :load_extension :telescope) :frecency))
 ;  :requires [:tami5/sqlite.lua :nvim-telescope/telescope.nvim]}
+:kkharji/sqlite.lua
 ;; }}}
 
 {1 :xiyaowong/nvim-transparent
@@ -218,10 +226,10 @@
                              :show_buffer_close_icons false
                              :color_icons false}})
            (nmaps
-              :<space>b
+              :<Space>b
               :bufferline
               [[:p (cmd :BufferLinePick) :pick]
-               [:c (cmd :BufferlinePickkClose) :close]
+               [:c (cmd :BufferlinePickClose) :close]
                [(br :r) (cmd :BufferLineCycleNext) "next"]
                [(br :l) (cmd :BufferLineCyclePrev) "prev"]
                [:e (cmd :BufferLineSortByExtension) "sort by extension"]
@@ -256,6 +264,7 @@
             )}
 
 {1 :sheerun/vim-polyglot}
+{1 :David-Kunz/markid}
 {1 :nvim-treesitter/nvim-treesitter
  :run ":TSUpdate"
  ; :event ["User plug-lazy-load"]
@@ -263,7 +272,14 @@
  :config (λ []
            ; ((. (require :orgmode) :setup_ts_grammar))
            ((. (require "nvim-treesitter.configs") :setup)
-            {:ensure_installed [ "nix" "org" "bash" ]  ; "lua" "rust" "c" "org"
+            {
+             ; :incremental_selection {:enable true
+             ;                         :keymaps {:init_selection "<CR>"
+             ;                                  :node_incremental "<CR>"
+             ;                                  :node_decremental "<BS>"
+             ;                                  :scope_incremental "<S-CR>"}
+             ;                         }
+             :ensure_installed [ "nix" "org" "bash" ]  ; "lua" "rust" "c" "org"
              :sync_install false
              :auto_install true
              :ignore_install [ "javascript" ]
@@ -273,6 +289,7 @@
              :rainbow {:enable true
                        :extended_mode true
                        :max_file_lines nil}
+             :markid { :enable true }
             :disable (λ [lang buf]
                 (local max_filesize (* 100 1024))
                 (local (ok status) (pcall vim.loop.fs_stat (vim.api.nvim_buf_get_name buf)))
@@ -282,6 +299,16 @@
              :additional_vim_regex_highlighting false}))}
 :nvim-treesitter/nvim-treesitter-context
 :nvim-treesitter/playground
+
+{1 :yuki-yano/fzf-preview.vim
+ :branch :release/remote}
+
+{1 :SmiteshP/nvim-navic
+ :config (lambda []
+           (ref-f :setup :nvim-navic {:highlight false
+                                      :separator " ➤ "}))
+ :requires :neovim/nvim-lspconfig }
+
 ; {1 :norcalli/nvim-colorizer.lua
 ;  :config (λ []
 ;            ((. (require :colorizer) :setup)))}
@@ -316,7 +343,7 @@
           (tset g :ctrlp_extensions [:tag :quickfix :dir :line :mixed])
           (tset g :ctrlp_match_window "bottom,order:btt,min:1,max:18")
           (nmaps
-            :<space>p
+            :<Space>p
             :ctrlp
             [[:a ::<c-u>CtrlP<Space> :default]
              [:b :<cmd>CtrlPBuffer<cr> :buffer]
@@ -341,10 +368,10 @@
 {1 :kana/vim-submode
  :event ["User plug-lazy-load"]
  :config (λ []
-           ((. vim.fn :submode#enter_with) :bufmove :n "" :<space>s> :<C-w>>)
-           ((. vim.fn :submode#enter_with) :bufmove :n "" :<space>s< :<C-w><)
-           ((. vim.fn :submode#enter_with) :bufmove :n "" :<space>s+ :<C-w>+)
-           ((. vim.fn :submode#enter_with) :bufmove :n "" :<space>s- :<C-w>-)
+           ((. vim.fn :submode#enter_with) :bufmove :n "" :<Space>s> :<C-w>>)
+           ((. vim.fn :submode#enter_with) :bufmove :n "" :<Space>s< :<C-w><)
+           ((. vim.fn :submode#enter_with) :bufmove :n "" :<Space>s+ :<C-w>+)
+           ((. vim.fn :submode#enter_with) :bufmove :n "" :<Space>s- :<C-w>-)
            ((. vim.fn :submode#map) :bufmove :n "" :> :<C-w>>)
            ((. vim.fn :submode#map) :bufmove :n "" :< :<C-w><)
            ((. vim.fn :submode#map) :bufmove :n "" :+ :<C-w>+)
@@ -402,7 +429,7 @@
 {1 :weilbith/nvim-code-action-menu
  :cmd :CodeActionMenu
  :setup (λ []
-          (let [prefix ((. (require :kaza.map) :prefix-o) :n :<space>f :code-action-menu)]
+          (let [prefix ((. (require :kaza.map) :prefix-o) :n :<Space>f :code-action-menu)]
             (prefix.map "" "<cmd>CodeActionMenu<cr>" :action)))}
 
 ;; error list
@@ -421,6 +448,7 @@
             {1 :hrsh7th/cmp-cmdline :after :nvim-cmp}
             {1 :hrsh7th/cmp-calc :after :nvim-cmp}
             {1 :hrsh7th/cmp-nvim-lsp-document-symbol :after :nvim-cmp}
+            {1 :kdheepak/cmp-latex-symbols}
             {1 :saadparwaiz1/cmp_luasnip :after [:nvim-cmp :LuaSnip]}
             ; :nvim-orgmode/orgmode
             {1 :uga-rosa/cmp-dictionary
@@ -478,10 +506,10 @@
                                                   :emoji "🚨"
                                                   :documentation "Adding missing tests or correcting existing tests"}}}))
             }
-            ; {1 :quangnguyen30192/cmp-nvim-ultisnips
-            ;  :after :nvim-cmp
-            ;  ; :config (λ [] (ref-f :setup :cmp-nvim-ultisnips {}))
-            ;  }
+            {1 :quangnguyen30192/cmp-nvim-ultisnips
+             :after :nvim-cmp
+             ; :config (λ [] (ref-f :setup :cmp-nvim-ultisnips {}))
+             }
             {1 :zbirenbaum/copilot-cmp :after :nvim-cmp}
             ; :neovim/nvim-lspconfig
             ]
@@ -504,7 +532,9 @@
                           {:name :ultisnips :group_index 2}
                           ; {:name :orgmode}
                           {:name :lsp_document_symbol}
-                          {:name :skkeleton :group_index 5}
+                          {:name :latex_symbols
+                           :option {:strategy 0}}
+                          ; {:name :skkeleton :group_index 5}
                           {:name :buffer
                            :option {:get_bufnrs (λ []
                                                   (vim.api.nvim_list_bufs))}}
@@ -543,10 +573,10 @@
                                        ((lspkind.cmp_format {:with_text true :maxwidth 50}) entry vim_item)))}
               :mapping (cmp.mapping.preset.insert
                          {
-                          :<C-i> (cmp.mapping
-                                   (λ [fallback]
-                                     (req-f :expand_or_jump_forwards  :cmp_nvim_ultisnips.mappings fallback))
-                                   [:i :s])
+                          ; :<C-i> (cmp.mapping
+                          ;          (λ [fallback]
+                          ;            (req-f :expand_or_jump_forwards  :cmp_nvim_ultisnips.mappings fallback))
+                          ;          [:i :s])
                           :<C-S-i> (cmp.mapping
                                    (λ [fallback]
                                      (req-f :expand_or_jump_forwards  :cmp_nvim_ultisnips.mappings fallback))
@@ -573,6 +603,7 @@
                                   :sources [{:name :buffer}]})
            (cmp.setup.cmdline :: {:mapping (cmp.mapping.preset.cmdline)
                                   :sources (cmp.config.sources [{:name :path}] [{:name :cmdline}])}))}
+:jubnzv/virtual-types.nvim
 
 ;; highlighting other uses of the current word under the cursor
 ; {1 :RRethy/vim-illuminate}
@@ -589,8 +620,7 @@
              :event ["User plug-lazy-load"]}]
  :after :cmp-nvim-lsp
  :config (lambda []
-           (lcnf :lsp_conf.lua)
-           )
+           (lcnf :lsp_conf.lua))
  ; :config
  ; (lambda []
  ;   (require :core.pack.lsp))
@@ -602,9 +632,9 @@
                 {:code_action_prompt {:virtual_text false}}))}
 
 ;; show type of argument
-{1 :ray-x/lsp_signature.nvim
- :event ["User plug-lazy-load"]
- :config (λ [] ((. (require :lsp_signature) :setup) {}))}
+; {1 :ray-x/lsp_signature.nvim
+;  :event ["User plug-lazy-load"]
+;  :config (λ [] ((. (require :lsp_signature) :setup) {}))}
 
 ;; tagbar alternative
 ; :simrat39/symbols-outline.nvim
@@ -643,7 +673,7 @@
                         :initially_closed true}}))
  :setup (la
            (nmaps
-             :<space>i
+             :<Space>i
              :sidebar
              [[:t (cmd :SidebarNvimToggle) :toggle]
               [:f (cmd :SidebarNvimFocus) :focus]]))
@@ -662,17 +692,19 @@
 ;           (map :n :<space>or (cmd :QuickRun) "[others] quickrun")) }
 
 
-; ;;; copilot
+;;; copilot
 {1 :zbirenbaum/copilot.lua
  :event ["User plug-lazy-load"]
- :requires [{1 :github/copilot.vim :event ["User plug-lazy-load"]}]
+ ; :requires [{1 :github/copilot.vim :event ["User plug-lazy-load"]
+ ;             :config (λ [] (tset vim.g :copilot_no_tab_map true))
+ ;             }]
  :config (lambda [] (vim.defer_fn
                (lambda [] ((. (require :copilot) :setup)))
                100))}
 
-{1 :github/copilot.vim
- :event ["User plug-lazy-load"]
- :config (λ [] (tset vim.g :copilot_no_tab_map true))} ;; requires command `:Copilot restart`
+; {1 :github/copilot.vim
+;  :event ["User plug-lazy-load"]
+;  :config (λ [] (tset vim.g :copilot_no_tab_map true))} ;; requires command `:Copilot restart`
 
 {1 :zbirenbaum/copilot-cmp
  ; :after [{1 :zbirenbaum/copilot.lua :event ["User plug-lazy-load"]}]
@@ -692,12 +724,24 @@
  :event ["User plug-lazy-load"]
  :cmd [:Git :Gdiff]
  :config (λ []
-          (let [ prefix ((. (require :kaza.map) :prefix-o) :n "<space>g" :git)]
+          (let [ prefix ((. (require :kaza.map) :prefix-o) :n "<Space>g" :git)]
             (prefix.map "g" "<cmd>Git<cr>" "add")
             (prefix.map "c" "<cmd>Git commit<cr>" "commit")
-            (prefix.map "p" "<cmd>Git push<cr>" "push")))}
+            (prefix.map "p" "<cmd>Git push<cr>" "push")
+            (prefix.map "a" (lambda []
+                              (local path (vim.fn.expand :%:p))
+                              (vim.cmd (.. "Git add " path))
+                              ) "add current")
+            ))}
 {1 :tpope/vim-rhubarb :event ["User plug-lazy-load"]} ; enable :Gbrowse
 {1 :tpope/vim-commentary :event ["User plug-lazy-load"]}
+{1 :LudoPinelli/comment-box.nvim
+ :config (lambda []
+ (local cb (require :comment-box))
+ (nmaps :<Space>o :comment-box
+        [[:c cb.accbox "accbox"]
+         [:b cb.lbox "lbox"]
+         [:l cb.cline "cline"] ])) }
 {1 :tpope/vim-unimpaired :event ["User plug-lazy-load"]}
 {1 :tpope/vim-surround :event ["User plug-lazy-load"]}
 {1 :tpope/vim-abolish :event ["User plug-lazy-load"]}
@@ -713,6 +757,7 @@
           (tset vim.g :sexp_filetypes "clojure,scheme,lisp,timl,fennel")
           (tset vim.g :sexp_enable_insert_mode_mappings false))}
 
+
 ;;; util
 {1 :kana/vim-textobj-user
  :event ["User plug-lazy-load"]
@@ -724,13 +769,15 @@
 ;  :setup (λ []
 ;           (tset vim.g :hwitch#prefixes _G.__kaza.prefix))}
 
+:tyru/capture.vim
+
 {1 :majutsushi/tagbar
  :event ["User plug-lazy-load"]
  :config (λ []
           (tset vim.g :tagbar_type_fennel {:ctagstype :fennel
                                            :sort 0
                                            :kinds ["f:functions" "v:variables" "m:macros" "c:comments"]})
-          ((. ((. (require :kaza.map) :prefix-o) :n :<space>a :tagbar) :map)
+          ((. ((. (require :kaza.map) :prefix-o) :n :<Space>a :tagbar) :map)
            :t :<cmd>TagbarToggle<cr> :toggle))}
 {1 :tyru/open-browser.vim
  :event ["User plug-lazy-load"]
@@ -741,14 +788,14 @@
 {1 :mbbill/undotree
  :event ["User plug-lazy-load"]
  :setup (λ []
-          ((. ((. (require :kaza.map) :prefix-o) :n :<space>u :undo-tree) :map)
+          ((. ((. (require :kaza.map) :prefix-o) :n :<Space>u :undo-tree) :map)
            :t :<cmd>UndotreeToggle<cr> :toggle))}
 {1 :junegunn/vim-easy-align
  :event ["User plug-lazy-load"]
  :setup (λ []
-          (let [prefix ((. (require :kaza.map) :prefix-o) :n :<space>ea :easy-align)]
+          (let [prefix ((. (require :kaza.map) :prefix-o) :n :<Space>ea :easy-align)]
             (prefix.map "" "<Plug>(EasyAlign)" :align))
-          (map :x "<space>ea" "<Plug>(EasyAlign)" :align)) }
+          (map :x "<Space>ea" "<Plug>(EasyAlign)" :align)) }
 {1 :terryma/vim-multiple-cursors
  :event ["User plug-lazy-load"]}
 
@@ -763,14 +810,30 @@
 
 {1 :ggandor/leap.nvim
  :event ["User plug-lazy-load"]
- :config (λ [] (ref-f :set_default_keymaps :leap))}
+ ; :config (λ [] (ref-f :set_default_keymaps :leap))
+ }
+{1 :yuki-yano/fuzzy-motion.vim
+ :event ["User plug-lazy-load"]
+ :config (lambda []
+           (tset vim.g :fuzzy_motion_matchers ["fzf" "kensaku"])
+
+           (nmaps
+             :<Space>k
+             :kensaku
+             [["k" (la
+                     (local opts {:prompt "kensaku> "})
+                     (vim.ui.input opts (lambda [input]
+                                          (vim.cmd (.. "Kensaku "  input " | set hlsearch"))))) "kensaku"]
+              ["f" (la (vim.cmd :FuzzyMotion)) "fuzzy-motion"]])
+           )
+ }
 
 ;; move dir to dir
 {1 :francoiscabrol/ranger.vim
  :event ["User plug-lazy-load"]
  :requires {1 :rbgrouleff/bclose.vim :event ["User plug-lazy-load"]}
  :config (λ []
-          (let [prefix ((. (require :kaza.map) :prefix-o) :n :<space>r :ranger)]
+          (let [prefix ((. (require :kaza.map) :prefix-o) :n :<Space>r :ranger)]
             (prefix.map :r :<cmd>Ranger<cr> "start at here")
             (prefix.map :t :<cmd>RangerNewTab<cr> "new tab")))}
 
@@ -779,15 +842,27 @@
  :event ["User plug-lazy-load"]
  :run "make"}
 
+{1 :jinh0/eyeliner.nvim
+ :config (lambda []
+           (ref-f :setup :eyeliner {:highlight_on_key true}))}
+
 ;; Jump to any visible line in the buffer by using letters instead of numbers.
 {1 :skamsie/vim-lineletters
  :event ["User plug-lazy-load"]
  :config (λ []
-          (let [prefix ((. (require :kaza.map) :prefix-o) :n :<space>l :lineletters)]
+          (let [prefix ((. (require :kaza.map) :prefix-o) :n :<Space>l :lineletters)]
             (prefix.map "" "<Plug>LineLetters" "jump to line"))) }
 
 {1 :Cassin01/emacs-key-source.nvim
  :event ["User plug-lazy-load"]}
+
+; {1 "cbochs/portal.nvim"
+;     :requires [
+;         "cbochs/grapple.nvim"  ; Optional: provides the "grapple" query item
+;         "ThePrimeagen/harpoon" ; Optional: provides the "harpoon" query item
+;     ]
+;     :config (lambda [] (ref-f :setup :portal))
+;  }
 
 ;; mark
 {1 :kshenoy/vim-signature
@@ -800,7 +875,8 @@
                    : kill-line2begging} (require :emacs-key-source))
           (map :i :<C-g> goto-line :goto-line)
           (map :i :<C-s> inc-search :inc-search)
-          (map :i :<C-S-u> kill-line2end :kill-line2end)
+          (map :i :<C-S-U> "<C-O>v$hc" :kill-line2end)
+          ; (map :i :<C-S-u> kill-line2end :kill-line2end)
           (map :n :<C-s> inc-search :inc-search))}
 
 :mhinz/neovim-remote
@@ -834,6 +910,9 @@
 ; :junegunn/limelight.vim
 ; :junegunn/goyo.vim
 ; :amix/vim-zenroom2
+{1 :folke/zen-mode.nvim
+ :config (la (ref-f :setup :zen-mode {})
+             (map :n :<Space>z (cmd :ZenMode) "[zenn-mode] toggle"))}
 
 ;; web browser
 {1 :thinca/vim-ref
@@ -849,9 +928,24 @@
 
 ;;; language
 
+;; sche
+{1 :Cassin01/sche.nvim
+ :requires [:rcarriga/nvim-notify]
+ :config (λ []
+           (local sche (require :sche))
+           (sche.setup {;:sche_path (vim.fn.expand "~/all_year/sche.nvim/my_calendar.sche")
+                        :notify_todays_schedule false
+                        :notify_tomorrows_schedule false
+                        :sche_path (vim.fn.expand "~/.config/nvim/data/10.sche")
+                        :syntax {:month "'^\\(\\d\\|\\d\\d\\)月'"}
+                        })
+     )}
+
 ;; deno
 {1 :vim-denops/denops.vim
  :event ["User plug-lazy-load"]}
+{1 :lambdalisue/kensaku.vim}
+; {1 :Cassin01/adoc_preview.nvim}
 ; {1 :Cassin01/fetch-info.nvim
 ;  :require :ms-jpq/lua-async-await
 ;  :setup (λ []
@@ -863,37 +957,37 @@
  :event ["User plug-lazy-load"]
  :config (λ [] (tset vim.g :weather_city :Tokyo))}
 
-{1 :vim-skk/skkeleton :requires  [ :vim-denops/denops.vim ]
- :event [:InsertEnter]
-:config (λ []
-          (let [g (vim.api.nvim_create_augroup :init-skkeleton {:clear true})]
-            (au! g :User
-                 (vim.fn.skkeleton#config
-                   {;:eggLikeNewline false
-                    :globalJisyoEncoding :euc-jp
-                    :immediatelyJisyoRW true
-                    :registerConvertResult false
-                    :keepState true
-                    :selectCandidateKeys :asdfjkl
-                    :setUndoPoint true
-                    :showCandidatesCount 4
-                    :usePopup true
-                    :globalJisyo "~/.config/nvim/data/skk/SKK-JISYO.L"
-                    :userJisyo "~/.skkeleton"})
-                 {:pattern :skkeleton-initialize-pre})
-            (au! g :User (let [cmp (require :cmp)]
-                           (cmp.setup.buffer {:view {:entries :native}}))
-                 {:pattern :skkeleton-enable-pre})
-            (au! g :User (let [cmp (require :cmp)]
-                           (cmp.setup.buffer {:view {:entries :custom}}))
-                 {:pattern :skkeleton-disable-pre})
-            (au! g :User :redrawstatus {:pattern :skkeleton-mode-changed}))
-          (map :i :<c-j> (plug "(skkeleton-toggle)") "[skkeleton] toggle")
-          (map :c :<c-j> (plug "(skkeleton-toggle)") "[skkeleton] toggle"))}
-{1 :Cassin01/cmp-skkeleton :after  [ "nvim-cmp" "skkeleton" ] }
-{1 :delphinus/skkeleton_indicator.nvim
- :event ["User plug-lazy-load"]
- :config (λ [] (ref-f :setup :skkeleton_indicator {}))}
+; {1 :vim-skk/skkeleton :requires  [ :vim-denops/denops.vim ]
+;  :event [:InsertEnter]
+; :config (λ []
+;           (let [g (vim.api.nvim_create_augroup :init-skkeleton {:clear true})]
+;             (au! g :User
+;                  (vim.fn.skkeleton#config
+;                    {;:eggLikeNewline false
+;                     :globalJisyoEncoding :euc-jp
+;                     :immediatelyJisyoRW true
+;                     :registerConvertResult false
+;                     :keepState true
+;                     :selectCandidateKeys :asdfjkl
+;                     :setUndoPoint true
+;                     :showCandidatesCount 4
+;                     :usePopup true
+;                     :globalJisyo "~/.config/nvim/data/skk/SKK-JISYO.L"
+;                     :userJisyo "~/.skkeleton"})
+;                  {:pattern :skkeleton-initialize-pre})
+;             (au! g :User (let [cmp (require :cmp)]
+;                            (cmp.setup.buffer {:view {:entries :native}}))
+;                  {:pattern :skkeleton-enable-pre})
+;             (au! g :User (let [cmp (require :cmp)]
+;                            (cmp.setup.buffer {:view {:entries :custom}}))
+;                  {:pattern :skkeleton-disable-pre})
+;             (au! g :User :redrawstatus {:pattern :skkeleton-mode-changed}))
+;           (map :i :<c-j> (plug "(skkeleton-toggle)") "[skkeleton] toggle")
+;           (map :c :<c-j> (plug "(skkeleton-toggle)") "[skkeleton] toggle"))}
+; {1 :Cassin01/cmp-skkeleton :after  [ "nvim-cmp" "skkeleton" ] }
+; {1 :delphinus/skkeleton_indicator.nvim
+;  :event ["User plug-lazy-load"]
+;  :config (λ [] (ref-f :setup :skkeleton_indicator {}))}
 
 {1 :uki00a/denops-pomodoro.vim}
 {1 :skanehira/denops-docker.vim}
@@ -906,7 +1000,7 @@
 {1 :sedm0784/vim-you-autocorrect
  :event ["User plug-lazy-load"]
  :setup (λ []
-          (let [prefix ((. (require :kaza.map) :prefix-o) :n :<space>a :auto-collect)]
+          (let [prefix ((. (require :kaza.map) :prefix-o) :n :<Space>a :auto-collect)]
             (prefix.map "e" "<cmd>EnableAutocorrect<cr>" "enable auto correct")))}
 
 ; ;; tailwind
@@ -918,7 +1012,7 @@
  :config (la
            (ref-f :setup :nvim-highlight-colors)
            (nmaps
-             :<space>h
+             :<Space>h
              :highlight-colors
              [["]" (la (ref-f :turnOn :nvim-highlight-colors)) "turn on highlight colors"]
               ["[" (la (ref-f :turnOff :nvim-highlight-colors)) "turn off highlight colors"]
@@ -929,6 +1023,10 @@
 ; {1 :nvim-orgmode/orgmode ; INFO startup
 ;  :config (λ []
 ;            ((. (require :orgmode) :setup) {:org_agenda_files ["~/org/*"]}))}
+
+;; nu
+{1 :LhKipp/nvim-nu
+ :config (la (ref-f :setup :nu {}))}
 
 ;; lua
 { 1 :bfredl/nvim-luadev
@@ -954,9 +1052,15 @@
  :event ["User plug-lazy-load"]}
 
 ;; tex
-{1 :Cassin01/texrun.vim
- ; :event ["User plug-lazy-load"]
- :setup (λ [] (tset vim.g :texrun#file_name [:l02.tex :sample.tex :resume.tex]))}
+{1 :https://github.com/lervag/vimtex
+ :config (λ []
+           (tset vim.g :vimtex_view_general_viewer "/Applications/Skim.app/Contents/SharedSupport/displayline")
+           (tset vim.g :vimtex_view_general_options "@line @pdf @tex")
+           )}
+
+; {1 :Cassin01/texrun.vim
+;  ; :event ["User plug-lazy-load"]
+;  :setup (λ [] (tset vim.g :texrun#file_name [:l02.tex :sample.tex :resume.tex]))}
 
 ;; vim
 {1 :LeafCage/vimhelpgenerator
@@ -989,24 +1093,35 @@
           (tset vim.g :mkdp_auto_close false)
           (tset vim.g :mkdp_preview_options {:katex {}
                                              :disable_sync_scroll false})
-          (local prefix ((. (require :kaza.map) :prefix-o) :n :<space>om :markdown-preview))
+          (local prefix ((. (require :kaza.map) :prefix-o) :n :<Space>om :markdown-preview))
           (prefix.map :p :<Plug>MarkdownPreview "preview"))
  :ft [:markdown]}
 {1 :ellisonleao/glow.nvim
  :cmd [:Glow :GlowInstall]
  :run ":GlowInstall"
  :setup (λ []
-          (local prefix ((. (require :kaza.map) :prefix-o) :n "<space>g" :glow))
+          (local prefix ((. (require :kaza.map) :prefix-o) :n "<Space>g" :glow))
           (prefix.map :mp "<cmd>Glow<cr>" "preview"))}
+
+;; asciidoc
+{1 :habamax/vim-asciidoctor
+ :config (la (tset vim.g :asciidoctor_fenced_languages [:python :c :javascript :haskell]))
+}
+
+; {1
+;     :marioortizmanero/adoc-pdf-live.nvim
+;     :config (la ((. (require :adoc_pdf_live) :setup)))
+; }
 
 ;; japanese
 {1 :deton/jasegment.vim
  :event ["User plug-lazy-load"]}
-; {1 :catppuccin/nvim
-;  :as :catppuccin
-;  :config (λ []
-;            ; (ref-f :setup :catppuccin {:flavour :macchiato})
-;            (vim.api.nvim_command "colorscheme catppuccin-macchiato"))}
+{1 :catppuccin/nvim
+ :as :catppuccin
+ ; :config (λ []
+ ;           ; (ref-f :setup :catppuccin {:flavour :macchiato})
+ ;           (vim.api.nvim_command "colorscheme catppuccin-macchiato"))
+ }
 
 ;; color
 ; {1 :ujihisa/unite-colorscheme
@@ -1019,6 +1134,10 @@
 {1 :sam4llis/nvim-tundra :event ["User plug-lazy-load"] :opt true}
 {1 :Mofiqul/dracula.nvim :event ["User plug-lazy-load"] :opt true}
 {1 :zanglg/nova.nvim :event ["User plug-lazy-load"] :opt true}
+{1 :projekt0n/github-nvim-theme :event ["User plug-lazy-load"] :opt true}
+{1 :maxmx03/FluoroMachine.nvim :event ["User plug-lazy-load"] :opt true
+ ; :config (lambda [] (ref-f :setup :fluoromachine {}))
+ }
 
 ; :altercation/vim-colors-solarized   ; solarized
 ; :croaker/mustang-vim                ; mustang

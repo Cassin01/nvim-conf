@@ -46,7 +46,9 @@
          (lambda []
            (vim.cmd "doautocmd User plug-lazy-load")
            (require :user)
-           (lplug :bracket.vim)
+           (require :ime)
+           (require :map)
+           ; (lplug :bracket.vim)
            (lplug :command.vim)
            (lplug :hyper_witch.vim)
            (lplug :terminal.vim)))
