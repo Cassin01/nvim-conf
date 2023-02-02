@@ -164,6 +164,23 @@
     [(c :a) :<c-o>^ "Jump to BOL"] ; *
     [(c :e) :<end> "Jump to EOL"]
     ; [(c :j) :<esc>o "<C-j> insert new line bellow and jump"]
+    ; [(c :j) (lambda []
+    ;           ; 102 eisu
+    ;           ; 104 kana
+    ;           (if (= vim.g.ime_on true) ; nil or  true
+    ;             (do ; ime off
+    ;               (local script "osascript -e \"tell application \\\"System Events\\\" to key code 102\"")
+    ;               (vim.fn.system script)
+    ;               (vim.cmd "highlight iCursor guibg=#5FAFFF cterm=underdotted")
+    ;               (vim.cmd "set guicursor+=i:var25-iCursor")
+    ;               (tset vim.g :ime_on false))
+    ;             (do ; ime on
+    ;               (local script "osascript -e \"tell application \\\"System Events\\\" to key code 104\"")
+    ;               (vim.fn.system script)
+    ;               (vim.cmd "highlight iCursor guibg=#cc6666")
+    ;               (vim.cmd "set guicursor+=i:var25-iCursor")
+    ;               (tset vim.g :ime_on true))))
+    ;  "ime toggle"]
     [(c-s :o) :<esc>O "<C-S-o> insert new line above and jump"] ; *
     ; [(c :o) :<esc>o "<C-o> insert new line above and jump"]
     ; [(c :g ::) goto-line "Goto line"] ; migrated
@@ -183,8 +200,8 @@
     ;; edit
     ; [(c :d) :<Del> "Delete"] ; * ; <- I actually use default i_CTRl-D. ; TODO: Find a key that replace this
     [(c-s :h) :<Del> "Delete"]
-    [(m :h) :<esc>vbc "Delete previous word"]
-    [(m :d) :<esc>wvec "Delete next word"]
+    ; [(m :h) :<esc>vbc "Delete previous word"] ; -> ctrl-w
+    [(c-s :w) :<esc>vec "Delete next word"]
     ; [(c-s :u) kill-line2end "delete from cursor to EOL"] ; *
     ; [(c-s :k) kill-line2begging "delete from cursor to BOL"]
     ; [(c :t) :<esc>xphli :transpose-chars] ; * ; TODO: find a key that replace this
@@ -206,7 +223,7 @@
     ; [(c :y) "<esc>pa" "paste"] ; *
 
     ;; undo & redo
-    [(c :z) "<esc>ua" "undo"] ; *
+    [(c :z) "<esc>ui" "undo"] ; *
     [(c-s :z) "<esc><c-r>a" "redo"]
 
     ;; window

@@ -5,17 +5,17 @@
 (local vf vim.fn)
 (local va vim.api)
 
-(map :n :<space> "<cmd>NormalWitch SPC<cr>" "wich")
+; (map :n :<space> "<cmd>NormalWitch SPC<cr>" "wich")
 (nmaps
   (space :w)
   :witch
   [[(space) (cmd "NormalWitch SPC") :space]
-   [:\ (cmd "NormalWitch \\") :\]
-   [:b (plug "(hwitch-bookmark)") "book mark"]
-   [:n (plug "(hwitch-normal)") "normal wich"]
+   ; [:\ (cmd "NormalWitch \\") :\]
+   ; [:b (plug "(hwitch-bookmark)") "book mark"]
+   ; [:n (plug "(hwitch-normal)") "normal wich"]
    [:u (plug "(hwitch-ultisnips)") "ultisnips"]
    [:t (plug "(hwitch-tex)") "tex"]
-   [:r (cmd "REGWITCH") :register]
+   ; [:r (cmd "REGWITCH") :register]
    [:e (cmd "KeyWindow") :evil]])
 
 (nmaps
@@ -66,7 +66,7 @@
   (va.nvim_set_keymap :l (vf.nr2char (+ i 32)) (vf.nr2char i) {:noremap true :silent true :desc :caps}))
 
 ;;; plugins
-(epi _ name [:bracket
+(epi _ name [; :bracket
              ; :veil
              :nmap] ((-> (.. :core.map. name) require (. :setup))))
 
