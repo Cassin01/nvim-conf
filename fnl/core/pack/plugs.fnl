@@ -950,56 +950,56 @@
                         })
      )}
 
-;; deno
-{1 :vim-denops/denops.vim
- :event ["User plug-lazy-load"]}
-{1 :lambdalisue/kensaku.vim}
-; {1 :Cassin01/adoc_preview.nvim}
-; {1 :Cassin01/fetch-info.nvim
-;  :require :ms-jpq/lua-async-await
-;  :setup (λ []
-;           (local a (require :plug.async))
-;           (local {: u-cmd} (require :kaza))
-;           (u-cmd :MyGetInfo (la
-;                               ((. (require :kaza.client) :start) "echo nvim_exec(\'GInfoM\', v:true)"))))}
-{1 :ellisonleao/weather.nvim
- :event ["User plug-lazy-load"]
- :config (λ [] (tset vim.g :weather_city :Tokyo))}
-
-; {1 :vim-skk/skkeleton :requires  [ :vim-denops/denops.vim ]
-;  :event [:InsertEnter]
-; :config (λ []
-;           (let [g (vim.api.nvim_create_augroup :init-skkeleton {:clear true})]
-;             (au! g :User
-;                  (vim.fn.skkeleton#config
-;                    {;:eggLikeNewline false
-;                     :globalJisyoEncoding :euc-jp
-;                     :immediatelyJisyoRW true
-;                     :registerConvertResult false
-;                     :keepState true
-;                     :selectCandidateKeys :asdfjkl
-;                     :setUndoPoint true
-;                     :showCandidatesCount 4
-;                     :usePopup true
-;                     :globalJisyo "~/.config/nvim/data/skk/SKK-JISYO.L"
-;                     :userJisyo "~/.skkeleton"})
-;                  {:pattern :skkeleton-initialize-pre})
-;             (au! g :User (let [cmp (require :cmp)]
-;                            (cmp.setup.buffer {:view {:entries :native}}))
-;                  {:pattern :skkeleton-enable-pre})
-;             (au! g :User (let [cmp (require :cmp)]
-;                            (cmp.setup.buffer {:view {:entries :custom}}))
-;                  {:pattern :skkeleton-disable-pre})
-;             (au! g :User :redrawstatus {:pattern :skkeleton-mode-changed}))
-;           (map :i :<c-j> (plug "(skkeleton-toggle)") "[skkeleton] toggle")
-;           (map :c :<c-j> (plug "(skkeleton-toggle)") "[skkeleton] toggle"))}
-; {1 :Cassin01/cmp-skkeleton :after  [ "nvim-cmp" "skkeleton" ] }
-; {1 :delphinus/skkeleton_indicator.nvim
+; ;; deno
+; {1 :vim-denops/denops.vim
+;  :event ["User plug-lazy-load"]}
+; {1 :lambdalisue/kensaku.vim}
+; ; {1 :Cassin01/adoc_preview.nvim}
+; ; {1 :Cassin01/fetch-info.nvim
+; ;  :require :ms-jpq/lua-async-await
+; ;  :setup (λ []
+; ;           (local a (require :plug.async))
+; ;           (local {: u-cmd} (require :kaza))
+; ;           (u-cmd :MyGetInfo (la
+; ;                               ((. (require :kaza.client) :start) "echo nvim_exec(\'GInfoM\', v:true)"))))}
+; {1 :ellisonleao/weather.nvim
 ;  :event ["User plug-lazy-load"]
-;  :config (λ [] (ref-f :setup :skkeleton_indicator {}))}
+;  :config (λ [] (tset vim.g :weather_city :Tokyo))}
 
-{1 :uki00a/denops-pomodoro.vim}
-{1 :skanehira/denops-docker.vim}
+; ; {1 :vim-skk/skkeleton :requires  [ :vim-denops/denops.vim ]
+; ;  :event [:InsertEnter]
+; ; :config (λ []
+; ;           (let [g (vim.api.nvim_create_augroup :init-skkeleton {:clear true})]
+; ;             (au! g :User
+; ;                  (vim.fn.skkeleton#config
+; ;                    {;:eggLikeNewline false
+; ;                     :globalJisyoEncoding :euc-jp
+; ;                     :immediatelyJisyoRW true
+; ;                     :registerConvertResult false
+; ;                     :keepState true
+; ;                     :selectCandidateKeys :asdfjkl
+; ;                     :setUndoPoint true
+; ;                     :showCandidatesCount 4
+; ;                     :usePopup true
+; ;                     :globalJisyo "~/.config/nvim/data/skk/SKK-JISYO.L"
+; ;                     :userJisyo "~/.skkeleton"})
+; ;                  {:pattern :skkeleton-initialize-pre})
+; ;             (au! g :User (let [cmp (require :cmp)]
+; ;                            (cmp.setup.buffer {:view {:entries :native}}))
+; ;                  {:pattern :skkeleton-enable-pre})
+; ;             (au! g :User (let [cmp (require :cmp)]
+; ;                            (cmp.setup.buffer {:view {:entries :custom}}))
+; ;                  {:pattern :skkeleton-disable-pre})
+; ;             (au! g :User :redrawstatus {:pattern :skkeleton-mode-changed}))
+; ;           (map :i :<c-j> (plug "(skkeleton-toggle)") "[skkeleton] toggle")
+; ;           (map :c :<c-j> (plug "(skkeleton-toggle)") "[skkeleton] toggle"))}
+; ; {1 :Cassin01/cmp-skkeleton :after  [ "nvim-cmp" "skkeleton" ] }
+; ; {1 :delphinus/skkeleton_indicator.nvim
+; ;  :event ["User plug-lazy-load"]
+; ;  :config (λ [] (ref-f :setup :skkeleton_indicator {}))}
+
+; {1 :uki00a/denops-pomodoro.vim}
+; {1 :skanehira/denops-docker.vim}
 
 ; ;; Async
 ; {1 :ms-jpq/lua-async-await
