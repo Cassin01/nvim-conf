@@ -206,7 +206,7 @@
 ;  :after :telescope.nvim
 ;  :config (la ((req-f :load_extension :telescope) :frecency))
 ;  :requires [:tami5/sqlite.lua :nvim-telescope/telescope.nvim]}
-:kkharji/sqlite.lua
+; :kkharji/sqlite.lua
 ;; }}}
 
 {1 :Cassin01/wf.nvim
