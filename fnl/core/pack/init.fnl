@@ -45,7 +45,7 @@
 (timeout 200
          (lambda []
            (vim.cmd "doautocmd User plug-lazy-load")
-           (require :user)
+           ; (require :user)
            (require :ime)
            (require :map)
            ; (lplug :bracket.vim)

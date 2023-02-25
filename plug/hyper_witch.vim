@@ -1108,6 +1108,7 @@ let s:bookmark = {
             \ "projects": "~/all_year",
             \ "lab": "~/2022/lab",
             \ "sche": "~/.config/nvim/data/10.sche",
+            \ "ghq": "~/ghq",
             \ }
 " \ "org": "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/",
 

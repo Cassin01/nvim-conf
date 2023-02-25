@@ -11,12 +11,14 @@
  ;; :cmdheight 0
  :number true
  :relativenumber true
- :winbar :%f
+ ; :winbar :%f
+ ; :winbar "%{%v:lua.require'lua.winbar'.eval()%}"
+ :pumheight 10
  :scrolloff 10
  :cursorline true
  :incsearch true
  :termguicolors true
-:splitkeep :screen ; :topline
+ :splitkeep :screen ; :topline
  :background :dark
  :mouse :a
  :t_8f "^[[38;2;%lu;%lu;%lum"
@@ -33,9 +35,10 @@
  :equalalways false
  :laststatus 3 ; 0
  :ruler false
+ :wrapmargin 2 ; Number of characters from the right window border where wrapping starts.
  :history 1000
- :ttimeout true ; default on
- :ttimeoutlen 100
+ :ttimeout false ; default on
+ :ttimeoutlen 1
  :confirm true
  ; :lazyredraw true ; WARN: In trial
  }

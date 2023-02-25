@@ -14,10 +14,14 @@
   (tset _G.__kaza.prefix prefix (.. "[" name "]")) ;FUTURE
   (local sign (.. "[" name "] "))
   {:map (λ [key cmd desc]
-          (vim.api.nvim_set_keymap mode
-                                   (.. prefix key)
-                                   cmd
-                                   (_overwrite {:noremap true :silent true :desc (.. sign desc)} (or ?opt {}))))
+          ; (vim.api.nvim_set_keymap mode
+          ;                          (.. prefix key)
+          ;                          cmd
+          ;                          (_overwrite {:noremap true :silent true :desc (.. sign desc)} (or ?opt {})))
+          (vim.keymap.set mode
+                          (.. prefix key)
+                          cmd
+                          (_overwrite {:noremap true :silent true :desc (.. sign desc)} (or ?opt {}))))
    :map-buf (λ [bufnr key cmd desc]
               (vim.api.nvim_buf_set_keymap bufnr
                                            mode

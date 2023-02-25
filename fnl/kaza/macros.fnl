@@ -32,8 +32,8 @@
 
 (fn M.space [?s]
   (if (= ?s nil)
-    :<space>
-    (string.format "<space>%s" ?s)))
+    :<Space>
+    (string.format "<Space>%s" ?s)))
 
 (fn M.br [c ?rest] (let [br ["[" "]"]
                         rest (or ?rest "")]

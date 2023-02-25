@@ -50,7 +50,8 @@ local function enter()
     local next_ = line:sub(col, col)
     for _, v in ipairs(brackets) do
         if v.prev_ == prev_ and v.next_ == next_ then
-            return "<CR><ESC>O" .. string.rep("<Space>", vim.bo.shiftwidth)
+            -- return "<CR><ESC>O" .. string.rep("<Space>", vim.bo.shiftwidth)
+            return "<CR><ESC>O"
         end
     end
     return "<CR>"

@@ -1,4 +1,4 @@
-local toggle = true
+local toggle = false
 local external_ime_control = true
 
 if vim.fn.has("mac") == 0 then

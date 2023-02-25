@@ -201,12 +201,21 @@
  :config (la ((req-f :load_extension :telescope) :packer))
  :requires [:nvim-telescope/telescope.nvim]}
 
+
 ; {1 :nvim-telescope/telescope-frecency.nvim
 ;  :after :telescope.nvim
 ;  :config (la ((req-f :load_extension :telescope) :frecency))
 ;  :requires [:tami5/sqlite.lua :nvim-telescope/telescope.nvim]}
 :kkharji/sqlite.lua
 ;; }}}
+
+{1 :Cassin01/wf.nvim
+ :event ["User plug-lazy-load"]
+ :branch :update
+ ; :tag :update
+ :config (la (ref-f :setup :wf {:theme :chad})
+             (require :user)
+             )}
 
 {1 :xiyaowong/nvim-transparent
  :cmd :TransparentEnable
@@ -1043,9 +1052,11 @@
  :event ["User plug-lazy-load"]}  ; syntax
 {1 :jaawerth/fennel-nvim
  :event ["User plug-lazy-load"]} ; native fennel support
-; :Olical/conjure       ; interactive environment
+:Olical/conjure       ; interactive environment
 {1 :Olical/nvim-local-fennel
  :event ["User plug-lazy-load"]}
+
+
 
 ;; rust
 {1 :rust-lang/rust.vim

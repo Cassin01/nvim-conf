@@ -78,6 +78,30 @@ local snippet = {
             i(3, "else"),
         }),
     },
+    sh = {
+        s("#!",
+        fmt([[
+        #!/usr/bin/env {}
+            ]],
+        {c(1, {t("zsh"), t("bash"), t("nu")})}))
+    },
+    asciidoctor = {
+        s("header",
+            fmt([[
+:doctype: book
+:toc:
+:toc-title: 目次
+:sectnums:
+:chapter-label:
+:source-highlighter: highlight.js
+:highlightjs-theme: github
+:highlightjs-languages: haskell
+:icons: font
+:author: Cassin01
+:tag: {1}
+:stem: latexmath
+                ]], {i(1, "tag")})),
+        },
     rust = {
         s(
             "fn",

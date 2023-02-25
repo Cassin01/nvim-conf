@@ -83,6 +83,10 @@
        nil)
      {:pattern "term://*"})
 
+;; esc
+(au! :esc :BufEnter
+     (vim.api.nvim_buf_set_keymap 0 :i "<C-[>" "<ESC>" {:noremap true :silent true :desc "Normal mode"}))
+
 ;; vim grep
 (create_autocmd
   :QuickFixCmdPost
@@ -90,12 +94,40 @@
    :command :cwindow
    :group (create_augroup :grep-cmd {:clear true})})
 
+;; gen directory automatically
+(au! :auto-mkdir
+     :BufWritePre
+     (let [dir (vim.fn.expand :<afile>:p:h)
+           force (= vim.v.cmdbang 1)]
+       (if (and (= (vim.fn.isdirectory dir) 0)
+                (or force (= (vim.fn.confirm (.. dir " does not exist. Create?") "&Yes\n&No") 1)))
+         (vim.fn.mkdir dir :p))))
+
+((. (require :lua.winbar) :setup))
+(au! :m-winbar :BufWinEnter
+     (do
+       ; (local info (vim.fn.getbufinfo (vim.api.nvim_getbuf)))
+    ; (local res (not (or
+       ;       (= vim.bo.buftype :terminal)
+       ;       (= vim.bo.filetype "noice"))))
+    ; (print vim.bo.buftype)
+    ; (print res)
+    (local res (or
+                 (= vim.bo.filetype "fennel")
+                 (= vim.bo.filetype "lua")
+                 (= vim.bo.filetype "rust")
+                 (= vim.bo.filetype "tex")
+                 ))
+     (when res
+        (tset vim.wo :winbar "%{%v:lua.require'lua.winbar'.exec()%}")))
+     {:pattern :*})
+
 ;; settings for global status
 
 ;; pattern {{{
 (fn tex_math []
   (buf_set_keymap 0 :i "$<enter>" "$$$$<left><cr><cr><up>" {:noremap true})
-  (buf_set_keymap 0 :i "$$" "$$<left>" {:noremap true}))
+  (buf_set_keymap 0 :i "$$" "$$<left>" {:noremap true :nowait true}))
 
 (create_autocmd
   :ColorScheme
@@ -135,6 +167,7 @@
   {:callback (λ []
                (tset vim.g :tex_conceal "")
                (tex_math)
+               (buf_set_keymap 0 :i "<C-l>" "$$<left>" {:noremap true :nowait true})
                (local indent 2)
                (tset vim.bo :tabstop indent)
                (tset vim.bo :shiftwidth indent)
@@ -144,6 +177,10 @@
                  (tset vim.g :auto_save 1)))
    :pattern [:*.tex]
    :group pattern})
+
+(vim.fn.setcellwidths
+  [[0x9789 0x9789 2]
+   [0x978B 0x978B 2]])
 (fn todo []
   ;; https://gist.github.com/huytd/668fc018b019fbc49fa1c09101363397
   (vf.matchadd :Conceal "^\\s*- \\[\\s\\]" 1 -1 {:conceal :})
@@ -185,6 +222,19 @@
                (vim.cmd "setlocal iskeyword-=-"))
    :pattern [:*.lisp :*.fnl]
    :group pattern})
+(create_autocmd
+  [:BufRead :BufNewFile]
+  {:callback (λ []
+               (buf_set_option 0 :shiftwidth 2)
+               (vim.cmd "setlocal iskeyword-=_")
+               (vim.cmd "setlocal iskeyword-=-")
+               (local fullpath (vim.fn.expand "%:p"))
+               (vim.keymap.set "n" "<Space>rs"
+                               (.. "<cmd>!scheme --quiet < " fullpath "<cr>")
+                               {:silent true :buffer 0})
+               )
+   :pattern [:*.scm]
+   :group pattern})
 
 ;; }}}
 (when (vim.fn.has :mac)
@@ -203,7 +253,7 @@
     {:pattern :*.adoc})
   (local {: u-cmd} (require :kaza))
   (u-cmd :AdocPreview
-         (la
+         (lambda []
            (when (not vim.g.adoc_preview)
              (tset vim.g :adoc_preview true)
              (let [cmd1 (concat-with

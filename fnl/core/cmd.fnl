@@ -65,6 +65,21 @@
                [:F :C :M :W])})
 
 (u-cmd
+  :Dearu
+  (λ []
+    (local subs {"いいます。" "いう。"
+                 "します。" "ある。"
+                 "なります。" "なる。"
+                 "ありません。" "ない。"
+                 "りません。" "らない。"
+                 "ません。" "ない。"
+                 "ました。" "た。"
+                 "です。" "である。"
+                 "ます。" "る。"})
+    (each [k v (pairs subs)]
+      (vim.cmd (.. "silent! %s/" k :/ v :/g)))))
+
+(u-cmd
   :ATest
   (λ []
     (local {: async-test} (require :kaza.cmd))

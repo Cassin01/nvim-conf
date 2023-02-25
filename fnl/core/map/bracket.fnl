@@ -5,7 +5,8 @@
 (local {: concat-with} (require :util.string))
 (local {: rt} (require :kaza.map))
 (local {: nvim_set_keymap} vim.api)
-(local right-brackets {"{" "}" "(" ")" "[" "]" "<" ">"})
+; (local right-brackets {"{" "}" "(" ")" "[" "]" "<" ">"})
+(local right-brackets {"{" "}" "(" ")" "[" "]"})
 
 (def in-front-of-the-cursor [char] [:string :boolean]
   "Whether word exist in front of the cursor"
@@ -39,23 +40,23 @@
 
 (def setup [] [:nil]
   (each [_ key (ipairs (keys right-brackets))]
-    (tset (. _G.__kaza :f) (.. :bracket_completion_default_ (string.byte key)) (bracket-completion-default key) )
-    (tset (. _G.__kaza :f) (.. :bracket_completion_cr_ (string.byte key)) (bracket-completion-cr key))
     (let [pair (.. key (. right-brackets key))]
       (nvim_set_keymap :i pair (.. pair :<left>) {:noremap true
                                                   :silent true
                                                   :desc "move cursor to center of the pair"}))
     (nvim_set_keymap :i
                      key
-                     (.. :v:lua.__kaza.f.bracket_completion_default_ (string.byte key) "()")
-                     {:noremap true
+                     ""
+                     {:callback (bracket-completion-default key)
+                      :noremap true
                       :silent true
                       :expr true
                       :desc "bracket completion default"})
     (nvim_set_keymap :i
                      (.. key "<enter>")
-                     (.. :v:lua.__kaza.f.bracket_completion_cr_ (string.byte key) "()")
-                     {:noremap true
+                     ""
+                     {:callback (bracket-completion-cr key)
+                      :noremap true
                       :silent true
                       :expr true
                       :desc "bracket completion cr"})
@@ -66,6 +67,14 @@
                       :noremap true
                       :silent true
                       :expr true
-                      :desc "bracket completion space"})))
+                      :desc "bracket completion space"}))
+  ; (nvim_set_keymap :i
+  ;                  (.. "[" "<C-[>")
+  ;                  "<esc>"
+  ;                  {:noremap true
+  ;                   :nowait true
+  ;                   :desc "escape bracket completion"
+  ;                   :silent true})
+  )
 
 {: setup}

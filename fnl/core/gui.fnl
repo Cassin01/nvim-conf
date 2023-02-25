@@ -14,9 +14,9 @@
   (let-g neovide_floating_blur_amount_x 2.0)
   (let-g neovide_floating_blur_amount_y 2.0)
 
-  )
+  (vim.cmd :NoiceDisable))
 
-(when (vim.fn.exists _G.neovide)
+(when (not= (vim.fn.exists :g:neovide) 0)
   (neovide-setting))
 
 {}

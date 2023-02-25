@@ -80,7 +80,7 @@ M.exec = function()
         end
     end)()
 
-    return "%#Function#" .. file_path .. "%*" .. location .. "%*"
+    return "%#Function#" .. file_path .. "%*" .. "%#Function#" .. location .. "%*"
 
     -- return '%#WinBarSeparator#'
     --     .. ''

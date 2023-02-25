@@ -10,6 +10,27 @@ require("mason-lspconfig").setup({
 --     client.resolved_capabilities.document_formatting = false
 --     client.resolved_capabilities.document_range_formatting = false
 -- end
+local navic = require("nvim-navic")
+local default_on_attach = function(client, bufnr)
+    if client.server_capabilities.documentSymbolProvider then
+        navic.attach(client, bufnr)
+    end
+    local nmap = function(keys, func, desc)
+        if desc then
+            desc = desc .. " [lsp]"
+        end
+        vim.keymap.set("n", keys, func, { buffer = bufnr, desc = desc })
+    end
+    nmap('sd', vim.lsp.buf.definition, 'definition')
+    nmap('sr', require('telescope.builtin').lsp_references, 'references')
+    nmap('si', vim.lsp.buf.implementation, 'implementation')
+    nmap('sy', vim.lsp.buf.type_definition, 'type definition')
+    nmap('<Space>td', require('telescope.builtin').lsp_document_symbols, 'lsp document symbol')
+    nmap('<Space>tw', require('telescope.builtin').lsp_dynamic_workspace_symbols, 'lsp workspace symbols')
+
+    -- ubnzv/virtual-types.nvim
+    require("virtualtypes").on_attach()
+end
 local default_capabilities = require("cmp_nvim_lsp").default_capabilities()
 
 lspconfig.util.default_config = vim.tbl_extend("force", lspconfig.util.default_config, {
@@ -23,6 +44,7 @@ local setup_handlers = {
     end,
     ["sumneko_lua"] = function()
         lspconfig.sumneko_lua.setup({
+            on_attach = default_on_attach,
             settings = {
                 Lua = {
                     runtime = {
@@ -52,6 +74,7 @@ local setup_handlers = {
     end,
     ["rust_analyzer"] = function()
         lspconfig.rust_analyzer.setup({
+            on_attach = default_on_attach,
             settings = {
                 ["rust-analyzer"] = {
                     assist = {
@@ -76,7 +99,7 @@ local setup_handlers = {
             single_file_support = false,
             root_dir = lspconfig.util.root_pattern("denops", "deno.json"),
             init_options = {
-                lint = false,
+                lint = true,
                 unstable = true,
             },
         })
