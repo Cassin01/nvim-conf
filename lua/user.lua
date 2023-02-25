@@ -8,7 +8,7 @@ local bookmark = require("wf.builtin.bookmark")
 local buffer = require("wf.builtin.buffer")
 -- local mark = require("wf.builtin.mark")
 -- local test = require("wf.builtin.test")
-local sql = require("sql")
+-- local sql = require("sql")
 
 local bookmark_dirs = {
   ome = "~/.config/nvim",
