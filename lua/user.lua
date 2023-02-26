@@ -68,21 +68,21 @@ vim.api.nvim_set_keymap("n", "<Space>", "", {
   noremap = true,
   silent = true,
   desc = "which-key space",
-  -- nowait = true,
+  nowait = true,
 })
 vim.api.nvim_set_keymap("n", "s", "", {
   callback = which_key({ text_insert_in_advance = "s", key_group_dict= key_group_dict  }),
   noremap = true,
   silent = true,
   desc = "which-key s",
-  -- nowait = true,
+  nowait = true,
 })
 vim.api.nvim_set_keymap("n", "<Leader>", "", {
   callback = which_key({ text_insert_in_advance = "<Leader>" , key_group_dict= key_group_dict }),
   noremap = true,
   silent = true,
   desc = "which-key /",
-  -- nowait = true,
+  nowait = true,
 })
 vim.api.nvim_create_autocmd({"BufEnter", "BufAdd"}, {
   group = vim.api.nvim_create_augroup("my_wf", { clear = true }),
