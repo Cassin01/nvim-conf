@@ -18,6 +18,15 @@ local rep = extras.rep
 local postfix = require("luasnip.extras.postfix").postfix
 local dl = require("luasnip.extras").dynamic_lambda
 
+local get_filename = function()
+    local name = vim.fn.expand("%:r")
+    if name == "" then
+        return "programming"
+    end
+    return name
+end
+
+
 ls.cleanup() -- remove all snippets
 
 local rec_ls
@@ -129,6 +138,19 @@ local snippet = {
         ),
         s("char2num", fmt([[{} as u8 - '0' as u8]], { i(1, "char") })),
     },
+    org = {
+        s(
+            "header", fmt([[
+#+title: {}
+#+filetags: :{}:
+                ]],
+                {
+                    i(1, "title"),
+                    i(2, "programming")
+                }
+            ))
+
+    },
     markdown = {
         s(
             "header",
@@ -142,7 +164,8 @@ local snippet = {
         ```
         ]]       ,
                 {
-                    i(1, "title"),
+                    -- i(1, "title"),
+                    i(1, get_filename()),
                     f(function()
                         return os.date("%Y-%m-%d")
                     end),
