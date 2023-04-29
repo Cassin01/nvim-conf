@@ -207,6 +207,29 @@ table.insert(
         },
     })
 )
+table.insert(
+    maps,
+    Map.new({
+        striker = "<",
+        { prefix = "", ret = "<><left>" },
+        { prefix = ";", ret = "<" },
+        {
+            prefix = ";;",
+            ret = "<><Left><CR><ESC>O",
+        },
+    })
+)
+table.insert(
+    maps,
+    Map.new({
+        striker = "-",
+        {
+            prefix = ";;",
+            ret = "------<Left><Left><Left><ESC>O",
+        },
+    })
+)
+
 table.insert(maps, Map.new({ striker = "z", { prefix = ";", ret = "-" } }))
 table.insert(maps, Map.new({ striker = "x", { prefix = ";", ret = "_" } }))
 table.insert(maps, Map.new({ striker = "c", { prefix = ";", ret = "+" } }))
