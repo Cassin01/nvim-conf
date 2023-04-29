@@ -48,7 +48,7 @@
 
 (fn print-second [a b]
   (print (vim.inspect b)))
-(au! :match-hi :ColorScheme 
+(au! :match-hi :ColorScheme
      (each [_ k (ipairs [;[:Tabs {:bg (blightness (get-hl :Normal :bg) 0.9)}]
                          [:TrailingSpaces {:bg :#FFa331}]
                          [:DoubleSpace {:bg :#cff082}]
@@ -105,21 +105,21 @@
 
 ((. (require :lua.winbar) :setup))
 (au! :m-winbar :BufWinEnter
-     (do
+     (vim.schedule (lambda []
        ; (local info (vim.fn.getbufinfo (vim.api.nvim_getbuf)))
-    ; (local res (not (or
+       ; (local res (not (or
        ;       (= vim.bo.buftype :terminal)
        ;       (= vim.bo.filetype "noice"))))
-    ; (print vim.bo.buftype)
-    ; (print res)
-    (local res (or
-                 (= vim.bo.filetype "fennel")
-                 (= vim.bo.filetype "lua")
-                 (= vim.bo.filetype "rust")
-                 (= vim.bo.filetype "tex")
-                 ))
-     (when res
-        (tset vim.wo :winbar "%{%v:lua.require'lua.winbar'.exec()%}")))
+       ; (print vim.bo.buftype)
+       ; (print res)
+       (local res (or
+                    (= vim.bo.filetype "fennel")
+                    (= vim.bo.filetype "lua")
+                    (= vim.bo.filetype "rust")
+                    (= vim.bo.filetype "tex")
+                    ))
+       (when res
+         (tset vim.wo :winbar "%{%v:lua.require'lua.winbar'.exec()%}"))))
      {:pattern :*})
 
 ;; settings for global status
@@ -185,15 +185,16 @@
   ;; https://gist.github.com/huytd/668fc018b019fbc49fa1c09101363397
   (vf.matchadd :Conceal "^\\s*- \\[\\s\\]" 1 -1 {:conceal :})
   (vf.matchadd :Conceal "^\\s*- \\[x\\]" 1 -1 {:conceal :})
-  (vf.matchadd :Comment "^---" 1 -1 {:conceal "• "})
-  (vf.matchadd :Conceal "^\\s*-" 0 -1 {:conceal "• "})
-  (vf.matchadd :Conceal "^#" 0 -1 {:conceal "◉"})
-  (vf.matchadd :Conceal "^##" 0 -1 {:conceal "○" })
-  (vf.matchadd :Conceal "^###" 0 -1 {:conceal "✹" })
+  ; (vf.matchadd :Comment "^---" 1 -1 {:conceal "• "})
+  (vf.matchadd :Conceal "^\\s*-\\(\\s\\)\\@=" 0 -1 {:conceal "• "})
+  (vf.matchadd :Conceal "^#\\(\\s\\)\\@=" 0 -1 {:conceal "◉"})
+  (vf.matchadd :Conceal "^##\\(\\s\\)\\@=" 0 -1 {:conceal "○" })
+  (vf.matchadd :Conceal "^###\\(\\s\\)\\@=" 0 -1 {:conceal "✹" })
   ; (syntax "syntax match todoCheckbox \\\'\\v(\\s+)?(-|\\*)\\s\\[-\\]\\\'hs=e-4 conceal cchar=☒")
   ; (syntax "syntax match todoCheckbox \'\\\[x\\\]\' conceal cchar=☒")
   (vim.cmd "hi def link todoCheckbox Todo")
-  (vim.cmd "setlocal cole=1"))
+  (vim.cmd "setlocal cole=1")
+  (buf_set_keymap 0 :n "<localleader>td" "a- [ ] <esc>" {:noremap true}))
 (create_autocmd
   [:BufRead :BufNewFile]
   {:callback (λ []
