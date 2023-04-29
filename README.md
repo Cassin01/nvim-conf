@@ -32,3 +32,7 @@ around 100ms
 ### Screenshots
 
 [here](https://github.com/Cassin01/nvim-conf/blob/master/gallery/gallery.md)
+
+### Dotfiles
+
+Other dotfiles are [here](https://github.com/Cassin01/dotfiles).
