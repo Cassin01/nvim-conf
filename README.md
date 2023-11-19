@@ -14,8 +14,7 @@ Powered by [hotpot.nvim](https://github.com/rktjmp/hotpot.nvim)
 
 ### Requires
 
-1. ``pip3 install pynvim``
-2. [packer](https://github.com/wbthomason/packer.nvim)
+- ``pip3 install pynvim``
 
 ### Version
 
@@ -26,8 +25,7 @@ v0.8.0 stable
 
 ### Startup time
 
-~~200~300ms on my environment.~~
-around 100ms
+200~300ms on my environment.
 
 ### Screenshots
 
