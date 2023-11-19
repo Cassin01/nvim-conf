@@ -1,37 +1,51 @@
-local fn = vim.fn
+-- local root = vim.fn.fnamemodify("./.repro", ":p")
+--
+-- -- set stdpaths to use .repro
+-- for _, name in ipairs({ "config", "data", "state", "cache" }) do
+--   vim.env[("XDG_%s_HOME"):format(name:upper())] = root .. "/" .. name
+-- end
 
-local preinstall_list = {
-  packer = {author = 'wbthomason', repo = 'packer.nvim'},
-  hotpot = {author = 'rktjmp', repo = 'hotpot.nvim'},
-  -- async = {author = 'ms-jpq', repo = 'lua-async-await'},
-  -- impatient = {author = 'lewis6991', repo = 'impatient.nvim'},
-}
-
-local preinstall_path = fn.stdpath 'data' .. '/site/pack/packer/start/'
-
-local init_install = false
-
-for _, info in pairs(preinstall_list) do
-  local plugin_path = preinstall_path .. info.repo
-  if fn.empty(fn.glob(plugin_path)) > 0 then
-    print("Could not find ", info.repo, ", cloning new copy to", plugin_path)
-    local repo_path = 'https://github.com/' .. info.author .. '/' .. info.repo
-    vim.fn.system({'git', 'clone', repo_path, '--depth', '1', plugin_path})
-    init_install = true
-  end
+-- bootstrap lazy
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
+  vim.fn.system({
+    "git",
+    "clone",
+    "--filter=blob:none",
+    "--branch=stable",
+    "https://github.com/folke/lazy.nvim.git",
+    lazypath,
+  })
 end
 
-if init_install then
-  -- require('impatient')
-  require 'hotpot'
-  require('init')
-  require('packer').sync()
-  vim.notify("Rerun neovim")
+local hotpotpath = vim.fn.stdpath("data") .. "/lazy/hotpot.nvim"
+if not vim.loop.fs_stat(hotpotpath) then
+  vim.fn.system({
+    "git",
+    "clone",
+    "--filter=blob:none",
+    "--single-branch",
+    "--branch=v0.9.6",
+    "https://github.com/rktjmp/hotpot.nvim.git",
+    hotpotpath,
+  })
 end
 
--- require('impatient')
-require('hotpot')
-require('init')
+vim.opt.runtimepath:prepend({lazypath, hotpotpath})
 
--- Reference:
--- [6cdh](https://github.com/6cdh/dotfiles/blob/main/editor/nvim/init.lua)
+require("hotpot")
+
+if _G.__kaza == nil then
+   require("kaza").setup()
+end
+
+require("core.opt")
+
+-- install plugins
+require("lazy").setup(require("plugs"))
+
+-- my settings
+require("setup")
+
+-- vim.cmd([[colorscheme tokyonight]])
+vim.cmd([[colorscheme nord]])
