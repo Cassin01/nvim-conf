@@ -48,7 +48,7 @@
 
 {1 :nvim-tree/nvim-web-devicons
  :event ["User plug-lazy-load"]
- :config (λ [] ((req-f :set_icon :nvim-web-devicons) {:fnl {:icon "🌱" :color "#428850" :name :fnl}}))}
+ :config (λ [] ((req-f :set_icon :nvim-web-devicons) {:fnl {:icon "󰌪" :color "#428850" :name :fnl}}))}
 
 {1 :lambdalisue/fern.vim
  :lazy true
@@ -245,7 +245,10 @@
            (ref-f :setup :bufferline
                   {:options {:show_close_icon false
                              :show_buffer_close_icons false
-                             :color_icons false}})
+                             :color_icons false
+                             :indicator {:style :none}
+                             :separator_style [" " " "]
+                             }})
            (nmaps
               :<Space>b
               :bufferline
@@ -268,18 +271,21 @@
             (local {: lazy} (require :kaza.cmd))
             (local set-hl
               (lambda []
-                (when-let bg (get-hl :Normal :bg)
-                          (fn bufferline [bg]
-                            (local {: unfold-iter} (require :util.list))
-                            (local res (vim.api.nvim_exec "highlight" true))
-                            (local lines (unfold-iter (res:gmatch "([^\r\n]+)")))
-                            (each [_ line (ipairs lines)]
-                              (local elements (unfold-iter (line:gmatch "%S+")))
-                              (local hi-name (. elements 1))
-                              (when (not= hi-name nil)
-                                (when (not= (hi-name:match "^BufferLine.*$") nil)
-                                  (vim.cmd (.. "hi " hi-name " guibg=" bg))))))
-                          (bufferline bg))))
+                (local bg (get-hl :Normal :bg))
+                (when (not= bg nil)
+                  (fn bufferline [bg]
+                    (local {: unfold-iter} (require :util.list))
+                    (local res (vim.api.nvim_exec "highlight" true))
+                    (local lines (unfold-iter (res:gmatch "([^\r\n]+)")))
+                    (each [_ line (ipairs lines)]
+                      (local elements (unfold-iter (line:gmatch "%S+")))
+                      (local hi-name (. elements 1))
+                      (when (not= hi-name nil)
+                        (when (not= (hi-name:match "^BufferLine.*$") nil)
+                          (vim.cmd (.. "hi " hi-name " guibg=" bg))))
+                      nil))
+                   (bufferline bg)))
+                  )
             ; (lazy 1000 set-hl)
             (set-hl)
             )}
@@ -965,17 +971,15 @@
 ;;; language
 
 ;; sche
-; {1 :Cassin01/sche.nvim
-;  :dependencies [:rcarriga/nvim-notify]
-;  :config (λ []
-;            (local sche (require :sche))
-;            (sche.setup {;:sche_path (vim.fn.expand "~/all_year/sche.nvim/my_calendar.sche")
-;                         :notify_todays_schedule false
-;                         :notify_tomorrows_schedule false
-;                         :sche_path (vim.fn.expand "~/.config/nvim/data/10.sche")
-;                         :syntax {:month "'^\\(\\d\\|\\d\\d\\)月'"}
-;                         })
-;      )}
+{1 :Cassin01/sche.nvim
+ :dependencies [:rcarriga/nvim-notify]
+ :config (lambda []
+           (local sche (require :sche))
+           (sche.setup {;:sche_path (vim.fn.expand "~/all_year/sche.nvim/my_calendar.sche")
+                        :notify_todays_schedule false
+                        :notify_tomorrows_schedule false
+                        :sche_path (vim.fn.expand "~/.config/nvim/data/10.sche")
+                        :syntax {:month "'^\\(\\d\\|\\d\\d\\)月'"}}))}
 
 ; ;; deno
 ; {1 :vim-denops/denops.vim
