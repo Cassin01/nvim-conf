@@ -3,8 +3,8 @@
  :backup false
  :swapfile false
  :autoread true
- :tabstop indent
  :shiftwidth indent
+ :tabstop indent
  :softtabstop indent
  :expandtab true
  :autoindent true ; default on
@@ -38,7 +38,7 @@
  :wrapmargin 2 ; Number of characters from the right window border where wrapping starts.
  :history 1000
  :ttimeout false ; default on
- :ttimeoutlen 1
+ :ttimeoutlen 0
  :confirm true
  ; :lazyredraw true ; WARN: In trial
  }

@@ -7,13 +7,15 @@
  [:i :<c-g>t "<Plug>(hwitch-tex)" "h-witch tex"]
  [:i :<c-g><c-u> :<esc>gUvbgi "upper case"]
  [:i :<c-g><c-l> :<esc>guvbgi "lower case"]
+ [:i :<left> :<c-g>U<left> "left"]
+ [:i :<right> :<c-g>U<right> "right"]
  [:t :<esc> :<C-\><C-n> "end insert mode"]
 
  [:x :<space>ds ::s/\%V\s//g<cr><cmd>noh<cr> "delete spaces"]
  [:x :<c-j> "m'>+1<cr>gv=gv" "moves selected lines down"]
  [:x :<c-k> "m'<-2<cr>gv=gv" "moves selected lines up"]
- [:x :< :<gv "deindent"]
- [:x :< :>gv "indent"]
+ ; [:x :< :<gv "deindent"]
+ ; [:x :< :>gv "indent"]
 
  ; [:n :<c-s-i> "<cmd>echo 'hoge'<cr>" "hge"]
  [:n :# :*:%s/<C-r>///g<Left><Left> "replace current word"]
