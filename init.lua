@@ -25,7 +25,7 @@ if not vim.loop.fs_stat(hotpotpath) then
     "clone",
     "--filter=blob:none",
     "--single-branch",
-    "--branch=v0.9.6",
+    "--branch=master",
     "https://github.com/rktjmp/hotpot.nvim.git",
     hotpotpath,
   })
@@ -35,7 +35,7 @@ vim.opt.runtimepath:prepend({lazypath, hotpotpath})
 
 require("hotpot")
 
-if _G.__kaza == nil then
+if _G["__kaza"] == nil then
    require("kaza").setup()
 end
 
@@ -47,5 +47,11 @@ require("lazy").setup(require("plugs"))
 -- my settings
 require("setup")
 
+
 -- vim.cmd([[colorscheme tokyonight]])
-vim.cmd([[colorscheme nord]])
+-- vim.cmd([[colorscheme lunaperche]])
+-- vim.cmd([[colorscheme nord]])
+vim.cmd([[colorscheme nova]])
+
+-- vim.cmd([[set background=light]])
+-- vim.cmd([[colorscheme morning]])

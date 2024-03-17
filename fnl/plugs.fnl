@@ -68,9 +68,9 @@
               [:d (cmd "Fern %:h -drawer -toggle") "open fern on a parent directory of a current buffer"]])
            )}
 
-; {1 :stevearc/oil.nvim
-;  :config (lambda [] (ref-f :setup :oil))
-;  }
+{1 :stevearc/oil.nvim
+ :config (lambda [] (ref-f :setup :oil))
+ }
 ; {1 :kyazdani42/nvim-tree.lua ; INFO: startup time
 ;  :dependencies :nvim-tree/nvim-web-devicons
 ;  :disabe true
@@ -114,7 +114,7 @@
 ;  :config (la (ref-f :setup :incline))}
 ; {1 :feline-nvim/feline.nvim
 ;  :init (la (ref-f :setup :feline)
-;              ((-> (require :feline) (. :winbar) (. setup))))}
+;              ((-> (require :feline) (. :winbar) (. :setup))))}
 ; {1 :nvim-lualine/lualine.nvim
 ;  :event ["User plug-lazy-load"]
 ;  :config (la (ref-f :setup :lualine {:options {:globalstatus true}}))
@@ -201,6 +201,7 @@
           (prefix.map :h "<cmd>Telescope help_tags<cr>" "help tags")
           (prefix.map :t "<cmd>Telescope<cr>" "telescope")
           (prefix.map :o "<cmd>Telescope oldfiles<cr>" "old files")
+          (prefix.map :c "<cmd>Telescope colorscheme<cr>" "colorscheme")
           (prefix.map :r "<cmd>Telescope file_browser<cr>" "file_browser"))}
 
 {1 :nvim-telescope/telescope-file-browser.nvim
@@ -223,8 +224,7 @@
 
 {1 :Cassin01/wf.nvim
  :event ["User plug-lazy-load"]
- :branch :develop
- ; :branch :new_feat
+ :branch :Fixes#105
  ; :version :update
  :config (la (ref-f :setup :wf {:theme :chad})
              (require :user))}
@@ -486,15 +486,11 @@
              :config (λ []
                        (local path (vim.fn.expand "~/.config/nvim/data/aspell/en.dict"))
                        (ref-f :setup :cmp_dictionary
-                              {
-                               :dic {:* [:/usr/share/dict/words]
-                                     :spelllang {:en path}
-                                     }
-                               :first_case_insensitive true
-                               :document true
-                               :async true
-                               })
-                       (ref-f :update :cmp_dictionary))}
+                        {:paths [:/usr/share/dict/words]
+                         :first_case_insensitive true
+                         :document {
+                         :enable true
+                         :command [ "wn" "${label}" "-over" ]}}))}
             {1 :Cassin01/cmp-gitcommit
              :dependencies :nvim-cmp
              :config (λ []
@@ -707,7 +703,8 @@
              :sidebar
              [[:t (cmd :SidebarNvimToggle) :toggle]
               [:f (cmd :SidebarNvimFocus) :focus]]))
- :rocks [:luatz]}
+ ;:rocks [:luatz]
+ }
 
 ; {1 :hrsh7th/vim-vsnip
 ;  :disable true
@@ -893,6 +890,10 @@
 ;     ]
 ;     :config (lambda [] (ref-f :setup :portal))
 ;  }
+
+{1 :andymass/vim-matchup
+ :event ["User plug-lazy-load"]
+ :config (la (tset (. vim :g) :matchup_matchparen_offscreen {:method :popup}))}
 
 ;; mark
 {1 :kshenoy/vim-signature
@@ -1132,8 +1133,8 @@
            (tset vim.g :vim_markdown_conceal_code_blocks false))}
 
 {1 :iamcco/markdown-preview.nvim
- :build "cd app & yarn install"
- :config (λ []
+ :build "cd app && yarn install"
+ :init (λ []
           (tset vim.g :mkdp_filetypes [:markdown])
           (tset vim.g :mkdp_auto_close false)
           (tset vim.g :mkdp_preview_options {:katex {}
@@ -1168,7 +1169,7 @@
  ;           (vim.api.nvim_command "colorscheme catppuccin-macchiato"))
  }
 
-;; color
+;;; color
 ; {1 :ujihisa/unite-colorscheme
 ;  :event ["User plug-lazy-load"]
 ;  :dependencies [:Shougo/unite.vim]}
