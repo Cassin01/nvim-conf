@@ -11,7 +11,7 @@
 
 ;; aus(group, arguments that will be unpacked)
 (aus :lsp-diagnostic
-     [[:CursorHold (la (vim.diagnostic.setloclist {:open false})) {:pattern [:*.rs :*.ts :*.tex]}]
+     [[:CursorHold (la (vim.diagnostic.setloclist {:open false})) {:pattern [:*.rs :*.ts :*.tex :*.py :*.go]}]
       [:FileType (la (let [line_num (vim.fn.line :$)]
                        ; (tset _G.__kaza.v :diagnostic_master_buf (vim.api.nvim_get_current_buf))
                        (tset vim.wo :wrap true)

@@ -1,7 +1,7 @@
-(import-macros {: epi} :util.macros)
+(import-macros {: epi : when-let : def} :util.macros)
 (import-macros {: au! : la : plug : async-do!} :kaza.macros)
 (local {: concat-with} (require :util.list))
-(local {: hi-clear} (require :kaza.hi))
+(local {: hi-clear : get-hl} (require :kaza.hi))
 (local {: syntax} (require :kaza.cmd))
 (local vf vim.fn)
 (local va vim.api)
@@ -62,7 +62,7 @@
                           ; (link :Comment {:fg (blightness (get-hl :Comment :fg) 0.8)})
                           ]
                          [:CommentHead (link :Comment {:fg :#727ca7})]
-                         [:VertSplit (link :NonText {})]
+                         [:VertSplit (link :LineNr {})]
                          [:StatusLine (link :NonText {})]
                          ; [:StatusLine (link :NonText {:fg (get-hl :StatusLine :fg)})]
                          ; [:BufferLineFill (link :NonText {:fg (get-hl :BufferLineFill :fg)})]
@@ -117,7 +117,10 @@
                     (= vim.bo.filetype "lua")
                     (= vim.bo.filetype "rust")
                     (= vim.bo.filetype "tex")
-                    ))
+                    (= vim.bo.filetype "python")
+                    (= vim.bo.filetype "htmldjango")
+                    (= vim.bo.filetype "javascript")
+                    (= vim.bo.filetype "go")))
        (when res
          (tset vim.wo :winbar "%{%v:lua.require'lua.winbar'.exec()%}"))))
      {:pattern :*})
@@ -147,7 +150,7 @@
                                :/*
                                :<kDivide><kMultiply><space><space><kMultiply><kDivide><left><left><left>
                                {:noremap true}))
-   :pattern [:*.c :*.h :*.cpp :*.rs]
+   :pattern [:*.c :*.h :*.cpp :*.rs :*.go]
    :group pattern})
 (create_autocmd
   [:BufRead :BufNewFile]
@@ -181,12 +184,13 @@
 (vim.fn.setcellwidths
   [[0x9789 0x9789 2]
    [0x978B 0x978B 2]])
+
 (fn todo []
   ;; https://gist.github.com/huytd/668fc018b019fbc49fa1c09101363397
-  (vf.matchadd :Conceal "^\\s*- \\[\\s\\]" 1 -1 {:conceal :})
-  (vf.matchadd :Conceal "^\\s*- \\[x\\]" 1 -1 {:conceal :})
+  (vf.matchadd :Conceal "\\(^\\s*\\)\\@<=- \\[\\s\\]" 1 -1 {:conceal :})
+  (vf.matchadd :Conceal "\\(^\\s*\\)\\@<=- \\[x\\]" 1 -1 {:conceal :})
   ; (vf.matchadd :Comment "^---" 1 -1 {:conceal "• "})
-  (vf.matchadd :Conceal "^\\s*-\\(\\s\\)\\@=" 0 -1 {:conceal "• "})
+  (vf.matchadd :Conceal "\\(^\\s*\\)\\@<=-\\(\\s\\)\\@=" 0 -1 {:conceal "• "})
   (vf.matchadd :Conceal "^#\\(\\s\\)\\@=" 0 -1 {:conceal "◉"})
   (vf.matchadd :Conceal "^##\\(\\s\\)\\@=" 0 -1 {:conceal "○" })
   (vf.matchadd :Conceal "^###\\(\\s\\)\\@=" 0 -1 {:conceal "✹" })
@@ -194,7 +198,13 @@
   ; (syntax "syntax match todoCheckbox \'\\\[x\\\]\' conceal cchar=☒")
   (vim.cmd "hi def link todoCheckbox Todo")
   (vim.cmd "setlocal cole=1")
-  (buf_set_keymap 0 :n "<localleader>td" "a- [ ] <esc>" {:noremap true}))
+  (vim.cmd "setlocal comments=nb:>,b:-\\ [\\ ],b:-\\ [x],b:-")
+  (local indent 2)
+  (vim.cmd "setlocal formatoptions-=c formatoptions+=jro")
+  (vim.cmd (string.format "setlocal shiftwidth=%d" 2))
+  (vim.cmd (string.format "setlocal tabstop=%d" 2))
+  (vim.cmd (string.format "setlocal softtabstop=%d" 2))
+  (buf_set_keymap 0 :n "<localleader>td" "a- [ ] " {:noremap true :desc "markdown add checkbox"}))
 (create_autocmd
   [:BufRead :BufNewFile]
   {:callback (λ []
@@ -276,11 +286,11 @@
 ;              :syntax {:month "'^\\(\\d\\|\\d\\d\\)月'"}})
 
 ;; packer
-(create_autocmd
-  :BufWritePost
-  {:command :PackerCompile
-   :pattern :plugs.fnl
-   :group (create_augroup :packer-compile {:clear true})})
+; (create_autocmd
+;   :BufWritePost
+;   {:command :PackerCompile
+;    :pattern :plugs.fnl
+;    :group (create_augroup :packer-compile {:clear true})})
 
 ;; ref-view
 (au! :ref-view
@@ -296,3 +306,17 @@
 ; (au! :reload-copilot
 ;      :VimEnter
 ;      (vim.cmd "Copilot restart"))
+
+
+;; bufferline
+(au! :reload-devicon
+     ; [:BufWinEnter :BufWinLeave :BufReadPost]
+     ; [:BufWinEnter :TabEnter :WinEnter]
+     [:BufEnter :BufLeave :WinEnter :WinLeave :TabEnter :TabLeave :BufWinEnter :BufWinLeave :BufReadPost :BufReadPre]
+     (do
+       (when-let fg (get-hl :Comment :fg)
+                 (local cs (vim.api.nvim_get_hl 0 {}))
+                 (each [hi-name _ (pairs cs)]
+                   (when (not= (hi-name:match "^BufferLineDevIcon.*Inactive$") nil)
+                     (vim.cmd (.. "hi " hi-name " guifg=" fg))))))
+     {})

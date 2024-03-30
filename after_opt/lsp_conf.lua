@@ -2,7 +2,7 @@ local vim = vim
 local lspconfig = require("lspconfig")
 require("mason").setup()
 require("mason-lspconfig").setup({
-    ensure_installed = { "sumneko_lua" },
+    ensure_installed = { },
 })
 
 -- local default_on_attach = function(client)
@@ -42,8 +42,8 @@ local setup_handlers = {
     function(server_name)
         lspconfig[server_name].setup({})
     end,
-    ["sumneko_lua"] = function()
-        lspconfig.sumneko_lua.setup({
+    ["lua_ls"] = function()
+        lspconfig.lua_ls.setup({
             on_attach = default_on_attach,
             settings = {
                 Lua = {
@@ -54,6 +54,7 @@ local setup_handlers = {
                         globals = { "vim", "use", "require" },
                     },
                     workspace = {
+                        checkThirdParty = false, -- Stop ask to configure my work environment.
                         library = vim.api.nvim_get_runtime_file("", true),
                     },
                     telemetry = {
@@ -102,6 +103,47 @@ local setup_handlers = {
                 lint = true,
                 unstable = true,
             },
+        })
+    end,
+    ["gopls"] = function()
+        lspconfig.gopls.setup({
+            on_attach = default_on_attach,
+            settings = {
+                gopls = {
+                    analyses = {
+                        unusedparams = true,
+                    },
+                    staticcheck = true,
+                    gofumpt = true,
+                },
+            },
+        })
+    end,
+    ["pylsp"] = function()
+        lspconfig.pylsp.setup({
+            on_attach = default_on_attach,
+            -- https://github.com/python-rope/rope/wiki/Rope-in-Vim-or-Neovim
+            cmd = { "pylsp" },
+            settings = {
+                pylsp = {
+                    configurationSources = { "flake8" },
+                    plugins = {
+                        -- https://github.com/python-lsp/python-lsp-server/blob/develop/CONFIGURATION.md
+                        jedi_symbols = {
+                            enabled = true,
+                            all_scopes = true,
+                            include_import_symbols = true,
+                        },
+                        -- jedi_definition.enabled = true,
+                        jedi_hover = {
+                            enabled = true,
+                        },
+                        rope_completion = {
+                            enabled = true,
+                        },
+                    }
+                }
+            }
         })
     end,
 }
