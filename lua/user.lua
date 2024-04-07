@@ -1,5 +1,4 @@
 local timeout = require("kaza.cmd").timeout
-local wf = require("wf")
 -- wf.setup({ theme = "chad" })
 -- wf.setup({theme="default"})
 
@@ -18,7 +17,7 @@ local bookmark_dirs = {
     core = "~/.config/nvim/fnl/core",
     vim = "~/.config/nvim/vim",
     macros = "~/.config/nvim/lua/macros",
-    packer = "~/.config/nvim/fnl/core/pack/plugs.fnl",
+    packer = "~/.config/nvim/fnl/plugs.fnl",
     snip = "~/.config/nvim/UltiSnips",
     dotfile = "~/dotfiles",
     memo = "~/tech-memo",
@@ -49,7 +48,22 @@ vim.api.nvim_set_keymap(
 --  "",
 --  { callback = test, noremap = true, silent = true, desc = "[wf.nvim] test" }
 -- )
-vim.keymap.set("n", "<Space>wbu", buffer({}), { noremap = true, silent = true, desc = "[wf.nvim] buffer" })
+vim.keymap.set("n", "<Space>wbu", buffer(), { noremap = true, silent = true, desc = "[wf.nvim] buffer" })
+
+vim.keymap.set("n", "<Space>wbf",
+    function()
+        require("wf").select({happy = "😊", sad = "😥"}, {
+                title = "Select your feelings:", behavior = {
+                    skip_front_duplication = true,
+                    skip_back_duplication = true,
+                },
+            }, function(text, key)
+                -- You feel happy😊.
+                vim.notify("You feel " .. key .. text .. ".")
+            end)
+        end
+        , { noremap = true, silent = true, desc = "[wf.nvim] feelings" })
+
 
 vim.keymap.set(
    "n",
@@ -69,7 +83,8 @@ end)
 
 -- which_key
 
-local key_group_dict = vim.fn.luaeval("_G.__kaza.prefix")
+-- local key_group_dict = vim.fn.luaeval("_G.__kaza.prefix")
+local key_group_dict = _G["__kaza"]["prefix"]
 -- wf.prefix_set(
 --     "n",
 --     "<Space>",
@@ -95,21 +110,21 @@ vim.api.nvim_set_keymap("n", "<Space>", "", {
     noremap = true,
     silent = true,
     desc = "which-key space",
-    nowait = true,
+    -- nowait = true,
   })
 vim.api.nvim_set_keymap("n", "s", "", {
     callback = which_key({ text_insert_in_advance = "s", key_group_dict= key_group_dict  }),
     noremap = true,
     silent = true,
     desc = "which-key s",
-    nowait = true,
+    -- nowait = true,
   })
 vim.api.nvim_set_keymap("n", "<Leader>", "", {
     callback = which_key({ text_insert_in_advance = "<Leader>" , key_group_dict= key_group_dict }),
     noremap = true,
     silent = true,
     desc = "which-key /",
-    nowait = true,
+    -- nowait = true,
   })
 end
 timeout(100, which_keys)
@@ -143,7 +158,7 @@ vim.api.nvim_create_autocmd({"BufEnter", "BufAdd"}, {
 })
 
 local ns = vim.api.nvim_create_namespace("mhoge")
-vim.api.nvim_set_keymap("n", "<Space>wf", "", {
+local wf_options = {
     callback = function()
         local conf_ = {
             width = 100,
@@ -155,10 +170,10 @@ vim.api.nvim_set_keymap("n", "<Space>wf", "", {
             title_pos = "center",
         }
         local conf = vim.fn.extend(conf_, {
-            height = 1,
-            row = 10,
-            col = 10,
-        })
+                height = 1,
+                row = 10,
+                col = 10,
+            })
         local buf = vim.api.nvim_create_buf(false, true)
         local win = vim.api.nvim_open_win(buf, true, conf)
         vim.api.nvim_buf_set_option(buf, "buftype", "prompt")
@@ -170,7 +185,20 @@ vim.api.nvim_set_keymap("n", "<Space>wf", "", {
     silent = true,
     desc = "test",
     nowait = true,
-})
+}
+vim.api.nvim_set_keymap("n", "<Space>wf", "", wf_options)
+-- vim.keymap.set("n", "<Space>wk", function()
+--     local keys = vim.api.nvim_get_keymap("n")
+--     for _, v in pairs(keys) do
+--         if v.lhs == " wf" then
+--             local meta = getmetatable(v)
+--             print(vim.inspect(meta))
+--         end
+--     end
+-- end, { noremap = true, desc = "test metatable" })
+
+
+vim.keymap.set("n", "<leader><Tab>", "<C-^>", { desc = "switch to previous buffer" })
 
 local input = require("wf.input").input
 vim.keymap.set("n", "<Space>k", input, { noremap = true, desc = "test" })

@@ -52,6 +52,7 @@
     "replace `.` and `,`"]
    [:a ":vim TODO ~/org/*.org<cr>" "agenda"]
    [:ts ":%s/\t/ /g<cr>" "replace tab with space"]
+   [:t2s ":%s/\t/  /g<cr>" "replace tab with 2 spaces"]
    [:tm (la
           (local a (require :async))
           (local co coroutine)
@@ -135,6 +136,8 @@
                            (bufferline))) :clear-bufferlne]
    [:fn (la (print (vim.fn.expand :%:t))) "show file name"]
    [:fp (la (print (vim.fn.expand :%:p))) "show file path"]
+   [:fft (la (vim.cmd "echo &filetype")) "show file type"]
+   [:fr ":<c-u>e %<cr>" "reload the file"]
    [:ft (la (if (= vim.o.foldmethod :indent)
               (tset vim.o :foldmethod :marker)
               (tset vim.o :foldmethod :indent))

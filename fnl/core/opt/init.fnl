@@ -22,7 +22,7 @@
                           :vertleft " "
                           :vertright " "
                           :verthoriz " "
-                          :horiz " "
+                          ;:horiz " "
                           :horizup " "
                           :horizdown " "
                           :eob " "})

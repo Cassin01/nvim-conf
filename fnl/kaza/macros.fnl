@@ -54,7 +54,7 @@
 
 ;;; autocmd
 (fn _group_handler [group]
-  `(if 
+  `(if
      (= (type ,group) :string)
      (vim.api.nvim_create_augroup ,group {:clear true})
      (= (type ,group) :number)

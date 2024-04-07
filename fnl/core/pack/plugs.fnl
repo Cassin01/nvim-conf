@@ -1,8 +1,13 @@
 (import-macros {: req-f : ref-f : epi : ep : when-let} :util.macros)
-(import-macros {: nmaps : map : cmd : plug : space : ui-ignore-filetype : la : br : let-g : au!} :kaza.macros)
+; (import-macros {: nmaps : map : cmd : plug : space : ui-ignore-filetype : la : br : let-g : au!} :kaza.macros)
+(import-macros { : map : cmd : plug : space : ui-ignore-filetype : la : br : let-g : au!} :kaza.macros)
 
 (macro lcnf [file_name]
   `(vim.cmd (table.concat ["source ~/.config/nvim/after_opt/" ,file_name ] "")))
+
+(local myutil (require :lua.util))
+(local nmaps myutil.nmaps)
+
 
 [
 ;;; snippet
@@ -46,17 +51,17 @@
  :opt true
  :event ["User plug-lazy-load"]
  :requires [:lambdalisue/fern-git-status.vim
-            {1 :lambdalisue/fern-renderer-devicons.vim
-             :requires [:ryanoasis/vim-devicons]}
+            {1 :lambdalisue/fern-renderer-nerdfont.vim
+             :dependencies [:lambdalisue/nerdfont.vim]}
             :yuki-yano/fern-preview.vim]
  :config (λ []
-           (tset vim.g :fern#renderer :devicons)
-           (tset vim.g :fern_renderer_devicons_disable_warning true)
+           (tset vim.g :fern#renderer :nerdfont)
+           ; (tset vim.g :fern_renderer_devicons_disable_warning true)
            (lcnf "fern.vim")
            (nmaps
              :<Space>n
              :fern
-             [[:p (cmd "Fern . -drawer -toggle") "open fern on a current working drectory"]
+             [[:p (cmd "Fern . -drawer -toggle") "open fern on a current working directory"]
               [:d (cmd "Fern %:h -drawer -toggle") "open fern on a parent directory of a current buffer"]])
            )}
 
@@ -211,7 +216,8 @@
 
 {1 :Cassin01/wf.nvim
  :event ["User plug-lazy-load"]
- :branch :update
+ :branch :develop
+ ; :branch :new_feat
  ; :tag :update
  :config (la (ref-f :setup :wf {:theme :chad})
              (require :user))}
@@ -456,7 +462,7 @@
             {1 :hrsh7th/cmp-cmdline :after :nvim-cmp}
             {1 :hrsh7th/cmp-calc :after :nvim-cmp}
             {1 :hrsh7th/cmp-nvim-lsp-document-symbol :after :nvim-cmp}
-            {1 :kdheepak/cmp-latex-symbols}
+            ; {1 :kdheepak/cmp-latex-symbols}
             {1 :saadparwaiz1/cmp_luasnip :after [:nvim-cmp :LuaSnip]}
             ; :nvim-orgmode/orgmode
             {1 :uga-rosa/cmp-dictionary
@@ -540,8 +546,8 @@
                           {:name :ultisnips :group_index 2}
                           ; {:name :orgmode}
                           {:name :lsp_document_symbol}
-                          {:name :latex_symbols
-                           :option {:strategy 0}}
+                          ; {:name :latex_symbols
+                          ; :option {:strategy 0}}
                           ; {:name :skkeleton :group_index 5}
                           {:name :buffer
                            :option {:get_bufnrs (λ []
@@ -605,7 +611,7 @@
                           :<c-e> (cmp.mapping.abort)
                           :<c-p> (cmp.mapping.select_prev_item)
                           :<c-n> (cmp.mapping.select_next_item)
-                          :<cr> (cmp.mapping.confirm {:select true}) }) })
+                          :<cr> (cmp.mapping.confirm {:select false}) }) })
            (vim.api.nvim_set_hl 0 :CmpItemKindCopilot {:fg :#6CC644})
            (cmp.setup.cmdline :/ {:mapping (cmp.mapping.preset.cmdline)
                                   :sources [{:name :buffer}]})
@@ -743,13 +749,13 @@
             ))}
 {1 :tpope/vim-rhubarb :event ["User plug-lazy-load"]} ; enable :Gbrowse
 {1 :tpope/vim-commentary :event ["User plug-lazy-load"]}
-{1 :LudoPinelli/comment-box.nvim
- :config (lambda []
- (local cb (require :comment-box))
- (nmaps :<Space>o :comment-box
-        [[:c cb.accbox "accbox"]
-         [:b cb.lbox "lbox"]
-         [:l cb.cline "cline"] ])) }
+; {1 :LudoPinelli/comment-box.nvim
+;  :config (lambda []
+;  (local cb (require :comment-box))
+;  (nmaps :<Space>o :comment-box
+;         [[:c cb.accbox "accbox"]
+;          [:b cb.lbox "lbox"]
+;          [:l cb.cline "cline"] ])) }
 {1 :tpope/vim-unimpaired :event ["User plug-lazy-load"]}
 {1 :tpope/vim-surround :event ["User plug-lazy-load"]}
 {1 :tpope/vim-abolish :event ["User plug-lazy-load"]}
@@ -911,6 +917,16 @@
           (tset vim.g :translate_target :ja)
           (tset vim.g :translate_popup_window false)
           (tset vim.g :translate_winsize 10)
+          (vim.keymap.set :n :<space>kj
+           (lambda []
+            (tset vim.g :translate_source :en)
+            (tset vim.g :translate_target :ja))
+           {:desc "[translate] en2jp"})
+          (vim.keymap.set :n :<space>ke
+           (lambda []
+            (tset vim.g :translate_source :ja)
+            (tset vim.g :translate_target :en))
+           {:desc "[translate] jp2en"})
           (vim.cmd "nnoremap gr <Plug>(Translate)")
           (vim.cmd "vnoremap <c-t> :Translate<cr>"))}
 
@@ -933,6 +949,8 @@
 
 {1 :ThePrimeagen/vim-apm
  :event ["User plug-lazy-load"]}
+
+:echasnovski/mini.nvim
 
 ;;; language
 
@@ -1010,6 +1028,9 @@
  :setup (λ []
           (let [prefix ((. (require :kaza.map) :prefix-o) :n :<Space>a :auto-collect)]
             (prefix.map "e" "<cmd>EnableAutocorrect<cr>" "enable auto correct")))}
+
+;; html
+:mattn/emmet-vim
 
 ; ;; tailwind
 ; {1 :mrshmllow/document-color.nvim

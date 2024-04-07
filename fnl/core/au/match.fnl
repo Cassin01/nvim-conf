@@ -70,6 +70,8 @@
       (each [ft matches (pairs fts)]
         (when (= ft vim.bo.filetype)
           (each [_ m (ipairs matches)]
-            (vf.matchadd (unpack m))))))))
+            (vf.matchadd (unpack m)))))
+      (when (= (vim.fn.expand :%f) "todo.md")
+        (vf.matchadd :Comment "CREATED: \\d\\d\\d\\d-\\d\\d-\\d\\d")))))
 
 {: add-matches}

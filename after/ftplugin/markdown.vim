@@ -26,6 +26,9 @@ function! s:markdown_checkbox(from, to) abort
       if lnum == curpos[1]
         let curpos[2] += 6
       endif
+      if expand('%f') ==# 'todo.md'
+        call append(line('.'), '  - CREATED: ' .. strftime('%Y-%m-%d'))
+      endif
     elseif line =~ list_pattern .. '\[ \]\s+'
       " blank box -> check
       let line = substitute(line, '\[ \]', '[x]', '')

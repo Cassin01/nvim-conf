@@ -155,6 +155,14 @@ table.insert(
                 return "{}<Left><CR><ESC>O" .. string.rep("<Space>", vim.bo.shiftwidth)
             end,
         },
+        {
+            prefix = "c;",
+            ret = function()
+                local header = string.format(vim.opt_local.commentstring["_value"], " {{{ ")
+                local footer = string.format(vim.opt_local.commentstring["_value"], " }}} ")
+                return header .. footer .. string.rep("<Left>", string.len(footer)) .. "<CR><ESC>O" .. string.rep("<Space>", vim.bo.shiftwidth)
+            end
+        },
     })
 )
 table.insert(
@@ -246,8 +254,8 @@ local function match_back(str, patt)
     return string.sub(str, string.len(patt) * -1, -1) == patt
 end
 
-for _, m in ipairs(maps) do
-    vim.keymap.set("i", m.striker, function()
+local core = function(m)
+    return function()
         local prefix = vim.fn.getline("."):sub(1, vim.fn.col(".") - 1)
         local max_len = -1
         local cont
@@ -256,7 +264,7 @@ for _, m in ipairs(maps) do
                 if string.len(a.prefix) > max_len then
                     cont = function()
                         return string.rep("<BS>", string.len(a.prefix))
-                            .. (type(a.ret) == "function" and a.ret() or a.ret)
+                        .. (type(a.ret) == "function" and a.ret() or a.ret)
                     end
                     max_len = string.len(a.prefix)
                 end
@@ -266,5 +274,20 @@ for _, m in ipairs(maps) do
             return cont()
         end
         return m.striker
-    end, { noremap = true, silent = true, expr = true })
+    end
 end
+
+for _, m in ipairs(maps) do
+    vim.keymap.set("i", m.striker, core(m), { noremap = true, silent = true, expr = true })
+end
+
+-- vim.api.nvim_create_autocmd(
+--     {"BufRead", "BufNewFile"},
+--     {
+--         callback = function ()
+--             vim.key
+--         end,
+--         pattern = {".html"},
+--         group = create_augroup("specific_stiker", {clear = true})
+--     }
+--     )

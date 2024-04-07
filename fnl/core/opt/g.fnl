@@ -6,7 +6,8 @@
 ; :colors_name :kanagawa
 ; :colors_name :habamax
 ; :colors_name :tokyonight-night
-:colors_name :catppuccin-mocha
+; :colors_name :catppuccin-mocha
+:colors_name :fluoromachine
 :markdown_fenced_languages [:python :ruby :javascript :js=javascript
                             :json=javascript :vim :css :ocaml
                             :rust

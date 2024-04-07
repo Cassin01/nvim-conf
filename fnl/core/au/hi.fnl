@@ -1,4 +1,5 @@
 (import-macros {: def : when-let} :util.macros)
+(local {: get-hl} (require :kaza.hi))
 (local va vim.api)
 (local vf vim.fn)
 
@@ -11,16 +12,16 @@
 (def gen-hl [name tbl] [:string :table :table]
   [name (link name tbl)])
 
-(def get-hl [name part] [:string :string :?string]
-  "name: hlname
-  part: bg or fg"
-  (let [target (va.nvim_get_hl_by_name name 0)]
-    (if
-      (= part :fg)
-      (.. :# (vf.printf :%0x (. target :foreground)))
-      (= part :bg)
-      (.. :# (vf.printf :%0x (. target :background)))
-      nil)))
+; (def get-hl [name part] [:string :string :?string]
+;   "name: hlname
+;   part: bg or fg"
+;   (let [target (va.nvim_get_hl_by_name name 0)]
+;     (if
+;       (= part :fg)
+;       (.. :# (vf.printf :%0x (. target :foreground)))
+;       (= part :bg)
+;       (.. :# (vf.printf :%0x (. target :background)))
+;       nil)))
 
 (macro add-hl [name tbl]
   `(table.insert hl-info (gen-hl ,name ,tbl)))
@@ -31,7 +32,17 @@
   (add-hl :SpecialKey {:bg nil :italic true})
   (when-let bg (get-hl :Normal :bg)
     (add-hl :StatusLine {:fg bg})
-    (add-hl :StatusLineNC {:fg bg}))
+    (add-hl :StatusLineNC {:fg bg})
+    (add-hl :WinBar {:bg bg})
+    (add-hl :WinBarNC {:bg bg}))
+  ; (when-let fg (get-hl :Comment :fg)
+  ;   ; For plugin: bufferline
+  ;   (local cs (vim.api.nvim_get_hl 0 {}))
+  ;   (print (vim.inspect cs))
+  ;   (each [hi-name _ (pairs cs)]
+  ;     (when (not= (hi-name:match "^BufferLineDevIcon.*Inactive$") nil)
+  ;       (add-hl hi-name {:fg fg})))
+  ;   )
   hl-info)
 
 ;;; INFO

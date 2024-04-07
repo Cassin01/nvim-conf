@@ -40,4 +40,20 @@ function M.findc(str, c)
     end
 end
 
+function M.nmaps(prefix, group, tbl)
+  local sign = "[" .. group .. "]"
+  -- table.insert(_G.__key_prefixes["n"], prefix, sign)
+  -- table.insert(_G["__kaza"]["prefix"], prefix, sign)
+  _G["__kaza"]["prefix"][prefix] = sign
+  local set = function(key, cmd, desc, opt)
+    local _opt = opt or {}
+    _opt["desc"] = sign .. " " .. desc
+    _opt["noremap"] = true
+    vim.keymap.set("n", prefix .. key, cmd, _opt)
+  end
+  for _, v in ipairs(tbl)  do
+    set(unpack(v))
+  end
+end
+
 return M
