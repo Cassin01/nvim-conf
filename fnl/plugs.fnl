@@ -7,11 +7,12 @@
 
 (local myutil (require :lua.util))
 (local nmaps myutil.nmaps)
+(macro lazy-load [name]
+  `{1 ,name :event ["User plug-lazy-load"] :lazy true})
 
 
 [
 {1 :rktjmp/hotpot.nvim}
-{1 :folke/tokyonight.nvim}
 
 ;;; snippet
 
@@ -123,17 +124,25 @@
 
 ; notify
 {1 :rcarriga/nvim-notify
+ :event :VeryLazy
  :config (lambda []
-           ((. (require :notify) :setup) {:stages :fade_in_slide_out
-                                        :background_colour :FloatShadow
-                                        :timeout 3000 })
+           ((. (require :notify) :setup)
+            {:stages :fade_in_slide_out
+             :background_colour :FloatShadow
+             :timeout 3000
+             })
            ; (set vim.notify (require :notify))
            )
  }
 {1 :folke/noice.nvim
  ; :event ["User plug-lazy-load"]
  :config (lambda []
-           nil
+           ((. (require :noice) :setup)
+            {:cmdline {:enabled true}
+             :messages {:enabled true}
+             :popupmenu {:enabled true}
+             :errors {:view :popup}
+             :notify {:enabled true}})
            ; (ref-f :setup :noice
            ;        {:lsp {:progress {:enabled false}}})
            )
@@ -306,7 +315,7 @@
              ;                                  :node_decremental "<BS>"
              ;                                  :scope_incremental "<S-CR>"}
              ;                         }
-             :ensure_installed [ "nix" "org" "bash" ]  ; "lua" "rust" "c" "org"
+             :ensure_installed [ "nix" "org" "bash" "go"]  ; "lua" "rust" "c" "org"
              :sync_install false
              :auto_install true
              :ignore_install [ "javascript" ]
@@ -797,6 +806,7 @@
 ;           (tset vim.g :hwitch#prefixes _G.__kaza.prefix))}
 
 :tyru/capture.vim
+:tani/vim-typo
 
 {1 :majutsushi/tagbar
  :event ["User plug-lazy-load"]
@@ -1174,16 +1184,15 @@
 ;  :event ["User plug-lazy-load"]
 ;  :dependencies [:Shougo/unite.vim]}
 
-{1 :folke/tokyonight.nvim}
-:shaunsingh/nord.nvim
-{1 :rebelot/kanagawa.nvim :event ["User plug-lazy-load"] :lazy true}
-{1 :sam4llis/nvim-tundra :event ["User plug-lazy-load"] :lazy true}
-{1 :Mofiqul/dracula.nvim :event ["User plug-lazy-load"] :lazy true}
-{1 :zanglg/nova.nvim :event ["User plug-lazy-load"] :lazy true}
-{1 :projekt0n/github-nvim-theme :event ["User plug-lazy-load"] :lazy true}
-{1 :maxmx03/FluoroMachine.nvim :event ["User plug-lazy-load"] :lazy true
- ; :config (lambda [] (ref-f :setup :fluoromachine {}))
- }
+(lazy-load :folke/tokyonight.nvim)
+(lazy-load :shaunsingh/nord.nvim)
+(lazy-load :rebelot/kanagawa.nvim)
+(lazy-load :sam4llis/nvim-tundra)
+(lazy-load :Mofiqul/dracula.nvim)
+(lazy-load :zanglg/nova.nvim)
+(lazy-load :projekt0n/github-nvim-theme)
+; {1 :maxmx03/FluoroMachine.nvim :event ["User plug-lazy-load"] :lazy true}
+:maxmx03/FluoroMachine.nvim
 
 ; :altercation/vim-colors-solarized   ; solarized
 ; :croaker/mustang-vim                ; mustang
