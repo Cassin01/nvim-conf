@@ -52,7 +52,14 @@
 (when (vim.fn.has :mac)
   (map :n "<space>m?" "<cmd>!open dict://<cword><cr>" "[me] mac dictionary"))
 
-(epi _ k (require :core.map.map) (map (unpack k)))
+(fn cdr [a ...]
+  [...])
+(epi _ k (require :core.map.map)
+     (let [ms (. k 1)]
+       (if (= (type ms) :table)
+         (each [_ m (ipairs ms)]
+          (map m (unpack (cdr (unpack k)))))
+         (map (unpack k)))))
 
 ;; veil
 (fn cdr [a ...]

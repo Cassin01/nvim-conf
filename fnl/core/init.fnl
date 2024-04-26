@@ -35,4 +35,3 @@
            (require :map)
            (lplug :command.vim)
            (lplug :terminal.vim)))
-

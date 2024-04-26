@@ -27,7 +27,7 @@
   `(table.insert hl-info (gen-hl ,name ,tbl)))
 
 (let [hl-info []]
-  (add-hl :SpellBad {:fg nil :bg nil :underline true})
+  (add-hl :SpellBad {:fg nil :bg nil :underline false})
   (add-hl :NonText {:underline true})
   (add-hl :SpecialKey {:bg nil :italic true})
   (when-let bg (get-hl :Normal :bg)

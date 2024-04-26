@@ -48,6 +48,21 @@
          (prefix#.map (unpack l#))
          (prefix#.map-f (unpack l#))))))
 
+
+(fn M.nmaps+ [prefix desc tbl]
+  `(let [prefix# ((. (require :kaza.map) :prefix-o) :n ,prefix ,desc)]
+     (fn cdr# [x# ...]
+       [...])
+     (each [_# l# (ipairs ,tbl)]
+       (if (= (type (. l# 1)) :table)
+           (each [_# m# (ipairs (. #l 1))]
+             (if (= (type (. l# 2)) :string)
+                 (prefix#.map m# (unpack (cdr# (unpack l#))))
+                 (prefix#.map-f m# (unpack (cdr# (unpack l#))))))
+           (if (= (type (. l# 2)) :string)
+                 (prefix#.map (unpack l#))
+                 (prefix#.map-f (unpack l#)))))))
+
 (fn M.map [mode key cmd desc]
   `(let [map# (. (require :kaza.map) :map)]
      (map# ,mode ,key ,cmd ,desc)))

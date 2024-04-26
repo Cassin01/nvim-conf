@@ -70,8 +70,12 @@
            )}
 
 {1 :stevearc/oil.nvim
- :config (lambda [] (ref-f :setup :oil))
- }
+ :config (la
+           (ref-f :setup :oil)
+           (nmaps
+             :<Space>oi
+             :oil
+             [["l" (cmd :Oil) "open oil"]]))}
 ; {1 :kyazdani42/nvim-tree.lua ; INFO: startup time
 ;  :dependencies :nvim-tree/nvim-web-devicons
 ;  :disabe true
