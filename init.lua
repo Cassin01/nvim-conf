@@ -53,6 +53,7 @@ require("setup")
 -- vim.cmd([[colorscheme nord]])
 -- vim.cmd([[colorscheme nova]])
 vim.cmd([[colorscheme fluoromachine]])
+-- vim.cmd([[colorscheme default]])
 
 -- vim.cmd([[set background=light]])
 -- vim.cmd([[colorscheme morning]])

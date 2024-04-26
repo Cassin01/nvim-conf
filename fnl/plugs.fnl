@@ -138,19 +138,19 @@
            ; (set vim.notify (require :notify))
            )
  }
-{1 :folke/noice.nvim
- ; :event ["User plug-lazy-load"]
- :config (lambda []
-           ((. (require :noice) :setup)
-            {:cmdline {:enabled true}
-             :messages {:enabled true}
-             :popupmenu {:enabled true}
-             :errors {:view :popup}
-             :notify {:enabled true}})
-           ; (ref-f :setup :noice
-           ;        {:lsp {:progress {:enabled false}}})
-           )
- :dependencies [:MunifTanjim/nui.nvim :rcarriga/nvim-notify]}
+; {1 :folke/noice.nvim
+;  ; :event ["User plug-lazy-load"]
+;  :config (lambda []
+;            ((. (require :noice) :setup)
+;             {:cmdline {:enabled true}
+;              :messages {:enabled true}
+;              :popupmenu {:enabled true}
+;              ; :errors {:view :popup}
+;              :notify {:enabled true}})
+;            ; (ref-f :setup :noice
+;            ;        {:lsp {:progress {:enabled false}}})
+;            )
+;  :dependencies [:MunifTanjim/nui.nvim :rcarriga/nvim-notify]}
 
 {1 :anuvyklack/windows.nvim
  :event ["User plug-lazy-load"]

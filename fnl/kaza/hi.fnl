@@ -7,9 +7,9 @@
   (let [target (vim.api.nvim_get_hl_by_name name 0)]
     (if
       (= part :fg)
-      (.. :# (vim.fn.printf :%0x (. target :foreground)))
+      (.. :# (vim.fn.printf :%06x (or (. target :foreground) 0)))
       (= part :bg)
-      (.. :# (vim.fn.printf :%0x (. target :background)))
+      (.. :# (vim.fn.printf :%06x (or (. target :background) 0)))
       nil)))
 
 (fn hi-clear [group-name]

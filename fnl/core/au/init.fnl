@@ -11,6 +11,8 @@
 (local buf_set_option vim.api.nvim_buf_set_option)
 (local win_set_option vim.api.nvim_win_set_option)
 (local buf_set_keymap vim.api.nvim_buf_set_keymap)
+(fn show [msg]
+  (vim.api.nvim_echo [[msg]] true {}))
 
 ;; remind cursor position
 (au! :restore-position :BufReadPost (when (and (> (vim.fn.line "'\"") 1)
@@ -25,49 +27,52 @@
 
 ;; annotations
 (fn link [name opt]
-  (let [data (vim.api.nvim_get_hl_by_name name 0)]
+  (let [data (or (vim.api.nvim_get_hl_by_name name 0) {})]
     (each [k v (pairs opt)]
       (tset data k v))
     data))
 (fn blightness [color p]
   (let
-    [r (string.sub (vf.printf :%0x (math.floor (* (tonumber (string.sub color 2 3) 16) p))) -2 -1)
-     g (string.sub (vf.printf :%0x (math.floor (* (tonumber  (string.sub color 4 5) 16) p))) -2 -1)
-     b (string.sub (vf.printf :%0x (math.floor (* (tonumber (string.sub color 6 7) 16) p))) -2 -1)]
+    [r (string.sub (vf.printf :%02x (math.floor (* (tonumber (string.sub color 2 3) 16) p))) -2 -1)
+     g (string.sub (vf.printf :%02x (math.floor (* (tonumber  (string.sub color 4 5) 16) p))) -2 -1)
+     b (string.sub (vf.printf :%02x (math.floor (* (tonumber (string.sub color 6 7) 16) p))) -2 -1)]
     (.. :# r g b)))
-(fn get-hl [name part]
-  "name: hlname
-  part: bg or fg"
-  (let [target (va.nvim_get_hl_by_name name 0)]
-    (if
-      (= part :fg)
-      (.. :# (vf.printf :%0x (. target :foreground)))
-      (= part :bg)
-      (.. :# (vf.printf :%0x (. target :background)))
-      nil)))
+; (fn get-hl [name part]
+;   "name: hlname
+;   part: bg or fg"
+;   (let [target (va.nvim_get_hl_by_name name 0)]
+;     (if
+;       (= part :fg)
+;       (.. :# (vf.printf :%0x (or (. target :foreground) 0)))
+;       (= part :bg)
+;       (.. :# (vf.printf :%0x (or (. target :background) 0)))
+;       nil)))
 
 (fn print-second [a b]
   (print (vim.inspect b)))
 (au! :match-hi :ColorScheme
-     (each [_ k (ipairs [;[:Tabs {:bg (blightness (get-hl :Normal :bg) 0.9)}]
-                         [:TrailingSpaces {:bg :#FFa331}]
-                         [:DoubleSpace {:bg :#cff082}]
-                         [:TodoEx {:bg :#44a005 :fg :#F0FFF0}]
-                         [:FoldMark (link :Comment {})
-                          ; (do
-                          ;   (local fg (get-hl :Comment :fg))
-                          ;   (if (= nil fg)
-                          ;     (link :Comment {})
-                          ;     (link :comment (blightness fg 0.8))))
-                          ; (link :Comment {:fg (blightness (get-hl :Comment :fg) 0.8)})
-                          ]
-                         [:CommentHead (link :Comment {:fg :#727ca7})]
-                         [:VertSplit (link :LineNr {})]
-                         [:StatusLine (link :NonText {})]
-                         ; [:StatusLine (link :NonText {:fg (get-hl :StatusLine :fg)})]
-                         ; [:BufferLineFill (link :NonText {:fg (get-hl :BufferLineFill :fg)})]
-                         ])]
-       (vim.api.nvim_set_hl 0 (unpack k))))
+     (do
+       (vim.api.nvim_set_hl 0 :Comment (link :Comment {:fg (blightness (get-hl :Comment :fg) 1.6)}))
+       (each [_ k (ipairs  
+                    [;[:Tabs {:bg (blightness (get-hl :Normal :bg) 0.9)}]
+                     [:TrailingSpaces {:bg :#FFa331}]
+                     [:DoubleSpace {:bg :#cff082}]
+                     [:TodoEx {:bg :#44a005 :fg :#F0FFF0}]
+                     [:FoldMark (link :Comment {})
+                      ; (do
+                      ;   (local fg (get-hl :Comment :fg))
+                      ;   (if (= nil fg)
+                      ;     (link :Comment {})
+                      ;     (link :comment (blightness fg 0.8))))
+                      ; (link :Comment {:fg (blightness (get-hl :Comment :fg) 0.8)})
+                      ]
+                     [:CommentHead (link :Comment {:fg :#727ca7})]
+                     [:VertSplit (link :LineNr {})]
+                     [:StatusLine (link :NonText {})]
+                     ; [:StatusLine (link :NonText {:fg (get-hl :StatusLine :fg)})]
+                     ; [:BufferLineFill (link :NonText {:fg (get-hl :BufferLineFill :fg)})]
+                     ])]
+         (vim.api.nvim_set_hl 0 (unpack k)))))
 (au! :mmatch [:BufWinEnter] ((. (require :core.au.match) :add-matches)))
 
 ;; terminal mode
