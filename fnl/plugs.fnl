@@ -547,8 +547,7 @@
             }
             {1 :quangnguyen30192/cmp-nvim-ultisnips
              :dependencies :nvim-cmp
-             ; :config (λ [] (ref-f :setup :cmp-nvim-ultisnips {}))
-             }
+             :config (λ [] (ref-f :setup :cmp_nvim_ultisnips {}))}
             {1 :zbirenbaum/copilot-cmp :dependencies :nvim-cmp}
             ; :neovim/nvim-lspconfig
             ]
@@ -775,13 +774,17 @@
             ))}
 {1 :tpope/vim-rhubarb :event ["User plug-lazy-load"]} ; enable :Gbrowse
 {1 :tpope/vim-commentary :event ["User plug-lazy-load"]}
-; {1 :LudoPinelli/comment-box.nvim
-;  :config (lambda []
-;  (local cb (require :comment-box))
-;  (nmaps :<Space>o :comment-box
-;         [[:c cb.accbox "accbox"]
-;          [:b cb.lbox "lbox"]
-;          [:l cb.cline "cline"] ])) }
+{1 :LudoPinelli/comment-box.nvim
+   :event ["User plug-lazy-load"]
+   :config (lambda []
+             (local cb (require :comment-box))
+             (fn fnum [f num]
+                (lambda []
+                  (f num)))
+             (nmaps :<Space>o :comment-box
+                    [[:c (fnum cb.ccbox 1) "ccbox"]
+                     [:b (fnum cb.cabox 7) "cabox"]
+                     [:l (fnum cb.llline 9) "llline"]]))}
 {1 :tpope/vim-unimpaired :event ["User plug-lazy-load"]}
 {1 :tpope/vim-surround :event ["User plug-lazy-load"]}
 {1 :tpope/vim-abolish :event ["User plug-lazy-load"]}
