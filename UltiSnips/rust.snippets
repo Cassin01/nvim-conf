@@ -66,6 +66,7 @@ snippet pre "pre write"
 #![allow(unused_mut)]
 #![allow(dead_code)]
 #![allow(unused_variables)]
+#![allow(unused_macros)]
 
 use std::collections::HashSet;
 use std::collections::HashMap;
@@ -74,6 +75,11 @@ use std::collections::VecDeque;
 use std::cmp::{max, min};
 use std::mem::swap;
 use std::io::prelude::*; // input()
+// use itertools::Itertools; // permutations and combinations
+
+macro_rules! round {
+    ($x:expr, $scale:expr) => (($x * $scale).round() / $scale)
+}
 
 fn input<T>() -> T
     where T: std::str::FromStr {
@@ -194,11 +200,11 @@ fn input<T>() -> T
 }
 endsnippet
 
-snippet inputc "input char"
+snippet inn "input number"
 let ${1:mut }n = input::<${2:usize}>();
 endsnippet
 
-snippet inputv "input vector"
+snippet inv "input vector"
 let ${1:mut }v = (0..${2:n})
 	.map(|_| input::<${3:usize}>())
 	.collect::<Vec<_>>();
@@ -314,6 +320,24 @@ pub mod modular {
 }
 
 use modular::Mod;
+endsnippet
+
+snippet math "math"
+fn min<T: Ord>(a: T, b: T) -> T {
+    if a < b {
+        a
+    } else {
+        b
+    }
+}
+
+fn max<T: Ord>(a: T, b: T) -> T {
+    if a > b {
+        a
+    } else {
+        b
+    }
+}
 endsnippet
 
 snippet pl "println"

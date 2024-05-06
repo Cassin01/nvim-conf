@@ -52,7 +52,10 @@
   (print (vim.inspect b)))
 (au! :match-hi :ColorScheme
      (do
-       (vim.api.nvim_set_hl 0 :Comment (link :Comment {:fg (blightness (get-hl :Comment :fg) 1.6)}))
+       (when (= vim.g.colors_name "fluoromachine")
+         (vim.api.nvim_set_hl 0 :Comment (link :Comment {:fg (blightness (get-hl :Comment :fg) 1.6)}))
+         (vim.api.nvim_set_hl 0 :Folded (link :Folded {:bg (blightness (get-hl :Folded :bg) 0.5)
+                                                       :fg (blightness (get-hl :Folded :fg) 1.5)})))
        (each [_ k (ipairs  
                     [;[:Tabs {:bg (blightness (get-hl :Normal :bg) 0.9)}]
                      [:TrailingSpaces {:bg :#FFa331}]
@@ -251,8 +254,8 @@
                )
    :pattern [:*.scm]
    :group pattern})
-
 ;; }}}
+
 (when (vim.fn.has :mac)
   (au! :adoc_preview :BufWritePost
        (let [cmd (concat-with
