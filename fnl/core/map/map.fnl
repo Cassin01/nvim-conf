@@ -28,6 +28,7 @@
  [[:n :v] :sh :0 "line start"]
  [[:n :v] :sl :$ "line end"]
  [[:n :v] :ss :^ "first non-blank in line"]
+ [[:n :v] :sw :^w "second non-blank in line"]
  [[:n :v] :se :G "last line"]
  [[:n :v] :sg :gg "file start"]
  [[:n :v] :st :H "window top"]

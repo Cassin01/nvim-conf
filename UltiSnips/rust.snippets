@@ -75,7 +75,10 @@ use std::collections::VecDeque;
 use std::cmp::{max, min};
 use std::mem::swap;
 use std::io::prelude::*; // input()
+// use superslice::Ext; // lower_bound, upper_bound
 // use itertools::Itertools; // permutations and combinations
+// Mint = ac_library::ModInt1000000007;
+const INF: usize = 1 << 60;
 
 macro_rules! round {
     ($x:expr, $scale:expr) => (($x * $scale).round() / $scale)
@@ -94,6 +97,33 @@ fn input<T>() -> T
     token.parse().ok().unwrap()
 }
 
+// read a line as string
+fn input_line<T>() -> T
+where
+    T: std::str::FromStr,
+{
+    let stdin = std::io::stdin();
+    let token: String = stdin
+        .lock()
+        .bytes()
+        .map(|c| c.unwrap() as char).take_while(|c| *c != '\n').collect();
+    token.parse().ok().unwrap()
+}
+
+fn lower_bound(v: &[i64], x: i64) -> usize {
+    let mut l = 0;
+    let mut r = v.len();
+    while l + 1 < r {
+        let m = (l + r) / 2;
+        if v[m] < x {
+            l = m;
+        } else {
+            r = m;
+        }
+    }
+    l
+}
+
 fn main() {
     ${VISUAL}${0:${VISUAL/(.*)//}}
 }
@@ -106,6 +136,7 @@ mod tests {
     #[test]
     fn tester() {
         let inputs = [
+// denx super position for leap
 ("
 ", "
 "),
@@ -124,6 +155,11 @@ mod tests {
         ];
 
         for (input, expected) in inputs.iter() {
+            if input == &"\n" { continue; }
+            if expected == &"\n" {
+                eprintln!("expected is empty. continue.");
+                continue;
+            }
             call(input, expected.to_string());
         }
     }
@@ -158,12 +194,12 @@ mod tests {
 
         // convert '\n' into space
         let actual = res_string
-            .replace("\n", " ")
+            .replace('\n', " ")
             .trim_end_matches(' ')
             .trim_start_matches(' ')
             .to_owned();
         let expected = expected
-            .replace("\n", " ")
+            .replace('\n', " ")
             .trim_end_matches(' ')
             .trim_start_matches(' ')
             .to_owned();
@@ -205,7 +241,7 @@ let ${1:mut }n = input::<${2:usize}>();
 endsnippet
 
 snippet inv "input vector"
-let ${1:mut }v = (0..${2:n})
+let ${1:mut }A = (0..${2:N})
 	.map(|_| input::<${3:usize}>())
 	.collect::<Vec<_>>();
 endsnippet
@@ -339,6 +375,26 @@ fn max<T: Ord>(a: T, b: T) -> T {
     }
 }
 endsnippet
+
+snippet binary_search "binary search"
+fn bineary_search(d: &[usize], t: usize) -> usize {
+    let mut left = 0;
+    let mut right = d.len();
+    while left < right {
+        let mid = (left + right) / 2;
+        left = if d[mid] < t { mid + 1 } else { left };
+        right = if d[mid] > t { mid } else { right };
+        if d[mid] == t {
+            return mid; // found
+        }
+    }
+    // the value most close to key is left or left - 1
+    // You dont have to check the boundry
+    left
+}
+endsnippet
+
+# Utility
 
 snippet pl "println"
 println!("${1:{:?}}", ${VISUAL}${2:${VISUAL/(.*)//}});

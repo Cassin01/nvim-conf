@@ -40,6 +40,19 @@ local function backspace()
             return "<BS><Del>"
         end
     end
+    -- "  " -> ""
+    local eol = vim.api.nvim_strwidth(line)
+    if col >= 3 and col + 1 <= eol then
+        local prev__ = line:sub(col - 2, col - 2)
+        local next__ = line:sub(col + 1, col + 1)
+        if prev_ == " " and next_ == " " then
+            for _, v in ipairs(brackets) do
+                if v.prev_ == prev__ and v.next_ == next__ then
+                    return "<BS><Del>"
+                end
+            end
+        end
+    end
     return "<BS>"
 end
 

@@ -71,6 +71,7 @@
                       ]
                      [:CommentHead (link :Comment {:fg :#727ca7})]
                      [:VertSplit (link :LineNr {})]
+                     [:WinSeparator (link :LineNr {})]
                      [:StatusLine (link :NonText {})]
                      ; [:StatusLine (link :NonText {:fg (get-hl :StatusLine :fg)})]
                      ; [:BufferLineFill (link :NonText {:fg (get-hl :BufferLineFill :fg)})]

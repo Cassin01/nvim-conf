@@ -41,6 +41,7 @@ u_cmd("RustAddDependencies", function()
 
   local crates = check({
     itertools = "use itertools.*$",
+    superslice = "use superslice.*$", -- lower_bound, upper_bound
     ['ac-library-rs'] = "^.+ac_library.*"
   })
   for _, v in pairs(crates) do

@@ -7,8 +7,13 @@
 
 (local myutil (require :lua.util))
 (local nmaps myutil.nmaps)
-(macro lazy-load [name]
-  `{1 ,name :event ["User plug-lazy-load"] :lazy true})
+(macro lazy-load [name ?opts]
+  (if (= ?opts nil)
+    `{1 ,name :event ["User plug-lazy-load"] :lazy true}
+    (let [core {1 name :event ["User plug-lazy-load"] :lazy true}]
+      (each [k v (pairs ?opts)]
+        (tset core k v))
+      `core)))
 
 
 [
@@ -323,7 +328,7 @@
              :sync_install false
              :auto_install true
              :ignore_install [ "javascript" ]
-             :highlight {:enable false
+             :highlight {:enable true
                          :disable [ "c" "rust" "org" "vim" "tex"]
                          :additional_vim_regex_highlighting ["org"]}
              :rainbow {:enable true
@@ -1049,6 +1054,11 @@
 
 ; {1 :uki00a/denops-pomodoro.vim}
 ; {1 :skanehira/denops-docker.vim}
+{1 :epwalsh/pomo.nvim 
+ :cmd ["TimerStart" "TimerRepeat"]
+ :lazy true
+ :init (λ [] (ref-f :setup :pomo {}))
+ :dependencies [:rcarriga/nvim-notify]}
 
 ; ;; Async
 ; {1 :ms-jpq/lua-async-await
@@ -1201,37 +1211,38 @@
 ; {1 :maxmx03/FluoroMachine.nvim :event ["User plug-lazy-load"] :lazy true}
 :maxmx03/FluoroMachine.nvim
 
-; :altercation/vim-colors-solarized   ; solarized
-; :croaker/mustang-vim                ; mustang
-; :jeffreyiacono/vim-colors-wombat    ; wombat
-; :nanotech/jellybeans.vim            ; jellybeans
-; :vim-scripts/Lucius                 ; lucius
-; :vim-scripts/Zenburn                ; zenburn
-; :mrkn/mrkn256.vim                   ; mrkn256
-; :jpo/vim-railscasts-theme           ; railscasts
-; :therubymug/vim-pyte                ; pyte
-; :tomasr/molokai                     ; molokai
-; :chriskempson/vim-tomorrow-theme    ; tomorrow night
-; :vim-scripts/twilight               ; twilight
-; :w0ng/vim-hybrid                    ; hybrid
-; :freeo/vim-kalisi                   ; kalisi
-; :morhetz/gruvbox                    ; gruvbox
-; :toupeira/vim-desertink             ; desertink
-; :sjl/badwolf                        ; badwolf
-; :itchyny/landscape.vim              ; landscape
-; :joshdick/onedark.vim               ; onedark in atom
-; :gosukiwi/vim-atom-dark             ; atom-dark
-; :liuchengxu/space-vim-dark          ; space-vim-dark
-; :kristijanhusak/vim-hybrid-material ; hybrid_material
-; :drewtempelmeyer/palenight.vim      ; palenight
-; :haishanh/night-owl.vim             ; night owl
-; :arcticicestudio/nord-vim           ; nord
-; :cocopon/iceberg.vim                ; iceberg
-; :hzchirs/vim-material               ; vim-material
-; :relastle/bluewery.vim              ; bluewery
-; :mhartington/oceanic-next           ; OceanicNext
-; :Mangeshrex/uwu.vim                 ; uwu
-; :ulwlu/elly.vim                     ; elly
-; :michaeldyrynda/carbon.vim
-; :rafamadriz/neon
+;; Not currenlty using
+(lazy-load :altercation/vim-colors-solarized   ) ; solarized
+(lazy-load :croaker/mustang-vim                ) ; mustang
+(lazy-load :jeffreyiacono/vim-colors-wombat    ) ; wombat
+(lazy-load :nanotech/jellybeans.vim            ) ; jellybeans
+(lazy-load :vim-scripts/Lucius                 ) ; lucius
+(lazy-load :vim-scripts/Zenburn                ) ; zenburn
+(lazy-load :mrkn/mrkn256.vim                   ) ; mrkn256
+(lazy-load :jpo/vim-railscasts-theme           ) ; railscasts
+(lazy-load :therubymug/vim-pyte                ) ; pyte
+(lazy-load :tomasr/molokai                     ) ; molokai
+(lazy-load :chriskempson/vim-tomorrow-theme    ) ; tomorrow night
+(lazy-load :vim-scripts/twilight               ) ; twilight
+(lazy-load :w0ng/vim-hybrid                    ) ; hybrid
+(lazy-load :freeo/vim-kalisi                   ) ; kalisi
+(lazy-load :morhetz/gruvbox                    ) ; gruvbox
+(lazy-load :toupeira/vim-desertink             ) ; desertink
+(lazy-load :sjl/badwolf                        ) ; badwolf
+(lazy-load :itchyny/landscape.vim              ) ; landscape
+(lazy-load :joshdick/onedark.vim               ) ; onedark in atom
+(lazy-load :gosukiwi/vim-atom-dark             ) ; atom-dark
+(lazy-load :liuchengxu/space-vim-dark          ) ; space-vim-dark
+(lazy-load :kristijanhusak/vim-hybrid-material ) ; hybrid_material
+(lazy-load :drewtempelmeyer/palenight.vim      ) ; palenight
+(lazy-load :haishanh/night-owl.vim             ) ; night owl
+(lazy-load :arcticicestudio/nord-vim           ) ; nord
+(lazy-load :cocopon/iceberg.vim                ) ; iceberg
+(lazy-load :hzchirs/vim-material               ) ; vim-material
+(lazy-load :relastle/bluewery.vim              ) ; bluewery
+(lazy-load :mhartington/oceanic-next           ) ; OceanicNext
+;(lazy-load :Mangeshrex/uwu.vim                 ) ; uwu
+; (lazy-load :ulwlu/elly.vim                     ) ; elly
+; (lazy-load :michaeldyrynda/carbon.vim          ) ; carbon
+(lazy-load :rafamadriz/neon                    ) ; neon
 ]
