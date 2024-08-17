@@ -32,6 +32,7 @@ local default_on_attach = function(client, bufnr)
     require("virtualtypes").on_attach()
 end
 local default_capabilities = require("cmp_nvim_lsp").default_capabilities()
+-- default_capabilities.offsetEncoding = { "utf-8", "utf-16" }
 
 lspconfig.util.default_config = vim.tbl_extend("force", lspconfig.util.default_config, {
     -- on_attach = default_on_attach,
@@ -146,6 +147,11 @@ local setup_handlers = {
             }
         })
     end,
+    -- ["protols"] = function()
+    --     lspconfig.protols.setup({
+    --         on_attach = default_on_attach,
+    --     })
+    -- end
 }
 
 local ok, secret = pcall(require, "secret")
