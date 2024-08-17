@@ -54,3 +54,12 @@
 ;       (vim.fn.mkdir target-path :p 0700))
 ;     (tset vim.o :undodir target-path)
 ;     (tset vim.o :undofile true)))
+
+;; ignore some messages
+ (let [notify (. vim :notify)]
+  (tset
+   vim :notify
+   (lambda [msg ...]
+    (when (: msg :match "warning: multiple different client offset_encodings")
+     (lua :return))
+    (notify msg ...))))
