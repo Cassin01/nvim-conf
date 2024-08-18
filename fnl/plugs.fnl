@@ -76,11 +76,14 @@
 
 {1 :stevearc/oil.nvim
  :config (la
-           (ref-f :setup :oil)
+           (ref-f :setup :oil {:win_options {:signcolumn :yes:2}})
            (nmaps
              :<Space>oi
              :oil
              [["l" (cmd :Oil) "open oil"]]))}
+{1 :refractalize/oil-git-status.nvim
+  :dependencies :stevearc/oil.nvim
+ :config true}
 ; {1 :kyazdani42/nvim-tree.lua ; INFO: startup time
 ;  :dependencies :nvim-tree/nvim-web-devicons
 ;  :disabe true

@@ -60,6 +60,9 @@
   (tset
    vim :notify
    (lambda [msg ...]
-    (when (: msg :match "warning: multiple different client offset_encodings")
+    (when
+      (or
+        (: msg :match "warning: multiple different client offset_encodings")
+        (: msg :match "treesitter"))
      (lua :return))
     (notify msg ...))))

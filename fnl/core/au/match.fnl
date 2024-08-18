@@ -64,7 +64,7 @@
       (vf.matchadd :TodoEx (todo-ex))
       (vf.matchadd :TodoEx "@dev")
       (vf.matchadd :Todo (todo))
-      ; (vf.matchadd :TSNote (todo-ts))
+      (vf.matchadd :TSNote (todo-ts))
       (vf.matchadd :Error (typo))
       (vf.matchadd :FoldMark (foldmarker))
       (each [ft matches (pairs fts)]

@@ -61,6 +61,7 @@
                      [:TrailingSpaces {:bg :#FFa331}]
                      [:DoubleSpace {:bg :#cff082}]
                      [:TodoEx {:bg :#44a005 :fg :#F0FFF0}]
+                     [:TSNote {:bg :#086788 :fg :#F0FFF0}]
                      [:FoldMark (link :Comment {})
                       ; (do
                       ;   (local fg (get-hl :Comment :fg))
