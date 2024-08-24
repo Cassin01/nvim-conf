@@ -61,9 +61,19 @@
                                                       (callback))))
                  (uv.timer_start timer ms 0 callback))
 
-(fn lazy [ms callback]
-  (async-fn (lambda []
-              (timeout ms callback))))
+(fn lazy [ms callback ...]
+  (let [callback_
+        (if (= (select :# ...) 0)
+          (lambda []
+             (callback))
+          (let [arg [...]]
+            (lambda []
+              (callback (unpack arg)))))]
+    (async-fn
+      (lambda []
+        (timeout
+          ms
+          callback_)))))
 
 (fn syntax [group pat ...]
   (vim.cmd (concat-with " " :syntax :match group pat ...)))

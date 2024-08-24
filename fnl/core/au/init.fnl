@@ -56,7 +56,7 @@
          (vim.api.nvim_set_hl 0 :Comment (link :Comment {:fg (blightness (get-hl :Comment :fg) 1.6)}))
          (vim.api.nvim_set_hl 0 :Folded (link :Folded {:bg (blightness (get-hl :Folded :bg) 0.5)
                                                        :fg (blightness (get-hl :Folded :fg) 1.5)})))
-       (each [_ k (ipairs  
+       (each [_ k (ipairs
                     [;[:Tabs {:bg (blightness (get-hl :Normal :bg) 0.9)}]
                      [:TrailingSpaces {:bg :#FFa331}]
                      [:DoubleSpace {:bg :#cff082}]
@@ -76,6 +76,7 @@
                      [:StatusLine (link :NonText {})]
                      ; [:StatusLine (link :NonText {:fg (get-hl :StatusLine :fg)})]
                      ; [:BufferLineFill (link :NonText {:fg (get-hl :BufferLineFill :fg)})]
+                     ; [:BufferLineBackground (link :bufferLineBackground (get-hl  :BufferLineInfoVisible :bg))]
                      ])]
          (vim.api.nvim_set_hl 0 (unpack k)))))
 (au! :mmatch [:BufWinEnter] ((. (require :core.au.match) :add-matches)))

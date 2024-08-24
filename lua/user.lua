@@ -26,7 +26,7 @@ local bookmark_dirs = {
     org = "~/org/",
     projects = "~/all_year",
     lab = "~/2022/lab",
-    sche = "~/.config/nvim/data/10.sche",
+    sche = "~/.config/nvim/data/24.sche",
     ghq = "~/ghq",
 }
 

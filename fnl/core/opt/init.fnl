@@ -56,13 +56,21 @@
 ;     (tset vim.o :undofile true)))
 
 ;; ignore some messages
- (let [notify (. vim :notify)]
-  (tset
-   vim :notify
-   (lambda [msg ...]
-    (when
-      (or
-        (: msg :match "warning: multiple different client offset_encodings")
-        (: msg :match "treesitter"))
-     (lua :return))
-    (notify msg ...))))
+ (let
+   [notify (. vim :notify)
+           nvim_notify (. vim :api :nvim_notify)]
+   (tset
+     vim :notify
+     (lambda [msg ...]
+       nil
+       ; (when
+       ;   (or
+       ;     (: msg :match "warning: multiple different client offset_encodings")
+       ;     (: msg :match "treesitter")
+       ;     (: msg :match "Error executing vim.schedule lua callback:"))
+       ;   (lua :return))
+       ; (notify msg ...)
+       ))
+   (tset (. vim :api)
+         :nvim_notify 
+         (lambda [msg ...] nil)))

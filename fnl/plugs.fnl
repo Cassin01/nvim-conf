@@ -291,7 +291,7 @@
 
             (local {: lazy} (require :kaza.cmd))
             (local set-hl
-              (lambda []
+              (lambda [patt]
                 (local bg (get-hl :Normal :bg))
                 (when (not= bg nil)
                   (fn bufferline [bg]
@@ -302,14 +302,16 @@
                       (local elements (unfold-iter (line:gmatch "%S+")))
                       (local hi-name (. elements 1))
                       (when (not= hi-name nil)
-                        (when (not= (hi-name:match "^BufferLine.*$") nil)
+                        (when (not= (hi-name:match patt) nil)
                           (vim.cmd (.. "hi " hi-name " guibg=" bg))))
                       nil))
-                   (bufferline bg)))
-                  )
-            ; (lazy 1000 set-hl)
-            (set-hl)
-            )}
+                   (bufferline bg))))
+            (lazy 1000 set-hl "^BufferLine.*$")
+            (let [g (vim.api.nvim_create_augroup :bufferline-overwrite-devicon {:clear true})]
+              (au! 
+                g
+                [:TabNew]
+                (set-hl "^BufferLineDevIcon.*$"))))}
 
 {1 :sheerun/vim-polyglot}
 {1 :David-Kunz/markid}
@@ -1004,7 +1006,7 @@
            (sche.setup {;:sche_path (vim.fn.expand "~/all_year/sche.nvim/my_calendar.sche")
                         :notify_todays_schedule false
                         :notify_tomorrows_schedule false
-                        :sche_path (vim.fn.expand "~/.config/nvim/data/10.sche")
+                        :sche_path (vim.fn.expand "~/.config/nvim/data/24.sche")
                         :syntax {:month "'^\\(\\d\\|\\d\\d\\)月'"}}))}
 
 ; ;; deno
