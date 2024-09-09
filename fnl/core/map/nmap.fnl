@@ -150,9 +150,21 @@
              (vim.api.nvim_open_win buf true {:relative :editor :style :minimal :row 3 :col 3 :height 40 :width 150}))) "show message"]
    [:em (la (let [width 27
                   height 30
-                  buf (vim.api.nvim_create_buf false true)]
+                  buf
+                  ; (if false
+                    (let [nvim-cache (. (require :kaza.file) :nvim-cache)
+                          dpath (.. (nvim-cache) :/my)
+                          fpath (.. dpath :/memo.org)]
+                      ; (print fpath)
+                      ; (when (not (vf.isdirectory dpath))
+                      ;   (os.execute (.. "mkdir " dpath)))
+                      ; (when (not (vf.filewritable fpath))
+                      ;   (os.excute (.. "touch " fpath)))
+                      (vf.bufadd fpath))
+                    ; (vim.api.nvim_create_buf false true)
+                    ]
               (vim.api.nvim_buf_set_option buf :filetype :org)
-              (vim.api.nvim_buf_set_lines buf 0 height false ["Note"])
+              ; (vim.api.nvim_buf_set_lines buf 0 height false ["MEMO"])
               (vim.api.nvim_open_win buf true {:relative :editor
                                                :style :minimal
                                                :border :rounded

@@ -31,7 +31,7 @@
   (add-hl :NonText {:underline true})
   (add-hl :SpecialKey {:bg nil :italic true})
   (when-let bg (get-hl :Normal :bg)
-    (add-hl :StatusLine {:fg bg})
+    (add-hl :StatusLine {:fg bg :bg bg})
     (add-hl :StatusLineNC {:fg bg})
     (add-hl :WinBar {:bg bg})
     (add-hl :WinBarNC {:bg bg}))

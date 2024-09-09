@@ -23,6 +23,7 @@
  [:n :U :<C-r> "redo"]
  [:n :<space><c-i> "<cmd>echo 'c-i'<cr>" "for test"]
  [:n :<space><c-u> "<cmd> echom 'c-u'<cr>" "c-u for test"]
+ [:n :<F7> "<cmd>!make<cr>" "make"]
  ; [:n :<c-s> inc-search "incremental search"]
 
  [[:n :v] :sh :0 "line start"]

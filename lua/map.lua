@@ -171,10 +171,14 @@ table.insert(
         {
             prefix = "c;",
             ret = function()
-                local header = string.format(vim.opt_local.commentstring["_value"], " {{{ ")
-                local footer = string.format(vim.opt_local.commentstring["_value"], " }}} ")
+                local header = string.format(vim.opt_local.commentstring["_value"], " {{{")
+                local footer = string.format(vim.opt_local.commentstring["_value"], " }}}")
                 return header .. footer .. string.rep("<Left>", string.len(footer)) .. "<CR><ESC>O" .. string.rep("<Space>", vim.bo.shiftwidth)
             end
+        },
+        {
+            prefix = "cc;",
+            ret = "{{{"
         },
     })
 )

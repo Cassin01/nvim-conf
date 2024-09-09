@@ -51,34 +51,44 @@
 (fn print-second [a b]
   (print (vim.inspect b)))
 (au! :match-hi :ColorScheme
-     (do
-       (when (= vim.g.colors_name "fluoromachine")
-         (vim.api.nvim_set_hl 0 :Comment (link :Comment {:fg (blightness (get-hl :Comment :fg) 1.6)}))
-         (vim.api.nvim_set_hl 0 :Folded (link :Folded {:bg (blightness (get-hl :Folded :bg) 0.5)
-                                                       :fg (blightness (get-hl :Folded :fg) 1.5)})))
-       (each [_ k (ipairs
-                    [;[:Tabs {:bg (blightness (get-hl :Normal :bg) 0.9)}]
-                     [:TrailingSpaces {:bg :#FFa331}]
-                     [:DoubleSpace {:bg :#cff082}]
-                     [:TodoEx {:bg :#44a005 :fg :#F0FFF0}]
-                     [:TSNote {:bg :#086788 :fg :#F0FFF0}]
-                     [:FoldMark (link :Comment {})
-                      ; (do
-                      ;   (local fg (get-hl :Comment :fg))
-                      ;   (if (= nil fg)
-                      ;     (link :Comment {})
-                      ;     (link :comment (blightness fg 0.8))))
-                      ; (link :Comment {:fg (blightness (get-hl :Comment :fg) 0.8)})
-                      ]
-                     [:CommentHead (link :Comment {:fg :#727ca7})]
-                     [:VertSplit (link :LineNr {})]
-                     [:WinSeparator (link :LineNr {})]
-                     [:StatusLine (link :NonText {})]
-                     ; [:StatusLine (link :NonText {:fg (get-hl :StatusLine :fg)})]
-                     ; [:BufferLineFill (link :NonText {:fg (get-hl :BufferLineFill :fg)})]
-                     ; [:BufferLineBackground (link :bufferLineBackground (get-hl  :BufferLineInfoVisible :bg))]
-                     ])]
-         (vim.api.nvim_set_hl 0 (unpack k)))))
+     (let [{: lazy} (require :kaza.cmd)]
+       (lazy
+         1000
+         (lambda []
+           (do
+             (when (= vim.g.colors_name "fluoromachine")
+               (vim.api.nvim_set_hl 0 :Comment (link :Comment {:fg (blightness (get-hl :Comment :fg) 1.6)}))
+               (vim.api.nvim_set_hl 0 :Folded (link :Folded {:bg (blightness (get-hl :Folded :bg) 0.5)
+                                                             :fg (blightness (get-hl :Folded :fg) 1.5)})))
+             (each [_ k (ipairs
+                          [;[:Tabs {:bg (blightness (get-hl :Normal :bg) 0.9)}]
+                           [:TrailingSpaces {:bg :#FFa331}]
+                           [:DoubleSpace {:bg :#cff082}]
+                           [:TodoEx {:bg :#44a005 :fg :#F0FFF0}]
+                           [:TSNote {:bg :#086788 :fg :#F0FFF0}]
+                           [:FoldMark (link :Comment {})
+                            ; (do
+                                ;   (local fg (get-hl :Comment :fg))
+                                ;   (if (= nil fg)
+                                      ;     (link :Comment {})
+                                      ;     (link :comment (blightness fg 0.8))))
+                            ; (link :Comment {:fg (blightness (get-hl :Comment :fg) 0.8)})
+                            ]
+                           [:CommentHead (link :Comment {:fg :#727ca7})]
+                           [:VertSplit (link :LineNr {})]
+                           [:WinSeparator (link :LineNr {})]
+                           ; [:StatusLine (link :NonText {:bg (get-hl :Normal :bg)})]
+                           ; [:StatusLine (link :NonText {:fg (get-hl :StatusLine :fg)})]
+                           ; [:BufferLineFill (link :NonText {:fg (get-hl :BufferLineFill :fg)})]
+                           ; [:BufferLineBackground (link :bufferLineBackground (get-hl  :BufferLineInfoVisible :bg))]
+                           ])]
+               (vim.api.nvim_set_hl 0 (unpack k))))))))
+; (au! :mmatch [:BufWinEnter :ColorScheme :ColorSchemePre]
+;      (let [{: lazy} (require :kaza.cmd)]
+;        (lazy
+;          1000
+;          (lambda []
+;            ((. (require :core.au.match) :add-matches))))))
 (au! :mmatch [:BufWinEnter] ((. (require :core.au.match) :add-matches)))
 
 ;; terminal mode
@@ -154,8 +164,14 @@
 (create_autocmd
   [:BufRead :BufNewFile]
   {:callback (λ []
-               (buf_set_option 0 :commentstring "// %s")
-               (win_set_option 0 :foldmethod :indent)
+               (vim.api.nvim_buf_set_option 0 :commentstring "// %s")
+               (vim.api.nvim_win_set_option 0 :foldmethod :indent)
+               (let [bn (vim.fn.line :$)
+                     wn (vim.fn.winheight 0)]
+                 (vim.notify bn)
+                 (vim.notify wn)
+                 (when (< bn (* wn 2))
+                   (vim.api.nvim_win_set_option 0 :foldenable false)))
                (buf_set_keymap 0
                                :i
                                :/*
@@ -320,14 +336,14 @@
 
 
 ;; bufferline
-(au! :reload-devicon
-     ; [:BufWinEnter :BufWinLeave :BufReadPost]
-     ; [:BufWinEnter :TabEnter :WinEnter]
-     [:BufEnter :BufLeave :WinEnter :WinLeave :TabEnter :TabLeave :BufWinEnter :BufWinLeave :BufReadPost :BufReadPre]
-     (do
-       (when-let fg (get-hl :Comment :fg)
-                 (local cs (vim.api.nvim_get_hl 0 {}))
-                 (each [hi-name _ (pairs cs)]
-                   (when (not= (hi-name:match "^BufferLineDevIcon.*Inactive$") nil)
-                     (vim.cmd (.. "hi " hi-name " guifg=" fg))))))
-     {})
+; (au! :reload-devicon
+;      ; [:BufWinEnter :BufWinLeave :BufReadPost]
+;      ; [:BufWinEnter :TabEnter :WinEnter]
+;      [:BufEnter :BufLeave :WinEnter :WinLeave :TabEnter :TabLeave :BufWinEnter :BufWinLeave :BufReadPost :BufReadPre]
+;      (do
+;        (when-let fg (get-hl :Comment :fg)
+;                  (local cs (vim.api.nvim_get_hl 0 {}))
+;                  (each [hi-name _ (pairs cs)]
+;                    (when (not= (hi-name:match "^BufferLineDevIcon.*Inactive$") nil)
+;                      (vim.cmd (.. "hi " hi-name " guifg=" fg))))))
+;      {})

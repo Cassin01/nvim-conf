@@ -34,6 +34,11 @@
   (local cmd "echo expand(\"$HOME/.config/nvim\")")
   (vim.api.nvim_exec cmd true))
 
+;;; get `~/.cache/nvim`
+(fn M.nvim-cache []
+  (local cmd "echo expand(\"$HOME/.cache/nvim\")")
+  (vim.api.nvim_exec cmd true))
+
 ;;; read_all
 (fn M.read_file [path]
   (local (file msg) (io.open path "rb"))

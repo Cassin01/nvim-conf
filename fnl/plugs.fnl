@@ -77,6 +77,7 @@
 {1 :stevearc/oil.nvim
  :config (la
            (ref-f :setup :oil {:win_options {:signcolumn :yes:2}})
+           (map :n :<F3> (cmd :Oil) "open oil")
            (nmaps
              :<Space>oi
              :oil
@@ -308,10 +309,10 @@
                    (bufferline bg))))
             (lazy 1000 set-hl "^BufferLine.*$")
             (let [g (vim.api.nvim_create_augroup :bufferline-overwrite-devicon {:clear true})]
-              (au! 
+              (au!
                 g
-                [:TabNew]
-                (set-hl "^BufferLineDevIcon.*$"))))}
+                [:WinEnter]
+                (lazy 1000 set-hl "^BufferLineDevIcon.*$"))))}
 
 {1 :sheerun/vim-polyglot}
 {1 :David-Kunz/markid}
@@ -334,7 +335,7 @@
              :auto_install true
              :ignore_install [ "javascript" ]
              :highlight {:enable true
-                         :disable [ "c" "rust" "org" "vim" "tex"]
+                         :disable [ "c" "rust" "org" "vim" "tex" "typescript"]
                          :additional_vim_regex_highlighting ["org"]}
              :rainbow {:enable true
                        :extended_mode true
@@ -1059,7 +1060,7 @@
 
 ; {1 :uki00a/denops-pomodoro.vim}
 ; {1 :skanehira/denops-docker.vim}
-{1 :epwalsh/pomo.nvim 
+{1 :epwalsh/pomo.nvim
  :cmd ["TimerStart" "TimerRepeat"]
  :lazy true
  :init (λ [] (ref-f :setup :pomo {}))
@@ -1128,6 +1129,24 @@
 ;; rust
 {1 :rust-lang/rust.vim
  :event ["User plug-lazy-load"]}
+
+;; go
+{1 :ray-x/go.nvim
+ :dependencies ["ray-x/guihua.lua"
+               "neovim/nvim-lspconfig"
+               "nvim-treesitter/nvim-treesitter"
+               ]
+ :config (la (ref-f :setup :go {})
+             (let [g (vim.api.nvim_create_augroup :GoFormat {:clear true})]
+               (au!
+                 g
+                 [:BufWritePre]
+                 (ref-f :goimports :go.format)
+                 {:pattern :*.go})))
+ :event ["CmdlineEnter"]
+ :ft [:go :gomod]
+ :build ":lua require(\"go.install\").update_all_sync()"
+ }
 
 ;; tex
 {1 :https://github.com/lervag/vimtex
