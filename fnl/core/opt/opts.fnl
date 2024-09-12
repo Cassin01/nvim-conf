@@ -37,8 +37,10 @@
  :ruler false
  :wrapmargin 2 ; Number of characters from the right window border where wrapping starts.
  :history 1000
- :ttimeout false ; default on
- :ttimeoutlen 0
+ ; :ttimeout false ; default on
+ ; :ttimeoutlen 0
+ :timeout true
+ :timeoutlen 1000
  :confirm true
  ; :lazyredraw true ; WARN: In trial
  }

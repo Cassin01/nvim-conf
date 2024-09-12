@@ -9,6 +9,7 @@
  [:i :<c-g><c-l> :<esc>guvbgi "lower case"]
  [:i :<left> :<c-g>U<left> "left"]
  [:i :<right> :<c-g>U<right> "right"]
+ [:i "<C-i>" :<esc>o :newline]
  [:t :<esc> :<C-\><C-n> "end insert mode"]
 
  [:x :<space>ds ::s/\%V\s//g<cr><cmd>noh<cr> "delete spaces"]

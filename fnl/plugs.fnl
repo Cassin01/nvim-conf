@@ -644,8 +644,10 @@
                           ;                         (cmp.mapping.complete)
                           ;                         (fallback))))
                           :<c-e> (cmp.mapping.abort)
-                          :<c-p> (cmp.mapping.select_prev_item)
-                          :<c-n> (cmp.mapping.select_next_item)
+                          :<UP> vim.NIL
+                          :<Down> vim.NIL
+                          ; :<c-p> (cmp.mapping.select_prev_item)
+                          ; :<c-n> (cmp.mapping.select_next_item)
                           :<cr> (cmp.mapping.confirm {:select false}) }) })
            (vim.api.nvim_set_hl 0 :CmpItemKindCopilot {:fg :#6CC644})
            (cmp.setup.cmdline :/ {:mapping (cmp.mapping.preset.cmdline)

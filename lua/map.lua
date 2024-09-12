@@ -1,7 +1,7 @@
 vim.keymap.set("n", "<Space><Space>", "<cmd>update<cr>", { silent = true, noremap = true })
 
 -- ╭──────────────────────────────────────────────────────────────────────────────╮
--- │                                    Bracket                                    │
+-- │                                    Bracket                                   │
 -- ╰──────────────────────────────────────────────────────────────────────────────╯
 local bracket = {
     new = function(p_, n_)
@@ -236,6 +236,7 @@ table.insert(
     maps,
     Map.new({
         striker = "<",
+        { prefix = " ", ret = " <" },
         { prefix = "", ret = "<><left>" },
         { prefix = ";", ret = "<" },
         {

@@ -22,7 +22,8 @@
                      [:CommentHead ";;"]
                      [:Error :iparis]
                      [:Error :prinnt]]
-           :rust [[:Todo "#"]]})
+           :rust [[:Todo "#"]]
+           :go [[:Error :sturct]]})
 
 
 ;;; fold-maker {{{

@@ -110,7 +110,7 @@ vim.api.nvim_set_keymap("n", "<Space>", "", {
     noremap = true,
     silent = true,
     desc = "which-key space",
-    -- nowait = true,
+    nowait = true,
   })
 vim.api.nvim_set_keymap("n", "s", "", {
     callback = which_key({ text_insert_in_advance = "s", key_group_dict= key_group_dict  }),
