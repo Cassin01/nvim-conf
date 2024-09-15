@@ -273,6 +273,12 @@
                )
    :pattern [:*.scm]
    :group pattern})
+(create_autocmd
+  [:BufRead :BufNewFile]
+  {:callback (λ []
+                (vim.cmd "setlocal filetype=json"))
+  :pattern [:*.json.golden]
+  :group pattern})
 ;; }}}
 
 (when (vim.fn.has :mac)
