@@ -50,6 +50,21 @@
            (vim.cmd "smap <silent><expr> <C-q> luasnip#choice_active() ? '<Plug>luasnip-next-choice' : '<C-q>'")
            (vim.keymap.set :n :<leader>k "<cmd>source ~/.config/nvim/after_opt/luasnip.lua<cr>"))}
 
+;;; lint
+{1 :mfussenegger/nvim-lint
+ :event ["User plug-lazy-load"]
+ :dependencies [:bufbuild/vim-buf]
+ :config (λ []
+             (tset (require :lint) :linters_by_ft {:proto [:buf_lint]
+                                                   :javascript [:eslint_d]
+                                                   :typescript [:eslint_d]
+                                                  })
+             (let [g (vim.api.nvim_create_augroup :my_lint_ {:clear true})]
+              (au!
+                g
+                [:BufWritePost]
+                (ref-f :try_lint :lint))))}
+
 ;;; UI
 
 {1 :nvim-tree/nvim-web-devicons
@@ -187,6 +202,16 @@
                ;:indent {:highlight [:RainbowRed :RainbowYellow]
                }))
  }
+
+ {1 "DNLHC/glance.nvim"
+  :config (la (ref-f :setup :glance)
+              (nmaps
+                :<Space>g
+                :glance
+                [[:D (cmd "Glance definitions") "definitions"]
+                 [:R (cmd "Glance references") "references"]
+                 [:Y (cmd "Glance type_definitions") "type definitions"]
+                 [:M (cmd "Glance implementations") "implementations"]]))}
 
 ; {1 :edluffy/specs.nvim
 ;  ; :event ["User plug-lazy-load"]
@@ -333,11 +358,11 @@
              :ensure_installed [ "nix" "org" "bash" "go"]  ; "lua" "rust" "c" "org"
              :sync_install false
              :auto_install true
-             :ignore_install [ "javascript" ]
+             ; :ignore_install [ "javascript" ]
              :highlight {:enable true
                          :disable [ "c" "rust" "org" "vim" "tex" "typescript"]
                          :additional_vim_regex_highlighting ["org"]}
-             :rainbow {:enable true
+             :rainbow {:enable false
                        :extended_mode true
                        :max_file_lines nil}
              :markid { :enable true }
@@ -1126,8 +1151,6 @@
 ; {1 :Olical/nvim-local-fennel
 ;  :event ["User plug-lazy-load"]}
 
-
-
 ;; rust
 {1 :rust-lang/rust.vim
  :event ["User plug-lazy-load"]}
@@ -1149,6 +1172,9 @@
  :ft [:go :gomod]
  :build ":lua require(\"go.install\").update_all_sync()"
  }
+
+;; sql
+{1 :nanotee/sqls.nvim}
 
 ;; tex
 {1 :https://github.com/lervag/vimtex

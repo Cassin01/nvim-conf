@@ -72,5 +72,5 @@
        ; (notify msg ...)
        ))
    (tset (. vim :api)
-         :nvim_notify 
+         :nvim_notify
          (lambda [msg ...] nil)))

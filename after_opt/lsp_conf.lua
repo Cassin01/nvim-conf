@@ -2,7 +2,7 @@ local vim = vim
 local lspconfig = require("lspconfig")
 require("mason").setup()
 require("mason-lspconfig").setup({
-    ensure_installed = { },
+    ensure_installed = {},
 })
 
 -- local default_on_attach = function(client)
@@ -11,27 +11,37 @@ require("mason-lspconfig").setup({
 --     client.resolved_capabilities.document_range_formatting = false
 -- end
 local navic = require("nvim-navic")
+local nmap = function(bufnr)
+    return function(keys, func, desc)
+        if desc then
+            desc = "[lsp]" .. desc
+        end
+        vim.keymap.set("n", keys, func, { buffer = bufnr, desc = desc })
+    end
+end
 local default_on_attach = function(client, bufnr)
     if client.server_capabilities.documentSymbolProvider then
         navic.attach(client, bufnr)
     end
-    local nmap = function(keys, func, desc)
-        if desc then
-            desc = desc .. " [lsp]"
+    local nmap_ = nmap(bufnr)
+    nmap_("sd", vim.lsp.buf.definition, "definition")
+    nmap_("si", vim.lsp.buf.implementation, "implementation")
+    nmap_("sy", vim.lsp.buf.type_definition, "type definition")
+    nmap_("sK", vim.lsp.buf.hover, "hover")
+    nmap_("sD", vim.lsp.buf.declaration, "declaration")
+    nmap_("s<C-k>", vim.lsp.buf.signature_help, "signature_help")
+    if client.server_capabilities.documentFormattingProvider then
+        local format = function()
+            vim.lsp.buf.format({ timeout_ms = 2000 })
         end
-        vim.keymap.set("n", keys, func, { buffer = bufnr, desc = desc })
+        nmap_("sf", format, "format")
     end
-    nmap('sd', vim.lsp.buf.definition, 'definition')
-    nmap('si', vim.lsp.buf.implementation, 'implementation')
-    nmap('sy', vim.lsp.buf.type_definition, 'type definition')
-    nmap('sK', vim.lsp.buf.hover, 'hover')
-    nmap('sD', vim.lsp.buf.declaration, 'declaration')
-    nmap('s<C-k>', vim.lsp.buf.signature_help, 'signature_help')
-    nmap('sa', vim.lsp.buf.code_action, 'code_action')
-    nmap('swl', function() print(vim.inspect(vim.lsp.buf.list_workspace_folders())) end, 'list_workspace_folders')
-    nmap('sr', require('telescope.builtin').lsp_references, 'references')
-    nmap('<Space>td', require('telescope.builtin').lsp_document_symbols, 'lsp document symbol')
-    nmap('<Space>tw', require('telescope.builtin').lsp_dynamic_workspace_symbols, 'lsp workspace symbols')
+    nmap_("swl", function()
+        print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
+    end, "list_workspace_folders")
+    nmap_("sr", require("telescope.builtin").lsp_references, "references")
+    nmap_("<Space>td", require("telescope.builtin").lsp_document_symbols, "lsp document symbol")
+    nmap_("<Space>tw", require("telescope.builtin").lsp_dynamic_workspace_symbols, "lsp workspace symbols")
 
     -- ubnzv/virtual-types.nvim
     require("virtualtypes").on_attach()
@@ -46,7 +56,7 @@ lspconfig.util.default_config = vim.tbl_extend("force", lspconfig.util.default_c
 
 local setup_handlers = {
     function(server_name)
-        lspconfig[server_name].setup({})
+        lspconfig[server_name].setup({ })
     end,
     ["lua_ls"] = function()
         lspconfig.lua_ls.setup({
@@ -78,6 +88,41 @@ local setup_handlers = {
                 },
             },
         })
+    end,
+    ["buf"] = function()
+        lspconfig["buf"].setup(
+            {
+                filetypes = { 'proto' },
+                on_attach = default_on_attach
+            }
+        )
+    end,
+    ["tsserver"] = function()
+        local vue_typescript_plugin = require("mason-registry").get_package("vue-language-server"):get_install_path()
+            .. "/node_modules/@vue/language-server/node_modules/@vue/typescript-plugin"
+        lspconfig["tsserver"].setup({
+            filetypes = {
+                "javascript",
+                "javascriptreact",
+                "typescript",
+                "typescriptreact",
+                "vue",
+            },
+            on_attach = default_on_attach,
+            root_dir = lspconfig.util.root_pattern({ "package.json", "node_modules" }),
+            init_options = {
+                plugins = {
+                    {
+                        name = "@vue/typescript-plugin",
+                        location = vue_typescript_plugin,
+                        languages = { "javascript", "typescript", "vue" },
+                    },
+                },
+            },
+        })
+    end,
+    ["volar"] = function()
+        lspconfig.volar.setup({ on_attach = default_on_attach })
     end,
     ["rust_analyzer"] = function()
         lspconfig.rust_analyzer.setup({
@@ -128,8 +173,7 @@ local setup_handlers = {
     ["pylsp"] = function()
         lspconfig.pylsp.setup({
             on_attach = default_on_attach,
-            -- https://github.com/python-rope/rope/wiki/Rope-in-Vim-or-Neovim
-            cmd = { "pylsp" },
+            -- https://github.com/python-rope"pylsp" },
             settings = {
                 pylsp = {
                     configurationSources = { "flake8" },
@@ -147,16 +191,19 @@ local setup_handlers = {
                         rope_completion = {
                             enabled = true,
                         },
-                    }
-                }
-            }
+                    },
+                },
+            },
         })
     end,
-    -- ["protols"] = function()
-    --     lspconfig.protols.setup({
-    --         on_attach = default_on_attach,
-    --     })
-    -- end
+    ["sqls"] = function()
+        lspconfig.sqls.setup({
+            on_attach = function(client, bufnr)
+                require("sqls").on_attach(client, bufnr)
+                default_on_attach(client, bufnr)
+            end,
+        })
+    end,
 }
 
 local ok, secret = pcall(require, "secret")
@@ -175,3 +222,29 @@ local function setup_default()
 end
 
 setup_default()
+
+-- on_attachが実行されるより先にLSPがアタッチされたタイミングで発火する
+vim.api.nvim_create_autocmd("LspAttach", {
+    group = vim.api.nvim_create_augroup("lsp_attached_"),
+    callback = function(ev)
+        vim.bo[ev.buf].omnifunc = "v:lua.vim.lsp.omnifunc"
+
+        local client = vim.lsp.get_client_by_id(ev.data.client_id)
+        if client == nil then
+            return
+        end
+        local format = function()
+            vim.lsp.buf.format({ timeout_ms = 2000 })
+        end
+        nmap(ev.bufnr)("sf", vim.lsp.buf.format, "format")
+        if client.supports_method("textDocument/formatting") then
+            vim.api.nvim_create_autocmd({ "BufWritePre" }, {
+                group = vim.api.nvim_create_augroup("lsp_attached_format_"),
+                buffer = ev.bufnr,
+                callback = function()
+                    format()
+                end,
+            })
+        end
+    end,
+})
