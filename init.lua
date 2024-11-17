@@ -52,7 +52,8 @@ require("setup")
 -- vim.cmd([[colorscheme lunaperche]])
 -- vim.cmd([[colorscheme nord]])
 -- vim.cmd([[colorscheme nova]])
-vim.cmd([[colorscheme fluoromachine]]) -- default
+vim.cmd([[colorscheme neon]])
+-- vim.cmd([[colorscheme fluoromachine]]) -- default
 -- vim.cmd([[colorscheme Tomorrow]])
 -- vim.cmd([[colorscheme default]])
 
