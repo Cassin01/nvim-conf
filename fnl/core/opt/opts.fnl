@@ -21,8 +21,8 @@
  :splitkeep :screen ; :topline
  :background :dark
  :mouse :a
- :t_8f "^[[38;2;%lu;%lu;%lum"
- :t_8b "^[[48;2;%lu;%lu;%lum"
+;; :t_8f "^[[38;2;%lu;%lu;%lum"
+;; :t_8b "^[[48;2;%lu;%lu;%lum"
  :list true
  ; :listchars "tab:»-,trail:□"
  :spell true
@@ -36,6 +36,7 @@
  :laststatus 3 ; 0
  :ruler false
  :wrapmargin 2 ; Number of characters from the right window border where wrapping starts.
+ :wrap false
  :history 1000
  ; :ttimeout false ; default on
  ; :ttimeoutlen 0

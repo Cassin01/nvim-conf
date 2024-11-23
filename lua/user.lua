@@ -20,13 +20,10 @@ local bookmark_dirs = {
     packer = "~/.config/nvim/fnl/plugs.fnl",
     snip = "~/.config/nvim/UltiSnips",
     dotfile = "~/dotfiles",
-    memo = "~/tech-memo",
+    memod = "~/mydocuments/dev",
+    natmego = "~/myprojects/nutmego",
     ["nvi1234567890fnl"] = "~/.cache/nvim/hotpot/Users/cassin/.config/nvim/fnl",
     ["nvi1234567890<Space>lua"] = "~/.cache/nvim/hotpot/Users/cassin/.config/nvim/lua",
-    org = "~/org/",
-    projects = "~/all_year",
-    lab = "~/2022/lab",
-    sche = "~/.config/nvim/data/24.sche",
     ghq = "~/ghq",
 }
 

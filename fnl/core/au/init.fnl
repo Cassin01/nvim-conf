@@ -57,7 +57,13 @@
          (lambda []
            (do
              (when (= vim.g.colors_name "fluoromachine")
-               (vim.api.nvim_set_hl 0 :Comment (link :Comment {:fg (blightness (get-hl :Comment :fg) 1.6)}))
+               (vim.api.nvim_set_hl 0 :Comment (link :Comment {:fg (blightness (get-hl :Comment :fg) 2.6)}))
+               (vim.api.nvim_set_hl 0 :LineNr (link :LineNr {:fg (blightness (get-hl :LineNr :fg) 1.6)}))
+               (vim.api.nvim_set_hl 0 :Folded (link :Folded {:bg (blightness (get-hl :Folded :bg) 0.5)
+                                                             :fg (blightness (get-hl :Folded :fg) 1.5)})))
+             (when (= vim.g.colors_name "catppuccin-latte")
+               (vim.api.nvim_set_hl 0 :Comment (link :Comment {:fg (blightness (get-hl :Comment :fg) 0.5)}))
+               (vim.api.nvim_set_hl 0 :LineNr (link :LineNr {:fg (blightness (get-hl :LineNr :fg) 0.4)}))
                (vim.api.nvim_set_hl 0 :Folded (link :Folded {:bg (blightness (get-hl :Folded :bg) 0.5)
                                                              :fg (blightness (get-hl :Folded :fg) 1.5)})))
              (each [_ k (ipairs
@@ -66,6 +72,11 @@
                            [:DoubleSpace {:bg :#cff082}]
                            [:TodoEx {:bg :#44a005 :fg :#F0FFF0}]
                            [:TSNote {:bg :#086788 :fg :#F0FFF0}]
+                           [:TodoWait {:bg :green :fg :#F0FFF0}]
+                           [:TodoDoing {:bg :red :fg :#F0FFF0}]
+                           [:TodoHold {:bg :blue :fg :#F0FFF0}]
+                           [:TodoTodo {:bg :orange :fg :#F0FFF0}]
+                           [:TodoDone {:bg :purple :fg :#F0FFF0}]
                            [:FoldMark (link :Comment {})
                             ; (do
                                 ;   (local fg (get-hl :Comment :fg))
@@ -89,7 +100,7 @@
 ;          1000
 ;          (lambda []
 ;            ((. (require :core.au.match) :add-matches))))))
-(au! :mmatch [:BufWinEnter] ((. (require :core.au.match) :add-matches)))
+(au! :mmatch [:BufWinEnter :ColorScheme :FileType :WinEnter :TabEnter :BufWritePre] ((. (require :core.au.match) :add-matches)))
 
 ;; terminal mode
 (au! :term-conf [:TermOpen]
@@ -140,6 +151,9 @@
                     (= vim.bo.filetype "tex")
                     (= vim.bo.filetype "python")
                     (= vim.bo.filetype "htmldjango")
+                    (= vim.bo.filetype "vue")
+                    (= vim.bo.filetype "sql")
+                    (= vim.bo.filetype "typescript")
                     (= vim.bo.filetype "javascript")
                     (= vim.bo.filetype "go")))
        (when res
@@ -214,8 +228,8 @@
 
 (fn todo []
   ;; https://gist.github.com/huytd/668fc018b019fbc49fa1c09101363397
-  (vf.matchadd :Conceal "\\(^\\s*\\)\\@<=- \\[\\s\\]" 1 -1 {:conceal :})
-  (vf.matchadd :Conceal "\\(^\\s*\\)\\@<=- \\[x\\]" 1 -1 {:conceal :})
+  (vf.matchadd :Conceal "\\(^\\s*\\)\\@<=- \\[\\s\\]" 1 -1 {:conceal :})
+  (vf.matchadd :Conceal "\\(^\\s*\\)\\@<=- \\[x\\]" 1 -1 {:conceal :})
   ; (vf.matchadd :Comment "^---" 1 -1 {:conceal "• "})
   (vf.matchadd :Conceal "\\(^\\s*\\)\\@<=-\\(\\s\\)\\@=" 0 -1 {:conceal "• "})
   (vf.matchadd :Conceal "^#\\(\\s\\)\\@=" 0 -1 {:conceal "◉"})

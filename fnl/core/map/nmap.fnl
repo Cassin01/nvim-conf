@@ -148,7 +148,7 @@
    [:m (la (let [buf (vim.api.nvim_create_buf false true)]
              (vim.api.nvim_buf_set_lines buf 0 100 false ((req-f :split :util.string) (vim.api.nvim_exec "messages" true ) "\n"))
              (vim.api.nvim_open_win buf true {:relative :editor :style :minimal :row 3 :col 3 :height 40 :width 150}))) "show message"]
-   [:em (la (let [width 27
+   [:em (la (let [width 50
                   height 30
                   buf
                   ; (if false

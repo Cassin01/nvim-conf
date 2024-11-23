@@ -23,8 +23,8 @@
                           :vertright " "
                           :verthoriz " "
                           ;:horiz " "
-                          :horizup " "
-                          :horizdown " "
+                          :horizup "─"
+                          :horizdown "─"
                           :eob " "})
 
 ;; Tips: This is explicit declaration.
@@ -72,5 +72,5 @@
        ; (notify msg ...)
        ))
    (tset (. vim :api)
-         :nvim_notify 
+         :nvim_notify
          (lambda [msg ...] nil)))
