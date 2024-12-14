@@ -801,7 +801,7 @@
  ;             :config (λ [] (tset vim.g :copilot_no_tab_map true))
  ;             }]
  :config (lambda [] (vim.defer_fn
-               (lambda [] ((. (require :copilot) :setup)))
+               (lambda [] ((. (require :copilot) :setup) {:yaml true}))
                100))}
 
 ; {1 :github/copilot.vim

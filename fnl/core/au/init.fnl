@@ -47,7 +47,41 @@
 ;       (= part :bg)
 ;       (.. :# (vf.printf :%0x (or (. target :background) 0)))
 ;       nil)))
+(fn clear_color []
+  (vim.cmd "hi Normal guibg=NONE ctermbg=NONE")
+  (vim.cmd "hi CursorLine guibg=NONE")
+  (vim.cmd "hi StatusLine guibg=NONE guifg=#727169")
+  (vim.cmd "hi StatusLineNC guibg=NONE guifg=#727169")
+  (vim.cmd "hi StatusLine guibg=NONE guifg=#727169")
+  (vim.cmd "hi StatusLineNC guibg=NONE guifg=#727169")
+  (vim.cmd "hi LineNr guibg=NONE")
+  (vim.cmd "hi SignColumn guibg=NONE")
+  (vim.cmd "hi Folded guibg=NONE")
+  (vim.cmd "hi FoldColumn guibg=NONE")
+  (vim.cmd "hi StatusLine guibg=NONE")
+  (vim.cmd "hi StatusLineNC guibg=NONE")
+  (vim.cmd "hi CursorLineNr guibg=NONE")
+  (vim.cmd "hi VertSplit guibg=NONE")
+  (vim.cmd "hi WinSeparator guibg=NONE")
+  (vim.cmd "hi WinBar guibg=NONE")
+  (vim.cmd "hi Keyword guibg=NONE")
+  (vim.cmd "hi Constant guibg=NONE")
+  (vim.cmd "hi Function guibg=NONE")
 
+  (fn bufferline []
+    (local {: unfold-iter} (require :util.list))
+    (local res (vim.api.nvim_exec "highlight" true))
+    (local lines (unfold-iter (res:gmatch "([^\r\n]+)")))
+    (each [_ line (ipairs lines)]
+      (local elements (unfold-iter (line:gmatch "%S+")))
+      (local hi-name (. elements 1))
+      (when (not= hi-name nil)
+        (when (not= (hi-name:match "^BufferLine.*$") nil)
+          (vim.cmd (.. "hi " hi-name " guibg=NONE"))))))
+  (bufferline))
+(au! :mmatch-clear
+     [:BufWinEnter :ColorScheme]
+     (clear_color))
 (fn print-second [a b]
   (print (vim.inspect b)))
 (au! :match-hi :ColorScheme

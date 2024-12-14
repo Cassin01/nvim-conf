@@ -39,6 +39,45 @@ vim.api.nvim_set_keymap(
     "",
     { callback = bookmark(bookmark_dirs, {}), noremap = true, silent = true, desc = "[wf.nvim] bookmark" }
 )
+
+-- see if the file exists
+function file_exists(file)
+    local f = io.open(file, "rb")
+    if f then
+        f:close()
+    end
+    return f ~= nil
+end
+
+-- get all lines from a file, returns an empty
+-- list/table if the file does not exist
+function lines_from(file)
+    if not file_exists(file) then
+        return {}
+    end
+    local lines = {}
+    for line in io.lines(file) do
+        lines[#lines + 1] = line
+    end
+    return lines
+end
+local path_marker = function()
+    local home = os.getenv("HOME")
+    local paths = lines_from(home .. "/.cache/path_marker/hist.txt")
+    local map_path = {}
+    for _, v in ipairs(paths) do
+        local key = v.gsub(v, "/", "")
+        map_path[v] = v
+    end
+    bookmark(map_path, {})()
+end
+vim.api.nvim_set_keymap(
+    "n",
+    "<Space>wp",
+    "",
+    { callback = path_marker, noremap = true, silent = true, desc = "[wf.nvim] path-marker" }
+)
+
 -- vim.api.nvim_set_keymap(
 --  "n",
 --  "<Space>wa",
@@ -47,35 +86,33 @@ vim.api.nvim_set_keymap(
 -- )
 vim.keymap.set("n", "<Space>wbu", buffer(), { noremap = true, silent = true, desc = "[wf.nvim] buffer" })
 
-vim.keymap.set("n", "<Space>wbf",
-    function()
-        require("wf").select({happy = "😊", sad = "😥"}, {
-                title = "Select your feelings:", behavior = {
-                    skip_front_duplication = true,
-                    skip_back_duplication = true,
-                },
-            }, function(text, key)
-                -- You feel happy😊.
-                vim.notify("You feel " .. key .. text .. ".")
-            end)
-        end
-        , { noremap = true, silent = true, desc = "[wf.nvim] feelings" })
-
+vim.keymap.set("n", "<Space>wbf", function()
+    require("wf").select({ happy = "😊", sad = "😥" }, {
+        title = "Select your feelings:",
+        behavior = {
+            skip_front_duplication = true,
+            skip_back_duplication = true,
+        },
+    }, function(text, key)
+        -- You feel happy😊.
+        vim.notify("You feel " .. key .. text .. ".")
+    end)
+end, { noremap = true, silent = true, desc = "[wf.nvim] feelings" })
 
 vim.keymap.set(
-   "n",
-   "'",
-   mark({text_insert_in_advance="'"}),
-   {noremap = true, silent= true, nowait = true, desc = "[wf.nvim] mark"}
- )
+    "n",
+    "'",
+    mark({ text_insert_in_advance = "'" }),
+    { noremap = true, silent = true, nowait = true, desc = "[wf.nvim] mark" }
+)
 
 timeout(100, function()
     vim.keymap.set(
         "n",
         "'",
-        mark({text_insert_in_advance="'"}),
-        {noremap = true, silent= true, nowait = true, desc = "[wf.nvim] mark"}
-        )
+        mark({ text_insert_in_advance = "'" }),
+        { noremap = true, silent = true, nowait = true, desc = "[wf.nvim] mark" }
+    )
 end)
 
 -- which_key
@@ -102,55 +139,55 @@ local key_group_dict = _G["__kaza"]["prefix"]
 -- )
 
 local which_keys = function()
-vim.api.nvim_set_keymap("n", "<Space>", "", {
-    callback = which_key({ text_insert_in_advance = "<Space>", key_group_dict= key_group_dict }),
-    noremap = true,
-    silent = true,
-    desc = "which-key space",
-    nowait = true,
-  })
-vim.api.nvim_set_keymap("n", "s", "", {
-    callback = which_key({ text_insert_in_advance = "s", key_group_dict= key_group_dict  }),
-    noremap = true,
-    silent = true,
-    desc = "which-key s",
-    -- nowait = true,
-  })
-vim.api.nvim_set_keymap("n", "<Leader>", "", {
-    callback = which_key({ text_insert_in_advance = "<Leader>" , key_group_dict= key_group_dict }),
-    noremap = true,
-    silent = true,
-    desc = "which-key /",
-    -- nowait = true,
-  })
+    vim.api.nvim_set_keymap("n", "<Space>", "", {
+        callback = which_key({ text_insert_in_advance = "<Space>", key_group_dict = key_group_dict }),
+        noremap = true,
+        silent = true,
+        desc = "which-key space",
+        nowait = true,
+    })
+    vim.api.nvim_set_keymap("n", "s", "", {
+        callback = which_key({ text_insert_in_advance = "s", key_group_dict = key_group_dict }),
+        noremap = true,
+        silent = true,
+        desc = "which-key s",
+        -- nowait = true,
+    })
+    vim.api.nvim_set_keymap("n", "<Leader>", "", {
+        callback = which_key({ text_insert_in_advance = "<Leader>", key_group_dict = key_group_dict }),
+        noremap = true,
+        silent = true,
+        desc = "which-key /",
+        -- nowait = true,
+    })
 end
 timeout(100, which_keys)
-vim.api.nvim_create_autocmd({"BufEnter", "BufAdd"}, {
+vim.api.nvim_create_autocmd({ "BufEnter", "BufAdd" }, {
     group = vim.api.nvim_create_augroup("my_wf", { clear = true }),
     callback = function()
-      timeout(100, function()
-        vim.api.nvim_buf_set_keymap(0, "n", "<Space>", "", {
-            callback = which_key({ text_insert_in_advance = "<Space>" , key_group_dict= key_group_dict }),
-            noremap = true,
-            silent = true,
-            desc = "which-key space [buf]",
-            nowait = true,
-          })
-        vim.api.nvim_buf_set_keymap(0, "n", "s", "", {
-            callback = which_key({ text_insert_in_advance = "s" , key_group_dict= key_group_dict }),
-            noremap = true,
-            silent = true,
-            desc = "which-key s [buf]",
-            nowait = true,
-          })
-        vim.api.nvim_buf_set_keymap(0, "n", "<Leader>", "", {
-            callback = which_key({ text_insert_in_advance = "<Leader>" , key_group_dict= key_group_dict }),
-            noremap = true,
-            silent = true,
-            desc = "which-key / [buf]",
-            nowait = true,
-          })
-      end)
+        timeout(100, function()
+            vim.api.nvim_buf_set_keymap(0, "n", "<Space>", "", {
+                callback = which_key({ text_insert_in_advance = "<Space>", key_group_dict = key_group_dict }),
+                noremap = true,
+                silent = true,
+                desc = "which-key space [buf]",
+                nowait = true,
+            })
+            vim.api.nvim_buf_set_keymap(0, "n", "s", "", {
+                callback = which_key({ text_insert_in_advance = "s", key_group_dict = key_group_dict }),
+                noremap = true,
+                silent = true,
+                desc = "which-key s [buf]",
+                nowait = true,
+            })
+            vim.api.nvim_buf_set_keymap(0, "n", "<Leader>", "", {
+                callback = which_key({ text_insert_in_advance = "<Leader>", key_group_dict = key_group_dict }),
+                noremap = true,
+                silent = true,
+                desc = "which-key / [buf]",
+                nowait = true,
+            })
+        end)
     end,
 })
 
@@ -167,10 +204,10 @@ local wf_options = {
             title_pos = "center",
         }
         local conf = vim.fn.extend(conf_, {
-                height = 1,
-                row = 10,
-                col = 10,
-            })
+            height = 1,
+            row = 10,
+            col = 10,
+        })
         local buf = vim.api.nvim_create_buf(false, true)
         local win = vim.api.nvim_open_win(buf, true, conf)
         vim.api.nvim_buf_set_option(buf, "buftype", "prompt")
@@ -193,7 +230,6 @@ vim.api.nvim_set_keymap("n", "<Space>wf", "", wf_options)
 --         end
 --     end
 -- end, { noremap = true, desc = "test metatable" })
-
 
 vim.keymap.set("n", "<leader><Tab>", "<C-^>", { desc = "switch to previous buffer" })
 

@@ -8,7 +8,7 @@ require("mason-lspconfig").setup({
 local nmap = function(bufnr)
     return function(keys, func, desc)
         if desc then
-            desc = desc .. " [lsp]"
+            desc = "[lsp]" .. desc
         end
         vim.keymap.set("n", keys, func, { buffer = bufnr, desc = desc })
     end
@@ -23,7 +23,7 @@ local default_on_attach = function(client, bufnr)
     if client.server_capabilities.documentSymbolProvider then
         navic.attach(client, bufnr)
     end
-    nmap_ = nmap(bufnr)
+    local nmap_ = nmap(bufnr)
     nmap_("sd", vim.lsp.buf.definition, "definition")
     nmap_("si", vim.lsp.buf.implementation, "implementation")
     nmap_("sy", vim.lsp.buf.type_definition, "type definition")
