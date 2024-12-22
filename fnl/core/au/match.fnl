@@ -23,7 +23,15 @@
                      [:Error :iparis]
                      [:Error :prinnt]]
            :rust [[:Todo "#"]]
-           :go [[:Error :sturct]]})
+           :go [[:Error :sturct]]
+           :markdown [[:TodoWait :WAIT]
+                      [:TodoDoing :DOING]
+                      [:TodoDoing :OPEN]
+                      [:TodoHold :HOLD]
+                      [:TodoTodo :TODO]
+                      [:TodoDone :DONE]
+                      [:TodoDone :MARGED]
+                      ]})
 
 
 ;;; fold-maker {{{

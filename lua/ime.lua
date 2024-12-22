@@ -1,5 +1,5 @@
 local toggle = true
-local external_ime_control = false
+local external_ime_control = true
 
 if vim.fn.has("mac") == 0 then
     return
@@ -112,9 +112,9 @@ vim.api.nvim_set_keymap("i", "<c-^>", "", {
             ime_off()
         end
         if vim.g.lmap_on then
-          _ime_off()
+            _ime_off()
         else
-          _lmap_on()
+            _lmap_on()
         end
         local k = vim.api.nvim_replace_termcodes("<C-^>", true, false, true)
         return k

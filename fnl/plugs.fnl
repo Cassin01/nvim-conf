@@ -58,6 +58,8 @@
              (tset (require :lint) :linters_by_ft {:proto [:buf_lint]
                                                    :javascript [:eslint_d]
                                                    :typescript [:eslint_d]
+                                                   :vue [:eslint_d]
+                                                   :go [:golangcilint]
                                                   })
              (let [g (vim.api.nvim_create_augroup :my_lint_ {:clear true})]
               (au!
@@ -85,13 +87,22 @@
            (nmaps
              :<Space>n
              :fern
-             [[:p (cmd "Fern . -drawer -toggle") "open fern on a current working directory"]
-              [:d (cmd "Fern %:h -drawer -toggle") "open fern on a parent directory of a current buffer"]])
+             [[:p (cmd "Fern . -drawer -toggle -reveal=%") "open fern on a current working directory"]
+              [:d (cmd "Fern %:h -drawer -toggle -reveal=%") "open fern on a parent directory of a current buffer"]])
            )}
 
 {1 :stevearc/oil.nvim
  :config (la
-           (ref-f :setup :oil {:win_options {:signcolumn :yes:2}})
+            (tset _G
+                  :get_oil_winbar
+                  (la
+                    (let [dir (ref-f :get_current_dir :oil)]
+                      (if dir
+                        (vim.fn.fnamemodify dir ":~")
+                        (vim.api.nvim_buf_get_name 0)))))
+           (ref-f :setup :oil {:win_options
+            {:signcolumn :yes:2
+             :winbar "%!v:lua.get_oil_winbar()"}})
            (map :n :<F3> (cmd :Oil) "open oil")
            (nmaps
              :<Space>oi
@@ -134,10 +145,10 @@
         (codewindow.apply_default_keybinds))}
 
 ;; scrollbar
-{1 :petertriho/nvim-scrollbar
- :event ["User plug-lazy-load"]
- :config (λ [] ((req-f :setup :scrollbar) {:excluded_buftypes [:terminal]
-                                           :excluded_filetypes (ui-ignore-filetype)}))}
+; {1 :petertriho/nvim-scrollbar
+;  :event ["User plug-lazy-load"]
+;  :config (λ [] ((req-f :setup :scrollbar) {:excluded_buftypes [:terminal]
+;                                            :excluded_filetypes (ui-ignore-filetype)}))}
 
 
 ;  :config (la (ref-f :setup :incline))}
@@ -162,6 +173,16 @@
            ; (set vim.notify (require :notify))
            )
  }
+
+{1 :folke/snacks.nvim
+ :priority 1000
+ :lazy false
+ :opts {
+   :bigfile {:enabled true}
+   :notifier {:enabled true}
+   :quickfile {:enabled true}
+   :statuscolumn {:enabled true}
+   :words {:enabled true}}}
 ; {1 :folke/noice.nvim
 ;  ; :event ["User plug-lazy-load"]
 ;  :config (lambda []
@@ -176,21 +197,24 @@
 ;            )
 ;  :dependencies [:MunifTanjim/nui.nvim :rcarriga/nvim-notify]}
 
-{1 :anuvyklack/windows.nvim
- :event ["User plug-lazy-load"]
- :dependencies [
-            "anuvyklack/middleclass"
-            "anuvyklack/animation.nvim"
-            ]
- :config (lambda []
-           (tset vim.o :winwidth 10)
-           (tset vim.o :winminwidth 10)
-           (tset vim.o :equalalways false)
-           (ref-f :setup :windows)
-           (vim.keymap.set :n :<C-w>z (cmd :WindowsMaximize))
-           (vim.keymap.set :n :<C-w>_ (cmd :WindowsMaximizeVertically))
-           (vim.keymap.set :n :<C-w>| (cmd :WindowsMaximizeHorizontally))
-           (vim.keymap.set :n :<C-w>= (cmd :WindowsEqualize)))}
+; {1 :anuvyklack/windows.nvim
+;  :event ["User plug-lazy-load"]
+;  :dependencies [
+;             "anuvyklack/middleclass"
+;             "anuvyklack/animation.nvim"
+;             ]
+;  :config (lambda []
+;            (tset vim.o :winwidth 10)
+;            (tset vim.o :winminwidth 10)
+;            (tset vim.o :equalalways false)
+;            (ref-f :setup :windows)
+;            (vim.keymap.set :n :<C-w>z (cmd :WindowsMaximize))
+;            (vim.keymap.set :n :<C-w>_ (cmd :WindowsMaximizeVertically))
+;            (vim.keymap.set :n :<C-w>| (cmd :WindowsMaximizeHorizontally))
+;            (vim.keymap.set :n :<C-w>= (cmd :WindowsEqualize)))}
+
+; resize window
+{1 :simeji/winresizer}
 
 {1 :lukas-reineke/indent-blankline.nvim
  :event ["User plug-lazy-load"]
@@ -235,21 +259,24 @@
  :event ["User plug-lazy-load"]
  :dependencies [{1 :nvim-lua/plenary.nvim}]
  :config (λ []
-          (ref-f
-            :setup
-            :telescope
+          (local telescope (. (require :telescope) :setup))
+          (telescope
             {:pickers
-             {:colorscheme
-              {:enable_preview true}}})
+             {:colorscheme {:enable_preview true}}})
           (local prefix ((. (require :kaza.map) :prefix-o) :n :<Space>t :telescope))
-          (prefix.map :f "<cmd>Telescope find_files<cr>" "find files")
-          (prefix.map :g "<cmd>Telescope live_grep<cr>" "live grep")
+          (prefix.map :f (la []
+                           ((-> (require :telescope.builtin) (. :find_files))
+                            {:hidden true})) "find files")
+          (prefix.map :g (la []
+                           ((-> (require :telescope.builtin) (. :live_grep))
+                            {:additional_args [:--hidden]})) "find files")
           (prefix.map :b "<cmd>Telescope buffers<cr>" "buffers")
           (prefix.map :h "<cmd>Telescope help_tags<cr>" "help tags")
           (prefix.map :t "<cmd>Telescope<cr>" "telescope")
           (prefix.map :o "<cmd>Telescope oldfiles<cr>" "old files")
           (prefix.map :c "<cmd>Telescope colorscheme<cr>" "colorscheme")
-          (prefix.map :r "<cmd>Telescope file_browser<cr>" "file_browser"))}
+          (prefix.map :r "<cmd>Telescope file_browser<cr>" "file_browser")
+          (prefix.map :cb "<cmd>Telescope current_buffer_fuzzy_find<cr>" "current_buffer_fuzzy_find"))}
 
 {1 :nvim-telescope/telescope-file-browser.nvim
  :dependencies :telescope.nvim
@@ -275,6 +302,14 @@
  ; :version :update
  :config (la (ref-f :setup :wf {:theme :chad})
              (require :user))}
+
+{1 :crusj/bookmarks.nvim
+  :keys [{1 "<tab><tab>" :mode [:n]}]
+  :branch :main
+  :dependencies [:nvim-web-devicons]
+  :config (la
+    (ref-f :setup :bookmarks)
+    (ref-f :load_extension :telescope :bookmarks))}
 
 {1 :xiyaowong/nvim-transparent
  :cmd :TransparentEnable
@@ -344,7 +379,7 @@
 {1 :nvim-treesitter/nvim-treesitter
  :build ":TSUpdate"
  ; :event ["User plug-lazy-load"]
- :dependencies {1 :p00f/nvim-ts-rainbow :dependencies :nvim-treesitter}
+ ; :dependencies {1 :p00f/nvim-ts-rainbow :dependencies :nvim-treesitter}
  :config (λ []
            ; ((. (require :orgmode) :setup_ts_grammar))
            ((. (require "nvim-treesitter.configs") :setup)
@@ -358,13 +393,13 @@
              :ensure_installed [ "nix" "org" "bash" "go"]  ; "lua" "rust" "c" "org"
              :sync_install false
              :auto_install true
-             ; :ignore_install [ "javascript" ]
+             :ignore_install [ "javascript" "markdown"]
              :highlight {:enable true
-                         :disable [ "c" "rust" "org" "vim" "tex" "typescript"]
+                         :disable [ "c" "rust" "org" "vim" "tex" "typescript" "markdown"]
                          :additional_vim_regex_highlighting ["org"]}
-             :rainbow {:enable false
-                       :extended_mode true
-                       :max_file_lines nil}
+             ; :rainbow {:enable true
+             ;           :extended_mode true
+             ;           :max_file_lines nil}
              :markid { :enable true }
             :disable (λ [lang buf]
                 (local max_filesize (* 100 1024))
@@ -624,7 +659,7 @@
                                           vim_item)
                                         (= entry.source.name :luasnip)
                                        (do
-                                         (tset vim_item :kind " Luasnip")
+                                         (tset vim_item :kind "󰆏 Luasnip")
                                          (tset vim_item :kind_hl_group :DevIconGraphQL)
                                          vim_item)
                                        (= entry.source.name :skkeleton)
@@ -641,7 +676,7 @@
                                             vim_item)
                                         (= entry.source.name :dictionary)
                                         (do
-                                          (tset vim_item :kind "﬜ Dict")
+                                          (tset vim_item :kind "󰘝 Dict")
                                           (tset vim_item :kind_hl_group :DevIconFsscript)
                                           vim_item)
                                        ((lspkind.cmp_format {:with_text true :maxwidth 50}) entry vim_item)))}
@@ -704,8 +739,8 @@
 
 {1 :tami5/lspsaga.nvim
  :event ["User plug-lazy-load"]
- :config (λ [] ((. (require :lspsaga) :setup)
-                {:code_action_prompt {:virtual_text false}}))}
+ :dependencies [:nvim-web-devicons]
+ :config (λ [] ((. (require :lspsaga) :setup) {}))}
 
 ;; show type of argument
 ; {1 :ray-x/lsp_signature.nvim
@@ -776,7 +811,8 @@
  ;             :config (λ [] (tset vim.g :copilot_no_tab_map true))
  ;             }]
  :config (lambda [] (vim.defer_fn
-               (lambda [] ((. (require :copilot) :setup)))
+               (lambda [] ((. (require :copilot) :setup)
+                           {:filetypes {:yaml true}}))
                100))}
 
 ; {1 :github/copilot.vim
@@ -788,6 +824,29 @@
  ; :event ["User plug-lazy-load"]
  :config (la (ref-f :setup :copilot_cmp))
  }
+{1 "yetone/avante.nvim"
+  :event ["User plug-lazy-load"]
+  :version false
+  :build "make"
+  :dependencies ["nvim-treesitter/nvim-treesitter"
+                 "stevearc/dressing.nvim"
+                 "nvim-lua/plenary.nvim"
+                 "MunifTanjim/nui.nvim"
+                 ; The below dependencies are optional,
+                 "nvim-tree/nvim-web-devicons"; or echasnovski/mini.icons
+                 "zbirenbaum/copilot.lua";  for providers='copilot'
+                 {1  "HakonHarnes/img-clip.nvim"
+                  :event ["User plug-lazy-load"]
+                  :opts {:default {:embed_images_as_base64 false
+                                   :prompt_for_file_name false
+                                   :drag_and_drop {:insert_mode true}
+                                   :use_absolute_path true}}}
+                 {1 :MeanderingProgrammer/render-markdown.nvim
+                  :opts {
+                        :file_types {:markdown :Avante}
+                        :ft {:markdown :Avante}}}]
+    :config (λ []
+        (vim.cmd "source ~/.config/nvim/fnl/core/pack/conf/avante.lua"))}
 
 ;;; vim
 {1 :Shougo/echodoc.vim
@@ -804,12 +863,25 @@
           (let [ prefix ((. (require :kaza.map) :prefix-o) :n "<Space>g" :git)]
             (prefix.map "g" "<cmd>Git<cr>" "add")
             (prefix.map "c" "<cmd>Git commit<cr>" "commit")
-            (prefix.map "p" "<cmd>Git push<cr>" "push")
+            (prefix.map "w" "<cmd>Git commit -m \"wip\"<cr>" "wip commit")
+            (prefix.map "p" (lambda []
+                              (local branch (vim.fn.trim (vim.fn.system "git branch --show-current")))
+                              (when (not= branch "main")
+                                ((require :notify) "pushing to remote branch " branch)
+                                (vim.fn.execute (.. "Git push origin " branch)))) "push")
+            (prefix.map "l" "<cmd>Git log<cr>" "log")
             (prefix.map "a" (lambda []
                               (local path (vim.fn.expand :%:p))
                               (vim.cmd (.. "Git add " path))
                               ) "add current")
             ))}
+{1 :rbong/vim-flog
+ :event ["User plug-lazy-load"]
+ :dependencies {1 "tpope/vim-fugitive" :event ["User plug-lazy-load"]}
+ :config (λ []
+          (let [ prefix ((. (require :kaza.map) :prefix-o) :n "<Space>g" :git)]
+            (prefix.map "f" "<cmd>vert Flogsplit<cr>" "log")))
+ }
 {1 :tpope/vim-rhubarb :event ["User plug-lazy-load"]} ; enable :Gbrowse
 {1 :tpope/vim-commentary :event ["User plug-lazy-load"]}
 {1 :LudoPinelli/comment-box.nvim
@@ -1007,8 +1079,10 @@
 ; :junegunn/goyo.vim
 ; :amix/vim-zenroom2
 {1 :folke/zen-mode.nvim
- :config (la (ref-f :setup :zen-mode {})
-             (map :n :<Space>z (cmd :ZenMode) "[zenn-mode] toggle"))}
+    :config (la
+            (ref-f :setup :zen-mode
+             {:window {:width 180}})
+            (map :n :<Space>z (cmd :ZenMode) "[zenn-mode] toggle"))}
 
 ;; web browser
 {1 :thinca/vim-ref
@@ -1159,7 +1233,7 @@
 {1 :ray-x/go.nvim
  :dependencies ["ray-x/guihua.lua"
                "neovim/nvim-lspconfig"
-               "nvim-treesitter/nvim-treesitter"
+               ;"nvim-treesitter/nvim-treesitter"
                ]
  :config (la (ref-f :setup :go {})
              (let [g (vim.api.nvim_create_augroup :GoFormat {:clear true})]
@@ -1207,10 +1281,9 @@
 
 ;; markdown
 {1 :godlygeek/tabular :lazy true :cmd [:Tabularize]}
-{1 :preservim/vim-markdown
- :config (λ []
-           (tset vim.g :vim_markdown_conceal_code_blocks false))}
-
+;{1 :preservim/vim-markdown
+; :config (λ []
+;           (tset vim.g :vim_markdown_conceal_code_blocks false))}
 {1 :iamcco/markdown-preview.nvim
  :build "cd app && yarn install"
  :init (λ []
@@ -1220,7 +1293,9 @@
                                              :disable_sync_scroll false})
           (local prefix ((. (require :kaza.map) :prefix-o) :n :<Space>om :markdown-preview))
           (prefix.map :p :<Plug>MarkdownPreview "preview"))
+ :cmd [:MarkdownPreviewToggle :MarkdownPreview :MarkdownPreviewStop]
  :ft [:markdown]}
+
 {1 :ellisonleao/glow.nvim
  :cmd [:Glow :GlowInstall]
  :build ":GlowInstall"

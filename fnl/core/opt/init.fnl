@@ -23,8 +23,8 @@
                           :vertright " "
                           :verthoriz " "
                           ;:horiz " "
-                          :horizup " "
-                          :horizdown " "
+                          :horizup "─"
+                          :horizdown "─"
                           :eob " "})
 
 ;; Tips: This is explicit declaration.
