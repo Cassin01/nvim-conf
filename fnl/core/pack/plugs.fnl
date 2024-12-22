@@ -186,7 +186,8 @@
             :telescope
             {:pickers
              {:colorscheme
-              {:enable_preview true}}})
+              {:enable_preview true}
+              :hidden true}})
           (local prefix ((. (require :kaza.map) :prefix-o) :n :<Space>t :telescope))
           (prefix.map :f "<cmd>Telescope find_files<cr>" "find files")
           (prefix.map :g "<cmd>Telescope live_grep<cr>" "live grep")

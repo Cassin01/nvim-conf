@@ -250,23 +250,24 @@
  :event ["User plug-lazy-load"]
  :dependencies [{1 :nvim-lua/plenary.nvim}]
  :config (λ []
-          (ref-f
-            :setup
-            :telescope
+          (local telescope (. (require :telescope) :setup))
+          (telescope
             {:pickers
-             {:colorscheme
-              {:enable_preview true}}})
+             {:colorscheme {:enable_preview true}}})
           (local prefix ((. (require :kaza.map) :prefix-o) :n :<Space>t :telescope))
-          (prefix.map :f "<cmd>Telescope find_files<cr>" "find files")
-          (prefix.map :g "<cmd>Telescope live_grep<cr>" "live grep")
+          (prefix.map :f (la []
+                           ((-> (require :telescope.builtin) (. :find_files))
+                            {:hidden true})) "find files")
+          (prefix.map :g (la []
+                           ((-> (require :telescope.builtin) (. :live_grep))
+                            {:additional_args [:--hidden]})) "find files")
           (prefix.map :b "<cmd>Telescope buffers<cr>" "buffers")
           (prefix.map :h "<cmd>Telescope help_tags<cr>" "help tags")
           (prefix.map :t "<cmd>Telescope<cr>" "telescope")
           (prefix.map :o "<cmd>Telescope oldfiles<cr>" "old files")
           (prefix.map :c "<cmd>Telescope colorscheme<cr>" "colorscheme")
           (prefix.map :r "<cmd>Telescope file_browser<cr>" "file_browser")
-          (prefix.map :cb "<cmd>Telescope current_buffer_fuzzy_find<cr>" "current_buffer_fuzzy_find")
-          )}
+          (prefix.map :cb "<cmd>Telescope current_buffer_fuzzy_find<cr>" "current_buffer_fuzzy_find"))}
 
 {1 :nvim-telescope/telescope-file-browser.nvim
  :dependencies :telescope.nvim
@@ -801,7 +802,8 @@
  ;             :config (λ [] (tset vim.g :copilot_no_tab_map true))
  ;             }]
  :config (lambda [] (vim.defer_fn
-               (lambda [] ((. (require :copilot) :setup) {:yaml true}))
+               (lambda [] ((. (require :copilot) :setup)
+                           {:filetypes {:yaml true}}))
                100))}
 
 ; {1 :github/copilot.vim
@@ -852,12 +854,25 @@
           (let [ prefix ((. (require :kaza.map) :prefix-o) :n "<Space>g" :git)]
             (prefix.map "g" "<cmd>Git<cr>" "add")
             (prefix.map "c" "<cmd>Git commit<cr>" "commit")
-            (prefix.map "p" "<cmd>Git push<cr>" "push")
+            (prefix.map "w" "<cmd>Git commit -m \"wip\"<cr>")
+            (prefix.map "p" (lambda []
+                              (local branch (vim.fn.trim (vim.fn.system "git branch --show-current")))
+                              (when (not= branch "main")
+                                (vim.fn.echo "pushing to remote branch " branch)
+                                (vim.fn.execute (.. "Git push origin " branch)))))
+            (prefix.map "l" "<cmd>Git log<cr>" "log")
             (prefix.map "a" (lambda []
                               (local path (vim.fn.expand :%:p))
                               (vim.cmd (.. "Git add " path))
                               ) "add current")
             ))}
+{1 :rbong/vim-flog
+ :dependencies {1 "tpope/vim-fugitive" :event ["User plug-lazy-load"]}
+ :cmd [ "Flog" "Flogsplit" "Floggit" ]
+ :config (λ []
+          (let [ prefix ((. (require :kaza.map) :prefix-o) :n "<Space>g" :git)]
+            (prefix.map "f" "<cmd>vert Flogsplit<cr>" "log")))
+ }
 {1 :tpope/vim-rhubarb :event ["User plug-lazy-load"]} ; enable :Gbrowse
 {1 :tpope/vim-commentary :event ["User plug-lazy-load"]}
 {1 :LudoPinelli/comment-box.nvim

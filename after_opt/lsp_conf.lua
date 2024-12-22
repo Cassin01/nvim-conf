@@ -1,4 +1,3 @@
-local vim = vim
 local lspconfig = require("lspconfig")
 require("mason").setup()
 require("mason-lspconfig").setup({
