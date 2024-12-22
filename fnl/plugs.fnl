@@ -858,7 +858,7 @@
             (prefix.map "p" (lambda []
                               (local branch (vim.fn.trim (vim.fn.system "git branch --show-current")))
                               (when (not= branch "main")
-                                (vim.fn.echo "pushing to remote branch " branch)
+                                ((require :notify) "pushing to remote branch " branch)
                                 (vim.fn.execute (.. "Git push origin " branch)))) "push")
             (prefix.map "l" "<cmd>Git log<cr>" "log")
             (prefix.map "a" (lambda []
