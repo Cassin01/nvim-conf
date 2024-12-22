@@ -1,5 +1,5 @@
 local toggle = true
-local external_ime_control = true
+local external_ime_control = false
 
 if vim.fn.has("mac") == 0 then
     return
@@ -87,11 +87,6 @@ else
 end
 
 local g = vim.api.nvim_create_augroup("my_ime", { clear = true })
-
-vim.api.nvim_create_autocmd("VimEnter", {
-    group = g,
-    callback = function() end,
-})
 
 -- モード切り替え時の制御
 if external_ime_control then -- karabiner等で制御されている場合

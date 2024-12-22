@@ -18,6 +18,14 @@ end
 --     client.resolved_capabilities.document_range_formatting = false
 -- end
 local navic = require("nvim-navic")
+local nmap = function(bufnr)
+    return function(keys, func, desc)
+        if desc then
+            desc = "[lsp]" .. desc
+        end
+        vim.keymap.set("n", keys, func, { buffer = bufnr, desc = desc })
+    end
+end
 local default_on_attach = function(client, bufnr)
     if client.server_capabilities.documentSymbolProvider then
         navic.attach(client, bufnr)
@@ -88,6 +96,41 @@ local setup_handlers = {
                 },
             },
         })
+    end,
+    ["buf"] = function()
+        lspconfig["buf"].setup(
+            {
+                filetypes = { 'proto' },
+                on_attach = default_on_attach
+            }
+        )
+    end,
+    ["tsserver"] = function()
+        local vue_typescript_plugin = require("mason-registry").get_package("vue-language-server"):get_install_path()
+            .. "/node_modules/@vue/language-server/node_modules/@vue/typescript-plugin"
+        lspconfig["tsserver"].setup({
+            filetypes = {
+                "javascript",
+                "javascriptreact",
+                "typescript",
+                "typescriptreact",
+                "vue",
+            },
+            on_attach = default_on_attach,
+            root_dir = lspconfig.util.root_pattern({ "package.json", "node_modules" }),
+            init_options = {
+                plugins = {
+                    {
+                        name = "@vue/typescript-plugin",
+                        location = vue_typescript_plugin,
+                        languages = { "javascript", "typescript", "vue" },
+                    },
+                },
+            },
+        })
+    end,
+    ["volar"] = function()
+        lspconfig.volar.setup({ on_attach = default_on_attach })
     end,
     ["rust_analyzer"] = function()
         lspconfig.rust_analyzer.setup({
@@ -168,8 +211,7 @@ local setup_handlers = {
     ["pylsp"] = function()
         lspconfig.pylsp.setup({
             on_attach = default_on_attach,
-            -- https://github.com/python-rope/rope/wiki/Rope-in-Vim-or-Neovim
-            cmd = { "pylsp" },
+            -- https://github.com/python-rope"pylsp" },
             settings = {
                 pylsp = {
                     configurationSources = { "flake8" },
@@ -190,6 +232,14 @@ local setup_handlers = {
                     },
                 },
             },
+        })
+    end,
+    ["sqls"] = function()
+        lspconfig.sqls.setup({
+            on_attach = function(client, bufnr)
+                require("sqls").on_attach(client, bufnr)
+                default_on_attach(client, bufnr)
+            end,
         })
     end,
 }

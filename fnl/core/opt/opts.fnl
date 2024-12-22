@@ -40,6 +40,7 @@
  :history 1000
  ; :ttimeout false ; default on
  ; :ttimeoutlen 0
+ :wrap false
  :timeout true
  :timeoutlen 1000
  :confirm true

@@ -51,7 +51,6 @@
            (vim.keymap.set :n :<leader>k "<cmd>source ~/.config/nvim/after_opt/luasnip.lua<cr>"))}
 
 ;;; lint
-
 {1 :mfussenegger/nvim-lint
  :event ["User plug-lazy-load"]
  :dependencies [:bufbuild/vim-buf]
@@ -227,6 +226,16 @@
                ;:indent {:highlight [:RainbowRed :RainbowYellow]
                }))
  }
+
+ {1 "DNLHC/glance.nvim"
+  :config (la (ref-f :setup :glance)
+              (nmaps
+                :<Space>g
+                :glance
+                [[:D (cmd "Glance definitions") "definitions"]
+                 [:R (cmd "Glance references") "references"]
+                 [:Y (cmd "Glance type_definitions") "type definitions"]
+                 [:M (cmd "Glance implementations") "implementations"]]))}
 
 ; {1 :edluffy/specs.nvim
 ;  ; :event ["User plug-lazy-load"]
@@ -1216,8 +1225,6 @@
 ; {1 :Olical/nvim-local-fennel
 ;  :event ["User plug-lazy-load"]}
 
-
-
 ;; rust
 {1 :rust-lang/rust.vim
  :event ["User plug-lazy-load"]}
@@ -1239,6 +1246,9 @@
  :ft [:go :gomod]
  :build ":lua require(\"go.install\").update_all_sync()"
  }
+
+;; sql
+{1 :nanotee/sqls.nvim}
 
 ;; tex
 {1 :https://github.com/lervag/vimtex
