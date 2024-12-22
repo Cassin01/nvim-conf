@@ -155,11 +155,11 @@
 ; {1 :feline-nvim/feline.nvim
 ;  :init (la (ref-f :setup :feline)
 ;              ((-> (require :feline) (. :winbar) (. :setup))))}
-; {1 :nvim-lualine/lualine.nvim
-;  :event ["User plug-lazy-load"]
-;  :config (la (ref-f :setup :lualine {:options {:globalstatus true}}))
-;  :dependencies {1 :nvim-tree/nvim-web-devicons
-;             :lazy true }}
+{1 :nvim-lualine/lualine.nvim
+ :event ["User plug-lazy-load"]
+ :config (la (ref-f :setup :lualine {:options {:globalstatus true}}))
+ :dependencies {1 :nvim-tree/nvim-web-devicons
+            :lazy true }}
 
 ; notify
 {1 :rcarriga/nvim-notify
@@ -503,29 +503,26 @@
 ;             (λ [server] (server:setup {}))))}
 {1 :williamboman/mason.nvim
  ; :event ["User plug-lazy-load"]
+ ; :dependencies [{1 "nvimtools/none-ls.nvim"}
  :dependencies [{1 "jose-elias-alvarez/null-ls.nvim"}
             {1 "jayp0521/mason-null-ls.nvim"}]
  :config (λ []
            (ref-f :setup :mason)
            ; (ref-f :setup :null-ls)
            (local null_ls (require :null-ls))
+           (local b (. null_ls :builtins))
            (local mason_null_ls (require :mason-null-ls))
-           (local b null_ls.builtins)
-           (mason_null_ls.setup
+           ((. mason_null_ls :setup)
                   {:ensure_installed [:stylua]
                    :automatic_installation true
-                   :handlers {1 (λ [source_name] )
+                   :handlers {1 (λ [source_name] nil)
                               :stylua (λ [source_name]
-                                        (null_ls.register null_ls.builtins.formatting.stylua)) }})
-           ; (mason_null_ls.setup_handlers
-           ;   {1 (λ [source_name] )
-           ;    :stylua (λ [source_name]
-           ;        (null_ls.register null_ls.builtins.formatting.stylua)) })
+                                        ((. null_ls :register) (-> b (. :formatting) (. :stylua)))) }})
            ;; ref: https://alpha2phi.medium.com/neovim-for-beginners-lsp-using-null-ls-nvim-bd954bf86b40
            ;; ref: https://www.reddit.com/r/neovim/comments/un3s55/how_to_pass_arguments_for_formatting_in_nullls/
            (local sources
-             [(b.formatting.stylua.with {:extra_args [:--indent-type :Spaces]})])
-           (null_ls.setup {:sources sources}))
+             [((-> b (. :formatting) (. :stylua) (. :with)) {:extra_args [:--indent-type :Spaces]})])
+           ((. null_ls :setup) {:sources sources}))
 
  }
 ; {1 :williamboman/mason-lspconfig.nvim}
@@ -1250,12 +1247,12 @@
 ;; sql
 {1 :nanotee/sqls.nvim}
 
-;; tex
-{1 :https://github.com/lervag/vimtex
- :config (λ []
-           (tset vim.g :vimtex_view_general_viewer "/Applications/Skim.app/Contents/SharedSupport/displayline")
-           (tset vim.g :vimtex_view_general_options "@line @pdf @tex")
-           )}
+; ;; tex
+; {1 :https://github.com/lervag/vimtex
+;  :config (λ []
+;            (tset vim.g :vimtex_view_general_viewer "/Applications/Skim.app/Contents/SharedSupport/displayline")
+;            (tset vim.g :vimtex_view_general_options "@line @pdf @tex")
+;            )}
 
 ; {1 :Cassin01/texrun.vim
 ;  ; :event ["User plug-lazy-load"]

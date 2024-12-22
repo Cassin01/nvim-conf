@@ -11,9 +11,7 @@
 (local buf_set_option vim.api.nvim_buf_set_option)
 (local win_set_option vim.api.nvim_win_set_option)
 (local buf_set_keymap vim.api.nvim_buf_set_keymap)
-(fn show [msg]
-  (vim.api.nvim_echo [[msg]] true {}))
-
+(fn show [msg] (vim.api.nvim_echo [[msg]] true {}))
 ;; remind cursor position
 (au! :restore-position :BufReadPost (when (and (> (vim.fn.line "'\"") 1)
                                               (<= (vim.fn.line "'\"") (vim.fn.line "$")))
@@ -68,7 +66,7 @@
   (vim.cmd "hi Constant guibg=NONE")
   (vim.cmd "hi Function guibg=NONE")
 
-  (fn bufferline []
+  (fn plugs []
     (local {: unfold-iter} (require :util.list))
     (local res (vim.api.nvim_exec "highlight" true))
     (local lines (unfold-iter (res:gmatch "([^\r\n]+)")))
@@ -77,8 +75,11 @@
       (local hi-name (. elements 1))
       (when (not= hi-name nil)
         (when (not= (hi-name:match "^BufferLine.*$") nil)
-          (vim.cmd (.. "hi " hi-name " guibg=NONE"))))))
-  (bufferline))
+          (vim.cmd (.. "hi " hi-name " guibg=NONE")))
+        ; (when (not= (hi-name:match "^lualine.*$") nil)
+        ;   (vim.cmd (.. "hi " hi-name " guibg=NONE")))
+        )))
+  (plugs))
 (au! :mmatch-clear
      [:BufWinEnter :ColorScheme]
      (clear_color))
@@ -169,7 +170,7 @@
                 (or force (= (vim.fn.confirm (.. dir " does not exist. Create?") "&Yes\n&No") 1)))
          (vim.fn.mkdir dir :p))))
 
-((. (require :lua.winbar) :setup))
+((. (require :winbar) :setup))
 (au! :m-winbar :BufWinEnter
      (vim.schedule (lambda []
        ; (local info (vim.fn.getbufinfo (vim.api.nvim_getbuf)))
@@ -190,8 +191,8 @@
                     (= vim.bo.filetype "typescript")
                     (= vim.bo.filetype "javascript")
                     (= vim.bo.filetype "go")))
-       (when res
-         (tset vim.wo :winbar "%{%v:lua.require'lua.winbar'.exec()%}"))))
+       (when true
+         (tset vim.wo :winbar "%{%v:lua.require'winbar'.exec()%}"))))
      {:pattern :*})
 
 ;; settings for global status
