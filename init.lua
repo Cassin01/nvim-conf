@@ -32,7 +32,7 @@ if not vim.loop.fs_stat(hotpotpath) then
 end
 
 vim.opt.runtimepath:prepend({lazypath, hotpotpath})
-
+vim.loader.enable()
 require("hotpot")
 
 if _G["__kaza"] == nil then

@@ -74,13 +74,13 @@ M.exec = function()
         end)()
     local location = (function()
         if navic_is_available then
-            return Navic.get_location()
+            return Navic.get_location() .. "%*"
         else
             return ""
         end
     end)()
 
-    return "%#Function#" .. file_path .. "%*" .. "%#Function#" .. location .. "%*"
+    return "%#Function#" .. file_path .. "%*" .. "%#Function#" .. location
 
     -- return '%#WinBarSeparator#'
     --     .. ''
