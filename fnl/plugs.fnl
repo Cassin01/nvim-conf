@@ -854,12 +854,12 @@
           (let [ prefix ((. (require :kaza.map) :prefix-o) :n "<Space>g" :git)]
             (prefix.map "g" "<cmd>Git<cr>" "add")
             (prefix.map "c" "<cmd>Git commit<cr>" "commit")
-            (prefix.map "w" "<cmd>Git commit -m \"wip\"<cr>")
+            (prefix.map "w" "<cmd>Git commit -m \"wip\"<cr>" "wip commit")
             (prefix.map "p" (lambda []
                               (local branch (vim.fn.trim (vim.fn.system "git branch --show-current")))
                               (when (not= branch "main")
                                 (vim.fn.echo "pushing to remote branch " branch)
-                                (vim.fn.execute (.. "Git push origin " branch)))))
+                                (vim.fn.execute (.. "Git push origin " branch)))) "push")
             (prefix.map "l" "<cmd>Git log<cr>" "log")
             (prefix.map "a" (lambda []
                               (local path (vim.fn.expand :%:p))
@@ -867,8 +867,8 @@
                               ) "add current")
             ))}
 {1 :rbong/vim-flog
+ :event ["User plug-lazy-load"]
  :dependencies {1 "tpope/vim-fugitive" :event ["User plug-lazy-load"]}
- :cmd [ "Flog" "Flogsplit" "Floggit" ]
  :config (λ []
           (let [ prefix ((. (require :kaza.map) :prefix-o) :n "<Space>g" :git)]
             (prefix.map "f" "<cmd>vert Flogsplit<cr>" "log")))

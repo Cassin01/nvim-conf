@@ -111,12 +111,6 @@ local setup_handlers = {
             },
         })
     end,
-    ["buf"] = function()
-        lspconfig["buf"].setup({
-            filetypes = { "proto" },
-            on_attach = default_on_attach,
-        })
-    end,
     ["ts_ls"] = function()
         local vue_typescript_plugin = require("mason-registry").get_package("vue-language-server"):get_install_path()
             .. "/node_modules/@vue/language-server/node_modules/@vue/typescript-plugin"
@@ -198,22 +192,6 @@ local setup_handlers = {
             },
         })
     end,
-    ["protobuf_language_server"] = function()
-        gopath = os.getenv("GOPATH")
-        lspconfig.protobuf_language_server.setup({
-            on_attach = default_on_attach,
-            cmd = { gopath .. "/bin/protobuf-language-server" },
-            filetypes = { "proto", "cpp" },
-            root_dir = util.root_pattern(".git"),
-            single_file_support = true,
-            settings = {},
-        })
-    end,
-    -- ["protols"] = function()
-    --     lspconfig.protols.setup({
-    --         on_attach = default_on_attach,
-    --     })
-    -- end
 }
 
 local ok, secret = pcall(require, "secret")
