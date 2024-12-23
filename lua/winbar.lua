@@ -65,16 +65,16 @@ M.exec = function()
     local navic_is_available = Navic.is_available()
     file_path = file_path:gsub("/", " ➤ ")
     file_path = file_path
-        .. (function()
-            if navic_is_available then
-                return " ➤ "
-            else
-                return ""
-            end
-        end)()
+    -- .. (function()
+    --     if navic_is_available then
+    --         return " ➤ "
+    --     else
+    --         return ""
+    --     end
+    -- end)()
     local location = (function()
         if navic_is_available then
-            return Navic.get_location() .. "%*"
+            return " ➤  " .. Navic.get_location() -- .. "%*"
         else
             return ""
         end
