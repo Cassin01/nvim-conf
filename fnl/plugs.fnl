@@ -92,19 +92,22 @@
            )}
 
 {1 :stevearc/oil.nvim
- :config (la
+    :config (la
             (tset _G
-                  :get_oil_winbar
-                  (la
-                    (let [dir (ref-f :get_current_dir :oil)]
-                      (if dir
-                        (vim.fn.fnamemodify dir ":~")
-                        (vim.api.nvim_buf_get_name 0)))))
-           (ref-f :setup :oil {:win_options
-            {:signcolumn :yes:2
-             :winbar "%!v:lua.get_oil_winbar()"}})
-           (map :n :<F3> (cmd :Oil) "open oil")
-           (nmaps
+             :get_oil_winbar
+             (la
+              (let [dir (ref-f :get_current_dir :oil)]
+               (if dir
+                (vim.fn.fnamemodify dir ":~")
+                (vim.api.nvim_buf_get_name 0)))))
+            (ref-f :setup :oil
+             {:win_options
+               {:signcolumn :yes:2
+               :winbar "%!v:lua.get_oil_winbar()"
+               }
+             :view_options {:show_hidden true}})
+            (map :n :<F3> (cmd :Oil) "open oil")
+            (nmaps
              :<Space>oi
              :oil
              [["l" (cmd :Oil) "open oil"]]))}
@@ -174,15 +177,15 @@
            )
  }
 
-{1 :folke/snacks.nvim
- :priority 1000
- :lazy false
- :opts {
-   :bigfile {:enabled true}
-   :notifier {:enabled true}
-   :quickfile {:enabled true}
-   :statuscolumn {:enabled true}
-   :words {:enabled true}}}
+;{1 :folke/snacks.nvim
+; :priority 1000
+; :lazy false
+; :opts {
+;   :bigfile {:enabled true}
+;   :notifier {:enabled true}
+;   :quickfile {:enabled true}
+;   :statuscolumn {:enabled true}
+;   :words {:enabled true}}}
 ; {1 :folke/noice.nvim
 ;  ; :event ["User plug-lazy-load"]
 ;  :config (lambda []
@@ -390,7 +393,7 @@
              ;                                  :node_decremental "<BS>"
              ;                                  :scope_incremental "<S-CR>"}
              ;                         }
-             :ensure_installed [ "nix" "org" "bash" "go"]  ; "lua" "rust" "c" "org"
+             :ensure_installed [ "nix" "org" "bash"]  ; "lua" "rust" "c" "org"
              :sync_install false
              :auto_install true
              :ignore_install [ "javascript" "markdown"]
