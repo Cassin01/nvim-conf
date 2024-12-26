@@ -264,14 +264,14 @@
  :config (λ []
           (local telescope (. (require :telescope) :setup))
           (telescope
+            {:defaults {
+             :file_ignore_patterns [".git" "node_modules" "vendor" "target" ".cache" ".vscode" ".idea" ".sass-cache" ".hg" ".svn"]}}
             {:pickers
              {:colorscheme {:enable_preview true}}})
           (local prefix ((. (require :kaza.map) :prefix-o) :n :<Space>t :telescope))
-          (prefix.map :f (la []
-                           ((-> (require :telescope.builtin) (. :find_files))
+          (prefix.map :f (la ((-> (require :telescope.builtin) (. :find_files))
                             {:hidden true})) "find files")
-          (prefix.map :g (la []
-                           ((-> (require :telescope.builtin) (. :live_grep))
+          (prefix.map :g (la ((-> (require :telescope.builtin) (. :live_grep))
                             {:additional_args [:--hidden]})) "find files")
           (prefix.map :b "<cmd>Telescope buffers<cr>" "buffers")
           (prefix.map :h "<cmd>Telescope help_tags<cr>" "help tags")
@@ -396,9 +396,13 @@
              :ensure_installed [ "nix" "org" "bash"]  ; "lua" "rust" "c" "org"
              :sync_install false
              :auto_install true
-             :ignore_install [ "javascript" "markdown"]
+             :ignore_install [ "javascript" "markdown" "git"]
              :highlight {:enable true
-                         :disable [ "c" "rust" "org" "vim" "tex" "typescript" "markdown"]
+                         :disable (la
+                                    (each [_ t (ipairs [ "c" "rust" "org" "vim" "tex" "typescript" "markdown" "git"])]
+                                      (when (= t vim.bo.filetype)
+                                        (lua "return false")))
+                                     true)
                          :additional_vim_regex_highlighting ["org"]}
              ; :rainbow {:enable true
              ;           :extended_mode true
@@ -869,6 +873,12 @@
                               (when (not= branch "main")
                                 ((require :notify) "pushing to remote branch " branch)
                                 (vim.fn.execute (.. "Git push origin " branch)))) "push")
+            (prefix.map "f" (lambda []
+                              (local branch (vim.fn.trim (vim.fn.system "git branch --show-current")))
+                              (when (and (not= branch "main") (not= branch "master"))
+                                (vim.fn.execute (.. "Git push -f origin " branch)) "")
+                                ((require :notify) "pushed to remote branch " branch)
+                                ) "push")
             (prefix.map "l" "<cmd>Git log<cr>" "log")
             (prefix.map "a" (lambda []
                               (local path (vim.fn.expand :%:p))
@@ -878,9 +888,9 @@
 {1 :rbong/vim-flog
  :event ["User plug-lazy-load"]
  :dependencies {1 "tpope/vim-fugitive" :event ["User plug-lazy-load"]}
- :config (λ []
-          (let [ prefix ((. (require :kaza.map) :prefix-o) :n "<Space>g" :git)]
-            (prefix.map "f" "<cmd>vert Flogsplit<cr>" "log")))
+ ; :config (λ []
+ ;          (let [ prefix ((. (require :kaza.map) :prefix-o) :n "<Space>g" :git)]
+ ;            (prefix.map "f" "<cmd>vert Flogsplit<cr>" "log")))
  }
 {1 :tpope/vim-rhubarb :event ["User plug-lazy-load"]} ; enable :Gbrowse
 {1 :tpope/vim-commentary :event ["User plug-lazy-load"]}

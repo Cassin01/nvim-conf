@@ -242,14 +242,14 @@ vim.api.nvim_create_autocmd("LspAttach", {
             vim.lsp.buf.format({ timeout_ms = 2000 })
         end
         nmap(ev.bufnr)("sf", vim.lsp.buf.format, "format")
-        if client.supports_method("textDocument/formatting") then
-            vim.api.nvim_create_autocmd({ "BufWritePre" }, {
-                group = vim.api.nvim_create_augroup("lsp_attached_format_", { clear = true }),
-                buffer = ev.bufnr,
-                callback = function()
-                    format()
-                end,
-            })
-        end
+        -- if client.supports_method("textDocument/formatting") then
+        --     vim.api.nvim_create_autocmd({ "BufWritePre" }, {
+        --         group = vim.api.nvim_create_augroup("lsp_attached_format_", { clear = true }),
+        --         buffer = ev.bufnr,
+        --         callback = function()
+        --             format()
+        --         end,
+        --     })
+        -- end
     end,
 })
