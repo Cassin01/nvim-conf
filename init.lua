@@ -8,35 +8,35 @@
 -- bootstrap lazy
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
-  vim.fn.system({
-    "git",
-    "clone",
-    "--filter=blob:none",
-    "--branch=stable",
-    "https://github.com/folke/lazy.nvim.git",
-    lazypath,
-  })
+    vim.fn.system({
+        "git",
+        "clone",
+        "--filter=blob:none",
+        "--branch=stable",
+        "https://github.com/folke/lazy.nvim.git",
+        lazypath,
+    })
 end
 
 local hotpotpath = vim.fn.stdpath("data") .. "/lazy/hotpot.nvim"
 if not vim.loop.fs_stat(hotpotpath) then
-  vim.fn.system({
-    "git",
-    "clone",
-    "--filter=blob:none",
-    "--single-branch",
-    "--branch=master",
-    "https://github.com/rktjmp/hotpot.nvim.git",
-    hotpotpath,
-  })
+    vim.fn.system({
+        "git",
+        "clone",
+        "--filter=blob:none",
+        "--single-branch",
+        "--branch=master",
+        "https://github.com/rktjmp/hotpot.nvim.git",
+        hotpotpath,
+    })
 end
 
-vim.opt.runtimepath:prepend({lazypath, hotpotpath})
+vim.opt.runtimepath:prepend({ lazypath, hotpotpath })
 vim.loader.enable()
 require("hotpot")
 
 if _G["__kaza"] == nil then
-   require("kaza").setup()
+    require("kaza").setup()
 end
 
 require("core.opt")
@@ -47,13 +47,12 @@ require("lazy").setup(require("plugs"))
 -- my settings
 require("setup")
 
-
 -- vim.cmd([[colorscheme tokyonight]])
 -- vim.cmd([[colorscheme lunaperche]])
 -- vim.cmd([[colorscheme nord]])
 -- vim.cmd([[colorscheme nova]])
-vim.cmd([[colorscheme neon]])
--- vim.cmd([[colorscheme fluoromachine]]) -- default
+-- vim.cmd([[colorscheme neon]])
+vim.cmd([[colorscheme fluoromachine]]) -- default
 -- vim.cmd([[colorscheme Tomorrow]])
 -- vim.cmd([[colorscheme default]])
 
