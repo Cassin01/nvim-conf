@@ -870,9 +870,9 @@
             (prefix.map "w" "<cmd>Git commit -m \"wip\"<cr>" "wip commit")
             (prefix.map "p" (lambda []
                               (local branch (vim.fn.trim (vim.fn.system "git branch --show-current")))
-                              (when (not= branch "main")
-                                ((require :notify) "pushing to remote branch " branch)
-                                (vim.fn.execute (.. "Git push origin " branch)))) "push")
+                              (when (and (not= branch "main") (not= branch "master"))
+                                (vim.fn.execute (.. "Git push origin " branch))
+                                ((require :notify) "pushing to remote branch " branch))) "push")
             (prefix.map "f" (lambda []
                               (local branch (vim.fn.trim (vim.fn.system "git branch --show-current")))
                               (when (and (not= branch "main") (not= branch "master"))
@@ -880,17 +880,38 @@
                                 ((require :notify) "pushed to remote branch " branch)
                                 ) "push")
             (prefix.map "l" "<cmd>Git log<cr>" "log")
+            (prefix.map "t" "<cmd>Git log --graph --pretty=oneline --abbrev-commit --date=relative<cr>" "log")
             (prefix.map "a" (lambda []
                               (local path (vim.fn.expand :%:p))
                               (vim.cmd (.. "Git add " path))
                               ) "add current")
             ))}
+
+; {1 :neogitOrg/neogit
+;  :dependencies {1 :nvim-lua/plenary.nvim
+;                 2 :sindrets/diffview.nvim
+;                 3 :nvim-tele.lua/telescope.nvim
+;                 :event ["User plug-lazy-load"]}
+;  :config (lambda []
+;            ((-> (require :neogit) (. :setup)) {})
+;            (let [ prefix ((. (require :kaza.map) :prefix-o) :n "<Space>gn" :neogit)]
+;              (prefix.map "l" "<cmd>Nogit log<cr>" "log")))
+;  }
+; {1 :isakbm/gitgraph.nvim
+;  :dependencies [:sindrets/diffview.nvim]
+;  :config (lambda []
+;             (let [prefix ((. (require :kaza.map) :prefix-o) :n "<Space>gn" :neogit)]
+;               (prefix.map "l" (lambda []
+;                                   ((-> (require :gitgraph) (. :draw)) {} {:all true :max_count 5000})
+;                                 ) "log")))
+;  :opts {:symbols {:merge_commit :●
+;                   :commit :○}}}
 {1 :rbong/vim-flog
  :event ["User plug-lazy-load"]
  :dependencies {1 "tpope/vim-fugitive" :event ["User plug-lazy-load"]}
- ; :config (λ []
- ;          (let [ prefix ((. (require :kaza.map) :prefix-o) :n "<Space>g" :git)]
- ;            (prefix.map "f" "<cmd>vert Flogsplit<cr>" "log")))
+ :config (λ []
+          (let [ prefix ((. (require :kaza.map) :prefix-o) :n "<Space>g" :git)]
+            (prefix.map "nl" "<cmd>vert Flogsplit<cr>" "log")))
  }
 {1 :tpope/vim-rhubarb :event ["User plug-lazy-load"]} ; enable :Gbrowse
 {1 :tpope/vim-commentary :event ["User plug-lazy-load"]}

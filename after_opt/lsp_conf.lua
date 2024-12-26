@@ -4,14 +4,6 @@ require("mason-lspconfig").setup({
     ensure_installed = {},
 })
 
-local nmap = function(bufnr)
-    return function(keys, func, desc)
-        if desc then
-            desc = "[lsp]" .. desc
-        end
-        vim.keymap.set("n", keys, func, { buffer = bufnr, desc = desc })
-    end
-end
 -- local default_on_attach = function(client)
 -- --     -- require("mappings").keys_lsp()
 --     client.resolved_capabilities.document_formatting = false
