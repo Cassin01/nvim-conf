@@ -37,7 +37,7 @@
  [[:n :v] :sc :M "window center"]
  [[:n :v] :sb :L "window bottom"]
  [[:n :v] :sn :<cmd>bnext<cr> "next buffer"]
- [[:n :v] :sp :<cmd>bprev<cr>"previous buffer"]
+ [[:n :v] :sp :<cmd>bprev<cr> "previous buffer"]
  [[:n :v] :sd :gd "difinition"]
  [[:n :v] :sm :% "match"]
  [[:n :v] :sj "<Plug>(leap-forward-to)" "leap forward"]

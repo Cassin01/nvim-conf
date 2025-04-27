@@ -25,7 +25,7 @@ if not vim.loop.fs_stat(hotpotpath) then
         "clone",
         "--filter=blob:none",
         "--single-branch",
-        "--branch=master",
+        "--branch=main",
         "https://github.com/rktjmp/hotpot.nvim.git",
         hotpotpath,
     })
