@@ -74,12 +74,12 @@
  :config (λ [] ((req-f :set_icon :nvim-web-devicons) {:fnl {:icon "󰌪" :color "#428850" :name :fnl}}))}
 
 {1 :lambdalisue/fern.vim
- :lazy true
- :event ["User plug-lazy-load"]
+ ; :lazy true
+ ; :event ["User plug-lazy-load"]
  :dependencies [:lambdalisue/fern-git-status.vim
-            {1 :lambdalisue/fern-renderer-nerdfont.vim
-             :dependencies [:lambdalisue/nerdfont.vim]}
-            :yuki-yano/fern-preview.vim]
+                {1 :lambdalisue/fern-renderer-nerdfont.vim
+                  :dependencies [:lambdalisue/nerdfont.vim]}
+                :yuki-yano/fern-preview.vim]
  :config (λ []
            (tset vim.g :fern#renderer :nerdfont)
            ; (tset vim.g :fern_renderer_devicons_disable_warning true)
@@ -265,12 +265,13 @@
           (local telescope (. (require :telescope) :setup))
           (telescope
             {:defaults {
-             :file_ignore_patterns [".git" "node_modules" "vendor" "target" ".cache" ".vscode" ".idea" ".sass-cache" ".hg" ".svn"]}}
+             :file_ignore_patterns [".git/" "node_modules" "vendor" "target" ".cache" ".vscode" ".idea" ".sass-cache" ".hg" ".svn"]}}
             {:pickers
              {:colorscheme {:enable_preview true}}})
           (local prefix ((. (require :kaza.map) :prefix-o) :n :<Space>t :telescope))
           (prefix.map :f (la ((-> (require :telescope.builtin) (. :find_files))
-                            {:hidden true})) "find files")
+                            {:hidden true
+                             :no_ignore true})) "find files")
           (prefix.map :g (la ((-> (require :telescope.builtin) (. :live_grep))
                             {:additional_args [:--hidden]})) "find files")
           (prefix.map :b "<cmd>Telescope buffers<cr>" "buffers")
@@ -397,12 +398,13 @@
              :sync_install false
              :auto_install true
              :ignore_install [ "javascript" "markdown" "git"]
-             :highlight {:enable true
-                         :disable (la
-                                    (each [_ t (ipairs [ "c" "rust" "org" "vim" "tex" "typescript" "markdown" "git"])]
-                                      (when (= t vim.bo.filetype)
-                                        (lua "return false")))
-                                     true)
+             :highlight {:enable ["go" "yaml"]
+                         :disable [ "c" "rust" "org" "vim" "tex" "typescript" "markdown" "git"]
+                         ; :disable (la
+                         ;            (each [_ t (ipairs [ "c" "rust" "org" "vim" "tex" "typescript" "markdown" "git"])]
+                         ;              (when (= t vim.bo.filetype)
+                         ;                (lua "return false")))
+                         ;             true)
                          :additional_vim_regex_highlighting ["org"]}
              ; :rainbow {:enable true
              ;           :extended_mode true
@@ -481,7 +483,7 @@
            ((. (require :gitsigns) :setup)
             {:current_line_blame true}))}
 
-; {1 :sindrets/diffview.nvim :dependencies :nvim-lua/plenary.nvim }
+{1 :sindrets/diffview.nvim :dependencies :nvim-lua/plenary.nvim }
 
 {1 :kana/vim-submode
  :event ["User plug-lazy-load"]
@@ -511,8 +513,8 @@
 {1 :williamboman/mason.nvim
  ; :event ["User plug-lazy-load"]
  ; :dependencies [{1 "nvimtools/none-ls.nvim"}
- :dependencies [{1 "jose-elias-alvarez/null-ls.nvim"}
-            {1 "jayp0521/mason-null-ls.nvim"}]
+ :dependencies [{1 "nvimtools/none-ls.nvim"}
+            {1 "jay-babu/mason-null-ls.nvim"}]
  :config (λ []
            (ref-f :setup :mason)
            ; (ref-f :setup :null-ls)
@@ -762,38 +764,38 @@
 ;                                                                               (prefix.map-buf bufnr :n "}" (cmd :AerialNext) :JumpBackward)
 ;                                                    (prefix.map-buf bufnr :n "[[" (cmd :AerialPrevUp) :JumpUpTheTree)
 ;                                                                                (prefix.map-buf bufnr :n "]]" (cmd :AerialNextUp) :JumpUpTheTree)))}))}
-{1 :sidebar-nvim/sidebar.nvim
-:event ["User plug-lazy-load"]
- :dependencies [{1 :jremmen/vim-ripgrep :event ["User plug-lazy-load"]}]
- :config (la
-           (local section {:title :Environment
-                           :icon :
-                           :setup (lambda [ctx]
-                                    nil)
-                           :update (lambda [ctx]
-                                     nil)
-                           :draw (lambda [ctx]
-                                   "> string here\n> multiline")
-                           :heights {:groups {:MyHighlightGroup {:gui :#C792EA
-                                                                 :fg :#ff0000
-                                                                 :bg :#00ff00}}
-                                     :links {:MyHighlightLink :Keyword}}})
-           (ref-f
-               :setup
-               :sidebar-nvim
-               {:initial_width 21
-                :sections [:datetime section :git :todos :buffers :files :symbols :diagnostics ]
-                :todos {:icon :
-                        :ignored_paths ["~"]
-                        :initially_closed true}}))
- :init (la
-           (nmaps
-             :<Space>i
-             :sidebar
-             [[:t (cmd :SidebarNvimToggle) :toggle]
-              [:f (cmd :SidebarNvimFocus) :focus]]))
- ;:rocks [:luatz]
- }
+; {1 :sidebar-nvim/sidebar.nvim
+; :event ["User plug-lazy-load"]
+;  :dependencies [{1 :jremmen/vim-ripgrep :event ["User plug-lazy-load"]}]
+;  :config (la
+;            (local section {:title :Environment
+;                            :icon :
+;                            :setup (lambda [ctx]
+;                                     nil)
+;                            :update (lambda [ctx]
+;                                      nil)
+;                            :draw (lambda [ctx]
+;                                    "> string here\n> multiline")
+;                            :heights {:groups {:MyHighlightGroup {:gui :#C792EA
+;                                                                  :fg :#ff0000
+;                                                                  :bg :#00ff00}}
+;                                      :links {:MyHighlightLink :Keyword}}})
+;            (ref-f
+;                :setup
+;                :sidebar-nvim
+;                {:initial_width 21
+;                 :sections [:datetime section :git :todos :buffers :files :symbols :diagnostics ]
+;                 :todos {:icon :
+;                         :ignored_paths ["~"]
+;                         :initially_closed true}}))
+;  :init (la
+;            (nmaps
+;              :<Space>i
+;              :sidebar
+;              [[:t (cmd :SidebarNvimToggle) :toggle]
+;               [:f (cmd :SidebarNvimFocus) :focus]]))
+;  ;:rocks [:luatz]
+;  }
 
 ; {1 :hrsh7th/vim-vsnip
 ;  :disable true
@@ -816,7 +818,8 @@
  ;             }]
  :config (lambda [] (vim.defer_fn
                (lambda [] ((. (require :copilot) :setup)
-                           {:filetypes {:yaml true}}))
+                           {:filetypes {:yaml true
+                                        :org true}}))
                100))}
 
 ; {1 :github/copilot.vim
@@ -848,9 +851,20 @@
                  {1 :MeanderingProgrammer/render-markdown.nvim
                   :opts {
                         :file_types {:markdown :Avante}
-                        :ft {:markdown :Avante}}}]
+                        :ft {:markdown :Avante}}}
+                        ]
     :config (λ []
         (vim.cmd "source ~/.config/nvim/fnl/core/pack/conf/avante.lua"))}
+; {1 :greggh/claude-code.nvim
+;   :dependencies [:nvim-lua/plenary.nvim]
+;   :config (λ [] ((. (require :claude-code) :setup)
+;                  (let [prefix ((. (require :kaza.map) :prefix-o) :n "<Space>c" :claude)]
+;                   (prefix.map "c" "<cmd>ClaudeCode<cr>" "claude code"))))}
+{1 :coder/claudecode.nvim
+ :dependencies [:folke/snacks.nvim]
+ :config (λ [] ((. (require :claudecode) :setup)
+                (let [prefix ((. (require :kaza.map) :prefix-o) :n "<Space>c" :claude)]
+                  (prefix.map "c" "<cmd>ClaudeCode<cr>" "claude code"))))}
 
 ;;; vim
 {1 :Shougo/echodoc.vim

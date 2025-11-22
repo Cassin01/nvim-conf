@@ -58,3 +58,4 @@ vim.cmd([[colorscheme fluoromachine]]) -- default
 
 -- vim.cmd([[set background=light]])
 -- vim.cmd([[colorscheme morning]])
+-- vim.cmd([[colorscheme fluoromachine]]) -- default
