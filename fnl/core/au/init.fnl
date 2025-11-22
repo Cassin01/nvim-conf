@@ -384,6 +384,11 @@
            (bmap 0 (unpack k))))
     {:pattern :ref})
 
+(au! :sq-view
+    :BufWritePost
+    (vim.diagnostic.setqflist)
+    {:pattern :*.go})
+
 ; ;; copilot
 ; (au! :reload-copilot
 ;      :VimEnter

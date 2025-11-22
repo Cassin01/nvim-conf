@@ -1,7 +1,7 @@
 local lspconfig = require("lspconfig")
 require("mason").setup()
 require("mason-lspconfig").setup({
-    ensure_installed = {},
+    ensure_installed = {"gopls"},
 })
 
 -- local default_on_attach = function(client)
@@ -19,6 +19,7 @@ local nmap = function(bufnr)
     end
 end
 local default_on_attach = function(client, bufnr)
+    print("LSP attached: " .. client.name)
     if client.server_capabilities.documentSymbolProvider then
         navic.attach(client, bufnr)
     end
@@ -30,10 +31,12 @@ local default_on_attach = function(client, bufnr)
     nmap_("sD", vim.lsp.buf.declaration, "declaration")
     nmap_("s<C-k>", vim.lsp.buf.signature_help, "signature_help")
     nmap_("sa", vim.lsp.buf.code_action, "code_action")
+    nmap_("sr", vim.lsp.buf.references, "references")
+    nmap_("sR", require("telescope.builtin").lsp_references, "references")
+    nmap_("sq", vim.diagnostic.setqflist, "set_qflist")
     nmap_("swl", function()
         print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
     end, "list_workspace_folders")
-    nmap_("sr", require("telescope.builtin").lsp_references, "references")
     if client.server_capabilities.documentFormattingProvider then
         local format = function()
             vim.lsp.buf.format({ timeout_ms = 2000 })
@@ -54,171 +57,6 @@ lspconfig.util.default_config = vim.tbl_extend("force", lspconfig.util.default_c
     capabilities = default_capabilities,
 })
 
-local setup_handlers = {
-    function(server_name)
-        lspconfig[server_name].setup({})
-    end,
-    ["lua_ls"] = function()
-        lspconfig.lua_ls.setup({
-            on_attach = default_on_attach,
-            settings = {
-                Lua = {
-                    runtime = {
-                        version = "LuaJIT",
-                    },
-                    diagnostics = {
-                        globals = { "vim", "use", "require" },
-                    },
-                    workspace = {
-                        checkThirdParty = false, -- Stop ask to configure my work environment.
-                        library = vim.api.nvim_get_runtime_file("", true),
-                    },
-                    telemetry = {
-                        enable = false,
-                    },
-                    format = {
-                        enable = true,
-                        -- Put format options here
-                        -- NOTE: the value should be STRING!!
-                        defaultConfig = {
-                            indent_style = "space",
-                            indent_size = "2",
-                        },
-                    },
-                },
-            },
-        })
-    end,
-    ["rust_analyzer"] = function()
-        lspconfig.rust_analyzer.setup({
-            on_attach = default_on_attach,
-            settings = {
-                ["rust-analyzer"] = {
-                    assist = {
-                        importGranularity = "module",
-                        importPrefix = "by_self",
-                    },
-                    cargo = {
-                        loadOutDirsFromCheck = true,
-                    },
-                    procMacro = {
-                        enable = false,
-                    },
-                    checkOnSave = {
-                        command = "clippy",
-                    },
-                },
-            },
-        })
-    end,
-    ["ts_ls"] = function()
-        local vue_typescript_plugin = require("mason-registry").get_package("vue-language-server"):get_install_path()
-            .. "/node_modules/@vue/language-server/node_modules/@vue/typescript-plugin"
-
-        lspconfig["ts_ls"].setup({
-            on_attach = default_on_attach,
-            init_options = {
-                plugins = {
-                    {
-                        name = "@vue/typescript-plugin",
-                        location = vue_typescript_plugin,
-                        languages = { "javascript", "typescript", "vue" },
-                    },
-                },
-            },
-            filetypes = { "typescript", "javascript", "javascriptreact", "typescriptreact", "vue" },
-        })
-    end,
-    ["volar"] = function()
-        lspconfig.volar.setup({
-            on_attach = default_on_attach,
-            root_dir = lspconfig.util.root_pattern({ "package.json" }),
-            single_file_support = true,
-            init_options = {
-                vue = {
-                    hybridMode = true,
-                },
-            },
-        })
-    end,
-    ["denols"] = function()
-        lspconfig.denols.setup({
-            single_file_support = false,
-            root_dir = lspconfig.util.root_pattern("denops", "deno.json"),
-            init_options = {
-                lint = true,
-                unstable = true,
-            },
-        })
-    end,
-    ["gopls"] = function()
-        lspconfig.gopls.setup({
-            on_attach = default_on_attach,
-            settings = {
-                gopls = {
-                    analyses = {
-                        unusedparams = true,
-                    },
-                    staticcheck = true,
-                    gofumpt = true,
-                },
-            },
-        })
-    end,
-    ["pylsp"] = function()
-        lspconfig.pylsp.setup({
-            on_attach = default_on_attach,
-            -- https://github.com/python-rope/rope/wiki/Rope-in-Vim-or-Neovim
-            cmd = { "pylsp" },
-            settings = {
-
-                pylsp = {
-                    configurationSources = { "flake8" },
-                    plugins = {
-                        -- https://github.com/python-lsp/python-lsp-server/blob/develop/CONFIGURATION.md
-                        jedi_symbols = {
-                            enabled = true,
-                            all_scopes = true,
-                            include_import_symbols = true,
-                        },
-                        -- jedi_definition.enabled = true,
-                        jedi_hover = {
-                            enabled = true,
-                        },
-                        rope_completion = {
-                            enabled = true,
-                        },
-                    },
-                },
-            },
-        })
-    end,
-    ["sqls"] = function()
-        lspconfig.sqls.setup({
-            on_attach = function(client, bufnr)
-                require("sqls").on_attach(client, bufnr)
-                default_on_attach(client, bufnr)
-            end,
-        })
-    end,
-}
-
-local ok, secret = pcall(require, "secret")
-if ok and secret["grammarly"] ~= nil then
-    setup_handlers["grammarly"] = function()
-        lspconfig.grammarly.setup({
-            init_options = {
-                clientId = secret["grammarly"].clientId,
-            },
-        })
-    end
-end
-
-local function setup_default()
-    require("mason-lspconfig").setup_handlers(setup_handlers)
-end
-
-setup_default()
 
 -- on_attachが実行されるより先にLSPがアタッチされたタイミングで発火する
 -- WARN: LspAttachよりも後に実行される可能性がある
@@ -244,4 +82,156 @@ vim.api.nvim_create_autocmd("LspAttach", {
         --     })
         -- end
     end,
+})
+
+vim.lsp.config('lua_ls', {
+    on_attach = default_on_attach,
+    settings = {
+        Lua = {
+            runtime = {
+                version = "LuaJIT",
+            },
+            diagnostics = {
+                globals = { "vim", "use", "require" },
+            },
+            workspace = {
+                checkThirdParty = false, -- Stop ask to configure my work environment.
+                library = vim.api.nvim_get_runtime_file("", true),
+            },
+            telemetry = {
+                enable = false,
+            },
+            format = {
+                enable = true,
+                -- Put format options here
+                -- NOTE: the value should be STRING!!
+                defaultConfig = {
+                    indent_style = "space",
+                    indent_size = "2",
+                },
+            },
+        },
+    },
+})
+
+vim.lsp.config('gopls', {
+    on_attach = default_on_attach,
+    settings = {
+        gopls = {
+            analyses = {
+                unusedparams = true,
+            },
+            staticcheck = true,
+            gofumpt = true,
+        },
+    },
+})
+
+vim.lsp.config('rust_analyzer', {
+    on_attach = default_on_attach,
+    settings = {
+        ["rust-analyzer"] = {
+            assist = {
+                importGranularity = "module",
+                importPrefix = "by_self",
+            },
+            cargo = {
+                loadOutDirsFromCheck = true,
+            },
+            procMacro = {
+                enable = false,
+            },
+            checkOnSave = {
+                command = "clippy",
+            },
+            diagnostics = {
+                disabled = { "unresolved-proc-macro", "macro-error" },
+            },
+        },
+    },
+})
+
+vim.lsp.config('ts_ls', {
+    on_attach = default_on_attach,
+    init_options = {
+        plugins = {
+            {
+                name = "@vue/typescript-plugin",
+                location = require("mason-registry").get_package("vue-language-server"):get_install_path()
+                    .. "/node_modules/@vue/language-server/node_modules/@vue/typescript-plugin",
+                languages = { "javascript", "typescript", "vue" },
+            },
+        },
+    },
+    filetypes = { "typescript", "javascript", "javascriptreact", "typescriptreact", "vue" },
+})
+
+vim.lsp.config('volar', {
+    on_attach = default_on_attach,
+    root_dir = lspconfig.util.root_pattern({ "package.json" }),
+    single_file_support = true,
+    init_options = {
+        vue = {
+            hybridMode = true,
+        },
+    },
+})
+
+vim.lsp.config('denols', {
+    single_file_support = false,
+    root_dir = lspconfig.util.root_pattern("denops", "deno.json"),
+    init_options = {
+        lint = true,
+        unstable = true,
+    },
+})
+
+vim.lsp.config('pylsp', {
+    on_attach = default_on_attach,
+    cmd = { "pylsp" },
+    settings = {
+        pylsp = {
+            configurationSources = { "flake8" },
+            plugins = {
+                jedi_symbols = {
+                    enabled = true,
+                    all_scopes = true,
+                    include_import_symbols = true,
+                },
+                jedi_hover = {
+                    enabled = true,
+                },
+                rope_completion = {
+                    enabled = true,
+                },
+            },
+        },
+    },
+})
+
+vim.lsp.config('sqls', {
+    on_attach = function(client, bufnr)
+        require("sqls").on_attach(client, bufnr)
+        default_on_attach(client, bufnr)
+    end,
+})
+
+local ok, secret = pcall(require, "secret")
+if ok and secret["grammarly"] ~= nil then
+    vim.lsp.config('grammarly', {
+        init_options = {
+            clientId = secret["grammarly"].clientId,
+        },
+    })
+end
+
+vim.lsp.enable({
+    "gopls",
+    "lua_ls",
+    "rust_analyzer",
+    "ts_ls",
+    "volar",
+    "denols",
+    "pylsp",
+    "sqls"
 })

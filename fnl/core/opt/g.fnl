@@ -11,6 +11,7 @@
 :markdown_fenced_languages [:python :ruby :javascript :js=javascript
                             :json=javascript :vim :css :ocaml
                             :rust
+                            ; :mermaid :plantuml
                             :haskell]
 
 :terminal_color_0  :#2e3436
