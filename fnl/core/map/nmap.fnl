@@ -185,6 +185,13 @@
                                                :col (- vim.o.columns width)
                                                :height height
                                                :width width}))) "schedule"]
+   ])
+
+;;; Yank/Copy operations
+(nmaps
+  (space :y)
+  "yank/copy operations"
+  [[:c (cmd :CopyContext) "copy context (file reference)"]
    ]))
 
 {: setup}
