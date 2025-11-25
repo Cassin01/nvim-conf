@@ -190,7 +190,7 @@
 ;;; Yank/Copy operations
 (nmaps
   (space :y)
-  "yank/copy operations"
+  "yank"
   [[:c (cmd :CopyContext) "copy context (file reference)"]
    ]))
 
