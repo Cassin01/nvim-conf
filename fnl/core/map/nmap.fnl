@@ -154,7 +154,7 @@
                   ; (if false
                     (let [nvim-cache (. (require :kaza.file) :nvim-cache)
                           dpath (.. (nvim-cache) :/my)
-                          fpath (.. dpath :/memo.org)]
+                          fpath (.. dpath :/memo.md)]
                       ; (print fpath)
                       ; (when (not (vf.isdirectory dpath))
                       ;   (os.execute (.. "mkdir " dpath)))
@@ -163,7 +163,7 @@
                       (vf.bufadd fpath))
                     ; (vim.api.nvim_create_buf false true)
                     ]
-              (vim.api.nvim_buf_set_option buf :filetype :org)
+              (vim.api.nvim_buf_set_option buf :filetype :markdown)
               ; (vim.api.nvim_buf_set_lines buf 0 height false ["MEMO"])
               (vim.api.nvim_open_win buf true {:relative :editor
                                                :style :minimal
@@ -171,7 +171,8 @@
                                                :row 3
                                                :col (- vim.o.columns width)
                                                :height height
-                                               :width width}))) "memo"]
+                                               :width width})
+              (tset vim.wo :wrap true))) "memo"]
    ;; TODO: I want to use this as a schedule.
    [:ew (la (let [width 27
                   height 30
