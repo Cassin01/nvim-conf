@@ -84,3 +84,30 @@
   (λ []
     (local {: async-test} (require :kaza.cmd))
     (async-test)))
+
+;;; INFO
+;;; CopyContext - Copy code reference to register c
+;;; Usage:
+;;;   Normal mode: :CopyContext → @{filepath}
+;;;   Visual mode (single line): :'<,'>CopyContext → @{filepath}#L{line}
+;;;   Visual mode (multi-line): :'<,'>CopyContext → @{filepath}#L{start}-{end}
+(u-cmd
+  :CopyContext
+  (λ [opts]
+    (let [bufnr (vim.api.nvim_get_current_buf)
+          filepath (vim.api.nvim_buf_get_name bufnr)
+          cwd (vim.fn.getcwd)
+          relative-path (vim.fn.fnamemodify filepath (.. ":." cwd))
+          formatted (if (> opts.range 0)
+                      ;; Visual mode with range
+                      (let [start-line opts.line1
+                            end-line opts.line2]
+                        (if (= start-line end-line)
+                          ;; Single line selection
+                          (.. "@" relative-path "#L" start-line)
+                          ;; Multi-line selection
+                          (.. "@" relative-path "#L" start-line "-" end-line)))
+                      ;; Normal mode without range
+                      (.. "@" relative-path))]
+      (vim.fn.setreg :c formatted)))
+  {:range true})

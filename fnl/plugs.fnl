@@ -864,7 +864,8 @@
  :dependencies [:folke/snacks.nvim]
  :config (λ [] ((. (require :claudecode) :setup)
                 (let [prefix ((. (require :kaza.map) :prefix-o) :n "<Space>c" :claude)]
-                  (prefix.map "c" "<cmd>ClaudeCode<cr>" "claude code"))))}
+                  (prefix.map "c" "<cmd>ClaudeCode<cr>" "claude code")
+                  (prefix.map "S" "<cmd>ClaudeCode --dangerously-skip-permissions<cr>" "claude (skip perms)"))))}
 
 ;;; vim
 {1 :Shougo/echodoc.vim

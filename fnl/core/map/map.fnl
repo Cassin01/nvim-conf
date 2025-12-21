@@ -15,6 +15,7 @@
  [:x :<space>ds ::s/\%V\s//g<cr><cmd>noh<cr> "delete spaces"]
  [:x :<c-j> "m'>+1<cr>gv=gv" "moves selected lines down"]
  [:x :<c-k> "m'<-2<cr>gv=gv" "moves selected lines up"]
+ [:x :<space>yc ":<C-u>'<,'>CopyContext<cr>" "copy context"]
  ; [:x :< :<gv "deindent"]
  ; [:x :< :>gv "indent"]
 
