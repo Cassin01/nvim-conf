@@ -68,24 +68,15 @@ vim.api.nvim_create_autocmd("LspAttach", {
         if client == nil then
             return
         end
-        local format = function()
-            vim.lsp.buf.format({ timeout_ms = 2000 })
+        -- Special handling for sqls
+        if client.name == "sqls" then
+            require("sqls").on_attach(client, ev.buf)
         end
-        nmap(ev.bufnr)("sf", vim.lsp.buf.format, "format")
-        -- if client.supports_method("textDocument/formatting") then
-        --     vim.api.nvim_create_autocmd({ "BufWritePre" }, {
-        --         group = vim.api.nvim_create_augroup("lsp_attached_format_", { clear = true }),
-        --         buffer = ev.bufnr,
-        --         callback = function()
-        --             format()
-        --         end,
-        --     })
-        -- end
+        default_on_attach(client, ev.buf)
     end,
 })
 
 vim.lsp.config('lua_ls', {
-    on_attach = default_on_attach,
     settings = {
         Lua = {
             runtime = {
@@ -115,7 +106,6 @@ vim.lsp.config('lua_ls', {
 })
 
 vim.lsp.config('gopls', {
-    on_attach = default_on_attach,
     settings = {
         gopls = {
             analyses = {
@@ -129,7 +119,6 @@ vim.lsp.config('gopls', {
 })
 
 vim.lsp.config('rust_analyzer', {
-    on_attach = default_on_attach,
     settings = {
         ["rust-analyzer"] = {
             assist = {
@@ -153,7 +142,6 @@ vim.lsp.config('rust_analyzer', {
 })
 
 vim.lsp.config('ts_ls', {
-    on_attach = default_on_attach,
     init_options = {
         plugins = {
             {
@@ -168,7 +156,6 @@ vim.lsp.config('ts_ls', {
 })
 
 vim.lsp.config('volar', {
-    on_attach = default_on_attach,
     root_dir = lspconfig.util.root_pattern({ "package.json" }),
     single_file_support = true,
     init_options = {
@@ -188,7 +175,6 @@ vim.lsp.config('denols', {
 })
 
 vim.lsp.config('pylsp', {
-    on_attach = default_on_attach,
     cmd = { "pylsp" },
     settings = {
         pylsp = {
@@ -210,11 +196,18 @@ vim.lsp.config('pylsp', {
     },
 })
 
-vim.lsp.config('sqls', {
-    on_attach = function(client, bufnr)
-        require("sqls").on_attach(client, bufnr)
-        default_on_attach(client, bufnr)
-    end,
+vim.lsp.config('sqls', {})
+
+vim.lsp.config('hls', {
+    capabilities = default_capabilities,
+    cmd = { vim.fn.expand("~/.ghcup/bin/haskell-language-server-wrapper"), "--lsp" },
+    filetypes = { 'haskell', 'lhaskell', 'cabal' },
+    settings = {
+        haskell = {
+            formattingProvider = "ormolu",
+            checkProject = true,
+        },
+    },
 })
 
 local ok, secret = pcall(require, "secret")
@@ -234,5 +227,6 @@ vim.lsp.enable({
     "volar",
     "denols",
     "pylsp",
-    "sqls"
+    "sqls",
+    "hls"
 })

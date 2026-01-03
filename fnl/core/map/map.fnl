@@ -2,7 +2,6 @@
 (import-macros {: la : cmd} :kaza.macros)
 
 ; (local {: inc-search} (require :emacs-key-source))
-
 [
  [:i :<c-g>t "<Plug>(hwitch-tex)" "h-witch tex"]
  [:i :<c-g><c-u> :<esc>gUvbgi "upper case"]

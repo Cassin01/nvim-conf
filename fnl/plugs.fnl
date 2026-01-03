@@ -819,6 +819,7 @@
  :config (lambda [] (vim.defer_fn
                (lambda [] ((. (require :copilot) :setup)
                            {:filetypes {:yaml true
+                                        :markdown true
                                         :org true}}))
                100))}
 
