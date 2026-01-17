@@ -172,7 +172,10 @@
                                                :col (- vim.o.columns width)
                                                :height height
                                                :width width})
-              (tset vim.wo :wrap true))) "memo"]
+              (tset vim.wo :wrap true)
+              (vim.defer_fn (fn []
+                              (pcall #((. (require :copilot.command) :attach) {:force true})))
+                            150))) "memo"]
    ;; TODO: I want to use this as a schedule.
    [:ew (la (let [width 27
                   height 30
