@@ -740,6 +740,7 @@
  :cmd [:Git :Gdiff]
  :config (λ []
           (let [ prefix ((. (require :kaza.map) :prefix-o) :n "<Space>g" :git)]
+            (prefix.map "v" "<cmd>vert Git<cr>" "git vertical")
             (prefix.map "g" "<cmd>Git<cr>" "add")
             (prefix.map "c" "<cmd>Git commit<cr>" "commit")
             (prefix.map "p" "<cmd>Git push<cr>" "push")

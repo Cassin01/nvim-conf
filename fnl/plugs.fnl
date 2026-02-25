@@ -398,7 +398,7 @@
              :sync_install false
              :auto_install true
              :ignore_install [ "javascript" "markdown" "git"]
-             :highlight {:enable ["go" "yaml"]
+             :highlight {:enable ["go" "yaml" "lua"]
                          :disable [ "c" "rust" "org" "vim" "tex" "typescript" "markdown" "git"]
                          ; :disable (la
                          ;            (each [_ t (ipairs [ "c" "rust" "org" "vim" "tex" "typescript" "markdown" "git"])]
@@ -819,6 +819,7 @@
  :config (lambda [] (vim.defer_fn
                (lambda [] ((. (require :copilot) :setup)
                            {:filetypes {:yaml true
+                                        :gitcommit true
                                         :markdown true
                                         :org true}}))
                100))}
@@ -900,8 +901,8 @@
             (prefix.map "a" (lambda []
                               (local path (vim.fn.expand :%:p))
                               (vim.cmd (.. "Git add " path))
-                              ) "add current")
-            ))}
+                              ) "add current")))}
+{1 :sindrets/diffview.nvim}
 
 ; {1 :neogitOrg/neogit
 ;  :dependencies {1 :nvim-lua/plenary.nvim
@@ -1419,4 +1420,37 @@
 ; (lazy-load :ulwlu/elly.vim                     ) ; elly
 ; (lazy-load :michaeldyrynda/carbon.vim          ) ; carbon
 (lazy-load :rafamadriz/neon                    ) ; neon
+
+;;; fzf-lua (fuzzy finder)
+{1 :ibhagwan/fzf-lua
+ :dependencies [:nvim-tree/nvim-web-devicons]
+ :event ["User plug-lazy-load"]
+ :config (la (ref-f :setup :fzf-lua))}
+
+;;; sm.nvim (memo management)
+{1 :Cassin01/sm.nvim
+ :dependencies [:ibhagwan/fzf-lua]
+ :event ["User plug-lazy-load"]
+ :config (la
+           (ref-f :setup :sm
+                  {:memos_dir (vim.fn.expand "~/.cache/nvim/sm/memos")
+                   :auto_tag_git_repo true
+                   :copilot_integration true
+                   :window {:width 80
+                            :height 30
+                            :border :rounded}})
+           (nmaps
+             :<Leader>x
+             :sm
+             [[:n (cmd :SmNew) "new memo"]
+              [:o (cmd :SmOpen) "open last memo"]])
+           (lcnf :sm_picker.lua))}
+
+;;; screenkey (display pressed keys)
+{1 :NStefan002/screenkey.nvim
+ :lazy false
+ :config (la
+           (ref-f :setup :screenkey {})
+           ; ((. (require :screenkey) :toggle))
+           (vim.keymap.set :n :<Leader>sk (cmd "Screenkey toggle") {:desc "toggle screenkey"}))}
 ]

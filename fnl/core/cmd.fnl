@@ -109,5 +109,5 @@
                           (.. "@" relative-path "#L" start-line "-" end-line)))
                       ;; Normal mode without range
                       (.. "@" relative-path))]
-      (vim.fn.setreg :c formatted)))
+      (vim.fn.setreg :+ formatted)))
   {:range true})

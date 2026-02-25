@@ -295,9 +295,9 @@ local core = function(m)
     end
 end
 
-for _, m in ipairs(maps) do
-    vim.keymap.set("i", m.striker, core(m), { noremap = true, silent = true, expr = true })
-end
+-- for _, m in ipairs(maps) do
+--     vim.keymap.set("i", m.striker, core(m), { noremap = true, silent = true, expr = true })
+-- end
 
 -- vim.api.nvim_create_autocmd(
 --     {"BufRead", "BufNewFile"},
