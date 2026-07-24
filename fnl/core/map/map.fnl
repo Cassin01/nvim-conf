@@ -9,6 +9,7 @@
  [:i :<left> :<c-g>U<left> "left"]
  [:i :<right> :<c-g>U<right> "right"]
  [:i "<C-i>" :<esc>o :newline]
+ [:i :<c-g><c-d> "<c-r>=strftime('%Y-%m-%d')<cr>" "insert date"]
  [:t :<esc> :<C-\><C-n> "end insert mode"]
 
  [:x :<space>ds ::s/\%V\s//g<cr><cmd>noh<cr> "delete spaces"]

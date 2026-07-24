@@ -17,13 +17,14 @@
 
 
 [
-{1 :rktjmp/hotpot.nvim}
+{1 :rktjmp/hotpot.nvim
+ :tag :v1.0.0}
 
 ;;; snippet
 
-{1 :SirVer/ultisnips
-:event ["User plug-lazy-load"]
- }
+; {1 :SirVer/ultisnips
+; :event ["User plug-lazy-load"]
+;  }
 {1 :honza/vim-snippets
  :event ["User plug-lazy-load"]}
 {1 :L3MON4D3/LuaSnip
@@ -302,13 +303,13 @@
 
 {1 :Cassin01/wf.nvim
  :event ["User plug-lazy-load"]
- :branch :Fixes#105
+ ; :branch :Fixes#105
  ; :version :update
  :config (la (ref-f :setup :wf {:theme :chad})
              (require :user))}
 
 {1 :crusj/bookmarks.nvim
-  :keys [{1 "<tab><tab>" :mode [:n]}]
+  :keys [{1 ",b" :mode [:n]}]
   :branch :main
   :dependencies [:nvim-web-devicons]
   :config (la
@@ -379,46 +380,29 @@
                 (lazy 1000 set-hl "^BufferLineDevIcon.*$"))))}
 
 {1 :sheerun/vim-polyglot}
-{1 :David-Kunz/markid}
+; markid requires the legacy module system (master branch). Disabled after main migration.
+; {1 :David-Kunz/markid}
 {1 :nvim-treesitter/nvim-treesitter
+ :branch :main
+ :lazy false
  :build ":TSUpdate"
- ; :event ["User plug-lazy-load"]
- ; :dependencies {1 :p00f/nvim-ts-rainbow :dependencies :nvim-treesitter}
  :config (λ []
-           ; ((. (require :orgmode) :setup_ts_grammar))
-           ((. (require "nvim-treesitter.configs") :setup)
-            {
-             ; :incremental_selection {:enable true
-             ;                         :keymaps {:init_selection "<CR>"
-             ;                                  :node_incremental "<CR>"
-             ;                                  :node_decremental "<BS>"
-             ;                                  :scope_incremental "<S-CR>"}
-             ;                         }
-             :ensure_installed [ "nix" "org" "bash"]  ; "lua" "rust" "c" "org"
-             :sync_install false
-             :auto_install true
-             :ignore_install [ "javascript" "markdown" "git"]
-             :highlight {:enable ["go" "yaml" "lua"]
-                         :disable [ "c" "rust" "org" "vim" "tex" "typescript" "markdown" "git"]
-                         ; :disable (la
-                         ;            (each [_ t (ipairs [ "c" "rust" "org" "vim" "tex" "typescript" "markdown" "git"])]
-                         ;              (when (= t vim.bo.filetype)
-                         ;                (lua "return false")))
-                         ;             true)
-                         :additional_vim_regex_highlighting ["org"]}
-             ; :rainbow {:enable true
-             ;           :extended_mode true
-             ;           :max_file_lines nil}
-             :markid { :enable true }
-            :disable (λ [lang buf]
-                (local max_filesize (* 100 1024))
-                (local (ok status) (pcall vim.loop.fs_stat (vim.api.nvim_buf_get_name buf)))
-                (if (and ok status (> status.size max_filesize))
-                  true
-                  nil))
-             :additional_vim_regex_highlighting false}))}
-:nvim-treesitter/nvim-treesitter-context
-:nvim-treesitter/playground
+           (local parsers-to-install ["go" "yaml" "lua" "nix" "bash"])
+           (local enabled-filetypes ["go" "yaml" "lua" "nix" "bash"])
+           (local ts (require :nvim-treesitter))
+           (pcall ts.install parsers-to-install)
+           (vim.api.nvim_create_autocmd :FileType
+             {:pattern enabled-filetypes
+              :callback (λ []
+                          (pcall vim.treesitter.start)
+                          (tset vim.wo :foldexpr "v:lua.vim.treesitter.foldexpr()")
+                          (tset vim.wo :foldmethod "expr"))}))}
+{1 :nvim-treesitter/nvim-treesitter-context
+ :config (λ []
+           ((. (require :treesitter-context) :setup)
+            {:on_attach (λ [buf]
+                          (let [ft (. (. vim.bo buf) :filetype)]
+                            (not (or (= ft "markdown") (= ft "markdown_inline")))))}))}
 
 {1 :yuki-yano/fzf-preview.vim
  :branch :release/remote}
@@ -622,9 +606,9 @@
                                                   :emoji "🚨"
                                                   :documentation "Adding missing tests or correcting existing tests"}}}))
             }
-            {1 :quangnguyen30192/cmp-nvim-ultisnips
-             :dependencies :nvim-cmp
-             :config (λ [] (ref-f :setup :cmp_nvim_ultisnips {}))}
+            ; {1 :quangnguyen30192/cmp-nvim-ultisnips
+            ;  :dependencies :nvim-cmp
+            ;  :config (λ [] (ref-f :setup :cmp_nvim_ultisnips {}))}
             {1 :zbirenbaum/copilot-cmp :dependencies :nvim-cmp}
             ; :neovim/nvim-lspconfig
             ]
@@ -833,30 +817,30 @@
  ; :event ["User plug-lazy-load"]
  :config (la (ref-f :setup :copilot_cmp))
  }
-{1 "yetone/avante.nvim"
-  :event ["User plug-lazy-load"]
-  :version false
-  :build "make"
-  :dependencies ["nvim-treesitter/nvim-treesitter"
-                 "stevearc/dressing.nvim"
-                 "nvim-lua/plenary.nvim"
-                 "MunifTanjim/nui.nvim"
-                 ; The below dependencies are optional,
-                 "nvim-tree/nvim-web-devicons"; or echasnovski/mini.icons
-                 "zbirenbaum/copilot.lua";  for providers='copilot'
-                 {1  "HakonHarnes/img-clip.nvim"
-                  :event ["User plug-lazy-load"]
-                  :opts {:default {:embed_images_as_base64 false
-                                   :prompt_for_file_name false
-                                   :drag_and_drop {:insert_mode true}
-                                   :use_absolute_path true}}}
-                 {1 :MeanderingProgrammer/render-markdown.nvim
-                  :opts {
-                        :file_types {:markdown :Avante}
-                        :ft {:markdown :Avante}}}
-                        ]
-    :config (λ []
-        (vim.cmd "source ~/.config/nvim/fnl/core/pack/conf/avante.lua"))}
+; {1 "yetone/avante.nvim"
+;   :event ["User plug-lazy-load"]
+;   :version false
+;   :build "make"
+;   :dependencies ["nvim-treesitter/nvim-treesitter"
+;                  "stevearc/dressing.nvim"
+;                  "nvim-lua/plenary.nvim"
+;                  "MunifTanjim/nui.nvim"
+;                  ; The below dependencies are optional,
+;                  "nvim-tree/nvim-web-devicons"; or echasnovski/mini.icons
+;                  "zbirenbaum/copilot.lua";  for providers='copilot'
+;                  {1  "HakonHarnes/img-clip.nvim"
+;                   :event ["User plug-lazy-load"]
+;                   :opts {:default {:embed_images_as_base64 false
+;                                    :prompt_for_file_name false
+;                                    :drag_and_drop {:insert_mode true}
+;                                    :use_absolute_path true}}}
+;                  {1 :MeanderingProgrammer/render-markdown.nvim
+;                   :opts {
+;                         :file_types {:markdown :Avante}
+;                         :ft {:markdown :Avante}}}
+;                         ]
+;     :config (λ []
+;         (vim.cmd "source ~/.config/nvim/fnl/core/pack/conf/avante.lua"))}
 ; {1 :greggh/claude-code.nvim
 ;   :dependencies [:nvim-lua/plenary.nvim]
 ;   :config (λ [] ((. (require :claude-code) :setup)
@@ -867,7 +851,8 @@
  :config (λ [] ((. (require :claudecode) :setup)
                 (let [prefix ((. (require :kaza.map) :prefix-o) :n "<Space>c" :claude)]
                   (prefix.map "c" "<cmd>ClaudeCode<cr>" "claude code")
-                  (prefix.map "S" "<cmd>ClaudeCode --dangerously-skip-permissions<cr>" "claude (skip perms)"))))}
+                  ;(prefix.map "S" "<cmd>ClaudeCode --dangerously-skip-permissions<cr>" "claude (skip perms)")
+                  )))}
 
 ;;; vim
 {1 :Shougo/echodoc.vim
@@ -1425,7 +1410,27 @@
 {1 :ibhagwan/fzf-lua
  :dependencies [:nvim-tree/nvim-web-devicons]
  :event ["User plug-lazy-load"]
- :config (la (ref-f :setup :fzf-lua))}
+ :config (la
+           (ref-f :setup :fzf-lua
+                  {:files {:no_ignore true}})
+           (nmaps
+             ",f"
+             :fzf
+             [[:f (cmd "FzfLua files") "find files"]
+              [:g (cmd "FzfLua live_grep") "live grep"]
+              [:w (cmd "FzfLua grep_cword") "grep word under cursor"]
+              [:b (cmd "FzfLua buffers") "buffers"]
+              [:o (cmd "FzfLua oldfiles") "recent files"]
+              [:r (cmd "FzfLua resume") "resume last picker"]
+              [:h (cmd "FzfLua help_tags") "help tags"]
+              [:k (cmd "FzfLua keymaps") "keymaps"]
+              [:m (cmd "FzfLua marks") "marks"]
+              [:q (cmd "FzfLua quickfix") "quickfix"]
+              [:c (cmd "FzfLua commands") "commands"]
+              [:G (cmd "FzfLua git_files") "git files"]
+              [:s (cmd "FzfLua git_status") "git status"]
+              [:C (cmd "FzfLua git_commits") "git commits"]
+              [:B (cmd "FzfLua git_branches") "git branches"]]))}
 
 ;;; sm.nvim (memo management)
 {1 :Cassin01/sm.nvim

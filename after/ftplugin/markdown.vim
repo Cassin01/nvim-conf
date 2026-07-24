@@ -1,5 +1,9 @@
 " Reference: https://zenn.dev/vim_jp/articles/4564e6e5c2866d
 
+" Disable vim-matchup on markdown to avoid treesitter engine errors
+let b:matchup_matchparen_enabled = 0
+let b:matchup_matchparen_fallback = 0
+
 function! s:markdown_checkbox(from, to) abort
   let from = a:from
   let to = a:to

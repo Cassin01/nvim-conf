@@ -7,6 +7,7 @@
 (fn concat-with [d ...]
   (table.concat [...] d))
 ;;; }}}
+(var markdown-preview-job nil)
 (fn setup []
 (nmaps
   (space :m)
@@ -134,6 +135,20 @@
                                  (when (not= (hi-name:match "^BufferLine.*$") nil)
                                    (vim.cmd (.. "hi " hi-name " guibg=NONE"))))))
                            (bufferline))) :clear-bufferlne]
+   [:gp (la (if markdown-preview-job
+              (do
+                (vf.jobstop markdown-preview-job)
+                (set markdown-preview-job nil)
+                (vim.notify "markdown-preview stopped"))
+              (let [file (vf.expand :%:p)]
+                (if (= vim.bo.filetype :markdown)
+                  (do
+                    (set markdown-preview-job
+                         (vf.jobstart [:gh :markdown-preview file]
+                                      {:on_exit (fn [] (set markdown-preview-job nil))}))
+                    (vim.notify (.. "markdown-preview started: " file)))
+                  (vim.notify "not a markdown file" vim.log.levels.WARN)))))
+    "toggle gh markdown-preview"]
    [:fn (la (print (vim.fn.expand :%:t))) "show file name"]
    [:fp (la (print (vim.fn.expand :%:p))) "show file path"]
    [:fft (la (vim.cmd "echo &filetype")) "show file type"]
