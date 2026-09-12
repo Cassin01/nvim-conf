@@ -36,7 +36,7 @@
  :laststatus 3 ; 0
  :ruler false
  :wrapmargin 2 ; Number of characters from the right window border where wrapping starts.
- :wrap false
+ :wrap true
  :history 1000
  ; :ttimeout false ; default on
  ; :ttimeoutlen 0

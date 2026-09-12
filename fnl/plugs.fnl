@@ -106,6 +106,16 @@
                {:signcolumn :yes:2
                :winbar "%!v:lua.get_oil_winbar()"
                }
+             :keymaps
+              {:gy {:callback (la
+                               (let [dir (ref-f :get_current_dir :oil)
+                                     entry (ref-f :get_cursor_entry :oil)]
+                                (when (and dir entry)
+                                 (let [path (vim.fn.fnamemodify (.. dir entry.name) ":.")]
+                                  (vim.fn.setreg "\"" path)
+                                  (vim.fn.setreg "+" path)
+                                  (vim.notify (.. "yanked: " path))))))
+                    :desc "yank path (relative, absolute if outside cwd)"}}
              :view_options {:show_hidden true}})
             (map :n :<F3> (cmd :Oil) "open oil")
             (nmaps

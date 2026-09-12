@@ -174,11 +174,13 @@ vim.lsp.config('denols', {
     },
 })
 
+-- black/isort/mypy live in mason's pylsp venv, not as Neovim plugins.
+-- A mason reinstall of python-lsp-server wipes them; reinstall with:
+--   ~/.local/share/nvim/mason/packages/python-lsp-server/venv/bin/pip install \
+--     python-lsp-black python-lsp-isort pylsp-mypy
 vim.lsp.config('pylsp', {
-    cmd = { "pylsp" },
     settings = {
         pylsp = {
-            configurationSources = { "flake8" },
             plugins = {
                 jedi_symbols = {
                     enabled = true,
@@ -188,8 +190,16 @@ vim.lsp.config('pylsp', {
                 jedi_hover = {
                     enabled = true,
                 },
-                rope_completion = {
+                isort = {
+                    profile = "black",
+                },
+                pylsp_mypy = {
                     enabled = true,
+                    live_mode = false, -- diagnostics refresh on write
+                    dmypy = true, -- daemon; mutually exclusive with live_mode
+                    -- ponytail: blanket ignore-missing-imports. Drop it once a project
+                    -- ships stubs and carries its own mypy config.
+                    overrides = { true, "--ignore-missing-imports" },
                 },
             },
         },
