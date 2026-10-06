@@ -56,5 +56,5 @@ command! -buffer -range MarkdownCheckbox call s:markdown_checkbox(<line1>, <line
 nnoremap <buffer> <C-f> <Cmd>MarkdownCheckbox<CR>
 inoremap <buffer> <C-f> <Cmd>MarkdownCheckbox<CR>
 xnoremap <buffer> <C-f> <Cmd>MarkdownCheckbox<CR>
-nnoremap <buffer> <LocalLeader>d <Cmd>call append('.', ['---', '', strftime('%Y-%m-%d')])<Bar>+3<CR>
-inoremap <buffer> <LocalLeader>d <Cmd>call append('.', ['---', '', strftime('%Y-%m-%d')])<CR><Down><Down><Down><End>
+nnoremap <buffer> <LocalLeader>d <Cmd>call append('.', ['---', '', strftime('%Y-%m-%d'), ''])<Bar>+3<CR>o
+inoremap <buffer> <LocalLeader>d <Cmd>call append('.', ['---', '', strftime('%Y-%m-%d')])<CR><Down><Down><Down><End><CR>
