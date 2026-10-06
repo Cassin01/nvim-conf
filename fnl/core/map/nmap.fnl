@@ -7,6 +7,7 @@
 (fn concat-with [d ...]
   (table.concat [...] d))
 ;;; }}}
+(var markdown-preview-job nil)
 (fn setup []
 (nmaps
   (space :m)
@@ -134,6 +135,25 @@
                                  (when (not= (hi-name:match "^BufferLine.*$") nil)
                                    (vim.cmd (.. "hi " hi-name " guibg=NONE"))))))
                            (bufferline))) :clear-bufferlne]
+   [:gp (la (let [start (fn []
+                          (let [file (vf.expand :%:p)]
+                            (if (= vim.bo.filetype :markdown)
+                              (do
+                                (set markdown-preview-job
+                                     (vf.jobstart [:gh :markdown-preview file]
+                                                  {:on_exit (fn [id]
+                                                              (when (= id markdown-preview-job)
+                                                                (set markdown-preview-job nil)))}))
+                                (vim.notify (.. "markdown-preview started: " file)))
+                              (vim.notify "not a markdown file" vim.log.levels.WARN))))]
+              (if markdown-preview-job
+                (do
+                  (vf.jobstop markdown-preview-job)
+                  (set markdown-preview-job nil)
+                  ;; wait for the old server to release the port before rebinding
+                  (vim.defer_fn start 200))
+                (start))))
+    "(re)start gh markdown-preview with current file"]
    [:fn (la (print (vim.fn.expand :%:t))) "show file name"]
    [:fp (la (print (vim.fn.expand :%:p))) "show file path"]
    [:fft (la (vim.cmd "echo &filetype")) "show file type"]
@@ -172,7 +192,10 @@
                                                :col (- vim.o.columns width)
                                                :height height
                                                :width width})
-              (tset vim.wo :wrap true))) "memo"]
+              (tset vim.wo :wrap true)
+              (vim.defer_fn (fn []
+                              (pcall #((. (require :copilot.command) :attach) {:force true})))
+                            150))) "memo"]
    ;; TODO: I want to use this as a schedule.
    [:ew (la (let [width 27
                   height 30

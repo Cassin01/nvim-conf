@@ -151,14 +151,21 @@ local which_keys = function()
         noremap = true,
         silent = true,
         desc = "which-key s",
-        -- nowait = true,
+        nowait = true,
     })
     vim.api.nvim_set_keymap("n", "<Leader>", "", {
         callback = which_key({ text_insert_in_advance = "<Leader>", key_group_dict = key_group_dict }),
         noremap = true,
         silent = true,
         desc = "which-key /",
-        -- nowait = true,
+        nowait = true,
+    })
+    vim.api.nvim_set_keymap("n", ",", "", {
+        callback = which_key({ text_insert_in_advance = ",", key_group_dict = key_group_dict }),
+        noremap = true,
+        silent = true,
+        desc = "which-key ,",
+        nowait = true,
     })
 end
 timeout(100, which_keys)

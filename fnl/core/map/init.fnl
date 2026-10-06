@@ -68,6 +68,9 @@
      ; (print (vim.inspect (cdr (unpack k))))
      (vim.api.nvim_set_keymap (unpack (cdr (unpack k)))))
 
+;;; insert today's date by typing "dts" (terminal-independent fallback for <c-g><c-d>)
+(vim.cmd "inoreabbrev <expr> dts strftime('%Y-%m-%d')")
+
 ;;; caps lock
 (for [i 65 90]
   (va.nvim_set_keymap :l (vf.nr2char (+ i 32)) (vf.nr2char i) {:noremap true :silent true :desc :caps}))

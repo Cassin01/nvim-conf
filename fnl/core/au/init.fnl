@@ -261,15 +261,17 @@
   [[0x9789 0x9789 2]
    [0x978B 0x978B 2]])
 
+(fn heading-conceal []
+  (vf.matchadd :Conceal "^#\\(\\s\\)\\@=" 0 -1 {:conceal "◉"})
+  (vf.matchadd :Conceal "^##\\(\\s\\)\\@=" 0 -1 {:conceal "○"})
+  (vf.matchadd :Conceal "^###\\(\\s\\)\\@=" 0 -1 {:conceal "✹"}))
+
 (fn todo []
   ;; https://gist.github.com/huytd/668fc018b019fbc49fa1c09101363397
   (vf.matchadd :Conceal "\\(^\\s*\\)\\@<=- \\[\\s\\]" 1 -1 {:conceal :})
   (vf.matchadd :Conceal "\\(^\\s*\\)\\@<=- \\[x\\]" 1 -1 {:conceal :})
   ; (vf.matchadd :Comment "^---" 1 -1 {:conceal "• "})
   (vf.matchadd :Conceal "\\(^\\s*\\)\\@<=-\\(\\s\\)\\@=" 0 -1 {:conceal "• "})
-  (vf.matchadd :Conceal "^#\\(\\s\\)\\@=" 0 -1 {:conceal "◉"})
-  (vf.matchadd :Conceal "^##\\(\\s\\)\\@=" 0 -1 {:conceal "○" })
-  (vf.matchadd :Conceal "^###\\(\\s\\)\\@=" 0 -1 {:conceal "✹" })
   ; (syntax "syntax match todoCheckbox \\\'\\v(\\s+)?(-|\\*)\\s\\[-\\]\\\'hs=e-4 conceal cchar=☒")
   ; (syntax "syntax match todoCheckbox \'\\\[x\\\]\' conceal cchar=☒")
   (vim.cmd "hi def link todoCheckbox Todo")
@@ -284,12 +286,14 @@
 (create_autocmd
   [:BufRead :BufNewFile]
   {:callback (λ []
+               (heading-conceal)
                (todo))
    :pattern [:*.txt]
    :group pattern})
 (create_autocmd
   [:BufRead :BufNewFile]
   {:callback (λ []
+               (heading-conceal)
                (todo))
    :pattern [:*.org]
    :group pattern})
