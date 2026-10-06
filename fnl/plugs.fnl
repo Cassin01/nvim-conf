@@ -620,6 +620,19 @@
             ;  :dependencies :nvim-cmp
             ;  :config (λ [] (ref-f :setup :cmp_nvim_ultisnips {}))}
             {1 :zbirenbaum/copilot-cmp :dependencies :nvim-cmp}
+            {1 :milanglacier/minuet-ai.nvim
+             :dependencies [:nvim-cmp :nvim-lua/plenary.nvim]
+             :config (λ []
+                       (ref-f :setup :minuet
+                              {:provider :codestral
+                               :n_completions 1
+                               :context_window 512
+                               :provider_options
+                                 {:codestral {:model "codestral-latest"
+                                              :end_point "https://codestral.mistral.ai/v1/fim/completions"
+                                              :api_key "CODESTRAL_API_KEY"
+                                              :stream true
+                                              :optional {:max_tokens 256}}}}))}
             ; :neovim/nvim-lspconfig
             ]
  :config (λ []
@@ -636,6 +649,7 @@
                          [
                           {:name :gitcommit :group_index 2}
                           {:name :copilot :group_index 2}
+                          {:name :minuet :group_index 2}
                           {:name :luasnip :group_index 5}
                           {:name :nvim_lsp :group_index 2}
                           {:name :ultisnips :group_index 2}
@@ -655,6 +669,11 @@
                                      (if (= entry.source.name :copilot)
                                        (do
                                          (tset vim_item :kind " Copilot")
+                                         (tset vim_item :kind_hl_group :CmpItemKindCopilot)
+                                          vim_item)
+                                        (= entry.source.name :minuet)
+                                       (do
+                                         (tset vim_item :kind "AI Minuet")
                                          (tset vim_item :kind_hl_group :CmpItemKindCopilot)
                                           vim_item)
                                         (= entry.source.name :luasnip)
@@ -858,11 +877,35 @@
 ;                   (prefix.map "c" "<cmd>ClaudeCode<cr>" "claude code"))))}
 {1 :coder/claudecode.nvim
  :dependencies [:folke/snacks.nvim]
- :config (λ [] ((. (require :claudecode) :setup)
-                (let [prefix ((. (require :kaza.map) :prefix-o) :n "<Space>c" :claude)]
-                  (prefix.map "c" "<cmd>ClaudeCode<cr>" "claude code")
-                  ;(prefix.map "S" "<cmd>ClaudeCode --dangerously-skip-permissions<cr>" "claude (skip perms)")
-                  )))}
+ :config (λ []
+           ((. (require :claudecode) :setup) {:track_selection false})
+           (let [prefix ((. (require :kaza.map) :prefix-o) :n "<Space>c" :ai)]
+             (prefix.map "c" "<cmd>ClaudeCode<cr>" "claude code")
+             ;(prefix.map "S" "<cmd>ClaudeCode --dangerously-skip-permissions<cr>" "claude (skip perms)")
+             ))}
+
+;; oh-my-pi (omp) runs as a TUI inside a sidekick terminal
+{1 :folke/sidekick.nvim
+ :event ["User plug-lazy-load"]
+ :dependencies [:folke/snacks.nvim]
+ :config (λ []
+           ((. (require :sidekick) :setup)
+            {:nes {:enabled false}
+             :cli {:tools {:omp {:cmd [:omp]
+                                 :is_proc "\\<omp\\>"
+                                 :url "https://github.com/can1357/oh-my-pi"
+                                 :resume [:--resume]
+                                 :continue [:--continue]}}}})
+           (let [cli (require :sidekick.cli)
+                 kmap (require :kaza.map)
+                 prefix (kmap.prefix-o :n "<Space>c" :ai)
+                 xprefix (kmap.prefix-o :x "<Space>c" :ai)]
+             (prefix.map "o" (λ [] (cli.toggle {:name :omp :focus true})) "omp toggle")
+             (prefix.map "s" (λ [] (cli.select)) "select ai cli")
+             (prefix.map "p" (λ [] (cli.prompt)) "omp prompt")
+             (xprefix.map "p" (λ [] (cli.prompt)) "omp prompt (selection)")
+             (xprefix.map "v" (λ [] (cli.send {:msg "{selection}"})) "send selection")
+             (vim.keymap.set [:n :t :i :x] "<C-.>" (λ [] (cli.focus)) {:desc "[ai] focus"})))}
 
 ;;; vim
 {1 :Shougo/echodoc.vim
