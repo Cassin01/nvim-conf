@@ -119,6 +119,9 @@ vim.lsp.config('gopls', {
 })
 
 vim.lsp.config('rust_analyzer', {
+    -- rustup's proxy runs the rust-analyzer of the project's toolchain (RUSTUP_TOOLCHAIN via mise).
+    -- Mason's build is prepended to PATH and lags behind cargo, which breaks `cargo metadata`.
+    cmd = { vim.fn.expand("~/.cargo/bin/rust-analyzer") },
     settings = {
         ["rust-analyzer"] = {
             assist = {
@@ -131,7 +134,8 @@ vim.lsp.config('rust_analyzer', {
             procMacro = {
                 enable = false,
             },
-            checkOnSave = {
+            checkOnSave = true,
+            check = {
                 command = "clippy",
             },
             diagnostics = {

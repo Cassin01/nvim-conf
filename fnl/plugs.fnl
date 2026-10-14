@@ -171,7 +171,10 @@
 ;              ((-> (require :feline) (. :winbar) (. :setup))))}
 {1 :nvim-lualine/lualine.nvim
  :event ["User plug-lazy-load"]
- :config (la (ref-f :setup :lualine {:options {:globalstatus true}}))
+ ; %.40 cuts the cwd's head with '<'; first in section c so lualine's %< also cuts it first on overflow
+ :config (la (ref-f :setup :lualine
+                    {:options {:globalstatus true}
+                     :sections {:lualine_c ["%.40{fnamemodify(getcwd(),':~')}" :filename]}}))
  :dependencies {1 :nvim-tree/nvim-web-devicons
             :lazy true }}
 
@@ -906,6 +909,13 @@
              (xprefix.map "p" (λ [] (cli.prompt)) "omp prompt (selection)")
              (xprefix.map "v" (λ [] (cli.send {:msg "{selection}"})) "send selection")
              (vim.keymap.set [:n :t :i :x] "<C-.>" (λ [] (cli.focus)) {:desc "[ai] focus"})))}
+
+;; Claude explains the current file beside its line ranges (code: lua/claude_explain)
+{1 :claude-explain ; a bare name (no slash) has no url; lazy rejects specs without [1], dir or url
+ :virtual true
+ :cmd [:ClaudeExplain]
+ :keys [{1 "<Space>ce" 2 "<cmd>ClaudeExplain<cr>" :desc "[ai] explain file"}]
+ :config (λ [_ ?opts] ((. (require :claude_explain) :setup) ?opts))}
 
 ;;; vim
 {1 :Shougo/echodoc.vim
