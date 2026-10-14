@@ -171,7 +171,10 @@
 ;              ((-> (require :feline) (. :winbar) (. :setup))))}
 {1 :nvim-lualine/lualine.nvim
  :event ["User plug-lazy-load"]
- :config (la (ref-f :setup :lualine {:options {:globalstatus true}}))
+ ; %.40 cuts the cwd's head with '<'; first in section c so lualine's %< also cuts it first on overflow
+ :config (la (ref-f :setup :lualine
+                    {:options {:globalstatus true}
+                     :sections {:lualine_c ["%.40{fnamemodify(getcwd(),':~')}" :filename]}}))
  :dependencies {1 :nvim-tree/nvim-web-devicons
             :lazy true }}
 
