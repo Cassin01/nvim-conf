@@ -118,7 +118,7 @@ local Map = {
 
 local maps = {}
 
-table.insert(maps, Map.new({ prefix = "j", striker = "j", ret = "<ESC>" }))
+-- table.insert(maps, Map.new({ prefix = "j", striker = "j", ret = "<ESC>" }))
 
 -- Number
 table.insert(maps, Map.new({ striker = "q", { prefix = ";", ret = "1" } }))
@@ -138,7 +138,7 @@ table.insert(maps, Map.new({ striker = "d", { prefix = ";", ret = "#" } }))
 table.insert(maps, Map.new({ striker = "f", { prefix = ";", ret = "$$<left>" } }))
 table.insert(maps, Map.new({ striker = "g", { prefix = ";", ret = "%" } }))
 table.insert(maps, Map.new({ striker = "h", { prefix = ";", ret = "^" } }))
-table.insert(maps, Map.new({ striker = "j", { prefix = ";", ret = "&" }, { prefix = "j", ret = "<ESC>" } }))
+table.insert(maps, Map.new({ striker = "j", { prefix = ";", ret = "&" } --[[, { prefix = "j", ret = "<ESC>" }]] }))
 table.insert(maps, Map.new({ striker = "k", { prefix = ";", ret = "*" } }))
 table.insert(maps, Map.new({ striker = "l", { prefix = ";", ret = "()<left>" }, { prefix = ";;", ret = "()<Left>" } }))
 
@@ -295,9 +295,9 @@ local core = function(m)
     end
 end
 
--- for _, m in ipairs(maps) do
---     vim.keymap.set("i", m.striker, core(m), { noremap = true, silent = true, expr = true })
--- end
+for _, m in ipairs(maps) do
+    vim.keymap.set("i", m.striker, core(m), { noremap = true, silent = true, expr = true })
+end
 
 -- vim.api.nvim_create_autocmd(
 --     {"BufRead", "BufNewFile"},
