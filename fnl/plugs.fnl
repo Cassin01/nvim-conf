@@ -480,7 +480,12 @@
            ((. (require :gitsigns) :setup)
             {:current_line_blame true}))}
 
-{1 :sindrets/diffview.nvim :dependencies :nvim-lua/plenary.nvim }
+{1 :sindrets/diffview.nvim
+ :dependencies :nvim-lua/plenary.nvim
+ :cmd [:DiffviewOpen :DiffviewClose :DiffviewFileHistory]
+ :keys [{1 "<Space>gd"
+         2 (λ [] (vim.cmd (if ((. (require :diffview.lib) :get_current_view)) :DiffviewClose :DiffviewOpen)))
+         :desc "[git] toggle diffview"}]}
 
 {1 :kana/vim-submode
  :event ["User plug-lazy-load"]
@@ -950,7 +955,6 @@
                               (local path (vim.fn.expand :%:p))
                               (vim.cmd (.. "Git add " path))
                               ) "add current")))}
-{1 :sindrets/diffview.nvim}
 
 ; {1 :neogitOrg/neogit
 ;  :dependencies {1 :nvim-lua/plenary.nvim

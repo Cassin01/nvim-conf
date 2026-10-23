@@ -116,7 +116,7 @@ function M.run(lines, name, ft, lang, on_done)
         "--setting-sources", "", -- ignore every settings.json (default model, effort, env)
         "--tools", "", -- no built-in tools; --json-schema still adds StructuredOutput
         "--no-session-persistence",
-        "--model", "sonnet",
+        "--model", "opus",
         "--effort", "low",
         "--output-format", "json", -- one result object; never add --verbose (it prints an array)
         "--json-schema", SCHEMA,
